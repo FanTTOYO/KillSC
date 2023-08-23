@@ -317,14 +317,109 @@ void Player::Update()
 		}
 		else
 		{
-			m_pos = groundPos /*+ Math::Vector3(0,-0.1,0)*/;
+			//m_pos = groundPos /*+ Math::Vector3(0,-0.1,0)*/;
 			m_gravity = 0;
 			m_playerState = fall;
 			m_rGrassHopperTime = 0;
 			m_lGrassHopperTime = 0;
 			m_bMove = false;
 			m_grassHopperDashDir = {};
+			m_dashSpd = 0.0f;
 		}
+	}
+
+	KdCollider::SphereInfo sphereInfo;
+	// 球の中心位置を設定
+	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
+	// 球の半径を設定
+	sphereInfo.m_sphere.Radius = 0.3f;
+
+	// 当たり判定をしたいタイプを設定
+	sphereInfo.m_type = KdCollider::TypeGround /*| KdCollider::TypeBump*/;
+
+	// デバック用
+	m_pDebugWire->AddDebugSphere
+	(
+		sphereInfo.m_sphere.Center,
+		sphereInfo.m_sphere.Radius
+	);
+
+	// 球の当たったオブジェクト情報
+	std::list<KdCollider::CollisionResult> retSphereList;
+
+	// 球と当たり判定 
+	for (auto& obj : SceneManager::Instance().GetObjList())
+	{
+		obj->Intersects
+		(
+			sphereInfo,
+			&retSphereList
+		);
+	}
+
+	// 球に当たったリスト情報から一番近いオブジェクトを検出
+	maxOverLap = 0;
+	hit = false;
+	Math::Vector3 hitDir = {}; // 当たった方向
+	for (auto& ret : retSphereList)
+	{
+		// 一番近くで当たったものを探す
+		if (maxOverLap < ret.m_overlapDistance)
+		{
+			maxOverLap = ret.m_overlapDistance;
+			hit = true;
+			hitDir = ret.m_hitDir;
+		}
+	}
+
+	if (hit)
+	{
+		// 球とモデルが当たっている
+		m_pos += (hitDir * maxOverLap);
+	}
+
+	// 当たり判定をしたいタイプを設定
+	sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
+
+	// デバック用
+	m_pDebugWire->AddDebugSphere
+	(
+		sphereInfo.m_sphere.Center,
+		sphereInfo.m_sphere.Radius
+	);
+
+	// 球の当たったオブジェクト情報
+	retSphereList.clear();
+
+	// 球と当たり判定 
+	for (auto& obj : m_enemy.lock()->GetWeaponList())
+	{
+		obj->Intersects
+		(
+			sphereInfo,
+			&retSphereList
+		);
+	}
+
+	// 球に当たったリスト情報から一番近いオブジェクトを検出
+	maxOverLap = 0;
+	hit = false;
+	hitDir = {}; // 当たった方向
+	for (auto& ret : retSphereList)
+	{
+		// 一番近くで当たったものを探す
+		if (maxOverLap < ret.m_overlapDistance)
+		{
+			maxOverLap = ret.m_overlapDistance;
+			hit = true;
+			hitDir = ret.m_hitDir;
+		}
+	}
+
+	if (hit)
+	{
+		// 球とモデルが当たっている
+		m_pos += (hitDir * maxOverLap);
 	}
 
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
@@ -446,7 +541,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	m_hitStopCnt = 10;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
-	m_torion -= 1.0f;
+	m_torion -= 5.0f;
 	m_attackHit = true;
 	if (m_torion < 0)
 	{

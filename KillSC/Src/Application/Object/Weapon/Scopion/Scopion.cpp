@@ -911,15 +911,15 @@ void Scopion::Init()
 	node = m_model->FindNode("AttackPointOne");
 	Math::Matrix mat = node->m_worldTransform * m_mWorld;
 	m_pCollider->RegisterCollisionShape
-	("ScopionModelGardCol", mat.Translation(), 0.4f, KdCollider::TypeBump | KdCollider::TypeGard);
+	("ScopionModelGardCol", mat.Translation(), 0.4f, KdCollider::TypeGard);
 
 	node = m_model->FindNode("AttackPointTwo");
 	mat = node->m_worldTransform * m_mWorld;
 	m_pCollider->RegisterCollisionShape
-	("ScopionModelGardCol", mat.Translation(), 0.4f, KdCollider::TypeBump | KdCollider::TypeGard);
+	("ScopionModelGardCol", mat.Translation(), 0.4f, KdCollider::TypeGard);
 
 	node = m_model->FindNode("AttackPointThree");
 	mat = node->m_worldTransform * m_mWorld;
 	m_pCollider->RegisterCollisionShape
-	("ScopionModelGardCol", mat.Translation(), 0.4f, KdCollider::TypeBump | KdCollider::TypeGard);
+	("ScopionModelGardCol", mat.Translation(), 0.4f, KdCollider::TypeGard);
 }

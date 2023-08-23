@@ -1,4 +1,5 @@
 #pragma once
+#define ENEMYAIRBORNETIMETOBECNTVAL 180
 
 class WeaponBase;
 class Player;
@@ -206,4 +207,6 @@ private:
 	bool m_bDashAttack;
 
 	bool m_attackHitImmediatelyAfter; // çUåÇÇ≠ÇÁÇ¡ÇΩíºå„
+	int m_grassSuccessionDelayCnt;
+	int m_enemyAirborneTimetoBeCnt;
 };
