@@ -6,37 +6,6 @@ class CameraBase;
 class WeaponBase;
 class Enemy;
 
-enum PlayerState
-{
-	idle =  1 << 0,
-	jump =  1 << 1,
-	fall =  1 << 2,
-	run  =  1 << 3,
-	grassHopperDashF   = 1 << 4,
-	grassHopperDashB   = 1 << 5,
-	grassHopperDashR   = 1 << 6,
-	grassHopperDashL   = 1 << 7,
-	grassHopperDash    = grassHopperDashF | grassHopperDashB | grassHopperDashR | grassHopperDashL,
-	grassHopperDashUp  = 1 << 8,
-	lAttackOne         = 1 << 9,
-	lAttackTwo         = 1 << 10,
-	lAttackThree       = 1 << 11,
-	lAttack            = lAttackOne | lAttackTwo | lAttackThree,
-	rAttackOne         = 1 << 12,
-	rAttackTwo         = 1 << 13,
-	rAttackThree       = 1 << 14,
-	rAttack            = rAttackOne | rAttackTwo | rAttackThree,
-	defense            = 1 << 15,
-	mantis             = 1 << 16,
-	hasDefense         = 1 << 17,
-	hit                = 1 << 18,
-	stepF              = 1 << 19,
-	stepR              = 1 << 20,
-	stepL              = 1 << 21,
-	stepB              = 1 << 22,
-	step               = stepF | stepB | stepR | stepL,
-};
-
 enum WeaponType
 {
 	scorpion    = 1 << 0,
@@ -49,6 +18,37 @@ enum WeaponType
 class Player : public KdGameObject
 {
 public:
+
+	enum PlayerState
+	{
+		idle = 1 << 0,
+		jump = 1 << 1,
+		fall = 1 << 2,
+		run = 1 << 3,
+		grassHopperDashF = 1 << 4,
+		grassHopperDashB = 1 << 5,
+		grassHopperDashR = 1 << 6,
+		grassHopperDashL = 1 << 7,
+		grassHopperDash = grassHopperDashF | grassHopperDashB | grassHopperDashR | grassHopperDashL,
+		grassHopperDashUp = 1 << 8,
+		lAttackOne = 1 << 9,
+		lAttackTwo = 1 << 10,
+		lAttackThree = 1 << 11,
+		lAttack = lAttackOne | lAttackTwo | lAttackThree,
+		rAttackOne = 1 << 12,
+		rAttackTwo = 1 << 13,
+		rAttackThree = 1 << 14,
+		rAttack = rAttackOne | rAttackTwo | rAttackThree,
+		defense = 1 << 15,
+		mantis = 1 << 16,
+		hasDefense = 1 << 17,
+		hit = 1 << 18,
+		stepF = 1 << 19,
+		stepR = 1 << 20,
+		stepL = 1 << 21,
+		stepB = 1 << 22,
+		step = stepF | stepB | stepR | stepL,
+	};
 
 	Player() {}
 	~Player() {}

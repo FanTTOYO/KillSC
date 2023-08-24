@@ -72,10 +72,10 @@ void Scopion::Update()
 // UŒ‚‚Ì“–‚½‚è”»’è
 		for (auto& wepLis : m_pTarget.lock()->GetWeaponList())
 		{
-			if (m_pTarget.lock()->GetEnemyState() & eDefense && !m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (rAttack | lAttack))
+			if (m_pTarget.lock()->GetEnemyState() & eDefense && !m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack))
 			{
-				if ((player->GetPlayerState() & rAttack) && m_arrmType == lArrm)break;
-				if ((player->GetPlayerState() & lAttack) && m_arrmType == rArrm)break;
+				if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm)break;
+				if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm)break;
 
 				node = m_model->FindNode("AttackPointOne");
 				KdCollider::SphereInfo sphereInfo;
@@ -262,10 +262,10 @@ void Scopion::Update()
 				}*/
 
 
-		if (!m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (rAttack | lAttack))
+		if (!m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack))
 		{
-			if (player->GetPlayerState() & rAttack && m_arrmType == lArrm)return;
-			if (player->GetPlayerState() & lAttack && m_arrmType == rArrm)return;
+			if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
+			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
 			node = m_model->FindNode("AttackPointOne");
 			KdCollider::SphereInfo sphereInfo;
 			mat = node->m_worldTransform * m_mWorld;
@@ -442,7 +442,7 @@ void Scopion::Update()
 // UŒ‚‚Ì“–‚½‚è”»’è
 		for (auto& wepLis : m_eTarget.lock()->GetWeaponList())
 		{
-			if (m_eTarget.lock()->GetPlayerState() & defense && !m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack))
+			if (m_eTarget.lock()->GetPlayerState() & Player::PlayerState::defense && !m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack))
 			{
 				if ((enemy->GetEnemyState() & eRAttack) && m_arrmType == lArrm)break;
 				if ((enemy->GetEnemyState() & eLAttack) && m_arrmType == rArrm)break;
@@ -903,10 +903,10 @@ void Scopion::Init()
 	m_animator = std::make_shared<KdAnimator>();
 	// “–‚½‚è”»’è‰Šú‰»
 	m_pCollider = std::make_unique<KdCollider>();
-	m_pCollider->RegisterCollisionShape
-	("ScopionModel", m_model, KdCollider::TypeDamage);
 
 
+	/*m_pCollider->RegisterCollisionShape
+	("ScopionModel", m_model, KdCollider::TypeDamage);*/
 	const KdModelWork::Node* node = nullptr;
 	node = m_model->FindNode("AttackPointOne");
 	Math::Matrix mat = node->m_worldTransform * m_mWorld;

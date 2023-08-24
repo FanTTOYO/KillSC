@@ -82,7 +82,8 @@ void Enemy::Init()
 	hopper->SetbEnemyWeapon();
 	m_weaponList.push_back(hopper);
 
-	m_thinkActionDelayTimeVal = 5;
+	//m_thinkActionDelayTimeVal = 5;
+	m_thinkActionDelayTimeVal = 1;
 	//m_actionDelayTimeVal = 10;
 
 	m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
@@ -544,12 +545,11 @@ void Enemy::Update()
 				m_animator->SetAnimation(m_model->GetAnimation("Idle"));
 			}
 		}
-
-		/*m_pos.y -= m_gravity;
-		m_gravity += 0.01f;*/
 	}
 	else
 	{
+		m_pos.y -= m_gravity;
+		m_gravity += 0.01f;
 		--m_hitStopCnt;
 		if (m_hitStopCnt <= 0)
 		{
@@ -586,9 +586,9 @@ void Enemy::Update()
 	}
 	else
 	{
-		rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
+		/*rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
 		rayInfo.m_dir = m_grassHopperDashDir;
-		rayInfo.m_range = 1.25f;
+		rayInfo.m_range = 1.25f;*/
 	}
 
 	rayInfo.m_type = KdCollider::TypeGround;
@@ -624,29 +624,31 @@ void Enemy::Update()
 
 	if (hit)
 	{
-		if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp)))
+		//m_pos = groundPos;
+		m_pos = groundPos + Math::Vector3(0, -0.7f, 0);
+		m_gravity = 0;
+		if (m_EnemyState & (eFall | eJump))
 		{
-			//m_pos = groundPos;
-			m_pos = groundPos + Math::Vector3(0, -0.7f, 0);
-			m_gravity = 0;
-			if (m_EnemyState & (eFall | eJump))
-			{
-				m_bMove = false;
-				m_EnemyState = eIdle;
-			}
-			m_enemyAirborneTimetoBeCnt = ENEMYAIRBORNETIMETOBECNTVAL;
+			m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
+			//m_actionDelayTime = m_actionDelayTimeVal;
+			m_wantToMoveState = none;
 		}
-		else
-		{
-			//m_pos = groundPos /*+ Math::Vector3(0,-0.1,0)*/;
-			m_gravity = 0;
-			m_EnemyState = eFall;
-			m_rGrassHopperTime = 0;
-			m_lGrassHopperTime = 0;
-			m_bMove = false;
-			m_grassHopperDashDir = {};
-			m_dashSpd = 0.0f;
-		}
+		m_enemyAirborneTimetoBeCnt = ENEMYAIRBORNETIMETOBECNTVAL;
+		
+		//else
+		//{
+		//	//m_pos = groundPos /*+ Math::Vector3(0,-0.1,0)*/;
+		//	m_gravity = 0;
+		//	m_EnemyState = eFall;
+		//	m_rGrassHopperTime = 0;
+		//	m_lGrassHopperTime = 0;
+		//	m_bMove = false;
+		//	m_grassHopperDashDir = {};
+		//	m_dashSpd = 0.0f;
+		//	m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
+		//	//m_actionDelayTime = m_actionDelayTimeVal;
+		//	m_wantToMoveState = none;
+		//}
 	}
 	else
 	{
@@ -655,7 +657,7 @@ void Enemy::Update()
 		{
 			m_enemyAirborneTimetoBeCnt = 0;
 			m_EnemyState = eFall;
-			m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
+			m_thinkActionDelayTime = m_thinkActionDelayTimeVal + 1;
 			//m_actionDelayTime = m_actionDelayTimeVal;
 			m_wantToMoveState = none;
 		}
@@ -664,8 +666,14 @@ void Enemy::Update()
 	KdCollider::SphereInfo sphereInfo;
 	// 球の中心位置を設定
 	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
-	// 球の半径を設定
-	sphereInfo.m_sphere.Radius = 0.3f;
+	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp)))
+	{
+		sphereInfo.m_sphere.Radius = 0.3f;
+	}
+	else
+	{
+		sphereInfo.m_sphere.Radius = 1.2f;
+	}
 
 	// 当たり判定をしたいタイプを設定
 	sphereInfo.m_type = KdCollider::TypeGround /*| KdCollider::TypeBump*/;
@@ -711,48 +719,98 @@ void Enemy::Update()
 		m_pos += (hitDir * maxOverLap);
 	}
 
-	// 当たり判定をしたいタイプを設定
-	sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
-
-	// デバック用
-	m_pDebugWire->AddDebugSphere
-	(
-		sphereInfo.m_sphere.Center,
-		sphereInfo.m_sphere.Radius
-	);
-
-	// 球の当たったオブジェクト情報
-	retSphereList.clear();
-
-	// 球と当たり判定 
-	for (auto& obj : m_target.lock()->GetWeaponList())
+	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::defense))
 	{
-		obj->Intersects
+		// 当たり判定をしたいタイプを設定
+		sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
+
+		// デバック用
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius
+		);
+
+		// 球の当たったオブジェクト情報
+		retSphereList.clear();
+
+		// 球と当たり判定 
+		for (auto& obj : m_target.lock()->GetWeaponList())
+		{
+			obj->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
+		}
+
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		maxOverLap = 0;
+		hit = false;
+		hitDir = {}; // 当たった方向
+		for (auto& ret : retSphereList)
+		{
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+				hitDir = ret.m_hitDir;
+			}
+		}
+
+		if (hit)
+		{
+			// 球とモデルが当たっている
+			m_pos += (hitDir * maxOverLap);
+		}
+	}
+
+	if (!(m_EnemyState & eGrassHopperDash) && !(m_target.lock()->GetPlayerState() & Player::PlayerState::grassHopperDash))
+	{
+		sphereInfo.m_sphere.Radius = 0.3f;
+
+
+		// 当たり判定をしたいタイプを設定
+		sphereInfo.m_type = KdCollider::TypeBump;
+		// デバック用
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius
+		);
+
+		// 球の当たったオブジェクト情報
+		retSphereList.clear();
+
+		// 球と当たり判定 
+
+		m_target.lock()->Intersects
 		(
 			sphereInfo,
 			&retSphereList
 		);
-	}
 
-	// 球に当たったリスト情報から一番近いオブジェクトを検出
-	maxOverLap = 0;
-	hit = false;
-	hitDir = {}; // 当たった方向
-	for (auto& ret : retSphereList)
-	{
-		// 一番近くで当たったものを探す
-		if (maxOverLap < ret.m_overlapDistance)
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		maxOverLap = 0;
+		hit = false;
+		hitDir = {}; // 当たった方向
+		for (auto& ret : retSphereList)
 		{
-			maxOverLap = ret.m_overlapDistance;
-			hit = true;
-			hitDir = ret.m_hitDir;
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+				hitDir = ret.m_hitDir;
+			}
 		}
-	}
 
-	if (hit)
-	{
-		// 球とモデルが当たっている
-		m_pos += (hitDir * maxOverLap);
+		if (hit)
+		{
+			// 球とモデルが当たっている
+			m_pos += (hitDir * maxOverLap);
+		}
 	}
 
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
@@ -769,7 +827,7 @@ void Enemy::PostUpdate()
 {
 	if (m_gravity > 0)
 	{
-		m_EnemyState = fall;
+		m_EnemyState = eFall;
 	}
 
 	if (m_rGrassHopperPauCnt > 0)
@@ -799,7 +857,7 @@ void Enemy::PostUpdate()
 
 	if (!m_animator) return;
 
-	if (!(m_EnemyState & (lAttack | rAttack)))
+	if (!(m_EnemyState & (eLAttack | eRAttack)))
 	{
 		m_animator->AdvanceTime(m_model->WorkNodes());
 		if (m_EnemyState & run)
@@ -820,12 +878,12 @@ void Enemy::PostUpdate()
 			}
 		}
 	}
-	else if (m_EnemyState & (lAttack | rAttack) && !m_bAttackAnimeDelay)
+	else if (m_EnemyState & (eLAttack | eRAttack) && !m_bAttackAnimeDelay)
 	{
 		if (m_bAttackAnimeCnt)
 		{
 			m_attackAnimeCnt++;
-			if (m_EnemyState & (lAttackOne | lAttackTwo | rAttackOne | rAttackTwo))
+			if (m_EnemyState & (eLAttackOne | eLAttackTwo | eRAttackOne | eRAttackTwo))
 			{
 				if (m_attackAnimeCnt == 10)
 				{
@@ -844,7 +902,7 @@ void Enemy::PostUpdate()
 		else
 		{
 			m_attackAnimeCnt++;
-			if (m_EnemyState & (lAttackThree | rAttackThree))
+			if (m_EnemyState & (eLAttackThree | eRAttackThree))
 			{
 				if (m_attackAnimeCnt == 15)
 				{
@@ -864,7 +922,7 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	m_hitStopCnt = 10;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
-	m_torion -= 5.0f;
+	m_torion -= 50.0f;
 	m_attackHit = true;
 	if (m_torion <= 0)
 	{
@@ -881,7 +939,7 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 	else
 	{
-		m_graduallyTorionDecVal *= 1.15f;
+		m_graduallyTorionDecVal *= 1.25f;
 	}
 }
 
@@ -2019,7 +2077,7 @@ void Enemy::ScorpionDefenseMove()
 
 		if (src.Length() <= 1.2f)
 		{
-			if (spTarget->GetPlayerState() & (rAttack | lAttack))
+			if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack))
 			{
 				m_bMove = true;
 			}

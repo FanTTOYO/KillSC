@@ -260,9 +260,9 @@ void Player::Update()
 	}
 	else
 	{
-		rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
+		/*rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
 		rayInfo.m_dir = m_grassHopperDashDir;
-		rayInfo.m_range = 1.25f;
+		rayInfo.m_range = 0.25f;*/
 	}
 
 	rayInfo.m_type = KdCollider::TypeGround;
@@ -332,7 +332,15 @@ void Player::Update()
 	// 球の中心位置を設定
 	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
 	// 球の半径を設定
-	sphereInfo.m_sphere.Radius = 0.3f;
+
+	if (!(m_playerState & (grassHopperDash | grassHopperDashUp)))
+	{
+		sphereInfo.m_sphere.Radius = 0.3f;
+	}
+	else
+	{
+		sphereInfo.m_sphere.Radius = 1.2f;
+	}
 
 	// 当たり判定をしたいタイプを設定
 	sphereInfo.m_type = KdCollider::TypeGround /*| KdCollider::TypeBump*/;
@@ -378,48 +386,98 @@ void Player::Update()
 		m_pos += (hitDir * maxOverLap);
 	}
 
-	// 当たり判定をしたいタイプを設定
-	sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
-
-	// デバック用
-	m_pDebugWire->AddDebugSphere
-	(
-		sphereInfo.m_sphere.Center,
-		sphereInfo.m_sphere.Radius
-	);
-
-	// 球の当たったオブジェクト情報
-	retSphereList.clear();
-
-	// 球と当たり判定 
-	for (auto& obj : m_enemy.lock()->GetWeaponList())
+	if (m_enemy.lock()->GetEnemyState() & eDefense)
 	{
-		obj->Intersects
+		// 当たり判定をしたいタイプを設定
+		sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
+
+		// デバック用
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius
+		);
+
+		// 球の当たったオブジェクト情報
+		retSphereList.clear();
+
+		// 球と当たり判定 
+		for (auto& obj : m_enemy.lock()->GetWeaponList())
+		{
+			obj->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
+		}
+
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		maxOverLap = 0;
+		hit = false;
+		hitDir = {}; // 当たった方向
+		for (auto& ret : retSphereList)
+		{
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+				hitDir = ret.m_hitDir;
+			}
+		}
+
+		if (hit)
+		{
+			// 球とモデルが当たっている
+			m_pos += (hitDir * maxOverLap);
+		}
+	}
+
+	if (!(m_playerState & grassHopperDash) && !(m_enemy.lock()->GetEnemyState() & eGrassHopperDash))
+	{
+		sphereInfo.m_sphere.Radius = 0.3f;
+
+
+		// 当たり判定をしたいタイプを設定
+		sphereInfo.m_type = KdCollider::TypeBump;
+		// デバック用
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius
+		);
+
+		// 球の当たったオブジェクト情報
+		retSphereList.clear();
+
+		// 球と当たり判定 
+
+		m_enemy.lock()->Intersects
 		(
 			sphereInfo,
 			&retSphereList
 		);
-	}
 
-	// 球に当たったリスト情報から一番近いオブジェクトを検出
-	maxOverLap = 0;
-	hit = false;
-	hitDir = {}; // 当たった方向
-	for (auto& ret : retSphereList)
-	{
-		// 一番近くで当たったものを探す
-		if (maxOverLap < ret.m_overlapDistance)
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		maxOverLap = 0;
+		hit = false;
+		hitDir = {}; // 当たった方向
+		for (auto& ret : retSphereList)
 		{
-			maxOverLap = ret.m_overlapDistance;
-			hit = true;
-			hitDir = ret.m_hitDir;
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+				hitDir = ret.m_hitDir;
+			}
 		}
-	}
 
-	if (hit)
-	{
-		// 球とモデルが当たっている
-		m_pos += (hitDir * maxOverLap);
+		if (hit)
+		{
+			// 球とモデルが当たっている
+			m_pos += (hitDir * maxOverLap);
+		}
 	}
 
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
@@ -541,7 +599,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	m_hitStopCnt = 10;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
-	m_torion -= 5.0f;
+	m_torion -= 50.0f;
 	m_attackHit = true;
 	if (m_torion < 0)
 	{
@@ -554,7 +612,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 	else
 	{
-		m_graduallyTorionDecVal *= 1.15f;
+		m_graduallyTorionDecVal *= 1.25f;
 	}
 }
 
@@ -1473,6 +1531,7 @@ void Player::ScorpionDefenseMove()
 				m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
 			}
 			m_playerState = idle;
+			//m_playerState &= ~defense;
 		}
 	}
 	else
@@ -1483,6 +1542,7 @@ void Player::ScorpionDefenseMove()
 			m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
 		}
 		m_playerState = idle;
+		//m_playerState &= ~defense;
 	}
 }
 
