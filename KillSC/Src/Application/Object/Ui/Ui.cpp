@@ -616,7 +616,6 @@ void Ui::ResultUpdate()
 		m_rank = aStr[3];
 
 		m_pointAddOrSubVal = SceneManager::Instance().GetPointAddOrSubVal();
-		m_pointAddOrSubVal = 500;
 	}
 
 	if (m_time >= 210)
@@ -1264,7 +1263,56 @@ void Ui::DrawSprite()
 
 		if (m_time >= 120)
 		{
-			transMat = Math::Matrix::CreateTranslation(-90, 25, 0);
+			transMat = Math::Matrix::CreateTranslation(-145, 25, 0);
+			switch ((m_pointAddOrSubVal / 1000) % 10)
+			{
+			case 0:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
+				break;
+			case 1:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point1Tex, 0, 0, 102, 114);
+				break;
+			case 2:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point2Tex, 0, 0, 102, 114);
+				break;
+			case 3:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point3Tex, 0, 0, 102, 114);
+				break;
+			case 4:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point4Tex, 0, 0, 102, 114);
+				break;
+			case 5:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point5Tex, 0, 0, 102, 114);
+				break;
+			case 6:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point6Tex, 0, 0, 102, 114);
+				break;
+			case 7:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point7Tex, 0, 0, 102, 114);
+				break;
+			case 8:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point8Tex, 0, 0, 102, 114);
+				break;
+			case 9:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point9Tex, 0, 0, 102, 114);
+				break;
+			default:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
+				break;
+			}
+
+			transMat = Math::Matrix::CreateTranslation(-65, 25, 0);
 			switch ((m_pointAddOrSubVal / 100) % 10)
 			{
 			case 0:
@@ -1313,7 +1361,7 @@ void Ui::DrawSprite()
 				break;
 			}
 
-			transMat = Math::Matrix::CreateTranslation(-10, 25, 0);
+			transMat = Math::Matrix::CreateTranslation(15, 25, 0);
 			switch ((m_pointAddOrSubVal / 10) % 10)
 			{
 			case 0:
@@ -1362,7 +1410,7 @@ void Ui::DrawSprite()
 				break;
 			}
 
-			transMat = Math::Matrix::CreateTranslation(70, 25, 0);
+			transMat = Math::Matrix::CreateTranslation(105, 25, 0);
 			switch ((m_pointAddOrSubVal / 1) % 10)
 			{
 			case 0:
