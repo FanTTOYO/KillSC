@@ -46,7 +46,10 @@ void SceneManager::DrawSprite()
 
 void SceneManager::DrawDebug()
 {
+#ifdef _DEBUG
 	m_currentScene->DrawDebug();
+#endif
+
 }
 
 const std::list<std::shared_ptr<KdGameObject>>& SceneManager::GetObjList()

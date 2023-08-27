@@ -245,7 +245,7 @@ void Ui::GameUpdate()
 				if (!m_bOption)
 				{
 					m_bOption = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/オプションを開く音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
 				}
 				else if (m_bOption)
 				{
@@ -256,7 +256,7 @@ void Ui::GameUpdate()
 					m_bHowToPage = true;
 					m_bInfo = false;
 					SetCursorPos(640, 360);
-					KdAudioManager::Instance().Play("Asset/Audio/SE/オプションを開く音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
 				}
 			}
 		}

@@ -8,12 +8,77 @@
 		{
 			"name":"Scene",
 			"nodes":[
-				0
+				7
 			]
 		}
 	],
 	"nodes":[
 		{
+			"name":"AttackPointFive",
+			"translation":[
+				0,
+				-0.2124866545200348,
+				0
+			]
+		},
+		{
+			"name":"AttackPointFour",
+			"translation":[
+				0,
+				-0.14908736944198608,
+				0
+			]
+		},
+		{
+			"name":"AttackPointOne",
+			"translation":[
+				0,
+				0.06277438998222351,
+				0
+			]
+		},
+		{
+			"name":"AttackPointSeven",
+			"translation":[
+				0,
+				-0.3150031864643097,
+				0
+			]
+		},
+		{
+			"name":"AttackPointSix",
+			"translation":[
+				0,
+				-0.2675427496433258,
+				0
+			]
+		},
+		{
+			"name":"AttackPointThree",
+			"translation":[
+				0,
+				-0.08969458937644958,
+				0
+			]
+		},
+		{
+			"name":"AttackPointTwo",
+			"translation":[
+				0,
+				-0.013750523328781128,
+				0
+			]
+		},
+		{
+			"children":[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6
+			],
 			"mesh":0,
 			"name":"Scopion",
 			"scale":[
@@ -34,21 +99,21 @@
 				{
 					"sampler":0,
 					"target":{
-						"node":0,
+						"node":7,
 						"path":"translation"
 					}
 				},
 				{
 					"sampler":1,
 					"target":{
-						"node":0,
+						"node":7,
 						"path":"rotation"
 					}
 				},
 				{
 					"sampler":2,
 					"target":{
-						"node":0,
+						"node":7,
 						"path":"scale"
 					}
 				}

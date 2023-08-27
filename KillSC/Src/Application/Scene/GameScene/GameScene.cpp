@@ -94,4 +94,5 @@ void GameScene::Init()
 	m_wpUi = ui;
 
 	SetCursorPos(640, 360);
+	KdAudioManager::Instance().Play("Asset/Audio/SE/CntDwon1.wav");
 }

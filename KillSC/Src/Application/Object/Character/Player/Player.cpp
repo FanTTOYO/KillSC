@@ -260,9 +260,9 @@ void Player::Update()
 	}
 	else
 	{
-		/*rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
+		//rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
 		rayInfo.m_dir = m_grassHopperDashDir;
-		rayInfo.m_range = 0.25f;*/
+		//rayInfo.m_range = 0.25f;
 	}
 
 	rayInfo.m_type = KdCollider::TypeGround;
@@ -496,12 +496,15 @@ void Player::PostUpdate()
 {
 	if (m_gravity > 0)
 	{
-		if (!(m_playerState & fall))
+		if (!(m_playerState & hit))
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("FallA"),false);
-		}
+			if (!(m_playerState & fall))
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
+			}
 
-		m_playerState = fall;
+			m_playerState = fall;
+		}
 	}
 
 	if (m_rGrassHopperPauCnt > 0)
@@ -654,6 +657,17 @@ void Player::DrawLit_SkinMesh()
 	{
 		Math::Color color = { 1,0,0,1 };
 		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, color);
+	}
+}
+
+void Player::DrawDebug()
+{
+	if (!m_pDebugWire)return;
+	m_pDebugWire->Draw();
+
+	for (auto& WeaList : m_weaponList)
+	{
+		WeaList->DrawDebug();
 	}
 }
 
@@ -1502,6 +1516,7 @@ void Player::ScorpionAttackMove()
 			m_playerState &= ~mantis;
 			m_attackAnimeCnt = 0;
 			m_weaponList[1]->SetBMantis(false);
+			m_weaponList[0]->SetBMantis(false);
 			m_bMove = false;
 		}
 	}

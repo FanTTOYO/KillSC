@@ -78,6 +78,8 @@ public:
 	void PostUpdate()override;
 	void DrawBright()override;
 	void DrawSprite()override;
+	void DrawDebug()override;
+
 	void GenerateDepthMapFromLight()override;
 	void SetTarget(std::shared_ptr<Player> a_target) { m_target = a_target; }
 	//void Release() {};

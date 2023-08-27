@@ -590,9 +590,9 @@ void Enemy::Update()
 	}
 	else
 	{
-		/*rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
-		rayInfo.m_dir = m_grassHopperDashDir;
-		rayInfo.m_range = 1.25f;*/
+		//rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
+		rayInfo.m_dir = {0,0,1};
+		//rayInfo.m_range = 1.25f;
 	}
 
 	rayInfo.m_type = KdCollider::TypeGround;
@@ -973,6 +973,17 @@ void Enemy::HasDefense()
 void Enemy::DrawSprite()
 {
 
+}
+
+void Enemy::DrawDebug()
+{	
+	if (!m_pDebugWire)return;
+	m_pDebugWire->Draw();
+	
+	for (auto& WeaList : m_weaponList)
+	{
+		WeaList->DrawDebug();
+	}	
 }
 
 void Enemy::GenerateDepthMapFromLight_SkinMesh()

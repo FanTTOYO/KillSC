@@ -18,7 +18,6 @@ public:
 	void SetOwner(const std::shared_ptr<KdGameObject>& a_owner) { m_owner = a_owner; }
 	void SetArrmType(ArrmType a_arrmType) { m_arrmType = a_arrmType; }
 
-
 	void GrassHopper(Math::Vector3 a_pos, float a_yAng);
 	void GrassHopper(Math::Vector3 a_pos) { m_pos = a_pos; }
 

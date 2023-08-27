@@ -22,6 +22,10 @@ public:
 
 private:
 	void Init()override;
+	void PlayerHitAttackChaeck();
+	void PlayerManAttackChaeck();
+	void EnemyHitAttackChaeck();
+	void EnemyManAttackChaeck();
 
 	bool m_bPlayerWeapon = false;
 	bool m_bEnemyWeapon = false;

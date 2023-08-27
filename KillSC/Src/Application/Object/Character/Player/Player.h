@@ -61,6 +61,7 @@ public:
 	void GenerateDepthMapFromLight()			override;
 	void GenerateDepthMapFromLight_SkinMesh()	override;
 	void DrawLit_SkinMesh()						override;
+	void DrawDebug()override;
 	void Init()									override;
 	void Release() {};
 
