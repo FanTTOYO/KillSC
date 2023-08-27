@@ -98,7 +98,7 @@ void Enemy::Update()
 	{
 		m_torion = 0;
 		SceneManager::Instance().SetBAddOrSubVal(true);
-		SceneManager::Instance().SetPointAddOrSubVal(500);
+		SceneManager::Instance().SetPointAddOrSubVal(1000);
 		SceneManager::Instance().SetBPlayerWin();
 		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
 	}
@@ -550,8 +550,14 @@ void Enemy::Update()
 	{
 		m_pos.y -= m_gravity;
 		m_gravity += 0.01f;
-		--m_hitStopCnt;
-		if (m_hitStopCnt <= 0)
+		if(m_hitStopCnt > 0)
+		{
+			--m_hitStopCnt;
+			m_pos += m_knockBackVec * m_hitMoveSpd;
+			m_hitMoveSpd *= 0.95f;
+		}
+
+		if (m_hitStopCnt == 0)
 		{
 			m_hitStopCnt = 0;
 			m_EnemyState = eIdle;
@@ -560,10 +566,8 @@ void Enemy::Update()
 			m_wantToMoveState = none;
 			m_attackHitImmediatelyAfter = true;
 			//m_EnemyState = eDefense;
-			m_hitMoveSpd = false;
+			m_hitMoveSpd = 0.0f;
 		}
-		m_pos += m_knockBackVec * m_hitMoveSpd;
-		m_hitMoveSpd *= 0.95f;
 	}
 
 	//if (m_pos.y <= -1.05f)//¡‚¾‚¯ ’n–Ê‚É’…‚¢‚½‚çƒJƒƒ‰‚ÌXAng‚ª180ˆÈ‰º‚©‚Â0ˆÈã•â³‚·‚é
@@ -652,14 +656,17 @@ void Enemy::Update()
 	}
 	else
 	{
-		--m_enemyAirborneTimetoBeCnt;
-		if (m_enemyAirborneTimetoBeCnt <= 0)
+		if (m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp))
 		{
-			m_enemyAirborneTimetoBeCnt = 0;
-			m_EnemyState = eFall;
-			m_thinkActionDelayTime = m_thinkActionDelayTimeVal + 1;
-			//m_actionDelayTime = m_actionDelayTimeVal;
-			m_wantToMoveState = none;
+			--m_enemyAirborneTimetoBeCnt;
+			if (m_enemyAirborneTimetoBeCnt <= 0)
+			{
+				m_enemyAirborneTimetoBeCnt = 0;
+				m_EnemyState = eFall;
+				m_thinkActionDelayTime = m_thinkActionDelayTimeVal + 1;
+				//m_actionDelayTime = m_actionDelayTimeVal;
+				m_wantToMoveState = none;
+			}
 		}
 	}
 
@@ -827,7 +834,10 @@ void Enemy::PostUpdate()
 {
 	if (m_gravity > 0)
 	{
-		m_EnemyState = eFall;
+		if (!(m_EnemyState & eHit))
+		{
+			m_EnemyState = eFall;
+		}
 	}
 
 	if (m_rGrassHopperPauCnt > 0)
@@ -928,7 +938,7 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	{
 		m_torion = 0;
 		SceneManager::Instance().SetBAddOrSubVal(true);
-		SceneManager::Instance().SetPointAddOrSubVal(500);
+		SceneManager::Instance().SetPointAddOrSubVal(1000);
 		SceneManager::Instance().SetBPlayerWin();
 		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
 	}
@@ -978,9 +988,10 @@ void Enemy::DrawLit_SkinMesh()
 
 	if (m_hitStopCnt <= 5)
 	{
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
+		Math::Color color = { 1,1,1,1 };
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld,color);
 	}
-	else
+	else if (m_hitStopCnt > 5)
 	{
 		Math::Color color = { 1,0,0,1 };
 		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, color);
