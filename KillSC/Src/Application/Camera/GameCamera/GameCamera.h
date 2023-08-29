@@ -1,6 +1,10 @@
 #pragma once
 #include "../CameraBase.h"
+#define CAMERAZ -3.25f 
+#define CAMERAY  2.0f
+
 class Player;
+class Enemy;
 
 class GameCamera : public CameraBase
 {
@@ -11,6 +15,7 @@ public:
 	void Update()				override;
 
 	void SetPlayer(std::shared_ptr<Player> a_player) { m_wpPlayer = a_player; }
+	void SetPlayer(std::shared_ptr<Enemy> a_enemy) { m_wpEnemy = a_enemy; }
 
 private:
 	void Init()					override;
@@ -26,6 +31,7 @@ private:
 	bool m_bCameraSet;
 	Math::Vector3 m_cameraSetVec;
 	std::weak_ptr<Player> m_wpPlayer;
+	std::weak_ptr<Enemy> m_wpEnemy;
 
 	float m_cameracChasePower = 0;
 	bool m_bCameraDown;

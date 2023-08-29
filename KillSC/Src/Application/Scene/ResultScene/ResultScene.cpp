@@ -32,4 +32,6 @@ void ResultScene::Init()
 	m_objList.push_back(ui);
 	m_wpUi = ui;
 	KdAudioManager::Instance().StopAllSound();
+
+	ShowCursor(true); // マウスカーソルを消す
 }

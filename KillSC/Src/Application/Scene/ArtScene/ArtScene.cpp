@@ -19,4 +19,6 @@ void ArtScene::Init()
 	ui->SetUiType(Ui::UiType::art);
 	m_objList.push_back(ui);
 	m_wpUi = ui;
+
+	ShowCursor(true); // マウスカーソルを消す
 }

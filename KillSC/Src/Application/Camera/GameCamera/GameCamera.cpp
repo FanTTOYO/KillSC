@@ -1,10 +1,11 @@
 #include "GameCamera.h"
 #include "../../Object/Character/Player/Player.h"
+#include "../../Object/Character/Enemy/Enemy.h"
 
 void GameCamera::Init()
 {
 	// ’Ž‹“_
-	m_LocalPos = Math::Matrix::CreateTranslation(0, 3.5f, -7.5f);
+	m_LocalPos = Math::Matrix::CreateTranslation(0, CAMERAY, CAMERAZ);
 
 	// «‰æ–Ê’†‰›
 	m_FixMousePos.x = 640;
@@ -86,24 +87,24 @@ void GameCamera::Update()
 		{
 			if (m_wpPlayer.lock()->GetLGrassHopperTime() <= 80 && m_wpPlayer.lock()->GetLGrassHopperTime() > 79 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 80 && m_wpPlayer.lock()->GetRGrassHopperTime() > 79)
 			{
-				m_LocalPos = Math::Matrix::CreateTranslation(0.0, 3.6f, -7.5f);
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY + 0.1f, CAMERAZ);
 			}
 			else if (m_wpPlayer.lock()->GetLGrassHopperTime() <= 79 && m_wpPlayer.lock()->GetLGrassHopperTime() > 78 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 79 && m_wpPlayer.lock()->GetRGrassHopperTime() > 78)
 			{
-				m_LocalPos = Math::Matrix::CreateTranslation(0.0, 3.4f, -7.5f);
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY - 0.1f, CAMERAZ);
 			}
 			else if (m_wpPlayer.lock()->GetLGrassHopperTime() <= 78 && m_wpPlayer.lock()->GetLGrassHopperTime() > 77 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 78 && m_wpPlayer.lock()->GetRGrassHopperTime() > 77)
 			{
-				m_LocalPos = Math::Matrix::CreateTranslation(0.0, 3.6f, -7.5f);
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY + 0.1f, CAMERAZ);
 			}
 			else if (m_wpPlayer.lock()->GetLGrassHopperTime() <= 77 && m_wpPlayer.lock()->GetLGrassHopperTime() >= 76 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 77 && m_wpPlayer.lock()->GetRGrassHopperTime() >= 76)
 			{
-				m_LocalPos = Math::Matrix::CreateTranslation(0.0, 3.4f, -7.5f);
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY - 0.1f, CAMERAZ);
 			}
 		}
 		else
 		{
-			m_LocalPos = Math::Matrix::CreateTranslation(0, 3.5f, -7.5f);
+			m_LocalPos = Math::Matrix::CreateTranslation(0, CAMERAY, CAMERAZ);
 		}
 	}
 

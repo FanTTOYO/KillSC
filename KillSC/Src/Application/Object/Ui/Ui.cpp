@@ -246,6 +246,7 @@ void Ui::GameUpdate()
 				{
 					m_bOption = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+					ShowCursor(true); // マウスカーソルを消す
 				}
 				else if (m_bOption)
 				{
@@ -257,6 +258,7 @@ void Ui::GameUpdate()
 					m_bInfo = false;
 					SetCursorPos(640, 360);
 					KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+					ShowCursor(false); // マウスカーソルを消す
 				}
 			}
 		}
@@ -352,6 +354,7 @@ void Ui::GameUpdate()
 						{
 							bLButtonKey = true;
 							m_bOption = false;
+							ShowCursor(false); // マウスカーソルを消す
 							SetCursorPos(640, 360);
 							KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
 						}
@@ -1244,6 +1247,11 @@ void Ui::DrawSprite()
 
 		break;
 	case UiType::result:
+		transMat = Math::Matrix::Identity;
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+		color = { 0,0.2f,0.6f,1.0f };
+		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
+
 		if (m_time >= 60)
 		{
 			if (SceneManager::Instance().GetBPlayerWin())

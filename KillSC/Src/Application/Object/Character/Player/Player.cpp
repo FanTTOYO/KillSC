@@ -769,15 +769,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
-					else
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 1.5f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
-
+					
+					m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
 				{
@@ -794,14 +787,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
-					else
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
+					
+					m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 
 				else if (KdInputManager::Instance().GetButtonState("backward"))
@@ -819,14 +806,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x - 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z - 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
-					else
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x - 1.25f * CameraVec.x,m_pos.y + 1.5f,m_pos.z - 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
+					
+					m_weaponList[2]->GrassHopper({ m_pos.x - 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z - 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("right"))
 				{
@@ -843,14 +824,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
-					else
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
+					
+					m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.75f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("jump"))
 				{
@@ -867,14 +842,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y - 0.7f,m_pos.z });
-					}
-					else
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
-					}
+					
+					m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 				}
 				else
 				{
@@ -891,14 +860,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y - 0.7f,m_pos.z });
-					}
-					else
-					{
-						m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
-					}
+					
+					m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 				}
 			}
 		}
@@ -928,14 +891,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
-					else
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 1.5f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
+					
+					m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
 				{
@@ -952,14 +909,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
-					else
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
+					
+					m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 
 				else if (KdInputManager::Instance().GetButtonState("backward"))
@@ -977,14 +928,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x - 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z - 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
-					else
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x - 1.25f * CameraVec.x,m_pos.y + 1.5f,m_pos.z - 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
+					
+					m_weaponList[3]->GrassHopper({ m_pos.x - 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z - 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("right"))
 				{
@@ -1001,14 +946,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
-					else
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x + 1.25f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 1.25f * CameraVec.z }, spCamera->GetYAng());
-					}
+					
+					m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.75f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("jump"))
 				{
@@ -1025,14 +964,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y - 0.7f,m_pos.z });
-					}
-					else
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
-					}
+					
+					m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 				}
 				else
 				{
@@ -1049,14 +982,8 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
-					if (m_playerState & (jump | fall))
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y - 0.7f,m_pos.z });
-					}
-					else
-					{
-						m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
-					}
+					
+					m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 				}
 			}
 		}
@@ -1169,7 +1096,7 @@ void Player::GrassMove()
 		m_dashSpd = 0.0f;
 		m_grassHopperDashDir = {};
 		m_gravity = 0;
-		m_playerState = fall;
+		m_playerState = idle;
 	}
 
 	m_pos += m_grassHopperDashDir * m_dashSpd;
@@ -1611,7 +1538,7 @@ void Player::ScorpionActionDecision()
 
 			if (m_playerState & grassHopperDash && m_lGrassHopperTime > 80 || m_rGrassHopperTime > 80)return;
 
-			if (m_weaponType & (lScorpion | scorpion))
+			if (m_weaponType & lScorpion && m_weaponType & scorpion)
 			{
 				if (KdInputManager::Instance().GetButtonState("lAttack"))
 				{
