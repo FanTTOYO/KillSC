@@ -26,8 +26,8 @@ public:
 	void SetTarget(std::shared_ptr<Enemy> a_enemy) { m_pTarget = a_enemy; }
 	void SetTarget(std::shared_ptr<Player> a_player) { m_eTarget = a_player; }
 
-	virtual void SetMantis(Math::Matrix a_mat, bool a_bMantis){}
-	virtual void SetBMantis(bool a_bMantis){}
+	virtual void SetMantis(const Math::Matrix a_mat, const bool a_bMantis){}
+	virtual void SetBMantis(const bool a_bMantis){}
 protected:
 
 	//std::shared_ptr<KdGameObject> m_owner;

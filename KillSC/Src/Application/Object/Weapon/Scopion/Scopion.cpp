@@ -110,6 +110,7 @@ void Scopion::Update()
 			}
 		}
 
+#ifdef _DEBUG
 		// ƒK[ƒh‚Ì“–‚½‚è”»’è‚ð‰ÂŽ‹‰»
 		node = m_model->FindNode("AttackPointTwo");
 		Math::Matrix mat = node->m_worldTransform * m_mWorld;
@@ -137,6 +138,7 @@ void Scopion::Update()
 			0.8f,
 			{ 1,0,0,1 }
 		);
+#endif
 
 		if (!m_bMantis)
 		{
@@ -368,16 +370,19 @@ void Scopion::PlayerHitAttackChaeck()
 			bool hit = false;
 			for (auto& ret : retSphereList)
 			{
-				Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-				Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-				float dot = nowDir.Dot(targetDir);
-				dot = std::clamp(dot, -1.0f, 1.0f);
-
-				float betweenAng = acos(dot);
-				betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-				if (betweenAng >= 0 && betweenAng <= 45)
+				if (ret.m_overlapDistance > 0)
 				{
-					hit = true;
+					Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+					float dot = nowDir.Dot(targetDir);
+					dot = std::clamp(dot, -1.0f, 1.0f);
+
+					float betweenAng = acos(dot);
+					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+					if (betweenAng >= 0 && betweenAng <= 45)
+					{
+						hit = true;
+					}
 				}
 			}
 
@@ -416,16 +421,19 @@ void Scopion::PlayerHitAttackChaeck()
 				hit = false;
 				for (auto& ret : retSphereList)
 				{
-					Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-					float dot = nowDir.Dot(targetDir);
-					dot = std::clamp(dot, -1.0f, 1.0f);
-
-					float betweenAng = acos(dot);
-					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-					if (betweenAng >= 0 && betweenAng <= 45)
+					if (ret.m_overlapDistance > 0)
 					{
-						hit = true;
+						Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+						float dot = nowDir.Dot(targetDir);
+						dot = std::clamp(dot, -1.0f, 1.0f);
+
+						float betweenAng = acos(dot);
+						betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+						if (betweenAng >= 0 && betweenAng <= 45)
+						{
+							hit = true;
+						}
 					}
 				}
 
@@ -464,16 +472,19 @@ void Scopion::PlayerHitAttackChaeck()
 					hit = false;
 					for (auto& ret : retSphereList)
 					{
-						Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-						float dot = nowDir.Dot(targetDir);
-						dot = std::clamp(dot, -1.0f, 1.0f);
-
-						float betweenAng = acos(dot);
-						betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-						if (betweenAng >= 0 && betweenAng <= 45)
+						if (ret.m_overlapDistance > 0)
 						{
-							hit = true;
+							Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+							Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+							float dot = nowDir.Dot(targetDir);
+							dot = std::clamp(dot, -1.0f, 1.0f);
+
+							float betweenAng = acos(dot);
+							betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+							if (betweenAng >= 0 && betweenAng <= 45)
+							{
+								hit = true;
+							}
 						}
 					}
 
@@ -660,16 +671,19 @@ void Scopion::PlayerManAttackChaeck()
 			bool hit = false;
 			for (auto& ret : retSphereList)
 			{
-				Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-				Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-				float dot = nowDir.Dot(targetDir);
-				dot = std::clamp(dot, -1.0f, 1.0f);
-
-				float betweenAng = acos(dot);
-				betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-				if (betweenAng >= 0 && betweenAng <= 45)
+				if (ret.m_overlapDistance > 0)
 				{
-					hit = true;
+					Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+					float dot = nowDir.Dot(targetDir);
+					dot = std::clamp(dot, -1.0f, 1.0f);
+
+					float betweenAng = acos(dot);
+					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+					if (betweenAng >= 0 && betweenAng <= 45)
+					{
+						hit = true;
+					}
 				}
 			}
 
@@ -708,16 +722,19 @@ void Scopion::PlayerManAttackChaeck()
 				hit = false;
 				for (auto& ret : retSphereList)
 				{
-					Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-					float dot = nowDir.Dot(targetDir);
-					dot = std::clamp(dot, -1.0f, 1.0f);
-
-					float betweenAng = acos(dot);
-					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-					if (betweenAng >= 0 && betweenAng <= 45)
+					if (ret.m_overlapDistance > 0)
 					{
-						hit = true;
+						Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+						float dot = nowDir.Dot(targetDir);
+						dot = std::clamp(dot, -1.0f, 1.0f);
+
+						float betweenAng = acos(dot);
+						betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+						if (betweenAng >= 0 && betweenAng <= 45)
+						{
+							hit = true;
+						}
 					}
 				}
 
@@ -756,16 +773,19 @@ void Scopion::PlayerManAttackChaeck()
 					hit = false;
 					for (auto& ret : retSphereList)
 					{
-						Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-						float dot = nowDir.Dot(targetDir);
-						dot = std::clamp(dot, -1.0f, 1.0f);
-
-						float betweenAng = acos(dot);
-						betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-						if (betweenAng >= 0 && betweenAng <= 45)
+						if (ret.m_overlapDistance > 0)
 						{
-							hit = true;
+							Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+							Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+							float dot = nowDir.Dot(targetDir);
+							dot = std::clamp(dot, -1.0f, 1.0f);
+
+							float betweenAng = acos(dot);
+							betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+							if (betweenAng >= 0 && betweenAng <= 45)
+							{
+								hit = true;
+							}
 						}
 					}
 
@@ -804,16 +824,19 @@ void Scopion::PlayerManAttackChaeck()
 						hit = false;
 						for (auto& ret : retSphereList)
 						{
-							Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-							Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-							float dot = nowDir.Dot(targetDir);
-							dot = std::clamp(dot, -1.0f, 1.0f);
-
-							float betweenAng = acos(dot);
-							betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-							if (betweenAng >= 0 && betweenAng <= 45)
+							if (ret.m_overlapDistance > 0)
 							{
-								hit = true;
+								Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+								Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+								float dot = nowDir.Dot(targetDir);
+								dot = std::clamp(dot, -1.0f, 1.0f);
+
+								float betweenAng = acos(dot);
+								betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+								if (betweenAng >= 0 && betweenAng <= 45)
+								{
+									hit = true;
+								}
 							}
 						}
 
@@ -852,16 +875,19 @@ void Scopion::PlayerManAttackChaeck()
 							hit = false;
 							for (auto& ret : retSphereList)
 							{
-								Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-								Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-								float dot = nowDir.Dot(targetDir);
-								dot = std::clamp(dot, -1.0f, 1.0f);
-
-								float betweenAng = acos(dot);
-								betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-								if (betweenAng >= 0 && betweenAng <= 45)
+								if (ret.m_overlapDistance > 0)
 								{
-									hit = true;
+									Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+									Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+									float dot = nowDir.Dot(targetDir);
+									dot = std::clamp(dot, -1.0f, 1.0f);
+
+									float betweenAng = acos(dot);
+									betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+									if (betweenAng >= 0 && betweenAng <= 45)
+									{
+										hit = true;
+									}
 								}
 							}
 
@@ -900,16 +926,19 @@ void Scopion::PlayerManAttackChaeck()
 								hit = false;
 								for (auto& ret : retSphereList)
 								{
-									Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-									Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-									float dot = nowDir.Dot(targetDir);
-									dot = std::clamp(dot, -1.0f, 1.0f);
-
-									float betweenAng = acos(dot);
-									betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-									if (betweenAng >= 0 && betweenAng <= 45)
+									if (ret.m_overlapDistance > 0)
 									{
-										hit = true;
+										Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+										Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+										float dot = nowDir.Dot(targetDir);
+										dot = std::clamp(dot, -1.0f, 1.0f);
+
+										float betweenAng = acos(dot);
+										betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+										if (betweenAng >= 0 && betweenAng <= 45)
+										{
+											hit = true;
+										}
 									}
 								}
 
@@ -948,16 +977,19 @@ void Scopion::PlayerManAttackChaeck()
 									hit = false;
 									for (auto& ret : retSphereList)
 									{
-										Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-										Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-										float dot = nowDir.Dot(targetDir);
-										dot = std::clamp(dot, -1.0f, 1.0f);
-
-										float betweenAng = acos(dot);
-										betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-										if (betweenAng >= 0 && betweenAng <= 45)
+										if (ret.m_overlapDistance > 0)
 										{
-											hit = true;
+											Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
+											Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+											float dot = nowDir.Dot(targetDir);
+											dot = std::clamp(dot, -1.0f, 1.0f);
+
+											float betweenAng = acos(dot);
+											betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+											if (betweenAng >= 0 && betweenAng <= 45)
+											{
+												hit = true;
+											}
 										}
 									}
 
@@ -1304,16 +1336,19 @@ void Scopion::EnemyHitAttackChaeck()
 			bool hit = false;
 			for (auto& ret : retSphereList)
 			{
-				Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-				Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-				float dot = nowDir.Dot(targetDir);
-				dot = std::clamp(dot, -1.0f, 1.0f);
-
-				float betweenAng = acos(dot);
-				betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-				if (betweenAng >= 0 && betweenAng <= 45)
+				if (ret.m_overlapDistance > 0)
 				{
-					hit = true;
+					Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+					float dot = nowDir.Dot(targetDir);
+					dot = std::clamp(dot, -1.0f, 1.0f);
+
+					float betweenAng = acos(dot);
+					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+					if (betweenAng >= 0 && betweenAng <= 45)
+					{
+						hit = true;
+					}
 				}
 			}
 
@@ -1352,16 +1387,19 @@ void Scopion::EnemyHitAttackChaeck()
 				hit = false;
 				for (auto& ret : retSphereList)
 				{
-					Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-					float dot = nowDir.Dot(targetDir);
-					dot = std::clamp(dot, -1.0f, 1.0f);
-
-					float betweenAng = acos(dot);
-					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-					if (betweenAng >= 0 && betweenAng <= 45)
+					if (ret.m_overlapDistance > 0)
 					{
-						hit = true;
+						Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+						float dot = nowDir.Dot(targetDir);
+						dot = std::clamp(dot, -1.0f, 1.0f);
+
+						float betweenAng = acos(dot);
+						betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+						if (betweenAng >= 0 && betweenAng <= 45)
+						{
+							hit = true;
+						}
 					}
 				}
 
@@ -1400,16 +1438,19 @@ void Scopion::EnemyHitAttackChaeck()
 					hit = false;
 					for (auto& ret : retSphereList)
 					{
-						Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-						float dot = nowDir.Dot(targetDir);
-						dot = std::clamp(dot, -1.0f, 1.0f);
-
-						float betweenAng = acos(dot);
-						betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-						if (betweenAng >= 0 && betweenAng <= 45)
+						if (ret.m_overlapDistance > 0)
 						{
-							hit = true;
+							Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+							Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+							float dot = nowDir.Dot(targetDir);
+							dot = std::clamp(dot, -1.0f, 1.0f);
+
+							float betweenAng = acos(dot);
+							betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+							if (betweenAng >= 0 && betweenAng <= 45)
+							{
+								hit = true;
+							}
 						}
 					}
 
@@ -1596,16 +1637,19 @@ void Scopion::EnemyManAttackChaeck()
 			bool hit = false;
 			for (auto& ret : retSphereList)
 			{
-				Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-				Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-				float dot = nowDir.Dot(targetDir);
-				dot = std::clamp(dot, -1.0f, 1.0f);
-
-				float betweenAng = acos(dot);
-				betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-				if (betweenAng >= 0 && betweenAng <= 45)
+				if (ret.m_overlapDistance > 0)
 				{
-					hit = true;
+					Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+					float dot = nowDir.Dot(targetDir);
+					dot = std::clamp(dot, -1.0f, 1.0f);
+
+					float betweenAng = acos(dot);
+					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+					if (betweenAng >= 0 && betweenAng <= 45)
+					{
+						hit = true;
+					}
 				}
 			}
 
@@ -1644,16 +1688,19 @@ void Scopion::EnemyManAttackChaeck()
 				hit = false;
 				for (auto& ret : retSphereList)
 				{
-					Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-					float dot = nowDir.Dot(targetDir);
-					dot = std::clamp(dot, -1.0f, 1.0f);
-
-					float betweenAng = acos(dot);
-					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-					if (betweenAng >= 0 && betweenAng <= 45)
+					if (ret.m_overlapDistance > 0)
 					{
-						hit = true;
+						Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+						float dot = nowDir.Dot(targetDir);
+						dot = std::clamp(dot, -1.0f, 1.0f);
+
+						float betweenAng = acos(dot);
+						betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+						if (betweenAng >= 0 && betweenAng <= 45)
+						{
+							hit = true;
+						}
 					}
 				}
 
@@ -1692,16 +1739,19 @@ void Scopion::EnemyManAttackChaeck()
 					hit = false;
 					for (auto& ret : retSphereList)
 					{
-						Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-						float dot = nowDir.Dot(targetDir);
-						dot = std::clamp(dot, -1.0f, 1.0f);
-
-						float betweenAng = acos(dot);
-						betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-						if (betweenAng >= 0 && betweenAng <= 45)
+						if (ret.m_overlapDistance > 0)
 						{
-							hit = true;
+							Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+							Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+							float dot = nowDir.Dot(targetDir);
+							dot = std::clamp(dot, -1.0f, 1.0f);
+
+							float betweenAng = acos(dot);
+							betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+							if (betweenAng >= 0 && betweenAng <= 45)
+							{
+								hit = true;
+							}
 						}
 					}
 
@@ -1740,16 +1790,19 @@ void Scopion::EnemyManAttackChaeck()
 						hit = false;
 						for (auto& ret : retSphereList)
 						{
-							Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-							Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-							float dot = nowDir.Dot(targetDir);
-							dot = std::clamp(dot, -1.0f, 1.0f);
-
-							float betweenAng = acos(dot);
-							betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-							if (betweenAng >= 0 && betweenAng <= 45)
+							if (ret.m_overlapDistance > 0)
 							{
-								hit = true;
+								Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+								Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+								float dot = nowDir.Dot(targetDir);
+								dot = std::clamp(dot, -1.0f, 1.0f);
+
+								float betweenAng = acos(dot);
+								betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+								if (betweenAng >= 0 && betweenAng <= 45)
+								{
+									hit = true;
+								}
 							}
 						}
 
@@ -1788,16 +1841,19 @@ void Scopion::EnemyManAttackChaeck()
 							hit = false;
 							for (auto& ret : retSphereList)
 							{
-								Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-								Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-								float dot = nowDir.Dot(targetDir);
-								dot = std::clamp(dot, -1.0f, 1.0f);
-
-								float betweenAng = acos(dot);
-								betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-								if (betweenAng >= 0 && betweenAng <= 45)
+								if (ret.m_overlapDistance > 0)
 								{
-									hit = true;
+									Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+									Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+									float dot = nowDir.Dot(targetDir);
+									dot = std::clamp(dot, -1.0f, 1.0f);
+
+									float betweenAng = acos(dot);
+									betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+									if (betweenAng >= 0 && betweenAng <= 45)
+									{
+										hit = true;
+									}
 								}
 							}
 
@@ -1836,16 +1892,19 @@ void Scopion::EnemyManAttackChaeck()
 								hit = false;
 								for (auto& ret : retSphereList)
 								{
-									Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-									Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-									float dot = nowDir.Dot(targetDir);
-									dot = std::clamp(dot, -1.0f, 1.0f);
-
-									float betweenAng = acos(dot);
-									betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-									if (betweenAng >= 0 && betweenAng <= 45)
+									if (ret.m_overlapDistance > 0)
 									{
-										hit = true;
+										Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+										Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+										float dot = nowDir.Dot(targetDir);
+										dot = std::clamp(dot, -1.0f, 1.0f);
+
+										float betweenAng = acos(dot);
+										betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+										if (betweenAng >= 0 && betweenAng <= 45)
+										{
+											hit = true;
+										}
 									}
 								}
 
@@ -1884,16 +1943,19 @@ void Scopion::EnemyManAttackChaeck()
 									hit = false;
 									for (auto& ret : retSphereList)
 									{
-										Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
-										Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
-										float dot = nowDir.Dot(targetDir);
-										dot = std::clamp(dot, -1.0f, 1.0f);
-
-										float betweenAng = acos(dot);
-										betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-										if (betweenAng >= 0 && betweenAng <= 45)
+										if (ret.m_overlapDistance > 0)
 										{
-											hit = true;
+											Math::Vector3 nowDir = m_eTarget.lock()->GetMatrix().Backward();
+											Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_eTarget.lock()->GetPos();
+											float dot = nowDir.Dot(targetDir);
+											dot = std::clamp(dot, -1.0f, 1.0f);
+
+											float betweenAng = acos(dot);
+											betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+											if (betweenAng >= 0 && betweenAng <= 45)
+											{
+												hit = true;
+											}
 										}
 									}
 
