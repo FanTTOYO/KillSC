@@ -39,6 +39,7 @@ void Scopion::Update()
 			}
 		}
 
+#ifdef _DEBUG
 		// ƒK[ƒh‚Ì“–‚½‚è”»’è‚ð‰ÂŽ‹‰»
 		node = m_model->FindNode("AttackPointTwo");
 		Math::Matrix mat = node->m_worldTransform * m_mWorld;
@@ -66,6 +67,7 @@ void Scopion::Update()
 			0.4f,
 			{ 1,0,0,1 }
 		);
+#endif
 
 		if (!m_bMantis)
 		{
@@ -345,12 +347,14 @@ void Scopion::PlayerHitAttackChaeck()
 			sphereInfo.m_sphere.Radius = 0.25f;
 			sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 			m_pDebugWire->AddDebugSphere
 			(
 				sphereInfo.m_sphere.Center,
 				sphereInfo.m_sphere.Radius,
 				{ 0,0,0,1 }
 			);
+#endif
 
 			std::list<KdCollider::CollisionResult> retSphereList;
 
@@ -392,12 +396,14 @@ void Scopion::PlayerHitAttackChaeck()
 				sphereInfo.m_sphere.Radius = 0.25f;
 				sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 				m_pDebugWire->AddDebugSphere
 				(
 					sphereInfo.m_sphere.Center,
 					sphereInfo.m_sphere.Radius,
 					{ 0,0,0,1 }
 				);
+#endif
 
 				retSphereList.clear();
 
@@ -438,12 +444,14 @@ void Scopion::PlayerHitAttackChaeck()
 					sphereInfo.m_sphere.Radius = 0.25f;
 					sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 					m_pDebugWire->AddDebugSphere
 					(
 						sphereInfo.m_sphere.Center,
 						sphereInfo.m_sphere.Radius,
 						{ 0,0,0,1 }
 					);
+#endif
 
 					retSphereList.clear();
 
@@ -492,12 +500,14 @@ void Scopion::PlayerHitAttackChaeck()
 		sphereInfo.m_sphere.Radius = 0.20f;
 		sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius,
 			{ 0,0,0,1 }
 		);
+#endif
 
 		std::list<KdCollider::CollisionResult> retSphereList;
 
@@ -531,12 +541,14 @@ void Scopion::PlayerHitAttackChaeck()
 			sphereInfo.m_sphere.Radius = 0.20f;
 			sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 			m_pDebugWire->AddDebugSphere
 			(
 				sphereInfo.m_sphere.Center,
 				sphereInfo.m_sphere.Radius,
 				{ 0,0,0,1 }
 			);
+#endif
 
 			retSphereList.clear();
 
@@ -567,12 +579,14 @@ void Scopion::PlayerHitAttackChaeck()
 				sphereInfo.m_sphere.Radius = 0.20f;
 				sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 				m_pDebugWire->AddDebugSphere
 				(
 					sphereInfo.m_sphere.Center,
 					sphereInfo.m_sphere.Radius,
 					{ 0,0,0,1 }
 				);
+#endif
 
 				retSphereList.clear();
 
@@ -625,12 +639,14 @@ void Scopion::PlayerManAttackChaeck()
 			sphereInfo.m_sphere.Radius = 0.25f;
 			sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 			m_pDebugWire->AddDebugSphere
 			(
 				sphereInfo.m_sphere.Center,
 				sphereInfo.m_sphere.Radius,
 				{ 0,0,0,1 }
 			);
+#endif
 
 			std::list<KdCollider::CollisionResult> retSphereList;
 
@@ -672,12 +688,14 @@ void Scopion::PlayerManAttackChaeck()
 				sphereInfo.m_sphere.Radius = 0.25f;
 				sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 				m_pDebugWire->AddDebugSphere
 				(
 					sphereInfo.m_sphere.Center,
 					sphereInfo.m_sphere.Radius,
 					{ 0,0,0,1 }
 				);
+#endif
 
 				retSphereList.clear();
 
@@ -718,12 +736,14 @@ void Scopion::PlayerManAttackChaeck()
 					sphereInfo.m_sphere.Radius = 0.25f;
 					sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 					m_pDebugWire->AddDebugSphere
 					(
 						sphereInfo.m_sphere.Center,
 						sphereInfo.m_sphere.Radius,
 						{ 0,0,0,1 }
 					);
+#endif
 
 					retSphereList.clear();
 
@@ -764,12 +784,14 @@ void Scopion::PlayerManAttackChaeck()
 						sphereInfo.m_sphere.Radius = 0.25f;
 						sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 						m_pDebugWire->AddDebugSphere
 						(
 							sphereInfo.m_sphere.Center,
 							sphereInfo.m_sphere.Radius,
 							{ 0,0,0,1 }
 						);
+#endif
 
 						retSphereList.clear();
 
@@ -810,12 +832,14 @@ void Scopion::PlayerManAttackChaeck()
 							sphereInfo.m_sphere.Radius = 0.25f;
 							sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 							m_pDebugWire->AddDebugSphere
 							(
 								sphereInfo.m_sphere.Center,
 								sphereInfo.m_sphere.Radius,
 								{ 0,0,0,1 }
 							);
+#endif
 
 							retSphereList.clear();
 
@@ -856,12 +880,14 @@ void Scopion::PlayerManAttackChaeck()
 								sphereInfo.m_sphere.Radius = 0.25f;
 								sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 								m_pDebugWire->AddDebugSphere
 								(
 									sphereInfo.m_sphere.Center,
 									sphereInfo.m_sphere.Radius,
 									{ 0,0,0,1 }
 								);
+#endif
 
 								retSphereList.clear();
 
@@ -902,12 +928,14 @@ void Scopion::PlayerManAttackChaeck()
 									sphereInfo.m_sphere.Radius = 0.25f;
 									sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 									m_pDebugWire->AddDebugSphere
 									(
 										sphereInfo.m_sphere.Center,
 										sphereInfo.m_sphere.Radius,
 										{ 0,0,0,1 }
 									);
+#endif
 
 									retSphereList.clear();
 
@@ -960,12 +988,14 @@ void Scopion::PlayerManAttackChaeck()
 		sphereInfo.m_sphere.Radius = 0.20f;
 		sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius,
 			{ 0,0,0,1 }
 		);
+#endif
 
 		std::list<KdCollider::CollisionResult> retSphereList;
 
@@ -999,12 +1029,14 @@ void Scopion::PlayerManAttackChaeck()
 			sphereInfo.m_sphere.Radius = 0.20f;
 			sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 			m_pDebugWire->AddDebugSphere
 			(
 				sphereInfo.m_sphere.Center,
 				sphereInfo.m_sphere.Radius,
 				{ 0,0,0,1 }
 			);
+#endif
 
 			retSphereList.clear();
 
@@ -1035,12 +1067,14 @@ void Scopion::PlayerManAttackChaeck()
 				sphereInfo.m_sphere.Radius = 0.20f;
 				sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 				m_pDebugWire->AddDebugSphere
 				(
 					sphereInfo.m_sphere.Center,
 					sphereInfo.m_sphere.Radius,
 					{ 0,0,0,1 }
 				);
+#endif
 
 				retSphereList.clear();
 
@@ -1071,12 +1105,14 @@ void Scopion::PlayerManAttackChaeck()
 					sphereInfo.m_sphere.Radius = 0.20f;
 					sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 					m_pDebugWire->AddDebugSphere
 					(
 						sphereInfo.m_sphere.Center,
 						sphereInfo.m_sphere.Radius,
 						{ 0,0,0,1 }
 					);
+#endif
 
 					retSphereList.clear();
 
@@ -1107,12 +1143,14 @@ void Scopion::PlayerManAttackChaeck()
 						sphereInfo.m_sphere.Radius = 0.20f;
 						sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 						m_pDebugWire->AddDebugSphere
 						(
 							sphereInfo.m_sphere.Center,
 							sphereInfo.m_sphere.Radius,
 							{ 0,0,0,1 }
 						);
+#endif
 
 						retSphereList.clear();
 
@@ -1143,12 +1181,14 @@ void Scopion::PlayerManAttackChaeck()
 							sphereInfo.m_sphere.Radius = 0.20f;
 							sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 							m_pDebugWire->AddDebugSphere
 							(
 								sphereInfo.m_sphere.Center,
 								sphereInfo.m_sphere.Radius,
 								{ 0,0,0,1 }
 							);
+#endif
 
 							retSphereList.clear();
 
@@ -1179,12 +1219,14 @@ void Scopion::PlayerManAttackChaeck()
 								sphereInfo.m_sphere.Radius = 0.20f;
 								sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 								m_pDebugWire->AddDebugSphere
 								(
 									sphereInfo.m_sphere.Center,
 									sphereInfo.m_sphere.Radius,
 									{ 0,0,0,1 }
 								);
+#endif
 
 								retSphereList.clear();
 
@@ -1241,12 +1283,14 @@ void Scopion::EnemyHitAttackChaeck()
 			sphereInfo.m_sphere.Radius = 0.25f;
 			sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 			m_pDebugWire->AddDebugSphere
 			(
 				sphereInfo.m_sphere.Center,
 				sphereInfo.m_sphere.Radius,
 				{ 0,0,0,1 }
 			);
+#endif
 
 			std::list<KdCollider::CollisionResult> retSphereList;
 
@@ -1288,12 +1332,14 @@ void Scopion::EnemyHitAttackChaeck()
 				sphereInfo.m_sphere.Radius = 0.25f;
 				sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 				m_pDebugWire->AddDebugSphere
 				(
 					sphereInfo.m_sphere.Center,
 					sphereInfo.m_sphere.Radius,
 					{ 0,0,0,1 }
 				);
+#endif
 
 				retSphereList.clear();
 
@@ -1334,12 +1380,14 @@ void Scopion::EnemyHitAttackChaeck()
 					sphereInfo.m_sphere.Radius = 0.25f;
 					sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 					m_pDebugWire->AddDebugSphere
 					(
 						sphereInfo.m_sphere.Center,
 						sphereInfo.m_sphere.Radius,
 						{ 0,0,0,1 }
 					);
+#endif
 
 					retSphereList.clear();
 
@@ -1388,12 +1436,14 @@ void Scopion::EnemyHitAttackChaeck()
 		sphereInfo.m_sphere.Radius = 0.20f;
 		sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius,
 			{ 0,0,0,1 }
 		);
+#endif
 
 		std::list<KdCollider::CollisionResult> retSphereList;
 
@@ -1427,12 +1477,14 @@ void Scopion::EnemyHitAttackChaeck()
 			sphereInfo.m_sphere.Radius = 0.20f;
 			sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 			m_pDebugWire->AddDebugSphere
 			(
 				sphereInfo.m_sphere.Center,
 				sphereInfo.m_sphere.Radius,
 				{ 0,0,0,1 }
 			);
+#endif
 
 			retSphereList.clear();
 
@@ -1463,12 +1515,14 @@ void Scopion::EnemyHitAttackChaeck()
 				sphereInfo.m_sphere.Radius = 0.20f;
 				sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 				m_pDebugWire->AddDebugSphere
 				(
 					sphereInfo.m_sphere.Center,
 					sphereInfo.m_sphere.Radius,
 					{ 0,0,0,1 }
 				);
+#endif
 
 				retSphereList.clear();
 
@@ -1521,12 +1575,14 @@ void Scopion::EnemyManAttackChaeck()
 			sphereInfo.m_sphere.Radius = 0.25f;
 			sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 			m_pDebugWire->AddDebugSphere
 			(
 				sphereInfo.m_sphere.Center,
 				sphereInfo.m_sphere.Radius,
 				{ 0,0,0,1 }
 			);
+#endif
 
 			std::list<KdCollider::CollisionResult> retSphereList;
 
@@ -1568,12 +1624,14 @@ void Scopion::EnemyManAttackChaeck()
 				sphereInfo.m_sphere.Radius = 0.25f;
 				sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 				m_pDebugWire->AddDebugSphere
 				(
 					sphereInfo.m_sphere.Center,
 					sphereInfo.m_sphere.Radius,
 					{ 0,0,0,1 }
 				);
+#endif
 
 				retSphereList.clear();
 
@@ -1614,12 +1672,14 @@ void Scopion::EnemyManAttackChaeck()
 					sphereInfo.m_sphere.Radius = 0.25f;
 					sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 					m_pDebugWire->AddDebugSphere
 					(
 						sphereInfo.m_sphere.Center,
 						sphereInfo.m_sphere.Radius,
 						{ 0,0,0,1 }
 					);
+#endif
 
 					retSphereList.clear();
 
@@ -1660,12 +1720,14 @@ void Scopion::EnemyManAttackChaeck()
 						sphereInfo.m_sphere.Radius = 0.25f;
 						sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 						m_pDebugWire->AddDebugSphere
 						(
 							sphereInfo.m_sphere.Center,
 							sphereInfo.m_sphere.Radius,
 							{ 0,0,0,1 }
 						);
+#endif
 
 						retSphereList.clear();
 
@@ -1706,12 +1768,14 @@ void Scopion::EnemyManAttackChaeck()
 							sphereInfo.m_sphere.Radius = 0.25f;
 							sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 							m_pDebugWire->AddDebugSphere
 							(
 								sphereInfo.m_sphere.Center,
 								sphereInfo.m_sphere.Radius,
 								{ 0,0,0,1 }
 							);
+#endif
 
 							retSphereList.clear();
 
@@ -1752,12 +1816,14 @@ void Scopion::EnemyManAttackChaeck()
 								sphereInfo.m_sphere.Radius = 0.25f;
 								sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 								m_pDebugWire->AddDebugSphere
 								(
 									sphereInfo.m_sphere.Center,
 									sphereInfo.m_sphere.Radius,
 									{ 0,0,0,1 }
 								);
+#endif
 
 								retSphereList.clear();
 
@@ -1798,12 +1864,14 @@ void Scopion::EnemyManAttackChaeck()
 									sphereInfo.m_sphere.Radius = 0.25f;
 									sphereInfo.m_type = KdCollider::TypeGard;
 
+#ifdef _DEBUG
 									m_pDebugWire->AddDebugSphere
 									(
 										sphereInfo.m_sphere.Center,
 										sphereInfo.m_sphere.Radius,
 										{ 0,0,0,1 }
 									);
+#endif
 
 									retSphereList.clear();
 
@@ -1856,12 +1924,14 @@ void Scopion::EnemyManAttackChaeck()
 		sphereInfo.m_sphere.Radius = 0.20f;
 		sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius,
 			{ 0,0,0,1 }
 		);
+#endif
 
 		std::list<KdCollider::CollisionResult> retSphereList;
 
@@ -1895,12 +1965,14 @@ void Scopion::EnemyManAttackChaeck()
 			sphereInfo.m_sphere.Radius = 0.20f;
 			sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 			m_pDebugWire->AddDebugSphere
 			(
 				sphereInfo.m_sphere.Center,
 				sphereInfo.m_sphere.Radius,
 				{ 0,0,0,1 }
 			);
+#endif
 
 			retSphereList.clear();
 
@@ -1931,12 +2003,14 @@ void Scopion::EnemyManAttackChaeck()
 				sphereInfo.m_sphere.Radius = 0.20f;
 				sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 				m_pDebugWire->AddDebugSphere
 				(
 					sphereInfo.m_sphere.Center,
 					sphereInfo.m_sphere.Radius,
 					{ 0,0,0,1 }
 				);
+#endif
 
 				retSphereList.clear();
 
@@ -1967,12 +2041,14 @@ void Scopion::EnemyManAttackChaeck()
 					sphereInfo.m_sphere.Radius = 0.20f;
 					sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 					m_pDebugWire->AddDebugSphere
 					(
 						sphereInfo.m_sphere.Center,
 						sphereInfo.m_sphere.Radius,
 						{ 0,0,0,1 }
 					);
+#endif
 
 					retSphereList.clear();
 
@@ -2003,12 +2079,14 @@ void Scopion::EnemyManAttackChaeck()
 						sphereInfo.m_sphere.Radius = 0.20f;
 						sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 						m_pDebugWire->AddDebugSphere
 						(
 							sphereInfo.m_sphere.Center,
 							sphereInfo.m_sphere.Radius,
 							{ 0,0,0,1 }
 						);
+#endif
 
 						retSphereList.clear();
 
@@ -2039,12 +2117,14 @@ void Scopion::EnemyManAttackChaeck()
 							sphereInfo.m_sphere.Radius = 0.20f;
 							sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 							m_pDebugWire->AddDebugSphere
 							(
 								sphereInfo.m_sphere.Center,
 								sphereInfo.m_sphere.Radius,
 								{ 0,0,0,1 }
 							);
+#endif
 
 							retSphereList.clear();
 
@@ -2075,12 +2155,14 @@ void Scopion::EnemyManAttackChaeck()
 								sphereInfo.m_sphere.Radius = 0.20f;
 								sphereInfo.m_type = KdCollider::TypeDamage;
 
+#ifdef _DEBUG
 								m_pDebugWire->AddDebugSphere
 								(
 									sphereInfo.m_sphere.Center,
 									sphereInfo.m_sphere.Radius,
 									{ 0,0,0,1 }
 								);
+#endif
 
 								retSphereList.clear();
 

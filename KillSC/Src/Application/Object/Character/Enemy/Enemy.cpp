@@ -596,9 +596,9 @@ void Enemy::Update()
 	}
 
 	rayInfo.m_type = KdCollider::TypeGround;
-
+#ifdef _DEBUG
 	m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range, { 1,1,1,1 });
-
+#endif
 	std::list<KdCollider::CollisionResult> retRayList;
 
 	for (auto& obj : SceneManager::Instance().GetObjList())
@@ -685,12 +685,14 @@ void Enemy::Update()
 	// 当たり判定をしたいタイプを設定
 	sphereInfo.m_type = KdCollider::TypeGround /*| KdCollider::TypeBump*/;
 
+#ifdef _DEBUG
 	// デバック用
 	m_pDebugWire->AddDebugSphere
 	(
 		sphereInfo.m_sphere.Center,
 		sphereInfo.m_sphere.Radius
 	);
+#endif
 
 	// 球の当たったオブジェクト情報
 	std::list<KdCollider::CollisionResult> retSphereList;
@@ -731,12 +733,14 @@ void Enemy::Update()
 		// 当たり判定をしたいタイプを設定
 		sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
 
+#ifdef _DEBUG
 		// デバック用
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius
 		);
+#endif
 
 		// 球の当たったオブジェクト情報
 		retSphereList.clear();
@@ -780,12 +784,15 @@ void Enemy::Update()
 
 		// 当たり判定をしたいタイプを設定
 		sphereInfo.m_type = KdCollider::TypeBump;
+
+#ifdef _DEBUG
 		// デバック用
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius
 		);
+#endif
 
 		// 球の当たったオブジェクト情報
 		retSphereList.clear();
@@ -977,6 +984,7 @@ void Enemy::DrawSprite()
 
 void Enemy::DrawDebug()
 {	
+#ifdef _DEBUG
 	if (!m_pDebugWire)return;
 	m_pDebugWire->Draw();
 	
@@ -984,6 +992,7 @@ void Enemy::DrawDebug()
 	{
 		WeaList->DrawDebug();
 	}	
+#endif
 }
 
 void Enemy::GenerateDepthMapFromLight_SkinMesh()

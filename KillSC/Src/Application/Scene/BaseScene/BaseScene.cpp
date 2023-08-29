@@ -140,6 +140,7 @@ void BaseScene::DrawSprite()
 
 void BaseScene::DrawDebug()
 {
+#ifdef _DEBUG
 	KdShaderManager::Instance().m_HD2DShader.BeginUnLit();
 	{
 		for (auto& obj : m_objList)
@@ -148,6 +149,7 @@ void BaseScene::DrawDebug()
 		}
 	}
 	KdShaderManager::Instance().m_HD2DShader.EndUnLit();
+#endif
 }
 
 void BaseScene::Event()

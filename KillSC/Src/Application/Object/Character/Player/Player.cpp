@@ -267,8 +267,9 @@ void Player::Update()
 
 	rayInfo.m_type = KdCollider::TypeGround;
 
+#ifdef _DEBUG
 	m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range, { 1,1,1,1 });
-
+#endif
 	std::list<KdCollider::CollisionResult> retRayList;
 
 	for (auto& obj : SceneManager::Instance().GetObjList())
@@ -344,14 +345,14 @@ void Player::Update()
 
 	// 当たり判定をしたいタイプを設定
 	sphereInfo.m_type = KdCollider::TypeGround /*| KdCollider::TypeBump*/;
-
+#ifdef _DEBUG
 	// デバック用
 	m_pDebugWire->AddDebugSphere
 	(
 		sphereInfo.m_sphere.Center,
 		sphereInfo.m_sphere.Radius
 	);
-
+#endif
 	// 球の当たったオブジェクト情報
 	std::list<KdCollider::CollisionResult> retSphereList;
 
@@ -390,14 +391,14 @@ void Player::Update()
 	{
 		// 当たり判定をしたいタイプを設定
 		sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
-
+#ifdef _DEBUG
 		// デバック用
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius
 		);
-
+#endif
 		// 球の当たったオブジェクト情報
 		retSphereList.clear();
 
@@ -440,13 +441,14 @@ void Player::Update()
 
 		// 当たり判定をしたいタイプを設定
 		sphereInfo.m_type = KdCollider::TypeBump;
+#ifdef _DEBUG
 		// デバック用
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius
 		);
-
+#endif
 		// 球の当たったオブジェクト情報
 		retSphereList.clear();
 
@@ -483,8 +485,6 @@ void Player::Update()
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
 	Math::Matrix RotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
 	m_mWorld = RotMat * transMat;
-
-
 
 	for (auto& WeaList : m_weaponList)
 	{
@@ -662,6 +662,7 @@ void Player::DrawLit_SkinMesh()
 
 void Player::DrawDebug()
 {
+#ifdef _DEBUG
 	if (!m_pDebugWire)return;
 	m_pDebugWire->Draw();
 
@@ -669,6 +670,7 @@ void Player::DrawDebug()
 	{
 		WeaList->DrawDebug();
 	}
+#endif
 }
 
 
