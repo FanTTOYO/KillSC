@@ -673,7 +673,7 @@ void Enemy::Update()
 	KdCollider::SphereInfo sphereInfo;
 	// ‹…‚Ì’†SˆÊ’u‚ğİ’è
 	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
-	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp)))
+	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)))
 	{
 		sphereInfo.m_sphere.Radius = 0.3f;
 	}

@@ -334,7 +334,7 @@ void Player::Update()
 	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
 	// ‹…‚Ì”¼Œa‚ğİ’è
 
-	if (!(m_playerState & (grassHopperDash | grassHopperDashUp)))
+	if (!(m_playerState & (grassHopperDash | grassHopperDashUp | step)))
 	{
 		sphereInfo.m_sphere.Radius = 0.3f;
 	}
