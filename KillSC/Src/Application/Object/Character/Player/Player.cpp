@@ -429,6 +429,8 @@ void Player::Update()
 
 		if (hit)
 		{
+			hitDir.y = 0.0f;
+			hitDir.Normalize();
 			// ‹…‚Æƒ‚ƒfƒ‹‚ª“–‚½‚Á‚Ä‚¢‚é
 			m_pos += (hitDir * maxOverLap);
 		}
@@ -477,6 +479,8 @@ void Player::Update()
 
 		if (hit)
 		{
+			hitDir.y = 0.0f;
+			hitDir.Normalize();
 			// ‹…‚Æƒ‚ƒfƒ‹‚ª“–‚½‚Á‚Ä‚¢‚é
 			m_pos += (hitDir * maxOverLap);
 		}

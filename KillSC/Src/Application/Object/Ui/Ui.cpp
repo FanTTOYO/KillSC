@@ -1,4 +1,5 @@
 #include "Ui.h"
+#include "../../main.h"
 #include "../../Scene/SceneManager.h"
 #include "../Character/Player/Player.h"
 
@@ -237,6 +238,12 @@ void Ui::GameUpdate()
 
 	if (m_time > 240)
 	{
+		PWINDOWINFO pwi;
+		pwi->cbSize = sizeof(WINDOWINFO);
+		GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
+		//pwi->rcWindow.left;    // マウスとの当たり判定関係のX座標に足す
+		//pwi->rcWindow.top + 35;// マウスとの当たり判定関係のこれをy座標に足す
+
 		if (GetAsyncKeyState(VK_TAB) & 0x8000)
 		{
 			if (!m_bTABKey)
@@ -797,16 +804,28 @@ void Ui::SelectUpdate()
 		m_time++;
 	}
 
+	// マウスの当たり判定はここを参考に＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	PWINDOWINFO pwi = new WINDOWINFO;
+	pwi->cbSize = sizeof(WINDOWINFO);
+	GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
+	//pwi->rcWindow.left;    // マウスとの当たり判定関係のX座標に足す
+	//pwi->rcWindow.top + 35;// マウスとの当たり判定関係のこれをy座標に足す
+
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 
 	mousePos.x -= 640;
 	mousePos.y = mousePos.y * -1 + 360;
 	Math::Vector3 Dis;
-	float mouseX = (float)mousePos.x;
-	float mouseY = (float)mousePos.y;
+	float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
+	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top);
 
-	Dis = m_artPos - Math::Vector3(mouseX, mouseY, 0.0f);
+	Math::Vector3 artPos;
+	artPos.x = m_artPos.x + (float)(pwi->rcWindow.left);
+	artPos.y = m_artPos.y /*+ (float)(pwi->rcWindow.top + 35)*/;
+	artPos.z = m_artPos.z;
+   // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+	Dis = artPos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 75)
 	{
 		m_artScale = 1.1f;
@@ -980,6 +999,8 @@ void Ui::SelectUpdate()
 		}
 	}
 
+	KdSafeDelete(pwi);
+	//delete(pwi);
 }
 
 void Ui::ArtUpdate()

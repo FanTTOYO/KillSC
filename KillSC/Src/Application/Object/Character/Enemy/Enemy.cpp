@@ -545,6 +545,11 @@ void Enemy::Update()
 				m_animator->SetAnimation(m_model->GetAnimation("Idle"));
 			}
 		}
+	
+		/*ScorpionDefenseDecision();
+		m_pos.y -= m_gravity;
+		m_gravity += 0.01f;*/
+		
 	}
 	else
 	{
@@ -772,6 +777,8 @@ void Enemy::Update()
 
 		if (hit)
 		{
+			hitDir.y = 0.0f;
+			hitDir.Normalize();
 			// ‹…‚Æƒ‚ƒfƒ‹‚ª“–‚½‚Á‚Ä‚¢‚é
 			m_pos += (hitDir * maxOverLap);
 		}
@@ -822,6 +829,8 @@ void Enemy::Update()
 
 		if (hit)
 		{
+			hitDir.y = 0.0f;
+			hitDir.Normalize();
 			// ‹…‚Æƒ‚ƒfƒ‹‚ª“–‚½‚Á‚Ä‚¢‚é
 			m_pos += (hitDir * maxOverLap);
 		}
