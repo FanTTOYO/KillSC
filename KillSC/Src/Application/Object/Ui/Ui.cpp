@@ -586,6 +586,8 @@ void Ui::GameUpdate()
 				}
 			}
 		}
+
+		KdSafeDelete(pwi);
 	}
 }
 
@@ -818,11 +820,11 @@ void Ui::SelectUpdate()
 	mousePos.y = mousePos.y * -1 + 360;
 	Math::Vector3 Dis;
 	float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
-	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top);
+	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
 
 	Math::Vector3 artPos;
 	artPos.x = m_artPos.x + (float)(pwi->rcWindow.left);
-	artPos.y = m_artPos.y /*+ (float)(pwi->rcWindow.top + 35)*/;
+	artPos.y = m_artPos.y /*+ (float)(pwi->rcWindow.top)*/;
 	artPos.z = m_artPos.z;
    // 
 	Dis = artPos - Math::Vector3(mouseX, mouseY, 0.0f);
@@ -850,7 +852,12 @@ void Ui::SelectUpdate()
 		m_artScale = 1.0f;
 	}
 
-	Dis = m_exitPos - Math::Vector3(mouseX, mouseY, 0.0f);
+	Math::Vector3 ExitPos;
+	ExitPos.x = m_exitPos.x + (float)(pwi->rcWindow.left);
+	ExitPos.y = m_exitPos.y /*+ (float)(pwi->rcWindow.top)*/;
+	ExitPos.z = m_exitPos.z;
+
+	Dis = ExitPos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 75)
 	{
 		m_artScale = 1.0f;
@@ -876,7 +883,12 @@ void Ui::SelectUpdate()
 		m_exitScale = 1.0f;
 	}
 
-	Dis = m_gamePos - Math::Vector3(mouseX,mouseY,0.0f);
+	Math::Vector3 GamePos;
+	GamePos.x = m_gamePos.x + (float)(pwi->rcWindow.left);
+	GamePos.y = m_gamePos.y /*+ (float)(pwi->rcWindow.top)*/;
+	GamePos.z = m_gamePos.z;
+
+	Dis = GamePos - Math::Vector3(mouseX,mouseY,0.0f);
 	if (Dis.Length() <= 75)
 	{
 		m_artScale = 1.0f;
@@ -901,7 +913,12 @@ void Ui::SelectUpdate()
 		m_gameScale = 1.0f;
 	}
 
-	Dis = m_optionPos - Math::Vector3(mouseX, mouseY, 0.0f);
+	Math::Vector3 OptionPos;
+	OptionPos.x = m_optionPos.x + (float)(pwi->rcWindow.left);
+	OptionPos.y = m_optionPos.y /*+ (float)(pwi->rcWindow.top)*/;
+	OptionPos.z = m_optionPos.z;
+
+	Dis = OptionPos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 75)
 	{
 		m_artScale = 1.0f;
@@ -925,6 +942,11 @@ void Ui::SelectUpdate()
 	{
 		m_optionScale = 1.0f;
 	}
+
+	Math::Vector3 TitlePos;
+	TitlePos.x = m_titlePos.x + (float)(pwi->rcWindow.left);
+	TitlePos.y = m_titlePos.y /*+ (float)(pwi->rcWindow.top)*/;
+	TitlePos.z = m_titlePos.z;
 
 	Dis = m_titlePos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 75)
