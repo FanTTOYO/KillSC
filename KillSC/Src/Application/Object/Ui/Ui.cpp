@@ -238,7 +238,7 @@ void Ui::GameUpdate()
 
 	if (m_time > 240)
 	{
-		PWINDOWINFO pwi;
+		PWINDOWINFO pwi = new WINDOWINFO;
 		pwi->cbSize = sizeof(WINDOWINFO);
 		GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
 		//pwi->rcWindow.left;    // マウスとの当たり判定関係のX座標に足す

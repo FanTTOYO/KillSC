@@ -1,6 +1,6 @@
 #pragma once
 #include "../CameraBase.h"
-#define CAMERAZ -3.25f 
+#define CAMERAZ -3.5f 
 #define CAMERAY  2.0f
 
 class Player;
