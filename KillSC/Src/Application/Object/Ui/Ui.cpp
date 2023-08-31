@@ -282,12 +282,17 @@ void Ui::GameUpdate()
 			mousePos.x -= (long)640.0f;
 			mousePos.y = (long)(mousePos.y * -1 + 360.0f);
 			Math::Vector3 Dis;
-			float mouseX = (float)mousePos.x;
-			float mouseY = (float)mousePos.y;
+			float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
+			float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
 
 			if (!m_bInfo)
 			{
-				Dis = m_exitPos - Math::Vector3(mouseX, mouseY, 0.0f);
+				Math::Vector3 ExitPos;
+				ExitPos.x = m_exitPos.x + (float)(pwi->rcWindow.left);
+				ExitPos.y = m_exitPos.y /*+ (float)(pwi->rcWindow.top)*/;
+				ExitPos.z = m_exitPos.z;
+
+				Dis = ExitPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 75)
 				{
 					m_exitScale = 1.5f;
@@ -310,7 +315,12 @@ void Ui::GameUpdate()
 					m_exitScale = 1.0f;
 				}
 
-				Dis = m_titlePos - Math::Vector3(mouseX, mouseY, 0.0f);
+				Math::Vector3 TitlePos;
+				TitlePos.x = m_titlePos.x + (float)(pwi->rcWindow.left);
+				TitlePos.y = m_titlePos.y /*+ (float)(pwi->rcWindow.top)*/;
+				TitlePos.z = m_titlePos.z;
+
+				Dis = TitlePos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 75)
 				{
 					m_exitScale = 1.0f;
@@ -332,7 +342,12 @@ void Ui::GameUpdate()
 					m_titleScale = 1.0f;
 				}
 
-				Dis = m_infoPos - Math::Vector3(mouseX, mouseY, 0.0f);
+				Math::Vector3 InfoPos;
+				InfoPos.x = m_infoPos.x + (float)(pwi->rcWindow.left);
+				InfoPos.y = m_infoPos.y /*+ (float)(pwi->rcWindow.top)*/;
+				InfoPos.z = m_infoPos.z;
+
+				Dis = InfoPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 75)
 				{
 					m_exitScale = 1.0f;
@@ -351,7 +366,11 @@ void Ui::GameUpdate()
 					m_infoScale = 1.0f;
 				}
 
-				Dis = m_backPos - Math::Vector3(mouseX, mouseY, 0.0f);
+				Math::Vector3 BackPos;
+				BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
+				BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
+				BackPos.z = m_backPos.z;
+				Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 40)
 				{
 					m_backScale = 1.0f;
@@ -413,7 +432,11 @@ void Ui::GameUpdate()
 			else
 			{
 
-				Dis = m_backPos - Math::Vector3(mouseX, mouseY, 0.0f);
+				Math::Vector3 BackPos;
+				BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
+				BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
+				BackPos.z = m_backPos.z;
+				Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 40)
 				{
 					m_backScale = 1.0f;
@@ -442,7 +465,11 @@ void Ui::GameUpdate()
 					m_backScale = 0.8f;
 				}
 
-				Dis = m_weaOrHowLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
+				Math::Vector3 WeaOrHowLeftYaiPos;
+				WeaOrHowLeftYaiPos.x = m_weaOrHowLeftYaiPos.x + (float)(pwi->rcWindow.left);
+				WeaOrHowLeftYaiPos.y = m_weaOrHowLeftYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
+				WeaOrHowLeftYaiPos.z = m_weaOrHowLeftYaiPos.z;
+				Dis = WeaOrHowLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 30)
 				{
 					m_weaOrHowLeftYaiScale = 1.5f;
@@ -477,6 +504,10 @@ void Ui::GameUpdate()
 					m_weaOrHowLeftYaiScale = 1.0f;
 				}
 
+				Math::Vector3 WeaOrHowRightYaiPos;
+				WeaOrHowRightYaiPos.x = m_weaOrHowRightYaiPos.x + (float)(pwi->rcWindow.left);
+				WeaOrHowRightYaiPos.y = m_weaOrHowRightYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
+				WeaOrHowRightYaiPos.z = m_weaOrHowRightYaiPos.z;
 				Dis = m_weaOrHowRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 30)
 				{
@@ -514,7 +545,12 @@ void Ui::GameUpdate()
 
 				if (m_bWeaponDataPage)
 				{
-					Dis = m_weaponLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
+					Math::Vector3 WeaponLeftYaiPos;
+					WeaponLeftYaiPos.x = m_weaponLeftYaiPos.x + (float)(pwi->rcWindow.left);
+					WeaponLeftYaiPos.y = m_weaponLeftYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
+					WeaponLeftYaiPos.z = m_weaponLeftYaiPos.z;
+
+					Dis = WeaponLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 					if (Dis.Length() <= 30)
 					{
 						m_weaponLeftYaiScale = 1.5f;
@@ -549,7 +585,12 @@ void Ui::GameUpdate()
 						m_weaponLeftYaiScale = 1.0f;
 					}
 
-					Dis = m_weaponRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
+					Math::Vector3 WeaponRightYaiPos;
+					WeaponRightYaiPos.x = m_weaponRightYaiPos.x + (float)(pwi->rcWindow.left);
+					WeaponRightYaiPos.y = m_weaponRightYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
+					WeaponRightYaiPos.z = m_weaponRightYaiPos.z;
+
+					Dis = WeaponRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 					if (Dis.Length() <= 30)
 					{
 						m_weaponLeftYaiScale = 1.0f;
