@@ -262,15 +262,15 @@ void Enemy::Update()
 				}
 				else
 				{
-					randNum[0] =   0;
-					randNum[1] =  50;
-					randNum[2] =   0;
+					randNum[0] = 0;
+					randNum[1] = 50;
+					randNum[2] = 0;
 					randNum[3] = 2500;
 					randNum[4] = 200;
 					randNum[5] = 100;
 					randNum[6] = 100;
 					randNum[7] = 300;
-					randNum[8] =   0;
+					randNum[8] = 0;
 
 					for (int i = 0; i < 9; i++)
 					{
@@ -545,17 +545,17 @@ void Enemy::Update()
 				m_animator->SetAnimation(m_model->GetAnimation("Idle"));
 			}
 		}
-	
+
 		/*ScorpionDefenseDecision();
 		m_pos.y -= m_gravity;
 		m_gravity += 0.01f;*/
-		
+
 	}
 	else
 	{
 		m_pos.y -= m_gravity;
 		m_gravity += 0.01f;
-		if(m_hitStopCnt > 0)
+		if (m_hitStopCnt > 0)
 		{
 			--m_hitStopCnt;
 			m_pos += m_knockBackVec * m_hitMoveSpd;
@@ -596,7 +596,7 @@ void Enemy::Update()
 	else
 	{
 		//rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
-		rayInfo.m_dir = {0,0,1};
+		rayInfo.m_dir = { 0,0,1 };
 		//rayInfo.m_range = 1.25f;
 	}
 
@@ -643,7 +643,7 @@ void Enemy::Update()
 			m_wantToMoveState = none;
 		}
 		m_enemyAirborneTimetoBeCnt = ENEMYAIRBORNETIMETOBECNTVAL;
-		
+
 		//else
 		//{
 		//	//m_pos = groundPos /*+ Math::Vector3(0,-0.1,0)*/;
@@ -784,57 +784,56 @@ void Enemy::Update()
 		}
 	}
 
-	if (!(m_EnemyState & eGrassHopperDash) && !(m_target.lock()->GetPlayerState() & Player::PlayerState::grassHopperDash))
-	{
-		sphereInfo.m_sphere.Radius = 0.3f;
+
+	sphereInfo.m_sphere.Radius = 0.3f;
 
 
-		// 当たり判定をしたいタイプを設定
-		sphereInfo.m_type = KdCollider::TypeBump;
+	// 当たり判定をしたいタイプを設定
+	sphereInfo.m_type = KdCollider::TypeBump;
 
 #ifdef _DEBUG
-		// デバック用
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius
-		);
+	// デバック用
+	m_pDebugWire->AddDebugSphere
+	(
+		sphereInfo.m_sphere.Center,
+		sphereInfo.m_sphere.Radius
+	);
 #endif
 
-		// 球の当たったオブジェクト情報
-		retSphereList.clear();
+	// 球の当たったオブジェクト情報
+	retSphereList.clear();
 
-		// 球と当たり判定 
+	// 球と当たり判定 
 
-		m_target.lock()->Intersects
-		(
-			sphereInfo,
-			&retSphereList
-		);
+	m_target.lock()->Intersects
+	(
+		sphereInfo,
+		&retSphereList
+	);
 
-		// 球に当たったリスト情報から一番近いオブジェクトを検出
-		maxOverLap = 0;
-		hit = false;
-		hitDir = {}; // 当たった方向
-		for (auto& ret : retSphereList)
+	// 球に当たったリスト情報から一番近いオブジェクトを検出
+	maxOverLap = 0;
+	hit = false;
+	hitDir = {}; // 当たった方向
+	for (auto& ret : retSphereList)
+	{
+		// 一番近くで当たったものを探す
+		if (maxOverLap < ret.m_overlapDistance)
 		{
-			// 一番近くで当たったものを探す
-			if (maxOverLap < ret.m_overlapDistance)
-			{
-				maxOverLap = ret.m_overlapDistance;
-				hit = true;
-				hitDir = ret.m_hitDir;
-			}
-		}
-
-		if (hit)
-		{
-			hitDir.y = 0.0f;
-			hitDir.Normalize();
-			// 球とモデルが当たっている
-			m_pos += (hitDir * maxOverLap);
+			maxOverLap = ret.m_overlapDistance;
+			hit = true;
+			hitDir = ret.m_hitDir;
 		}
 	}
+
+	if (hit)
+	{
+		hitDir.y = 0.0f;
+		hitDir.Normalize();
+		// 球とモデルが当たっている
+		m_pos += (hitDir * maxOverLap);
+	}
+
 
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
 	Math::Matrix RotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
@@ -950,6 +949,7 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	m_knockBackVec = a_KnocBackvec;
 	m_torion -= 50.0f;
 	m_attackHit = true;
+	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 	if (m_torion <= 0)
 	{
 		m_torion = 0;
@@ -992,15 +992,15 @@ void Enemy::DrawSprite()
 }
 
 void Enemy::DrawDebug()
-{	
+{
 #ifdef _DEBUG
 	if (!m_pDebugWire)return;
 	m_pDebugWire->Draw();
-	
+
 	for (auto& WeaList : m_weaponList)
 	{
 		WeaList->DrawDebug();
-	}	
+	}
 #endif
 }
 
@@ -1018,7 +1018,7 @@ void Enemy::DrawLit_SkinMesh()
 	if (m_hitStopCnt <= 5)
 	{
 		Math::Color color = { 1,1,1,1 };
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld,color);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, color);
 	}
 	else if (m_hitStopCnt > 5)
 	{
@@ -1124,7 +1124,7 @@ void Enemy::GrassMoveVecDecision()
 			{
 			case WantToMoveState::escape:
 				if (m_grassSuccessionDelayCnt != 0)return;
-				randNum[0] =   0;
+				randNum[0] = 0;
 				randNum[1] = 550;
 				randNum[2] = 150;
 				randNum[3] = 150;
@@ -1138,7 +1138,7 @@ void Enemy::GrassMoveVecDecision()
 					randNum[1] = 700;    // 後
 					randNum[2] = 100;    // 右 
 					randNum[3] = 100;    // 左
-					randNum[4] =   0;    // 上
+					randNum[4] = 0;    // 上
 				}
 				else
 				{
@@ -1146,7 +1146,7 @@ void Enemy::GrassMoveVecDecision()
 					randNum[1] = 100;    // 後
 					randNum[2] = 100;    // 右 
 					randNum[3] = 100;    // 左
-					randNum[4] =   0;
+					randNum[4] = 0;
 				}
 				break;
 			case WantToMoveState::disturbance:
@@ -1163,7 +1163,7 @@ void Enemy::GrassMoveVecDecision()
 				randNum[1] = 250;
 				randNum[2] = 150;
 				randNum[3] = 150;
-				randNum[4] =   0;
+				randNum[4] = 0;
 				break;
 			case WantToMoveState::avoidance:
 				if (m_grassSuccessionDelayCnt != 0)return;
@@ -1192,7 +1192,7 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						
+
 						m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z + 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
 						break;
 					case 1:
@@ -1241,7 +1241,7 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						
+
 						m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 						break;
 					}
@@ -1283,7 +1283,7 @@ void Enemy::GrassMoveVecDecision()
 					randNum[1] = 700;    // 後
 					randNum[2] = 100;    // 右 
 					randNum[3] = 100;    // 左
-					randNum[4] =   0;    // 上
+					randNum[4] = 0;    // 上
 				}
 				else
 				{
@@ -1291,7 +1291,7 @@ void Enemy::GrassMoveVecDecision()
 					randNum[1] = 100;    // 後
 					randNum[2] = 100;    // 右 
 					randNum[3] = 100;    // 左
-					randNum[4] =   0;
+					randNum[4] = 0;
 				}
 				break;
 			case WantToMoveState::disturbance:
@@ -1385,7 +1385,7 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						
+
 						m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 						break;
 					}
@@ -1521,11 +1521,11 @@ void Enemy::GrassMove()
 				switch (m_wantToMoveState)
 				{
 				case WantToMoveState::escape:
-					randNum[0] =  50;
-					randNum[1] =  50;
+					randNum[0] = 50;
+					randNum[1] = 50;
 					randNum[2] = 200;
 					randNum[3] = 200;
-					randNum[4] =  50;
+					randNum[4] = 50;
 					randNum[5] = 100;
 					randNum[6] = 100;
 					randNum[7] = 100;
@@ -1533,46 +1533,46 @@ void Enemy::GrassMove()
 					break;
 				case WantToMoveState::dashAttack:
 					src = m_target.lock()->GetPos() - m_pos;
-					randNum[0] =   0;
+					randNum[0] = 0;
 					randNum[1] = 200;
 					randNum[2] = 150;
 					randNum[3] = 200;
-					randNum[4] =   0;
-					randNum[5] =  50;
+					randNum[4] = 0;
+					randNum[5] = 50;
 					randNum[6] = 100;
 					randNum[7] = 200;
 					randNum[8] = 100;
 					break;
 				case WantToMoveState::disturbance:
-					randNum[0] =   0;
+					randNum[0] = 0;
 					randNum[1] = 250;
-					randNum[2] =   0;
+					randNum[2] = 0;
 					randNum[3] = 200;
-					randNum[4] =   0;
+					randNum[4] = 0;
 					randNum[5] = 300;
-					randNum[6] =   0;
+					randNum[6] = 0;
 					randNum[7] = 250;
-					randNum[8] =   0;
+					randNum[8] = 0;
 					break;
 				case WantToMoveState::grassDash:
-					randNum[0] =   0;
+					randNum[0] = 0;
 					randNum[1] = 150;
 					randNum[2] = 100;
 					randNum[3] = 200;
 					randNum[4] = 100;
-					randNum[5] =  50;
+					randNum[5] = 50;
 					randNum[6] = 100;
 					randNum[7] = 200;
 					randNum[8] = 100;
 					break;
 				case WantToMoveState::avoidance:
-					randNum[0] =   0;
+					randNum[0] = 0;
 					randNum[1] = 150;
 					randNum[2] = 100;
 					randNum[3] = 300;
 					randNum[4] = 100;
 					randNum[5] = 100;
-					randNum[6] =   0;
+					randNum[6] = 0;
 					randNum[7] = 150;
 					randNum[8] = 100;
 					break;
@@ -1620,65 +1620,65 @@ void Enemy::GrassMove()
 			}
 			else
 			{
-			switch (m_wantToMoveState)
-			{
-			case WantToMoveState::escape:
-				randNum[0] =   0;
-				randNum[1] = 100;
-				randNum[2] =   0;
-				randNum[3] = 350;
-				randNum[4] =  50;
-				randNum[5] = 100;
-				randNum[6] = 100;
-				randNum[7] = 150;
-				randNum[8] = 100;
-				break;
-			case WantToMoveState::dashAttack:
-				src = m_target.lock()->GetPos() - m_pos;
-				randNum[0] =   0;
-				randNum[1] = 100;
-				randNum[2] =   0;
-				randNum[3] = 300;
-				randNum[4] = 150;
-				randNum[5] =  50;
-				randNum[6] = 100;
-				randNum[7] = 200;
-				randNum[8] = 100;
-				break;
-			case WantToMoveState::disturbance:
-				randNum[0] = 0;
-				randNum[1] = 150;
-				randNum[2] = 0;
-				randNum[3] = 300;
-				randNum[4] = 0;
-				randNum[5] = 300;
-				randNum[6] = 0;
-				randNum[7] = 250;
-				randNum[8] = 0;
-				break;
-			case WantToMoveState::grassDash:
-				randNum[0] =   0;
-				randNum[1] = 100;
-				randNum[2] = 100;
-				randNum[3] = 200;
-				randNum[4] = 150;
-				randNum[5] =  50;
-				randNum[6] = 100;
-				randNum[7] = 200;
-				randNum[8] = 100;
-				break;
-			case WantToMoveState::avoidance:
-				randNum[0] = 0;
-				randNum[1] = 150;
-				randNum[2] = 100;
-				randNum[3] = 300;
-				randNum[4] = 100;
-				randNum[5] = 100;
-				randNum[6] =   0;
-				randNum[7] = 150;
-				randNum[8] = 100;
-				break;
-			}
+				switch (m_wantToMoveState)
+				{
+				case WantToMoveState::escape:
+					randNum[0] = 0;
+					randNum[1] = 100;
+					randNum[2] = 0;
+					randNum[3] = 350;
+					randNum[4] = 50;
+					randNum[5] = 100;
+					randNum[6] = 100;
+					randNum[7] = 150;
+					randNum[8] = 100;
+					break;
+				case WantToMoveState::dashAttack:
+					src = m_target.lock()->GetPos() - m_pos;
+					randNum[0] = 0;
+					randNum[1] = 100;
+					randNum[2] = 0;
+					randNum[3] = 300;
+					randNum[4] = 150;
+					randNum[5] = 50;
+					randNum[6] = 100;
+					randNum[7] = 200;
+					randNum[8] = 100;
+					break;
+				case WantToMoveState::disturbance:
+					randNum[0] = 0;
+					randNum[1] = 150;
+					randNum[2] = 0;
+					randNum[3] = 300;
+					randNum[4] = 0;
+					randNum[5] = 300;
+					randNum[6] = 0;
+					randNum[7] = 250;
+					randNum[8] = 0;
+					break;
+				case WantToMoveState::grassDash:
+					randNum[0] = 0;
+					randNum[1] = 100;
+					randNum[2] = 100;
+					randNum[3] = 200;
+					randNum[4] = 150;
+					randNum[5] = 50;
+					randNum[6] = 100;
+					randNum[7] = 200;
+					randNum[8] = 100;
+					break;
+				case WantToMoveState::avoidance:
+					randNum[0] = 0;
+					randNum[1] = 150;
+					randNum[2] = 100;
+					randNum[3] = 300;
+					randNum[4] = 100;
+					randNum[5] = 100;
+					randNum[6] = 0;
+					randNum[7] = 150;
+					randNum[8] = 100;
+					break;
+				}
 
 				for (int i = 0; i < 9; i++)
 				{

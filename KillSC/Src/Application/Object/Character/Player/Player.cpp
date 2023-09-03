@@ -42,7 +42,7 @@ void Player::Init()
 	m_bAttackAnimeCnt = true;
 
 	m_animator = std::make_shared<KdAnimator>();
-	m_animator->SetAnimation(m_model->GetAnimation("IdleA"),false);
+	m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
 
 	std::shared_ptr<Scopion> sco;
 	sco = std::make_shared<Scopion>();
@@ -76,7 +76,7 @@ void Player::Init()
 void Player::Update()
 {
 	if (m_bFirstUpdate)
-	{	
+	{
 		m_bFirstUpdate = false;
 		for (auto& WeaList : m_weaponList)
 		{
@@ -234,7 +234,7 @@ void Player::Update()
 		{
 			if (!(m_playerState & idle))
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("IdleA"),false);
+				m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
 			}
 			m_playerState = idle;
 		}
@@ -309,7 +309,7 @@ void Player::Update()
 				m_bMove = false;
 				if (!(m_playerState & idle))
 				{
-					m_animator->SetAnimation(m_model->GetAnimation("IdleA"),false);
+					m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
 				}
 				m_playerState = idle;
 			}
@@ -436,55 +436,54 @@ void Player::Update()
 		}
 	}
 
-	if (!(m_playerState & grassHopperDash) && !(m_enemy.lock()->GetEnemyState() & eGrassHopperDash))
-	{
-		sphereInfo.m_sphere.Radius = 0.3f;
+
+	sphereInfo.m_sphere.Radius = 0.3f;
 
 
-		// 当たり判定をしたいタイプを設定
-		sphereInfo.m_type = KdCollider::TypeBump;
+	// 当たり判定をしたいタイプを設定
+	sphereInfo.m_type = KdCollider::TypeBump;
 #ifdef _DEBUG
-		// デバック用
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius
-		);
+	// デバック用
+	m_pDebugWire->AddDebugSphere
+	(
+		sphereInfo.m_sphere.Center,
+		sphereInfo.m_sphere.Radius
+	);
 #endif
-		// 球の当たったオブジェクト情報
-		retSphereList.clear();
+	// 球の当たったオブジェクト情報
+	retSphereList.clear();
 
-		// 球と当たり判定 
+	// 球と当たり判定 
 
-		m_enemy.lock()->Intersects
-		(
-			sphereInfo,
-			&retSphereList
-		);
+	m_enemy.lock()->Intersects
+	(
+		sphereInfo,
+		&retSphereList
+	);
 
-		// 球に当たったリスト情報から一番近いオブジェクトを検出
-		maxOverLap = 0;
-		hit = false;
-		hitDir = {}; // 当たった方向
-		for (auto& ret : retSphereList)
+	// 球に当たったリスト情報から一番近いオブジェクトを検出
+	maxOverLap = 0;
+	hit = false;
+	hitDir = {}; // 当たった方向
+	for (auto& ret : retSphereList)
+	{
+		// 一番近くで当たったものを探す
+		if (maxOverLap < ret.m_overlapDistance)
 		{
-			// 一番近くで当たったものを探す
-			if (maxOverLap < ret.m_overlapDistance)
-			{
-				maxOverLap = ret.m_overlapDistance;
-				hit = true;
-				hitDir = ret.m_hitDir;
-			}
-		}
-
-		if (hit)
-		{
-			hitDir.y = 0.0f;
-			hitDir.Normalize();
-			// 球とモデルが当たっている
-			m_pos += (hitDir * maxOverLap);
+			maxOverLap = ret.m_overlapDistance;
+			hit = true;
+			hitDir = ret.m_hitDir;
 		}
 	}
+
+	if (hit)
+	{
+		hitDir.y = 0.0f;
+		hitDir.Normalize();
+		// 球とモデルが当たっている
+		m_pos += (hitDir * maxOverLap);
+	}
+
 
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
 	Math::Matrix RotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
@@ -585,7 +584,7 @@ void Player::PostUpdate()
 					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 				}
 			}
-			else if(m_playerState & (lAttackThree | rAttackThree))
+			else if (m_playerState & (lAttackThree | rAttackThree))
 			{
 				if (m_attackAnimeCnt == 15)
 				{
@@ -608,6 +607,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	m_knockBackVec = a_KnocBackvec;
 	m_torion -= 50.0f;
 	m_attackHit = true;
+	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 	if (m_torion < 0)
 	{
 		m_torion = 0;
@@ -775,7 +775,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
-					
+
 					m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
@@ -793,7 +793,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
-					
+
 					m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 
@@ -812,7 +812,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
-					
+
 					m_weaponList[2]->GrassHopper({ m_pos.x - 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z - 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("right"))
@@ -830,7 +830,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
-					
+
 					m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.75f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("jump"))
@@ -848,7 +848,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
-					
+
 					m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 				}
 				else
@@ -866,7 +866,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
-					
+
 					m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 				}
 			}
@@ -897,7 +897,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
-					
+
 					m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
@@ -915,7 +915,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
-					
+
 					m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 
@@ -934,7 +934,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
-					
+
 					m_weaponList[3]->GrassHopper({ m_pos.x - 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z - 0.65f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("right"))
@@ -952,7 +952,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
-					
+
 					m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.75f * CameraVec.z }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("jump"))
@@ -970,7 +970,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
-					
+
 					m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 				}
 				else
@@ -988,7 +988,7 @@ void Player::GrassMoveVecDecision()
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
-					
+
 					m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
 				}
 			}
@@ -1109,7 +1109,8 @@ void Player::GrassMove()
 
 	if (!m_wpCamera.expired())
 	{
-		UpdateRotate(Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), m_grasRotYMat));
+		Math::Vector3 vec = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), m_grasRotYMat);
+		UpdateRotate(vec);
 	}
 
 }
@@ -1196,7 +1197,8 @@ void Player::StepMove()
 
 	if (!m_wpCamera.expired())
 	{
-		UpdateRotate(Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), m_grasRotYMat));
+		Math::Vector3 vec = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), m_grasRotYMat);
+		UpdateRotate(vec);
 	}
 
 }
@@ -1352,7 +1354,7 @@ void Player::NormalMove()
 				m_gravity = -0.2f;
 				m_playerState |= jump;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
-				m_animator->SetAnimation(m_model->GetAnimation("JumpA"),false);
+				m_animator->SetAnimation(m_model->GetAnimation("JumpA"), false);
 				m_bMove = true;
 
 			}
@@ -1381,7 +1383,7 @@ void Player::NormalMove()
 	{
 		if (m_animator->IsAnimationEnd())
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("JumpB"),true);
+			m_animator->SetAnimation(m_model->GetAnimation("JumpB"), true);
 		}
 	}
 
@@ -1389,7 +1391,7 @@ void Player::NormalMove()
 	{
 		if (m_animator->IsAnimationEnd())
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("IdleB"),true);
+			m_animator->SetAnimation(m_model->GetAnimation("IdleB"), true);
 		}
 	}
 
@@ -1397,7 +1399,7 @@ void Player::NormalMove()
 	{
 		if (m_animator->IsAnimationEnd())
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("FallB"),true);
+			m_animator->SetAnimation(m_model->GetAnimation("FallB"), true);
 		}
 	}
 
@@ -1564,7 +1566,7 @@ void Player::ScorpionActionDecision()
 							std::shared_ptr<CameraBase> spCamera = m_wpCamera.lock();
 							if (spCamera)
 							{
-								m_weaponList[0]->SetMantis(spCamera->GetRotationMatrix(),true);
+								m_weaponList[0]->SetMantis(spCamera->GetRotationMatrix(), true);
 								m_weaponList[1]->SetBMantis(true);
 							}
 							m_bMove = true;

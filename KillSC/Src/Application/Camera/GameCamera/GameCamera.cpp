@@ -11,6 +11,7 @@ void GameCamera::Init()
 	m_FixMousePos.x = 640;
 	m_FixMousePos.y = 360;
 
+	m_bRotateEnemy = false;
 	SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
 
 	CameraBase::Init();
@@ -108,10 +109,18 @@ void GameCamera::Update()
 		}
 	}
 
-	// カメラの回転
-	UpdateRotateByMouse();
-	m_Rotation = GetRotationMatrix();
-
+	if (!m_bRotateEnemy)
+	{
+		// カメラの回転
+		UpdateRotateByMouse();
+	}
+	else
+	{
+		UpdateRotateByEnemy();
+		SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
+	}
+		m_Rotation = GetRotationMatrix();
+	
 	if (m_bCameraSet)
 	{
 		CameraSetUpdate();
@@ -120,6 +129,12 @@ void GameCamera::Update()
 	m_mWorld = m_LocalPos * m_Rotation * targetMat;
 
 	CameraBase::Update();
+}
+
+void GameCamera::SetEnemy(std::shared_ptr<Enemy> a_enemy)
+{
+	m_wpEnemy = a_enemy;
+	m_bRotateEnemy = !m_bRotateEnemy;
 }
 
 void GameCamera::UpdateRotateByMouse()
@@ -140,6 +155,71 @@ void GameCamera::UpdateRotateByMouse()
 
 	// 回転制御
 	m_DegAng.x = std::clamp(m_DegAng.x, -FLT_MAX, FLT_MAX);
+}
+
+void GameCamera::UpdateRotateByEnemy()
+{
+	//Math::Matrix mInvertRideObject;
+	//m_mWorld.Invert(mInvertRideObject);
+	//enemyMat.CreatePerspectiveFieldOfView(); // これでいけるかも
+	//Math::Matrix enemyMat = m_wpEnemy.lock()->GetMatrix() * mInvertRideObject;
+	//Math::Vector3 enemyPos = enemyMat.Translation();
+	//enemyPos.x = enemyPos.x - m_FixMousePos.x;
+	//enemyPos.y = (enemyPos.y + 0.5f) - m_FixMousePos.y;
+
+	Math::Vector3 nowVec = m_mWorld.Backward();
+
+	// 向きたい方向
+	Math::Vector3 toVec = m_wpEnemy.lock()->GetPos();
+	toVec.Normalize();
+
+	// 内積（回転する角度を求める）
+	// ベクトルAとベクトルBとコサインなす角
+	// A・B
+	Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, toVec);
+	// ベクトルAの長さ１
+	// ベクトルBの長さ１
+	// なのでdotの中にはコサインなす角だけ入っている
+	// 丸め誤差（小数点以下を省略した際に生じる誤差）
+	if (dot.x > 1)// .?はなんでもいい
+	{
+		dot.x = 1;
+	}
+	if (dot.x < -1)
+	{
+		dot.x = -1;
+	}
+
+	// 角度を取得
+	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+	// 少しでも角度が変わったら
+	if (ang >= 10.0f)
+	{
+		// 角度制限
+		if (ang > 5)
+		{
+			ang = 5.0f;
+		}
+		if (ang < -5)
+		{
+			ang = -5.0f;
+		}
+
+		// 外積（どっちに回転するか調べる）
+		// ベクトルAとベクトルBに垂直なベクトル
+		// A x B
+		Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
+		if (cross.y >= 0)
+		{
+			m_DegAng.y += ang;
+		}
+
+		if (cross.y < 0)
+		{
+			m_DegAng.y -= ang;
+		}
+	}
 }
 
 void GameCamera::CameraSetUpdate()

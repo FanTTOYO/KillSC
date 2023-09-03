@@ -1,4 +1,5 @@
 #include "BaseScene.h"
+#include "../../Scene/SceneManager.h"
 
 void BaseScene::PreUpdate()
 {
@@ -22,25 +23,34 @@ void BaseScene::PreUpdate()
 
 void BaseScene::Update()
 {
-
-	if (!m_bCountDown)
+	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 	{
-		for (auto& obj : m_objList)
+		if (!m_bCountDown)
 		{
-			obj->Update();
+			for (auto& obj : m_objList)
+			{
+				obj->Update();
+			}
 		}
-	}
 
-	Event();
+		Event();
+	}
+	else
+	{
+		SceneManager::Instance().SetUpdateStopCnt(SceneManager::Instance().GetUpdateStopCnt() - 1);
+	}
 }
 
 void BaseScene::PostUpdate()
 {
-	if (!m_bCountDown)
+	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 	{
-		for (auto& obj : m_objList)
+		if (!m_bCountDown)
 		{
-			obj->PostUpdate();
+			for (auto& obj : m_objList)
+			{
+				obj->PostUpdate();
+			}
 		}
 	}
 }

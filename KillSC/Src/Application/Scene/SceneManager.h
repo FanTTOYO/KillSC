@@ -52,6 +52,10 @@ public:
 	const bool GetBAddOrSubVal() { return m_bAddOrSubVal; }
 	void SetBWinEnd(bool a_bWinEnd = true) { m_bWinEnd = a_bWinEnd; }
 	const bool GetBWinEnd() { return m_bWinEnd; }
+
+	void SetUpdateStopCnt(int a_updateStopCnt) { m_updateStopCnt = a_updateStopCnt; }
+	const int GetUpdateStopCnt() { return m_updateStopCnt; }
+
 private:
 
 	void ChangeScene(SceneType _sceneType);
@@ -68,6 +72,7 @@ private:
 	int m_pointAddOrSubVal; // 加算値か減算値
 	bool m_bAddOrSubVal = true; // true 加算値  false 減算値
 	bool m_bWinEnd;   // gameが終了してwindowが閉じるとき
+	int m_updateStopCnt;
 
 // シングルトンパターン
 	// 生成するインスタンスの数を1つに制限する

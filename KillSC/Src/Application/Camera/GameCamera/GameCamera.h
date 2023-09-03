@@ -15,12 +15,13 @@ public:
 	void Update()				override;
 
 	void SetPlayer(std::shared_ptr<Player> a_player) { m_wpPlayer = a_player; }
-	void SetPlayer(std::shared_ptr<Enemy> a_enemy) { m_wpEnemy = a_enemy; }
+	void SetEnemy(std::shared_ptr<Enemy> a_enemy);
 
 private:
 	void Init()					override;
 
 	void UpdateRotateByMouse();
+	void UpdateRotateByEnemy();
 
 	void CameraSetUpdate();
 
@@ -35,4 +36,5 @@ private:
 
 	float m_cameracChasePower = 0;
 	bool m_bCameraDown;
+	bool m_bRotateEnemy; // エネミーによってカメラの回転がかわる
 };
