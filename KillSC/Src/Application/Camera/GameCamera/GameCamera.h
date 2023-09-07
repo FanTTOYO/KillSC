@@ -1,7 +1,7 @@
 #pragma once
 #include "../CameraBase.h"
-#define CAMERAZ -3.5f 
-#define CAMERAY  2.0f
+#define CAMERAZ -3.25f 
+#define CAMERAY  2.5f
 
 class Player;
 class Enemy;

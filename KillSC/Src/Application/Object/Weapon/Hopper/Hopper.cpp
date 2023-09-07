@@ -34,7 +34,7 @@ void Hopper::Update()
 		}
 		else if (player->GetPlayerState() & Player::PlayerState::grassHopperDashB)
 		{
-			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng + 180),
+			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng),
 				DirectX::XMConvertToRadians(315),
 				DirectX::XMConvertToRadians(0)) * Math::Matrix::CreateTranslation(m_pos);
 		}
@@ -88,32 +88,32 @@ void Hopper::Update()
 			m_mWorld._42 += 0.9f;
 		}
 
-		if (enemy->GetEnemyState() & Player::PlayerState::grassHopperDashF)
+		if (enemy->GetEnemyState() & eGrassHopperDashF)
 		{
 			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng),
 				DirectX::XMConvertToRadians(45),
 				DirectX::XMConvertToRadians(0)) * Math::Matrix::CreateTranslation(m_pos);
 		}
-		else if (enemy->GetEnemyState() & Player::PlayerState::grassHopperDashB)
+		else if (enemy->GetEnemyState() & eGrassHopperDashB)
 		{
 			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng + 180),
 				DirectX::XMConvertToRadians(315),
 				DirectX::XMConvertToRadians(0)) * Math::Matrix::CreateTranslation(m_pos);
 		}
-		else if (enemy->GetEnemyState() & Player::PlayerState::grassHopperDashL)
+		else if (enemy->GetEnemyState() & eGrassHopperDashL)
 		{
 			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng + 90),
 				DirectX::XMConvertToRadians(315),
 				DirectX::XMConvertToRadians(0)) * Math::Matrix::CreateTranslation(m_pos);
 		}
-		else if (enemy->GetEnemyState() & Player::PlayerState::grassHopperDashR)
+		else if (enemy->GetEnemyState() & eGrassHopperDashR)
 		{
 			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng + 270),
 				DirectX::XMConvertToRadians(315),
 				DirectX::XMConvertToRadians(0)) * Math::Matrix::CreateTranslation(m_pos);
 		}
 
-		if (enemy->GetEnemyState() & Player::PlayerState::grassHopperDashUp)
+		if (enemy->GetEnemyState() & eGrassHopperDashUp)
 		{
 			m_hopperMat = Math::Matrix::CreateTranslation(m_pos);
 		}
@@ -160,24 +160,24 @@ void Hopper::DrawBright()
 	if (m_bEnemyWeapon)
 	{
 		const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-		if (!(enemy->GetWeaponType() & (grassHopper | lGrassHopper)))return;
+		if (!(enemy->GetWeaponType() & (eGrassHopper | eLGrassHopper)))return;
 
-		if (m_arrmType == rArrm && enemy->GetWeaponType() & grassHopper)
+		if (m_arrmType == rArrm && enemy->GetWeaponType() & eGrassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
 
-		if (m_arrmType == lArrm && enemy->GetWeaponType() & lGrassHopper)
+		if (m_arrmType == lArrm && enemy->GetWeaponType() & eLGrassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
 
-		if (m_arrmType == rArrm && enemy->GetRGrassHopperTime() >= 60 && enemy->GetEnemyState() & (Player::PlayerState::grassHopperDashUp | Player::PlayerState::grassHopperDash))
+		if (m_arrmType == rArrm && enemy->GetRGrassHopperTime() >= 60 && enemy->GetEnemyState() & (eGrassHopperDashUp | eGrassHopperDash))
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_hopperModel, m_hopperMat);
 		}
 
-		if (m_arrmType == lArrm && enemy->GetLGrassHopperTime() >= 60 && enemy->GetEnemyState() & (Player::PlayerState::grassHopperDashUp | Player::PlayerState::grassHopperDash))
+		if (m_arrmType == lArrm && enemy->GetLGrassHopperTime() >= 60 && enemy->GetEnemyState() & (eGrassHopperDashUp | eGrassHopperDash))
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_hopperModel, m_hopperMat);
 		}
@@ -205,14 +205,14 @@ void Hopper::GenerateDepthMapFromLight()
 	if (m_bEnemyWeapon)
 	{
 		const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-		if (!(enemy->GetWeaponType() & (grassHopper | lGrassHopper)))return;
+		if (!(enemy->GetWeaponType() & (eGrassHopper | eLGrassHopper)))return;
 
-		if (m_arrmType == rArrm && enemy->GetWeaponType() & grassHopper)
+		if (m_arrmType == rArrm && enemy->GetWeaponType() & eGrassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
 
-		if (m_arrmType == lArrm && enemy->GetWeaponType() & lGrassHopper)
+		if (m_arrmType == lArrm && enemy->GetWeaponType() & eLGrassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}

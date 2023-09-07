@@ -944,11 +944,20 @@ void Enemy::PostUpdate()
 void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 {
 	m_EnemyState = eHit;
-	m_hitStopCnt = 10;
+	m_hitStopCnt = 20;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
 	m_torion -= 50.0f;
 	m_attackHit = true;
+	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackThree))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+	}
+	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackTwo))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+	}
+
 	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 	if (m_torion <= 0)
 	{
@@ -967,6 +976,41 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	{
 		m_graduallyTorionDecVal *= 1.25f;
 	}
+}
+
+void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
+{
+	m_EnemyState = eHit;
+	m_hitStopCnt = 40;
+	m_hitMoveSpd = 0.05f;
+	m_knockBackVec = a_KnocBackvec;
+	m_torion -= 50.0f;
+	m_attackHit = true;
+	m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
+
+	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	if (m_torion <= 0)
+	{
+		m_torion = 0;
+		SceneManager::Instance().SetBAddOrSubVal(true);
+		SceneManager::Instance().SetPointAddOrSubVal(1000);
+		SceneManager::Instance().SetBPlayerWin();
+		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+	}
+
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.01f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.25f;
+	}
+}
+
+void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
+{
+
 }
 
 void Enemy::HasDefense()
@@ -1108,6 +1152,9 @@ void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
 
 void Enemy::GrassMoveVecDecision()
 {
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+
 	if (m_rGrassHopperPauCnt == 0)
 	{
 		if (m_weaponType & eGrassHopper)
@@ -1205,7 +1252,10 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						m_weaponList[2]->GrassHopper({ m_pos.x - 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z - 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
+						node = m_model->FindNode("GrassHopperLegRPoint");
+						mat = node->m_worldTransform * m_mWorld;
+						mat._42 += 0.7f;
+						m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 						break;
 					case 2:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(1, 0, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -1217,7 +1267,10 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z + 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
+						node = m_model->FindNode("GrassHopperLegLPoint");
+						mat = node->m_worldTransform * m_mWorld;
+						mat._42 += 0.7f;
+						m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 						break;
 					case 3:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(-1, 0, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -1229,7 +1282,10 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z + 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
+						node = m_model->FindNode("GrassHopperLegRPoint");
+						mat = node->m_worldTransform * m_mWorld;
+						mat._42 += 0.7f;
+						m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 						break;
 					case 4:
 						m_grassHopperDashDir = { 0, 1, 0 };
@@ -1242,7 +1298,10 @@ void Enemy::GrassMoveVecDecision()
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
 
-						m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
+						node = m_model->FindNode("GrassHopperLegRPoint");
+						mat = node->m_worldTransform * m_mWorld;
+						mat._42 += 0.7f;
+						m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 						break;
 					}
 					break;
@@ -1337,7 +1396,10 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z + 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
+						node = m_model->FindNode("GrassHopperLegRPoint");
+						mat = node->m_worldTransform * m_mWorld;
+						mat._42 += 0.7f;
+						m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 						break;
 					case 1:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, -1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -1349,7 +1411,10 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						m_weaponList[3]->GrassHopper({ m_pos.x - 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z - 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
+						node = m_model->FindNode("GrassHopperLegRPoint");
+						mat = node->m_worldTransform * m_mWorld;
+						mat._42 += 0.7f;
+						m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 						break;
 					case 2:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(1, 0, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -1361,7 +1426,10 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z + 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
+						node = m_model->FindNode("GrassHopperLegLPoint");
+						mat = node->m_worldTransform * m_mWorld;
+						mat._42 += 0.7f;
+						m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 						break;
 					case 3:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(-1, 0, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -1373,7 +1441,10 @@ void Enemy::GrassMoveVecDecision()
 						m_lGrassHopperTime = 90;
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
-						m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z + 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
+						node = m_model->FindNode("GrassHopperLegRPoint");
+						mat = node->m_worldTransform * m_mWorld;
+						mat._42 += 0.7f;
+						m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 						break;
 					case 4:
 						m_grassHopperDashDir = { 0, 1, 0 };
@@ -1386,7 +1457,10 @@ void Enemy::GrassMoveVecDecision()
 						m_rGrassHopperTime = 0;
 						m_gravity = 0;
 
-						m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
+						node = m_model->FindNode("GrassHopperLegRPoint");
+						mat = node->m_worldTransform * m_mWorld;
+						mat._42 += 0.7f;
+						m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 						break;
 					}
 					break;

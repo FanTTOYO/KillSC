@@ -577,14 +577,7 @@ void Player::PostUpdate()
 		else
 		{
 			m_attackAnimeCnt++;
-			if (m_playerState & (lAttackOne | rAttackOne) & m_playerState & eGrassHopperDash)
-			{
-				if (m_attackAnimeCnt == 10)
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-			else if (m_playerState & (lAttackThree | rAttackThree))
+			if (m_playerState & (lAttackThree | rAttackThree))
 			{
 				if (m_attackAnimeCnt == 15)
 				{
@@ -607,6 +600,15 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	m_knockBackVec = a_KnocBackvec;
 	m_torion -= 50.0f;
 	m_attackHit = true;
+	if (m_enemy.lock()->GetEnemyState() & (eRAttackOne | eRAttackThree))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+	}
+	else if (m_enemy.lock()->GetEnemyState() & (eRAttackTwo))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+	}
+
 	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 	if (m_torion < 0)
 	{
@@ -621,6 +623,37 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	{
 		m_graduallyTorionDecVal *= 1.25f;
 	}
+}
+
+void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
+{
+	m_playerState = hit;
+	m_hitStopCnt = 40;
+	m_hitMoveSpd = 0.05f;
+	m_knockBackVec = a_KnocBackvec;
+	m_torion -= 50.0f;
+	m_attackHit = true;
+	m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
+
+	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	if (m_torion < 0)
+	{
+		m_torion = 0;
+	}
+
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.01f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.25f;
+	}
+}
+
+void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
+{
+
 }
 
 void Player::HasDefense()
@@ -751,6 +784,9 @@ void Player::GrassMoveVecDecision()
 	CameraVec.y = 0;
 	CameraVec.Normalize();
 
+	const KdModelWork::Node* node = nullptr;	
+	Math::Matrix mat = Math::Matrix::Identity;
+
 	//std::shared_ptr<GameCamera> spCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
 	if (m_rGrassHopperPauCnt == 0)
 	{
@@ -776,7 +812,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
 
-					m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43}, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
 				{
@@ -794,7 +833,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
 
-					m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 
 				else if (KdInputManager::Instance().GetButtonState("backward"))
@@ -813,7 +855,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
 
-					m_weaponList[2]->GrassHopper({ m_pos.x - 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z - 0.65f * CameraVec.z }, spCamera->GetYAng());
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("right"))
 				{
@@ -831,7 +876,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
 
-					m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.75f * CameraVec.z }, spCamera->GetYAng());
+					node = m_model->FindNode("GrassHopperLegLPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("jump"))
 				{
@@ -849,7 +897,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
 
-					m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 				else
 				{
@@ -867,7 +918,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
 
-					m_weaponList[2]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 			}
 		}
@@ -898,7 +952,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
 
-					m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
 				{
@@ -916,7 +973,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
 
-					m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.65f * CameraVec.z }, spCamera->GetYAng());
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 
 				else if (KdInputManager::Instance().GetButtonState("backward"))
@@ -935,7 +995,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
 
-					m_weaponList[3]->GrassHopper({ m_pos.x - 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z - 0.65f * CameraVec.z }, spCamera->GetYAng());
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("right"))
 				{
@@ -953,7 +1016,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
 
-					m_weaponList[3]->GrassHopper({ m_pos.x + 0.65f * CameraVec.x,m_pos.y + 0.9f,m_pos.z + 0.75f * CameraVec.z }, spCamera->GetYAng());
+					node = m_model->FindNode("GrassHopperLegLPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("jump"))
 				{
@@ -971,7 +1037,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
 
-					m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 				else
 				{
@@ -989,7 +1058,10 @@ void Player::GrassMoveVecDecision()
 					m_torion -= TORIONDOWNVALUE;
 					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
 
-					m_weaponList[3]->GrassHopper({ m_pos.x,m_pos.y + 0.7f,m_pos.z });
+					node = m_model->FindNode("GrassHopperLegRPoint");
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 			}
 		}
@@ -1013,11 +1085,11 @@ void Player::GrassMove()
 	if (m_lGrassHopperTime != 0 || m_rGrassHopperTime != 0)
 	{
 		m_bMove = true;
-		if (m_lGrassHopperTime <= 90 && m_lGrassHopperTime > 80 || m_rGrassHopperTime <= 90 && m_rGrassHopperTime > 80)
+		if (m_lGrassHopperTime <= 90 && m_lGrassHopperTime > 75 || m_rGrassHopperTime <= 90 && m_rGrassHopperTime > 75)
 		{
 			m_dashSpd = 0.0f;
 		}
-		else if (m_lGrassHopperTime <= 80 && m_lGrassHopperTime > 30 || m_rGrassHopperTime <= 75 && m_rGrassHopperTime > 30)
+		else if (m_lGrassHopperTime <= 75 && m_lGrassHopperTime > 30 || m_rGrassHopperTime <= 75 && m_rGrassHopperTime > 30)
 		{
 			m_dashSpd = 0.8f;
 		}
@@ -1543,7 +1615,6 @@ void Player::ScorpionActionDecision()
 	{
 		if (!m_bAttackAnimeDelay)
 		{
-
 			if (m_playerState & grassHopperDash && m_lGrassHopperTime > 80 || m_rGrassHopperTime > 80)return;
 
 			if (m_weaponType & lScorpion && m_weaponType & scorpion)
@@ -1676,7 +1747,7 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = true;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
-							m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+							m_animator->SetAnimation(m_model->GetAnimation("LAttack2"), false);
 						}
 						else if (m_playerState & lAttackTwo)
 						{
@@ -1689,7 +1760,7 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = false;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
-							m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+							m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
 						}
 
 						if (m_playerState & rAttackOne)
@@ -1703,7 +1774,7 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = true;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
-							m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+							m_animator->SetAnimation(m_model->GetAnimation("LAttack2"), false);
 						}
 						else if (m_playerState & rAttackTwo)
 						{
@@ -1716,7 +1787,7 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = false;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
-							m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+							m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
 						}
 
 						m_playerState &= ~rAttack;
@@ -1766,7 +1837,7 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = true;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
-							m_animator->SetAnimation(m_model->GetAnimation("RAttack1"), false);
+							m_animator->SetAnimation(m_model->GetAnimation("RAttack2"), false);
 						}
 						else if (m_playerState & lAttackTwo)
 						{
@@ -1776,10 +1847,10 @@ void Player::ScorpionActionDecision()
 							m_playerState |= rAttackThree;
 							m_playerState &= ~lAttackTwo;
 							m_bAttackAnimeDelay = false;
-							m_bAttackAnimeCnt = true;
+							m_bAttackAnimeCnt = false;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
-							m_animator->SetAnimation(m_model->GetAnimation("RAttack1"), false);
+							m_animator->SetAnimation(m_model->GetAnimation("RAttack3"), false);
 						}
 
 						m_playerState &= ~lAttack;

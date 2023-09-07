@@ -13,7 +13,7 @@ void GameCamera::Init()
 
 	m_bRotateEnemy = false;
 	SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
-
+	m_cameracChasePower = 0.0f;
 	CameraBase::Init();
 }
 
@@ -22,92 +22,140 @@ void GameCamera::Update()
 	Math::Matrix targetMat = Math::Matrix::Identity;
 	if (!m_wpPlayer.expired())
 	{
-
 		if (!m_wpTarget.expired())
 		{
 			const std::shared_ptr<const KdGameObject> spTarget = m_wpTarget.lock();
 			if (spTarget)
 			{
 				// Player基準
-				//targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
-
-				// 地面基準 未完
-				if (spTarget->GetPos().y < m_stepOnPlayerPos.y + 5 && spTarget->GetPos().y > m_stepOnPlayerPos.y - 5 && !m_bCameraDown)
+				if (m_stepOnPlayerPos.y + 0.2f < spTarget->GetPos().y)
 				{
-					m_cameracChasePower = 0;
-					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y, spTarget->GetPos().z);
-				}
-				else if (spTarget->GetPos().y >= m_stepOnPlayerPos.y + 5 && spTarget->GetPos().y > m_stepOnPlayerPos.y + m_cameracChasePower)
-				{
-					float b = spTarget->GetPos().y - m_stepOnPlayerPos.y + m_cameracChasePower;
-					if (b >= 2.0f)
+					if (m_wpPlayer.lock()->GetGravity() > 0.0f)
 					{
-						m_cameracChasePower += m_wpPlayer.lock()->GetDashSpd();
+						m_cameracChasePower -= (1.0f / 60.0f);
+						if (m_cameracChasePower <= 0.0f)
+						{
+							m_cameracChasePower = 0.0f;
+						}
 					}
-
-					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
-				}
-				else if(m_wpPlayer.lock()->GetGravity() < 0)
-				{
-					m_cameracChasePower = m_wpPlayer.lock()->GetGravity() * 0.95f;
-					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
+					else
+					{
+						m_cameracChasePower += (1.0f / 60.0f);
+						if (m_cameracChasePower >= 1.0f)
+						{
+							m_cameracChasePower = 1.0f;
+						}
+					}
 				}
 				else
 				{
-					float b = 0.0f;
-					b = spTarget->GetPos().y - m_stepOnPlayerPos.y;
-					m_bCameraDown = true;
-					if (m_cameracChasePower <= 0.0f)
-					{
-						m_bCameraDown = false;
-					}
-
-					if (m_wpPlayer.lock()->GetGravity() > 0)
-					{
-						m_cameracChasePower -= m_wpPlayer.lock()->GetGravity();
-					}
-
-					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
+					m_cameracChasePower = 0;
 				}
+				targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
+				
 
-				if (m_cameracChasePower > 0.0f && m_wpPlayer.lock()->GetGravity() == 0 && !(m_wpPlayer.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDash | Player::PlayerState::grassHopperDashUp)))
-				{
-					m_cameracChasePower -= 0.15f;
-					m_bCameraDown = true;
-					if (m_cameracChasePower <= 0.0f)
-					{
-						m_bCameraDown = false;
-					}
-					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
-				}
+				//// 地面基準 未完
+				//if (spTarget->GetPos().y < m_stepOnPlayerPos.y + 5 && spTarget->GetPos().y > m_stepOnPlayerPos.y - 5 && !m_bCameraDown)
+				//{
+				//	m_cameracChasePower = 0;
+				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y, spTarget->GetPos().z);
+				//}
+				//else if (spTarget->GetPos().y >= m_stepOnPlayerPos.y + 5 && spTarget->GetPos().y > m_stepOnPlayerPos.y + m_cameracChasePower)
+				//{
+				//	float b = spTarget->GetPos().y - m_stepOnPlayerPos.y + m_cameracChasePower;
+				//	if (b >= 2.0f)
+				//	{
+				//		m_cameracChasePower += m_wpPlayer.lock()->GetDashSpd() * 1.10f;
+				//	}
+
+				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
+				//}
+				//else if(m_wpPlayer.lock()->GetGravity() < 0)
+				//{
+				//	m_cameracChasePower = m_wpPlayer.lock()->GetGravity() * 0.95f;
+				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
+				//}
+				//else
+				//{
+				//	float b = 0.0f;
+				//	b = spTarget->GetPos().y - m_stepOnPlayerPos.y;
+				//	m_bCameraDown = true;
+				//	if (m_cameracChasePower <= 0.0f)
+				//	{
+				//		m_bCameraDown = false;
+				//	}
+
+				//	if (m_wpPlayer.lock()->GetGravity() > 0)
+				//	{
+				//		m_cameracChasePower -= m_wpPlayer.lock()->GetGravity();
+				//	}
+
+				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
+				//}
+
+				//if (m_cameracChasePower > 0.0f && m_wpPlayer.lock()->GetGravity() == 0 && !(m_wpPlayer.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDash | Player::PlayerState::grassHopperDashUp)))
+				//{
+				//	m_cameracChasePower -= 0.15f;
+				//	m_bCameraDown = true;
+				//	if (m_cameracChasePower <= 0.0f)
+				//	{
+				//		m_bCameraDown = false;
+				//	}
+				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
+				//}
+
+				//if (spTarget->GetPos().y <= m_stepOnPlayerPos.y)
+				//{
+				//	if (m_wpPlayer.lock()->GetGravity() > 0)
+				//	{
+				//		m_cameracChasePower -= m_wpPlayer.lock()->GetGravity();
+				//	}
+				//	else
+				//	{
+				//		m_cameracChasePower = 0;
+				//	}
+
+				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
+				//}
 			}
 		}
+
 
 
 		if (m_wpPlayer.lock()->GetLGrassHopperTime() <= 80 && m_wpPlayer.lock()->GetLGrassHopperTime() > 75 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 80 && m_wpPlayer.lock()->GetRGrassHopperTime() > 75)
 		{
 			if (m_wpPlayer.lock()->GetLGrassHopperTime() <= 80 && m_wpPlayer.lock()->GetLGrassHopperTime() > 79 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 80 && m_wpPlayer.lock()->GetRGrassHopperTime() > 79)
 			{
-				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY + 0.1f, CAMERAZ);
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY + 0.1f, CAMERAZ - m_cameracChasePower);
 			}
 			else if (m_wpPlayer.lock()->GetLGrassHopperTime() <= 79 && m_wpPlayer.lock()->GetLGrassHopperTime() > 78 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 79 && m_wpPlayer.lock()->GetRGrassHopperTime() > 78)
 			{
-				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY - 0.1f, CAMERAZ);
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY - 0.1f, CAMERAZ - m_cameracChasePower);
 			}
 			else if (m_wpPlayer.lock()->GetLGrassHopperTime() <= 78 && m_wpPlayer.lock()->GetLGrassHopperTime() > 77 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 78 && m_wpPlayer.lock()->GetRGrassHopperTime() > 77)
 			{
-				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY + 0.1f, CAMERAZ);
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY + 0.1f, CAMERAZ - m_cameracChasePower);
 			}
 			else if (m_wpPlayer.lock()->GetLGrassHopperTime() <= 77 && m_wpPlayer.lock()->GetLGrassHopperTime() >= 76 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 77 && m_wpPlayer.lock()->GetRGrassHopperTime() >= 76)
 			{
-				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY - 0.1f, CAMERAZ);
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY - 0.1f, CAMERAZ - m_cameracChasePower);
 			}
 		}
 		else
 		{
-			m_LocalPos = Math::Matrix::CreateTranslation(0, CAMERAY, CAMERAZ);
+			m_LocalPos = Math::Matrix::CreateTranslation(0, CAMERAY, CAMERAZ - m_cameracChasePower);
 		}
 	}
+
+	//float z = m_wpEnemy.lock()->GetPos().z - m_wpPlayer.lock()->GetPos().z;
+	/*if (z >= 0)
+	{
+		m_bRotateEnemy = true;
+	}
+	else
+	{
+		m_bRotateEnemy = false;
+	}*/
 
 	if (!m_bRotateEnemy)
 	{
@@ -168,20 +216,16 @@ void GameCamera::UpdateRotateByEnemy()
 	//enemyPos.y = (enemyPos.y + 0.5f) - m_FixMousePos.y;
 
 	Math::Vector3 nowVec = m_mWorld.Backward();
+	nowVec.y = 0.0f;
+	nowVec.Normalize();
 
 	// 向きたい方向
-	Math::Vector3 toVec = m_wpEnemy.lock()->GetPos();
+	Math::Vector3 toVec = m_wpEnemy.lock()->GetPos() - GetPos();
+	toVec.y = 0.0f;
 	toVec.Normalize();
 
-	// 内積（回転する角度を求める）
-	// ベクトルAとベクトルBとコサインなす角
-	// A・B
 	Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, toVec);
-	// ベクトルAの長さ１
-	// ベクトルBの長さ１
-	// なのでdotの中にはコサインなす角だけ入っている
-	// 丸め誤差（小数点以下を省略した際に生じる誤差）
-	if (dot.x > 1)// .?はなんでもいい
+	if (dot.x > 1)
 	{
 		dot.x = 1;
 	}
@@ -193,33 +237,124 @@ void GameCamera::UpdateRotateByEnemy()
 	// 角度を取得
 	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
-	// 少しでも角度が変わったら
-	if (ang >= 10.0f)
+	//// 角度制限
+	//if (ang > 5)
+	//{
+	//	ang = 5.0f;
+	//}
+	//if (ang < -5)
+	//{
+	//	ang = -5.0f;
+	//}
+
+	Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
+	if (cross.y >= 0)
 	{
-		// 角度制限
-		if (ang > 5)
+		m_DegAng.y += ang;
+	}
+	
+	if (cross.y < 0)
+	{
+		m_DegAng.y -= ang;
+	}
+
+	//nowVec = Math::Vector3::TransformNormal(nowVec,Math::Matrix::CreateRotationY(m_DegAng.y));
+	
+	nowVec   = m_mWorld.Backward();
+	nowVec.x = 0.0f;
+	nowVec.Normalize();
+
+	toVec   = Math::Vector3(m_wpEnemy.lock()->GetPos().x, m_wpEnemy.lock()->GetPos().y + 0.5f, m_wpEnemy.lock()->GetPos().z) - Math::Vector3(m_wpPlayer.lock()->GetPos().x, m_wpPlayer.lock()->GetPos().y + 0.5f, m_wpPlayer.lock()->GetPos().z);
+	toVec.x = 0.0f;
+	toVec.Normalize();
+
+	dot = DirectX::XMVector3Dot(nowVec, toVec);
+	
+	if (dot.x > 1)
+	{
+		dot.x = 1;
+	}
+	if (dot.x < -1)
+	{
+		dot.x = -1;
+	}
+
+	
+	// 角度を取得
+	ang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+	if (ang >= 20)
+	{
+		if (ang > 1)
 		{
-			ang = 5.0f;
-		}
-		if (ang < -5)
-		{
-			ang = -5.0f;
+			ang = 1;
 		}
 
-		// 外積（どっちに回転するか調べる）
-		// ベクトルAとベクトルBに垂直なベクトル
-		// A x B
-		Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
-		if (cross.y >= 0)
+		if (ang < -1)
 		{
-			m_DegAng.y += ang;
+			ang = -1;
 		}
 
-		if (cross.y < 0)
+		Math::Vector3 crossX = DirectX::XMVector3Cross(nowVec, toVec);
+		if (crossX.x >= 0)
 		{
-			m_DegAng.y -= ang;
+			m_DegAng.x += ang;
+		}
+		if (crossX.x < 0)
+		{
+			m_DegAng.x -= ang;
+		}
+
+		if (m_DegAng.x > 80)
+		{
+			m_DegAng.x = 80;
+			if (cross.y >= 0)
+			{
+				m_DegAng.y += 180;
+			}
+
+			if (cross.y < 0)
+			{
+				m_DegAng.y -= 180;
+			}
+		}
+
+		if (m_DegAng.x < -80)
+		{
+			m_DegAng.x = -80;
+			if (cross.y >= 0)
+			{
+				m_DegAng.y += 180;
+			}
+
+			if (cross.y < 0)
+			{
+				m_DegAng.y -= 180;
+			}
 		}
 	}
+
+	if (m_wpPlayer.lock()->GetPos().y <= m_stepOnPlayerPos.y)
+	{
+		if (m_DegAng.x < 0)
+		{
+			m_DegAng.x += 10;
+			if (m_DegAng.x >= 0)
+			{
+				m_DegAng.x = 0;
+			}
+		}
+		else
+		{
+			m_DegAng.x -= 10;
+			if (m_DegAng.x <= 0)
+			{
+				m_DegAng.x = 0;
+			}
+		}
+	}
+	
+
 }
 
 void GameCamera::CameraSetUpdate()

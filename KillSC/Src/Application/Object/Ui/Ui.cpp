@@ -847,7 +847,6 @@ void Ui::SelectUpdate()
 		m_time++;
 	}
 
-	// マウスの当たり判定はここを参考に＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 	PWINDOWINFO pwi = new WINDOWINFO;
 	pwi->cbSize = sizeof(WINDOWINFO);
 	GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
@@ -867,7 +866,7 @@ void Ui::SelectUpdate()
 	artPos.x = m_artPos.x + (float)(pwi->rcWindow.left);
 	artPos.y = m_artPos.y /*+ (float)(pwi->rcWindow.top)*/;
 	artPos.z = m_artPos.z;
-   // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+ 
 	Dis = artPos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 75)
 	{

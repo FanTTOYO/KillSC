@@ -73,9 +73,6 @@
     <Filter Include="Src\Application\Object">
       <UniqueIdentifier>{58390f40-87d6-40a0-b130-6d2e7de8f791}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Src\Application\Object\Ground">
-      <UniqueIdentifier>{a5929a3d-9659-4474-9732-79f4a12991aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Src\Application\Camera">
       <UniqueIdentifier>{6f62f246-02fc-42fa-99fb-d025618e594c}</UniqueIdentifier>
     </Filter>
@@ -111,6 +108,18 @@
     </Filter>
     <Filter Include="Src\Application\Scene\ArtScene">
       <UniqueIdentifier>{4c8fb2e9-e951-4504-940a-93bf4bca822c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Sky">
+      <UniqueIdentifier>{70b4e377-693a-47a0-8617-351508e18c78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\InvisibleWall">
+      <UniqueIdentifier>{a5929a3d-9659-4474-9732-79f4a12991aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Ground">
+      <UniqueIdentifier>{7d58f66f-914c-42b4-a5ea-7c0e863a39cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Bldg">
+      <UniqueIdentifier>{927f1fb3-a981-450a-9f6a-9f37b2a14965}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -246,9 +255,6 @@
     <ClInclude Include="Src\Application\Scene\BaseScene\BaseScene.h">
       <Filter>Src\Application\Scene\BaseScene</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Application\Object\Ground\Ground.h">
-      <Filter>Src\Application\Object\Ground</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Application\Camera\CameraBase.h">
       <Filter>Src\Application\Camera</Filter>
     </ClInclude>
@@ -281,6 +287,18 @@
     </ClInclude>
     <ClInclude Include="Src\Application\Scene\ArtScene\ArtScene.h">
       <Filter>Src\Application\Scene\ArtScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Sky\Sky.h">
+      <Filter>Src\Application\Object\Sky</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\invisibleWall\InvisibleWall.h">
+      <Filter>Src\Application\Object\InvisibleWall</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Ground\Ground.h">
+      <Filter>Src\Application\Object\Ground</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Bldg\Bldg.h">
+      <Filter>Src\Application\Object\Bldg</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -395,9 +413,6 @@
     <ClCompile Include="Src\Application\Scene\BaseScene\BaseScene.cpp">
       <Filter>Src\Application\Scene\BaseScene</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Application\Object\Ground\Ground.cpp">
-      <Filter>Src\Application\Object\Ground</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Application\Camera\CameraBase.cpp">
       <Filter>Src\Application\Camera</Filter>
     </ClCompile>
@@ -430,6 +445,18 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Scene\ArtScene\ArtScene.cpp">
       <Filter>Src\Application\Scene\ArtScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Sky\Sky.cpp">
+      <Filter>Src\Application\Object\Sky</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\invisibleWall\InvisibleWall.cpp">
+      <Filter>Src\Application\Object\InvisibleWall</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Ground\Ground.cpp">
+      <Filter>Src\Application\Object\Ground</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Bldg\Bldg.cpp">
+      <Filter>Src\Application\Object\Bldg</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

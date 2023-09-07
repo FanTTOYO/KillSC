@@ -86,7 +86,9 @@ public:
 	std::vector<std::shared_ptr<WeaponBase>> GetWeaponList() { return m_weaponList; }
 
 	void OnHit(Math::Vector3 a_KnocBackvec)override;
-    void HasDefense()override;
+	void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)override;
+	void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)override;
+	void HasDefense()override;
 
 private:
 

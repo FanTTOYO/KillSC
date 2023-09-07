@@ -67,7 +67,10 @@ public:
 	bool Intersects(const KdCollider::SphereInfo& targetShape, std::list<KdCollider::CollisionResult>* pResults);
 	bool Intersects(const KdCollider::RayInfo& targetShape, std::list<KdCollider::CollisionResult>* pResults);
 
-	virtual void OnHit(Math::Vector3 a_KnocBackvec) {}
+	virtual void OnHit(Math::Vector3 a_KnocBackvec) {}                         // 通常の当たり判定
+	virtual void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec) {}        // 吹き飛ばし攻撃当たり判定
+	virtual void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec) {}            // 居合切り当たり判定
+
 	virtual void HasDefense() {}
 
 	void SetAttackHit(bool a_attackHit) { m_attackHit = a_attackHit; }
