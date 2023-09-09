@@ -157,6 +157,7 @@ void GameCamera::Update()
 		m_bRotateEnemy = false;
 	}*/
 
+	Math::Matrix rotMatX;
 	if (!m_bRotateEnemy)
 	{
 		// ƒJƒƒ‰‚Ì‰ñ“]
@@ -166,6 +167,7 @@ void GameCamera::Update()
 	{
 		UpdateRotateByEnemy();
 		SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
+		rotMatX = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(10));
 	}
 		m_Rotation = GetRotationMatrix();
 	
@@ -174,7 +176,7 @@ void GameCamera::Update()
 		CameraSetUpdate();
 	}
 
-	m_mWorld = m_LocalPos * m_Rotation * targetMat;
+	m_mWorld = m_LocalPos * rotMatX * m_Rotation * targetMat;
 
 	CameraBase::Update();
 }
@@ -279,11 +281,10 @@ void GameCamera::UpdateRotateByEnemy()
 		dot.x = -1;
 	}
 
-	
 	// Šp“x‚ðŽæ“¾
 	ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
-	if (ang >= 20)
+	if (ang >= 15)
 	{
 		if (ang > 1)
 		{
@@ -295,14 +296,15 @@ void GameCamera::UpdateRotateByEnemy()
 			ang = -1;
 		}
 
-		Math::Vector3 crossX = DirectX::XMVector3Cross(nowVec, toVec);
-		if (crossX.x >= 0)
-		{
-			m_DegAng.x += ang;
-		}
-		if (crossX.x < 0)
+		/*Math::Vector3 crossX = DirectX::XMVector3Cross(nowVec, toVec);*/
+		float y = toVec.y - nowVec.y;
+		if (y >= 0)
 		{
 			m_DegAng.x -= ang;
+		}
+		if (y < 0)
+		{
+			m_DegAng.x += ang;
 		}
 
 		if (m_DegAng.x > 80)
@@ -310,12 +312,12 @@ void GameCamera::UpdateRotateByEnemy()
 			m_DegAng.x = 80;
 			if (cross.y >= 0)
 			{
-				m_DegAng.y += 180;
+				m_DegAng.y += 20;
 			}
 
 			if (cross.y < 0)
 			{
-				m_DegAng.y -= 180;
+				m_DegAng.y -= 20;
 			}
 		}
 
@@ -324,37 +326,39 @@ void GameCamera::UpdateRotateByEnemy()
 			m_DegAng.x = -80;
 			if (cross.y >= 0)
 			{
-				m_DegAng.y += 180;
+				m_DegAng.y += 20;
 			}
 
 			if (cross.y < 0)
 			{
-				m_DegAng.y -= 180;
+				m_DegAng.y -= 20;
 			}
 		}
 	}
 
-	if (m_wpPlayer.lock()->GetPos().y <= m_stepOnPlayerPos.y)
+	float y = m_wpEnemy.lock()->GetPos().y - m_wpPlayer.lock()->GetPos().y;
+	if (y <= 0)
 	{
-		if (m_DegAng.x < 0)
+		if (m_wpPlayer.lock()->GetPos().y <= m_stepOnPlayerPos.y)
 		{
-			m_DegAng.x += 10;
-			if (m_DegAng.x >= 0)
+			if (m_DegAng.x < 0)
 			{
-				m_DegAng.x = 0;
+				m_DegAng.x += 10;
+				if (m_DegAng.x >= 0)
+				{
+					m_DegAng.x = 0;
+				}
 			}
-		}
-		else
-		{
-			m_DegAng.x -= 10;
-			if (m_DegAng.x <= 0)
+			else
 			{
-				m_DegAng.x = 0;
+				m_DegAng.x -= 10;
+				if (m_DegAng.x <= 0)
+				{
+					m_DegAng.x = 0;
+				}
 			}
 		}
 	}
-	
-
 }
 
 void GameCamera::CameraSetUpdate()

@@ -43,6 +43,8 @@ private:
 	KdTexture m_weaponTypeOvreDarkTex;
 	KdTexture m_torionTex;
 	KdTexture m_torionBarTex;
+	KdTexture m_enduranceTex;
+	KdTexture m_enduranceBarTex;
 	KdTexture m_pushToEnterTex;
 
 	KdTexture m_winTex;

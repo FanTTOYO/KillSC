@@ -81,6 +81,7 @@ public:
 	const float& GetGravity() { return m_gravity; }
 	const float& GetDashSpd() { return m_dashSpd;}
 	const float& GetTorion()  { return m_torion; }
+	const float& GetEndurance()  { return m_endurance; }
 	const std::shared_ptr<KdModelWork>& GetModel() { return m_model; }
 
 	std::vector<std::shared_ptr<WeaponBase>> GetWeaponList() { return m_weaponList; }
@@ -124,6 +125,7 @@ private:
 
 	bool m_bLeftWallHit = false;
 	bool m_bRightWallHit = false;
+	bool m_bMButtonState;
 
 	Math::Vector3    m_pos = {};
 	Math::Vector3    m_move = {};
@@ -177,10 +179,14 @@ private:
 	float m_gardMoveSpd;           // 攻撃を防御した時のノックバック速度
 	bool  m_bTough;                // 高い攻撃力の攻撃をくらうORガードしたかどうか
 	Math::Vector3 m_knockBackVec;  // ノックバックする方向
-	float m_torion = 0.0f;
+	float m_torion    = 0.0f;    // トリオン残量
+	float m_endurance = 0.0f;    // トリオン体耐久力
 	float m_graduallyTorionDecVal; // 徐々に減ってくトリオン量
 	int m_delayTurnAroundTime; // 振り返りを遅らせる時間
 
 	int m_stepCnt;
 	Math::Vector3 m_stepDashDir;
+
+	Math::Vector3 m_attackMoveDir; // 攻撃した時に移動する方向
+	float         m_attackMoveSpd; // 攻撃した時に移動する方向
 };

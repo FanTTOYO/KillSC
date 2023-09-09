@@ -944,7 +944,7 @@ void Enemy::PostUpdate()
 void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 {
 	m_EnemyState = eHit;
-	m_hitStopCnt = 20;
+	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
 	m_torion -= 50.0f;
@@ -1010,7 +1010,31 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 {
+	m_EnemyState = eHit;
+	m_hitStopCnt = 40;
+	m_hitMoveSpd = 0.0f;
+	m_knockBackVec = a_KnocBackvec;
+	m_torion -= 50.0f;
+	m_attackHit = true;
+	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
+	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	if (m_torion <= 0)
+	{
+		m_torion = 0;
+		SceneManager::Instance().SetBAddOrSubVal(true);
+		SceneManager::Instance().SetPointAddOrSubVal(1000);
+		SceneManager::Instance().SetBPlayerWin();
+		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+	}
 
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.01f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.25f;
+	}
 }
 
 void Enemy::HasDefense()

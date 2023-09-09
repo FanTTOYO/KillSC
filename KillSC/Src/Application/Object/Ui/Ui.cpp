@@ -1243,15 +1243,28 @@ void Ui::DrawSprite()
 
 			transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			Math::Rectangle rc = { 0,0,320,70 };
+			Math::Rectangle rc = { 0,0,250,50 };
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionBarTex, 0, 0, 320, 70, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 250, 50, &rc, &color, Math::Vector2(0, 0.5f));
 
-			transMat = Math::Matrix::CreateTranslation(-620, 300, 0);
+			transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			rc = { 0,0,(int)(m_spPlayer->GetTorion()),50};
+			rc = { 0,0,(int)(m_spPlayer->GetEndurance()),50 };
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetTorion()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(m_spPlayer->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+
+			transMat = Math::Matrix::CreateTranslation(-630, 255, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			rc = { 0,0,320,40 };
+			color = { 1, 1, 1, 1 };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionBarTex, 0, 0, 320, 40, &rc, &color, Math::Vector2(0, 0.5f));
+
+			transMat = Math::Matrix::CreateTranslation(-620, 255, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			rc = { 0,0,(int)(m_spPlayer->GetTorion()),30};
+			color = { 1, 1, 1, 1 };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetTorion()), 30, &rc, &color, Math::Vector2(0, 0.5f));
+
 		}
 
 		if (m_bOption)
@@ -1836,6 +1849,9 @@ void Ui::Init()
 
 	m_torionTex.Load("Asset/Textures/Ui/Game/Torion.png");
 	m_torionBarTex.Load("Asset/Textures/Ui/Game/TorionBar.png");
+
+	m_enduranceBarTex.Load("Asset/Textures/Ui/Game/enduranceBar.png");
+	m_enduranceTex.Load("Asset/Textures/Ui/Game/endurance.png");
 
 	m_winTex.Load("Asset/Textures/Ui/Result/WIN.png");
 	m_lossTex.Load("Asset/Textures/Ui/Result/LOSS.png");

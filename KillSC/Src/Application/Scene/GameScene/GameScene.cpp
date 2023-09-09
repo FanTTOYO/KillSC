@@ -122,7 +122,6 @@ void GameScene::Init()
 	std::shared_ptr<GameCamera> camera = std::make_shared<GameCamera>();
 	camera->SetTarget(player);
 	camera->SetPlayer(player);
-	camera->SetEnemy(enemy); //デバックでここに出してる
 	player->SetCamera(camera);
 	m_objList.push_back(camera);
 

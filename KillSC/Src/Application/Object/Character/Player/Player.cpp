@@ -38,6 +38,7 @@ void Player::Init()
 	m_leftWeaponNumber = 1;
 
 	m_torion = 300.0f;
+	m_endurance = 400;
 	m_graduallyTorionDecVal = 0.0f;
 	m_bAttackAnimeCnt = true;
 
@@ -166,6 +167,21 @@ void Player::Update()
 
 	if (!(m_playerState & hit))
 	{
+
+		if (GetAsyncKeyState(VK_MBUTTON) & 0x80000)
+		{
+			if (!m_bMButtonState)
+			{
+				const std::shared_ptr<GameCamera> gCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
+				gCamera->SetEnemy(m_enemy.lock()); //デバックでここに出してる
+				m_bMButtonState = true;
+			}
+		}
+		else
+		{
+			m_bMButtonState = false;
+		}
+
 		if (!(m_playerState & hasDefense))
 		{
 			if (m_weaponType & (lGrassHopper | grassHopper))
@@ -595,7 +611,7 @@ void Player::PostUpdate()
 void Player::OnHit(Math::Vector3 a_KnocBackvec)
 {
 	m_playerState = hit;
-	m_hitStopCnt = 10;
+	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
 	m_torion -= 50.0f;
@@ -653,7 +669,28 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 {
+	m_playerState = hit;
+	m_hitStopCnt = 40;
+	m_hitMoveSpd = 0.0f;
+	m_knockBackVec = a_KnocBackvec;
+	m_torion -= 50.0f;
+	m_attackHit = true;
+	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
 
+	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	if (m_torion < 0)
+	{
+		m_torion = 0;
+	}
+
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.01f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.25f;
+	}
 }
 
 void Player::HasDefense()
@@ -1530,6 +1567,10 @@ void Player::ScorpionAttackMove()
 	else
 	{
 		m_bMove = true;
+
+		m_attackMoveSpd *= 0.90f;
+		m_pos += m_attackMoveDir * m_attackMoveSpd;
+		
 	}
 }
 
@@ -1587,27 +1628,30 @@ void Player::ScorpionActionDecision()
 {
 	if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
 	{
-		if (KdInputManager::Instance().GetButtonState("lAttack"))
+		if (m_gravity == 0)
 		{
-			if (!(m_playerState & (rAttack | lAttack | defense | mantis)))
+			if (KdInputManager::Instance().GetButtonState("lAttack"))
 			{
-				m_playerState = defense;
-				m_playerState &= ~rAttack;
-				m_playerState &= ~lAttack;
-				m_bMove = true;
-				m_animator->SetAnimation(m_model->GetAnimation("Defense"), true);
+				if (!(m_playerState & (rAttack | lAttack | defense | mantis)))
+				{
+					m_playerState = defense;
+					m_playerState &= ~rAttack;
+					m_playerState &= ~lAttack;
+					m_bMove = true;
+					m_animator->SetAnimation(m_model->GetAnimation("Defense"), true);
+				}
 			}
-		}
 
-		if (KdInputManager::Instance().GetButtonState("rAttack"))
-		{
-			if (!(m_playerState & (rAttack | lAttack | defense | mantis)))
+			if (KdInputManager::Instance().GetButtonState("rAttack"))
 			{
-				m_playerState = defense;
-				m_playerState &= ~lAttack;
-				m_playerState &= ~rAttack;
-				m_bMove = true;
-				m_animator->SetAnimation(m_model->GetAnimation("Defense"), true);
+				if (!(m_playerState & (rAttack | lAttack | defense | mantis)))
+				{
+					m_playerState = defense;
+					m_playerState &= ~lAttack;
+					m_playerState &= ~rAttack;
+					m_bMove = true;
+					m_animator->SetAnimation(m_model->GetAnimation("Defense"), true);
+				}
 			}
 		}
 	}
@@ -1689,6 +1733,11 @@ void Player::ScorpionActionDecision()
 						m_attackAnimeCnt = 0;
 						m_attackAnimeDelayCnt = 0;
 						m_bMove = true;
+
+						m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+						m_attackMoveDir.y = 0;
+						m_attackMoveDir.Normalize();
+						m_attackMoveSpd = 0.05f;
 						if (m_playerState & grassHopperDash)
 						{
 							m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
@@ -1716,6 +1765,11 @@ void Player::ScorpionActionDecision()
 						m_attackAnimeCnt = 0;
 						m_attackAnimeDelayCnt = 0;
 						m_bMove = true;
+
+						m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+						m_attackMoveDir.y = 0;
+						m_attackMoveDir.Normalize();
+						m_attackMoveSpd = 0.05f;
 						if (m_playerState & (grassHopperDashF | step))
 						{
 							m_animator->SetAnimation(m_model->GetAnimation("GrassDashRAttack"), false);
@@ -1747,6 +1801,11 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = true;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("LAttack2"), false);
 						}
 						else if (m_playerState & lAttackTwo)
@@ -1760,6 +1819,11 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = false;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
 						}
 
@@ -1774,6 +1838,11 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = true;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("LAttack2"), false);
 						}
 						else if (m_playerState & rAttackTwo)
@@ -1787,6 +1856,11 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = false;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
 						}
 
@@ -1810,6 +1884,11 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = true;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("RAttack2"), false);
 						}
 						else if (m_playerState & rAttackTwo)
@@ -1823,6 +1902,11 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = false;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("RAttack3"), false);
 						}
 
@@ -1837,6 +1921,11 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = true;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("RAttack2"), false);
 						}
 						else if (m_playerState & lAttackTwo)
@@ -1850,6 +1939,11 @@ void Player::ScorpionActionDecision()
 							m_bAttackAnimeCnt = false;
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("RAttack3"), false);
 						}
 
