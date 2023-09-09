@@ -1243,9 +1243,9 @@ void Ui::DrawSprite()
 
 			transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			Math::Rectangle rc = { 0,0,250,50 };
+			Math::Rectangle rc = { 0,0,400,50 };
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 250, 50, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
 
 			transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);

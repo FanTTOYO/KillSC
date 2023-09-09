@@ -99,6 +99,15 @@ void Player::Update()
 		SceneManager::Instance().SetPointAddOrSubVal(500);
 		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
 	}
+
+	if (m_endurance <= 0)
+	{
+		m_endurance = 0;
+		SceneManager::Instance().SetBAddOrSubVal(false);
+		SceneManager::Instance().SetPointAddOrSubVal(500);
+		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+	}
+
 	if (!(m_playerState & (fall | jump)))
 	{
 		m_bMove = false;
@@ -614,7 +623,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
-	m_torion -= 50.0f;
+	m_endurance -= 15.0f;
 	m_attackHit = true;
 	if (m_enemy.lock()->GetEnemyState() & (eRAttackOne | eRAttackThree))
 	{
@@ -626,9 +635,9 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 
 	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
-	if (m_torion < 0)
+	if (m_endurance < 0)
 	{
-		m_torion = 0;
+		m_endurance = 0;
 	}
 
 	if (m_graduallyTorionDecVal == 0)
@@ -647,14 +656,14 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
-	m_torion -= 50.0f;
+	m_endurance -= 30.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
 
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-	if (m_torion < 0)
+	if (m_endurance < 0)
 	{
-		m_torion = 0;
+		m_endurance = 0;
 	}
 
 	if (m_graduallyTorionDecVal == 0)
@@ -663,7 +672,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	}
 	else
 	{
-		m_graduallyTorionDecVal *= 1.25f;
+		m_graduallyTorionDecVal *= 1.45f;
 	}
 }
 
@@ -673,23 +682,23 @@ void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.0f;
 	m_knockBackVec = a_KnocBackvec;
-	m_torion -= 50.0f;
+	m_endurance -= 50.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
 
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-	if (m_torion < 0)
+	if (m_endurance < 0)
 	{
-		m_torion = 0;
+		m_endurance = 0;
 	}
 
 	if (m_graduallyTorionDecVal == 0)
 	{
-		m_graduallyTorionDecVal = 0.01f;
+		m_graduallyTorionDecVal = 0.05f;
 	}
 	else
 	{
-		m_graduallyTorionDecVal *= 1.25f;
+		m_graduallyTorionDecVal *= 1.5f;
 	}
 }
 

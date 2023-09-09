@@ -191,7 +191,8 @@ private:
 	float m_gardMoveSpd;           // 攻撃を防御した時のノックバック速度
 	bool  m_bTough;                // 高い攻撃力の攻撃をくらうORガードしたかどうか
 	Math::Vector3 m_knockBackVec;  // ノックバックする方向
-	float m_torion;
+	float m_torion = 0.0f;
+	float m_endurance = 0.0f;    // トリオン体耐久力
 	float m_graduallyTorionDecVal; // 徐々に減ってくトリオン量
 	int m_delayTurnAroundTime; // 振り返りを遅らせる時間
 

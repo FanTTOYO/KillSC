@@ -48,6 +48,7 @@ void Enemy::Init()
 	m_hitMoveSpd = 0.0f;
 	m_gardMoveSpd = 0.0f;
 	m_torion = 300.0f;
+	m_endurance = 400.0f;
 	m_bTough = false;
 	m_bFirstUpdate = true;
 
@@ -947,7 +948,7 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
-	m_torion -= 50.0f;
+	m_endurance -= 15.0f;
 	m_attackHit = true;
 	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackThree))
 	{
@@ -959,9 +960,9 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 
 	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
-	if (m_torion <= 0)
+	if (m_endurance <= 0)
 	{
-		m_torion = 0;
+		m_endurance = 0;
 		SceneManager::Instance().SetBAddOrSubVal(true);
 		SceneManager::Instance().SetPointAddOrSubVal(1000);
 		SceneManager::Instance().SetBPlayerWin();
@@ -984,14 +985,14 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
-	m_torion -= 50.0f;
+	m_endurance -= 30.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
 
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-	if (m_torion <= 0)
+	if (m_endurance <= 0)
 	{
-		m_torion = 0;
+		m_endurance = 0;
 		SceneManager::Instance().SetBAddOrSubVal(true);
 		SceneManager::Instance().SetPointAddOrSubVal(1000);
 		SceneManager::Instance().SetBPlayerWin();
@@ -1004,7 +1005,7 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	}
 	else
 	{
-		m_graduallyTorionDecVal *= 1.25f;
+		m_graduallyTorionDecVal *= 1.45f;
 	}
 }
 
@@ -1014,13 +1015,13 @@ void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.0f;
 	m_knockBackVec = a_KnocBackvec;
-	m_torion -= 50.0f;
+	m_endurance -= 50.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-	if (m_torion <= 0)
+	if (m_endurance <= 0)
 	{
-		m_torion = 0;
+		m_endurance = 0;
 		SceneManager::Instance().SetBAddOrSubVal(true);
 		SceneManager::Instance().SetPointAddOrSubVal(1000);
 		SceneManager::Instance().SetBPlayerWin();
@@ -1029,11 +1030,11 @@ void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 	if (m_graduallyTorionDecVal == 0)
 	{
-		m_graduallyTorionDecVal = 0.01f;
+		m_graduallyTorionDecVal = 0.05f;
 	}
 	else
 	{
-		m_graduallyTorionDecVal *= 1.25f;
+		m_graduallyTorionDecVal *= 1.5f;
 	}
 }
 
