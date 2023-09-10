@@ -42,12 +42,18 @@ public:
 		defense = 1 << 15,
 		mantis = 1 << 16,
 		hasDefense = 1 << 17,
-		hit = 1 << 18,
-		stepF = 1 << 19,
-		stepR = 1 << 20,
-		stepL = 1 << 21,
-		stepB = 1 << 22,
-		step = stepF | stepB | stepR | stepL,
+		blowingAwayHit = 1 << 18,
+		iaiKiriHit = 1 << 19,
+		nomalHit = 1 << 20,
+		hit = nomalHit | iaiKiriHit | blowingAwayHit,
+		stepF = 1 << 21,
+		stepR = 1 << 22,
+		stepL = 1 << 23,
+		stepB = 1 << 24,
+		step  = stepF | stepB | stepR | stepL,
+		blowingAwayRise  = 1 << 25,
+		iaiKiriRise      = 1 << 26,
+		rise             = iaiKiriRise | blowingAwayRise,
 	};
 
 	Player() {}
@@ -83,7 +89,7 @@ public:
 	const float& GetTorion()  { return m_torion; }
 	const float& GetEndurance()  { return m_endurance; }
 	const std::shared_ptr<KdModelWork>& GetModel() { return m_model; }
-
+	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }
 	std::vector<std::shared_ptr<WeaponBase>> GetWeaponList() { return m_weaponList; }
 
 	void OnHit(Math::Vector3 a_KnocBackvec)override;
@@ -189,4 +195,6 @@ private:
 
 	Math::Vector3 m_attackMoveDir; // UŒ‚‚µ‚½‚ÉˆÚ“®‚·‚é•ûŒü
 	float         m_attackMoveSpd; // UŒ‚‚µ‚½‚ÉˆÚ“®‚·‚é•ûŒü
+
+	int m_invincibilityTimeCnt;  // –³“GŠÔ
 };

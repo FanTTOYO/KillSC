@@ -41,6 +41,7 @@ void Player::Init()
 	m_endurance = 400;
 	m_graduallyTorionDecVal = 0.0f;
 	m_bAttackAnimeCnt = true;
+	m_invincibilityTimeCnt = 0;
 
 	m_animator = std::make_shared<KdAnimator>();
 	m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
@@ -106,6 +107,11 @@ void Player::Update()
 		SceneManager::Instance().SetBAddOrSubVal(false);
 		SceneManager::Instance().SetPointAddOrSubVal(500);
 		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+	}
+
+	if (m_invincibilityTimeCnt > 0)
+	{
+		--m_invincibilityTimeCnt;
 	}
 
 	if (!(m_playerState & (fall | jump)))
@@ -174,7 +180,7 @@ void Player::Update()
 		break;
 	}
 
-	if (!(m_playerState & hit))
+	if (!(m_playerState & (hit | rise)))
 	{
 
 		if (GetAsyncKeyState(VK_MBUTTON) & 0x80000)
@@ -235,22 +241,54 @@ void Player::Update()
 			GrassMove();
 		}
 	}
-	else
+	else if(m_playerState & hit)
 	{
 		--m_hitStopCnt;
 		m_bMove = true;
 		if (m_hitStopCnt <= 0)
 		{
 			m_hitStopCnt = 0;
+
+			if (m_playerState & nomalHit)
+			{
+				if (!(m_playerState & idle))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+				}
+				m_playerState = idle;
+			}
+			else if (m_playerState & blowingAwayHit)
+			{
+				if (!(m_playerState & idle))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayRise"), false);
+				}
+				m_playerState = blowingAwayRise;
+			}
+			else if (m_playerState & iaiKiriHit)
+			{
+				if (!(m_playerState & idle))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("IaiKiriRise"), false);
+				}
+				m_playerState = iaiKiriRise;
+			}
+			m_hitMoveSpd = false;
+		}
+		m_pos += m_knockBackVec * m_hitMoveSpd;
+		m_hitMoveSpd *= 0.95f;
+	}
+	else
+	{
+		m_bMove = true;
+		if (m_animator->IsAnimationEnd())
+		{
 			if (!(m_playerState & idle))
 			{
 				m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
 			}
 			m_playerState = idle;
-			m_hitMoveSpd = false;
 		}
-		m_pos += m_knockBackVec * m_hitMoveSpd;
-		m_hitMoveSpd *= 0.95f;
 	}
 
 	if (!m_bMove)
@@ -619,7 +657,7 @@ void Player::PostUpdate()
 
 void Player::OnHit(Math::Vector3 a_KnocBackvec)
 {
-	m_playerState = hit;
+	m_playerState = nomalHit;
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
@@ -652,14 +690,14 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 
 void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 {
-	m_playerState = hit;
+	m_playerState = blowingAwayHit;
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 30.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
-
+	m_invincibilityTimeCnt = 100;
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
 	if (m_endurance < 0)
 	{
@@ -678,14 +716,14 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 {
-	m_playerState = hit;
+	m_playerState = iaiKiriHit;
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.0f;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 50.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
-
+	m_invincibilityTimeCnt = 100;
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
 	if (m_endurance < 0)
 	{
@@ -732,6 +770,14 @@ void Player::DrawLit_SkinMesh()
 {
 	if (!m_model) return;
 
+	if (m_invincibilityTimeCnt <= 90 && m_invincibilityTimeCnt > 80 ||
+		m_invincibilityTimeCnt <= 70 && m_invincibilityTimeCnt > 60 ||
+		m_invincibilityTimeCnt <= 50 && m_invincibilityTimeCnt > 40 ||
+		m_invincibilityTimeCnt <= 30 && m_invincibilityTimeCnt > 20 ||
+		m_invincibilityTimeCnt <= 15 && m_invincibilityTimeCnt > 10 ||
+		m_invincibilityTimeCnt <= 5  && m_invincibilityTimeCnt  > 3 ||
+		m_invincibilityTimeCnt == 1
+		)return;
 	if (m_hitStopCnt <= 5)
 	{
 		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
