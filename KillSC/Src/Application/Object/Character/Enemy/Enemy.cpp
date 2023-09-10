@@ -49,6 +49,7 @@ void Enemy::Init()
 	m_gardMoveSpd = 0.0f;
 	m_torion = 300.0f;
 	m_endurance = 400.0f;
+	m_invincibilityTimeCnt = 0;
 	m_bTough = false;
 	m_bFirstUpdate = true;
 
@@ -120,7 +121,12 @@ void Enemy::Update()
 		m_bEwaponDrawPosible = true;
 	}
 
-	if (!(m_EnemyState & eHit))
+	if (m_invincibilityTimeCnt > 0)
+	{
+		--m_invincibilityTimeCnt;
+	}
+
+	if (!(m_EnemyState & (eHit | eRise)))
 	{
 		std::shared_ptr<Player> spTarget = m_target.lock();
 		if (spTarget)
@@ -552,7 +558,7 @@ void Enemy::Update()
 		m_gravity += 0.01f;*/
 
 	}
-	else
+	else if (m_EnemyState & eHit)
 	{
 		m_pos.y -= m_gravity;
 		m_gravity += 0.01f;
@@ -565,14 +571,51 @@ void Enemy::Update()
 
 		if (m_hitStopCnt == 0)
 		{
+			if (m_EnemyState & eNomalHit)
+			{
+				if (!(m_EnemyState & eIdle))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+				}
+				m_EnemyState = eIdle;
+				m_wantToMoveState = none;
+			}
+			else if (m_EnemyState & eBlowingAwayHit)
+			{
+				if (!(m_EnemyState & eIdle))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayRise"), false);
+				}
+				m_EnemyState = eBlowingAwayRise;
+			}
+			else if (m_EnemyState & eIaiKiriHit)
+			{
+				if (!(m_EnemyState & eIdle))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("IaiKiriRise"), false);
+				}
+				m_EnemyState = eIaiKiriRise;
+			}
 			m_hitStopCnt = 0;
-			m_EnemyState = eIdle;
 			m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
 			//m_actionDelayTime = m_actionDelayTimeVal;
-			m_wantToMoveState = none;
 			m_attackHitImmediatelyAfter = true;
 			//m_EnemyState = eDefense;
 			m_hitMoveSpd = 0.0f;
+		}
+	}
+	else
+	{
+		m_bMove = true;
+		if (m_animator->IsAnimationEnd())
+		{
+			if (!(m_EnemyState & eIdle))
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+			}
+			m_EnemyState = eIdle;
+			m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
+			m_wantToMoveState = none;
 		}
 	}
 
@@ -759,7 +802,7 @@ void Enemy::Update()
 				sphereInfo,
 				&retSphereList
 			);
-		}
+	}
 
 		// 球に当たったリスト情報から一番近いオブジェクトを検出
 		maxOverLap = 0;
@@ -783,7 +826,7 @@ void Enemy::Update()
 			// 球とモデルが当たっている
 			m_pos += (hitDir * maxOverLap);
 		}
-	}
+		}
 
 
 	sphereInfo.m_sphere.Radius = 0.3f;
@@ -844,7 +887,7 @@ void Enemy::Update()
 	{
 		WeaList->Update();
 	}
-}
+	}
 
 void Enemy::PostUpdate()
 {
@@ -944,7 +987,7 @@ void Enemy::PostUpdate()
 
 void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 {
-	m_EnemyState = eHit;
+	m_EnemyState = eNomalHit;
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
@@ -981,9 +1024,10 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 
 void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 {
-	m_EnemyState = eHit;
+	m_EnemyState = eBlowingAwayHit;
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.05f;
+	m_invincibilityTimeCnt = 100;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 30.0f;
 	m_attackHit = true;
@@ -1011,9 +1055,10 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 {
-	m_EnemyState = eHit;
+	m_EnemyState = eIaiKiriHit;
 	m_hitStopCnt = 40;
 	m_hitMoveSpd = 0.0f;
+	m_invincibilityTimeCnt = 100;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 50.0f;
 	m_attackHit = true;
@@ -1084,6 +1129,14 @@ void Enemy::DrawLit_SkinMesh()
 {
 	if (!m_model) return;
 
+	if (m_invincibilityTimeCnt <= 90 && m_invincibilityTimeCnt > 80 ||
+		m_invincibilityTimeCnt <= 70 && m_invincibilityTimeCnt > 60 ||
+		m_invincibilityTimeCnt <= 50 && m_invincibilityTimeCnt > 40 ||
+		m_invincibilityTimeCnt <= 30 && m_invincibilityTimeCnt > 20 ||
+		m_invincibilityTimeCnt <= 15 && m_invincibilityTimeCnt > 10 ||
+		m_invincibilityTimeCnt <= 5 && m_invincibilityTimeCnt > 3 ||
+		m_invincibilityTimeCnt == 1
+		)return;
 	if (m_hitStopCnt <= 5)
 	{
 		Math::Color color = { 1,1,1,1 };

@@ -31,12 +31,18 @@ enum EnemyState
 	eDefense = 1 << 18,
 	eMantis = 1 << 19,
 	eHasDefense = 1 << 20,
-	eHit = 1 << 21,
-	eStepF = 1 << 22,
-	eStepR = 1 << 23,
-	eStepL = 1 << 24,
-	eStepB = 1 << 25,
+	eBlowingAwayHit = 1 << 21,
+	eIaiKiriHit = 1 << 22,
+	eNomalHit = 1 << 23,
+	eHit = eNomalHit | eIaiKiriHit | eBlowingAwayHit,
+	eStepF = 1 << 24,
+	eStepR = 1 << 25,
+	eStepL = 1 << 26,
+	eStepB = 1 << 27,
 	eStep = eStepF | eStepB | eStepR | eStepL,
+	eBlowingAwayRise = 1 << 28,
+	eIaiKiriRise = 1 << 29,
+	eRise = eIaiKiriRise | eBlowingAwayRise,
 };
 
 enum eWeaponType
@@ -96,6 +102,7 @@ public:
 
 	const float& GetGravity() { return m_gravity; }
 	const float& GetDashSpd() { return m_dashSpd;}
+	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }
 	const std::shared_ptr<KdModelWork>& GetModel() { return m_model; }
 
 	std::vector<std::shared_ptr<WeaponBase>> GetWeaponList() { return m_weaponList; }
@@ -215,4 +222,6 @@ private:
 	bool m_attackHitImmediatelyAfter; // UŒ‚‚­‚ç‚Á‚½’¼Œã
 	int m_grassSuccessionDelayCnt;
 	int m_enemyAirborneTimetoBeCnt;
+
+	int m_invincibilityTimeCnt;  // –³“GŠÔ
 };
