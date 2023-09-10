@@ -212,7 +212,7 @@ void Player::Update()
 
 		if (!(m_playerState & (grassHopperDash | grassHopperDashUp)))
 		{
-			if (m_playerState & (lAttack | rAttack | mantis))
+			if (m_playerState & (lAttack | rAttack | mantis | rlAttack | rlAttackRush))
 			{
 				ScorpionAttackMove();
 			}
@@ -595,7 +595,7 @@ void Player::PostUpdate()
 
 	if (!m_animator) return;
 
-	if (!(m_playerState & (lAttack | rAttack)))
+	if (!(m_playerState & (lAttack | rAttack | rlAttack | rlAttackRush)))
 	{
 		m_animator->AdvanceTime(m_model->WorkNodes());
 		if (m_playerState & run)
@@ -631,9 +631,9 @@ void Player::PostUpdate()
 
 			if (m_attackAnimeCnt == 20)
 			{
-				m_bAttackAnimeDelay = true;
-				m_bAttackAnimeCnt = false;
-				m_attackAnimeCnt = 0;
+				m_bAttackAnimeDelay   = true;
+				m_bAttackAnimeCnt     = false;
+				m_attackAnimeCnt      = 0;
 				m_attackAnimeDelayCnt = 10;
 			}
 		}
@@ -646,6 +646,52 @@ void Player::PostUpdate()
 				{
 					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 				}
+			}
+		}
+
+		m_animator->AdvanceTime(m_model->WorkNodes());
+		m_model->CalcNodeMatrices();
+	}
+	else if (m_playerState & (rlAttack | rlAttackRush))
+	{
+		if (m_bAttackAnimeCnt)
+		{
+			m_attackAnimeCnt++;
+			if (m_playerState & rlAttackOne)
+			{
+				if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 17)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+			else if (m_playerState & rlAttackTwo)
+			{
+				if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 17)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+			else if (m_playerState & rlAttackThree)
+			{
+				if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 17)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+			else if (m_playerState & rlAttackRush)
+			{
+				if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 17)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+
+			if (m_attackAnimeCnt == 20)
+			{
+				m_bAttackAnimeDelay = true;
+				m_bAttackAnimeCnt = false;
+				m_attackAnimeCnt = 0;
+				m_attackAnimeDelayCnt = 10;
 			}
 		}
 
@@ -1622,10 +1668,24 @@ void Player::ScorpionAttackMove()
 	else
 	{
 		m_bMove = true;
-
-		m_attackMoveSpd *= 0.90f;
-		m_pos += m_attackMoveDir * m_attackMoveSpd;
+		if (!(m_playerState & (rlAttack | rlAttackRush)))
+		{
+			m_attackMoveSpd *= 0.90f;
+		}
+		else
+		{
+			if (m_playerState & rlAttackOne)
+			{
+				m_attackMoveSpd *= 0.5f;
+				if (m_bAttackAnimeCnt == 17)
+				{
+					m_enemy.lock()->SetAttackHit(false);
+					m_enemy.lock()->SetDefenseSuc(false);
+				}
+			}
+		}
 		
+		m_pos += m_attackMoveDir * m_attackMoveSpd;
 	}
 }
 
@@ -1743,6 +1803,30 @@ void Player::ScorpionActionDecision()
 							m_animator->SetAnimation(m_model->GetAnimation("Mantis"), false);
 						}
 					}
+					else
+					{
+						if (!(m_playerState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
+						{
+							m_enemy.lock()->SetAttackHit(false);
+							m_enemy.lock()->SetDefenseSuc(false);
+							m_playerState |= rlAttackOne;
+							m_playerState &= ~rAttack;
+							m_playerState &= ~lAttack;
+							m_bAttackAnimeDelay = false;
+							m_bAttackAnimeCnt = true;
+							m_attackAnimeCnt = 0;
+							m_attackAnimeDelayCnt = 0;
+							m_bMove = true;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.3f;
+
+							m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
+						}
+						
+					}
 				}
 
 				if (KdInputManager::Instance().GetButtonState("rAttack"))
@@ -1770,6 +1854,30 @@ void Player::ScorpionActionDecision()
 							//m_animator->SetAnimation(m_model->GetAnimation("mantis"), false);
 						}
 					}
+					else
+					{
+						if (!(m_playerState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
+						{
+							m_enemy.lock()->SetAttackHit(false);
+							m_enemy.lock()->SetDefenseSuc(false);
+							m_playerState |= rlAttackOne;
+							m_playerState &= ~rAttack;
+							m_playerState &= ~lAttack;
+							m_bAttackAnimeDelay = false;
+							m_bAttackAnimeCnt = true;
+							m_attackAnimeCnt = 0;
+							m_attackAnimeDelayCnt = 0;
+							m_bMove = true;
+
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
+							m_attackMoveSpd = 0.3f;
+
+							m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
+						}
+
+					}
 				}
 			}
 
@@ -1777,7 +1885,7 @@ void Player::ScorpionActionDecision()
 			{
 				if (KdInputManager::Instance().GetButtonState("lAttack"))
 				{
-					if (!(m_playerState & (rAttack | lAttack | mantis)))
+					if (!(m_playerState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
 					{
 						m_enemy.lock()->SetAttackHit(false);
 						m_enemy.lock()->SetDefenseSuc(false);
@@ -1809,7 +1917,7 @@ void Player::ScorpionActionDecision()
 			{
 				if (KdInputManager::Instance().GetButtonState("rAttack"))
 				{
-					if (!(m_playerState & (rAttack | lAttack | mantis)))
+					if (!(m_playerState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
 					{
 						m_enemy.lock()->SetAttackHit(false);
 						m_enemy.lock()->SetDefenseSuc(false);

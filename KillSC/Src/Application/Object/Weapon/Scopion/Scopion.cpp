@@ -337,7 +337,7 @@ void Scopion::PlayerHitAttackChaeck()
 	// UŒ‚‚Ì“–‚½‚è”»’è
 	for (auto& wepLis : m_pTarget.lock()->GetWeaponList())
 	{
-		if (m_pTarget.lock()->GetEnemyState() & eDefense && !m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack))
+		if (m_pTarget.lock()->GetEnemyState() & eDefense && !m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
 		{
 			if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm)break;
 			if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm)break;
@@ -500,7 +500,7 @@ void Scopion::PlayerHitAttackChaeck()
 	}
 	//}
 
-	if (!m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack) && m_pTarget.lock()->GetInvincibilityTimeCnt() == 0)
+	if (!m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack) && m_pTarget.lock()->GetInvincibilityTimeCnt() == 0)
 	{
 		if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
 		if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
@@ -545,7 +545,8 @@ void Scopion::PlayerHitAttackChaeck()
 				m_pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
 			}
 			else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
-				Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo))
+				                                 Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo | 
+				                                 Player::PlayerState::rlAttack))
 			{
 				m_pTarget.lock()->OnHit(player->GetMatrix().Backward());
 			}
@@ -595,7 +596,8 @@ void Scopion::PlayerHitAttackChaeck()
 					m_pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
 				}
 				else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
-					Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo))
+					                                 Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
+					                                 Player::PlayerState::rlAttack))
 				{
 					m_pTarget.lock()->OnHit(player->GetMatrix().Backward());
 				}
@@ -645,7 +647,8 @@ void Scopion::PlayerHitAttackChaeck()
 						m_pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
 					}
 					else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
-						Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo))
+						                                 Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
+						                                 Player::PlayerState::rlAttack))
 					{
 						m_pTarget.lock()->OnHit(player->GetMatrix().Backward());
 					}

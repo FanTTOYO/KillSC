@@ -54,6 +54,11 @@ public:
 		blowingAwayRise  = 1 << 25,
 		iaiKiriRise      = 1 << 26,
 		rise             = iaiKiriRise | blowingAwayRise,
+		rlAttackOne      = 1 << 27,
+		rlAttackTwo      = 1 << 28,
+		rlAttackThree    = 1 << 29,
+		rlAttack         = rlAttackOne | rlAttackTwo | rlAttackThree,
+		rlAttackRush     = 1 << 30,
 	};
 
 	Player() {}
