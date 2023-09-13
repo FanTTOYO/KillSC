@@ -1067,7 +1067,7 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() >= 107)
 	{
-		m_hitMoveSpd = 0.8f;
+		m_hitMoveSpd = 1.2f;
 	}
 	else
 	{

@@ -23,7 +23,6 @@ public:
 private:
 	void Init()override;
 	void PlayerHitAttackChaeck();
-	void PlayerKickHitAttackChaeck();
 	void PlayerManAttackChaeck();
 	void EnemyHitAttackChaeck();
 	void EnemyManAttackChaeck();

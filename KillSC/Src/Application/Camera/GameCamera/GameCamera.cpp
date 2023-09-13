@@ -262,6 +262,8 @@ void GameCamera::UpdateRotateByEnemy()
 
 	//nowVec = Math::Vector3::TransformNormal(nowVec,Math::Matrix::CreateRotationY(m_DegAng.y));
 	
+	if (m_wpPlayer.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush)return;
+
 	nowVec   = m_mWorld.Backward();
 	nowVec.x = 0.0f;
 	nowVec.Normalize();

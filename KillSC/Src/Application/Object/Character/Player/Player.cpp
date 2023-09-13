@@ -562,6 +562,40 @@ void Player::Update()
 		PlayerKickHitAttackChaeck();
 	}
 
+#ifdef _DEBUG
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+
+	node = m_model->FindNode("LegAttackPoint");
+	mat = node->m_worldTransform * m_mWorld;
+	mat._42 += 0.7f;
+	m_pDebugWire->AddDebugSphere
+	(
+		mat.Translation(),
+		0.3f,
+		{ 0,0,1,1 }
+	);
+
+	node = m_model->FindNode("LegAttackHitPoint");
+	mat = node->m_worldTransform * m_mWorld;
+	mat._42 += 0.7f;
+	m_pDebugWire->AddDebugSphere
+	(
+		mat.Translation(),
+		0.3f,
+		{ 0,0,1,1 }
+	);
+
+	node = m_model->FindNode("LegAttackHitPointTwo");
+	mat = node->m_worldTransform * m_mWorld;
+	mat._42 += 0.7f;
+	m_pDebugWire->AddDebugSphere
+	(
+		mat.Translation(),
+		0.3f,
+		{ 0,0,1,1 }
+	);
+#endif
 
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
 	Math::Matrix RotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
@@ -586,8 +620,9 @@ void Player::PlayerKickHitAttackChaeck()
 		node = m_model->FindNode("LegAttackPoint");
 		KdCollider::SphereInfo sphereInfo;
 		mat = node->m_worldTransform * m_mWorld;
+		mat._42 += 0.7f;
 		sphereInfo.m_sphere.Center = mat.Translation();
-		sphereInfo.m_sphere.Radius = 0.25f;
+		sphereInfo.m_sphere.Radius = 0.30f;
 		sphereInfo.m_type = KdCollider::TypeDamage;
 
 #ifdef _DEBUG
@@ -621,15 +656,16 @@ void Player::PlayerKickHitAttackChaeck()
 		{
 
 			m_enemy.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
-			KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+			KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
 		}
 		else
 		{
 			node = m_model->FindNode("LegAttackHitPoint");
-			KdCollider::SphereInfo sphereInfo;
+			sphereInfo;
 			mat = node->m_worldTransform * m_mWorld;
+			mat._42 += 0.7f;
 			sphereInfo.m_sphere.Center = mat.Translation();
-			sphereInfo.m_sphere.Radius = 0.25f;
+			sphereInfo.m_sphere.Radius = 0.30f;
 			sphereInfo.m_type = KdCollider::TypeDamage;
 
 #ifdef _DEBUG
@@ -641,7 +677,7 @@ void Player::PlayerKickHitAttackChaeck()
 			);
 #endif
 
-			std::list<KdCollider::CollisionResult> retSphereList;
+			retSphereList.clear();
 
 			/*for (auto& obj : SceneManager::Instance().GetObjList())
 			{*/
@@ -651,8 +687,8 @@ void Player::PlayerKickHitAttackChaeck()
 				&retSphereList
 			);
 
-			Math::Vector3 hitDir = {};
-			bool hit = false;
+			hitDir = {};
+			hit = false;
 			for (auto& ret : retSphereList)
 			{
 				hit = true;
@@ -662,15 +698,16 @@ void Player::PlayerKickHitAttackChaeck()
 			if (hit)
 			{
 				m_enemy.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
-				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+				KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
 			}
 			else
 			{
 				node = m_model->FindNode("LegAttackHitPointTwo");
-				KdCollider::SphereInfo sphereInfo;
+				sphereInfo;
 				mat = node->m_worldTransform * m_mWorld;
+				mat._42 += 0.7f;
 				sphereInfo.m_sphere.Center = mat.Translation();
-				sphereInfo.m_sphere.Radius = 0.25f;
+				sphereInfo.m_sphere.Radius = 0.30f;
 				sphereInfo.m_type = KdCollider::TypeDamage;
 
 #ifdef _DEBUG
@@ -682,7 +719,7 @@ void Player::PlayerKickHitAttackChaeck()
 				);
 #endif
 
-				std::list<KdCollider::CollisionResult> retSphereList;
+				retSphereList.clear();
 
 				/*for (auto& obj : SceneManager::Instance().GetObjList())
 				{*/
@@ -692,8 +729,8 @@ void Player::PlayerKickHitAttackChaeck()
 					&retSphereList
 				);
 
-				Math::Vector3 hitDir = {};
-				bool hit = false;
+				hitDir = {};
+				hit = false;
 				for (auto& ret : retSphereList)
 				{
 					hit = true;
@@ -702,9 +739,8 @@ void Player::PlayerKickHitAttackChaeck()
 
 				if (hit)
 				{
-
 					m_enemy.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
-					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
 				}
 			}
 		}
@@ -2268,8 +2304,8 @@ void Player::ScorpionActionDecision()
 							m_enemy.lock()->SetAttackHit(false);
 							m_enemy.lock()->SetDefenseSuc(false);
 
-							m_playerState = rlAttackRush;
-							m_playerState &= ~rlAttackThree;
+							m_playerState |= rlAttackRush;
+							m_playerState &= rlAttackRush;
 							m_bAttackAnimeDelay = false;
 							m_bAttackAnimeCnt = true;
 							m_attackAnimeCnt = 0;
