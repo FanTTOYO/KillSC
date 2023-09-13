@@ -69,13 +69,13 @@ void Scopion::Update()
 		);
 #endif
 
-		if (!m_bMantis)
+		if (m_bMantis)
 		{
-			PlayerHitAttackChaeck();
+			PlayerManAttackChaeck();
 		}
 		else
 		{
-			PlayerManAttackChaeck();
+			PlayerHitAttackChaeck();
 		}
 	}
 
@@ -337,7 +337,7 @@ void Scopion::PlayerHitAttackChaeck()
 	// UŒ‚‚Ì“–‚½‚è”»’è
 	for (auto& wepLis : m_pTarget.lock()->GetWeaponList())
 	{
-		if (m_pTarget.lock()->GetEnemyState() & eDefense && !m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (m_pTarget.lock()->GetEnemyState() & eDefense && !m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
 		{
 			if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm)break;
 			if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm)break;
@@ -500,7 +500,7 @@ void Scopion::PlayerHitAttackChaeck()
 	}
 	//}
 
-	if (!m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack) && m_pTarget.lock()->GetInvincibilityTimeCnt() == 0)
+	if (!m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush) && m_pTarget.lock()->GetInvincibilityTimeCnt() == 0)
 	{
 		if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
 		if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
@@ -544,15 +544,30 @@ void Scopion::PlayerHitAttackChaeck()
 			{
 				m_pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
 			}
-			else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
-				                                 Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo | 
-				                                 Player::PlayerState::rlAttack))
+			else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne |   Player::PlayerState::rAttackTwo |
+				                                 Player::PlayerState::lAttackOne |   Player::PlayerState::lAttackTwo | 
+				                                 Player::PlayerState::rlAttack)  || 
+				                                (Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 8) ||
+				                                (Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 8 && player->GetAnimationCnt()  < 21)) || 
+											    (Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31)))
 			{
+				if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
+				{
+					player->SetBRushAttackPossible(true);
+				}
+
 				m_pTarget.lock()->OnHit(player->GetMatrix().Backward());
 			}
 			else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
 			{
 				m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+			}
+			else if(player->GetPlayerState() & Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49) || 
+				                                                                    (player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 74) ||
+				                                                                    (player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89)  || 
+				                                                                    (player->GetAnimationCnt() >= 89 && player->GetAnimationCnt() < 107))
+			{
+				m_pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
 			}
 			KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 		}
@@ -596,14 +611,28 @@ void Scopion::PlayerHitAttackChaeck()
 					m_pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
 				}
 				else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
-					                                 Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
-					                                 Player::PlayerState::rlAttack))
+					Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
+					Player::PlayerState::rlAttack) ||
+					(Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 8) ||
+					(Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 8 && player->GetAnimationCnt() < 21)))
 				{
+					if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
+					{
+						player->SetBRushAttackPossible(true);
+					}
+
 					m_pTarget.lock()->OnHit(player->GetMatrix().Backward());
 				}
 				else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
 				{
 					m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+				}
+				else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31) ||
+					(player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49) ||
+					(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 74) ||
+					(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89))
+				{
+					m_pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
 				}
 				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
@@ -647,14 +676,28 @@ void Scopion::PlayerHitAttackChaeck()
 						m_pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
 					}
 					else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
-						                                 Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
-						                                 Player::PlayerState::rlAttack))
+						Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
+						Player::PlayerState::rlAttack) ||
+						(Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 8) ||
+						(Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 8 && player->GetAnimationCnt() < 21)))
 					{
+						if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
+						{
+							player->SetBRushAttackPossible(true);
+						}
+
 						m_pTarget.lock()->OnHit(player->GetMatrix().Backward());
 					}
 					else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
 					{
 						m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+					}
+					else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31) ||
+						(player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49) ||
+						(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 74) ||
+						(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89))
+					{
+						m_pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
 					}
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
@@ -662,6 +705,62 @@ void Scopion::PlayerHitAttackChaeck()
 		}
 		//}
 	}
+}
+
+void Scopion::PlayerKickHitAttackChaeck()
+{
+	const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
+	if (!(player->GetWeaponType() & (scorpion | lScorpion)))return;
+
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+
+	if (!m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rlAttackRush) && player->GetAnimationCnt() >= 107 && m_pTarget.lock()->GetInvincibilityTimeCnt() == 0)
+	{
+		if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
+		if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
+		node = m_model->FindNode("LegAttackPoint");
+		KdCollider::SphereInfo sphereInfo;
+		mat  = node->m_worldTransform;
+		mat *= player->GetMatrix();
+		sphereInfo.m_sphere.Center = mat.Translation();
+		sphereInfo.m_sphere.Radius = 0.20f;
+		sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius,
+			{ 0,0,0,1 }
+		);
+#endif
+
+		std::list<KdCollider::CollisionResult> retSphereList;
+
+		/*for (auto& obj : SceneManager::Instance().GetObjList())
+		{*/
+		m_pTarget.lock()->Intersects
+		(
+			sphereInfo,
+			&retSphereList
+		);
+
+		Math::Vector3 hitDir = {};
+		bool hit = false;
+		for (auto& ret : retSphereList)
+		{
+			hit = true;
+			hitDir = ret.m_hitDir;
+		}
+
+		if (hit)
+		{
+
+			m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+			KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+		}
+	}	//}
 }
 
 void Scopion::PlayerManAttackChaeck()

@@ -71,6 +71,8 @@ public:
 	virtual void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec) {}        // 吹き飛ばし攻撃当たり判定
 	virtual void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec) {}            // 居合切り当たり判定
 
+	virtual void CutRaiseOnHit(Math::Vector3 a_KnocBackvec) {}                 // 切り上げ攻撃当たり判定
+
 	virtual void HasDefense() {}
 
 	void SetAttackHit(bool a_attackHit) { m_attackHit = a_attackHit; }

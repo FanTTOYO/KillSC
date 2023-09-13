@@ -34,14 +34,15 @@ enum EnemyState
 	eBlowingAwayHit = 1 << 21,
 	eIaiKiriHit = 1 << 22,
 	eNomalHit = 1 << 23,
-	eHit = eNomalHit | eIaiKiriHit | eBlowingAwayHit,
-	eStepF = 1 << 24,
-	eStepR = 1 << 25,
-	eStepL = 1 << 26,
-	eStepB = 1 << 27,
+	eCutRaiseHit = 1 << 24,
+	eHit = eNomalHit | eIaiKiriHit | eBlowingAwayHit | eCutRaiseHit,
+	eStepF = 1 << 25,
+	eStepR = 1 << 26,
+	eStepL = 1 << 27,
+	eStepB = 1 << 28,
 	eStep = eStepF | eStepB | eStepR | eStepL,
-	eBlowingAwayRise = 1 << 28,
-	eIaiKiriRise = 1 << 29,
+	eBlowingAwayRise = 1 << 29,
+	eIaiKiriRise = 1 << 30,
 	eRise = eIaiKiriRise | eBlowingAwayRise,
 };
 
@@ -109,7 +110,7 @@ public:
 	void OnHit(Math::Vector3 a_KnocBackvec)override;
 	void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)override;
 	void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)override;
-
+	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec)override;
 	void HasDefense()override;
 
 private:

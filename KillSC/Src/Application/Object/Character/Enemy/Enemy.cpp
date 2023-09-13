@@ -561,17 +561,37 @@ void Enemy::Update()
 	else if (m_EnemyState & eHit)
 	{
 		m_pos.y -= m_gravity;
-		m_gravity += 0.01f;
+
+		if (m_EnemyState & eCutRaiseHit)
+		{
+			m_gravity += 0.0075f;
+		}
+		else
+		{
+			m_gravity += 0.01f;
+		}
+
 		if (m_hitStopCnt > 0)
 		{
 			--m_hitStopCnt;
+			if (m_EnemyState & eBlowingAwayHit)
+			{
+				if (m_hitStopCnt < 10)
+				{
+					m_hitMoveSpd = 0;
+				}
+				m_hitMoveSpd *= 0.75f;
+			}
+			else
+			{
+				m_hitMoveSpd *= 0.95f;
+			}
 			m_pos += m_knockBackVec * m_hitMoveSpd;
-			m_hitMoveSpd *= 0.95f;
 		}
 
 		if (m_hitStopCnt == 0)
 		{
-			if (m_EnemyState & eNomalHit)
+			if (m_EnemyState & (eNomalHit | eCutRaiseHit))
 			{
 				if (!(m_EnemyState & eIdle))
 				{
@@ -988,12 +1008,21 @@ void Enemy::PostUpdate()
 void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 {
 	m_EnemyState = eNomalHit;
-	m_hitStopCnt = 40;
+	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackThree)
+	{
+		m_hitStopCnt = 60;
+	}
+	else
+	{
+		m_hitStopCnt = 40;
+	}
+
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 15.0f;
 	m_attackHit = true;
-	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackThree))
+	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne        | 
+		                                     Player::PlayerState::rAttackThree))
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
 	}
@@ -1002,6 +1031,15 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
 	}
 
+	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() < 8 || 
+		                                                                        (m_target.lock()->GetAnimationCnt() >= 21 && m_target.lock()->GetAnimationCnt() < 31))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+	}
+	else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 8 && m_target.lock()->GetAnimationCnt() < 21))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+	}
 	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 	if (m_endurance <= 0)
 	{
@@ -1026,7 +1064,16 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 {
 	m_EnemyState = eBlowingAwayHit;
 	m_hitStopCnt = 40;
-	m_hitMoveSpd = 0.05f;
+
+	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() >= 107)
+	{
+		m_hitMoveSpd = 0.8f;
+	}
+	else
+	{
+		m_hitMoveSpd = 0.3f;
+	}
+
 	m_invincibilityTimeCnt = 100;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 30.0f;
@@ -1080,6 +1127,35 @@ void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 	else
 	{
 		m_graduallyTorionDecVal *= 1.5f;
+	}
+}
+
+void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
+{
+	m_EnemyState = eCutRaiseHit;
+	m_hitStopCnt = 60;
+	m_hitMoveSpd = 0.0f;
+	m_gravity   -= 0.1f;
+	m_endurance -= 15.0f;
+	m_attackHit = true;
+	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
+	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	if (m_endurance <= 0)
+	{
+		m_endurance = 0;
+		SceneManager::Instance().SetBAddOrSubVal(true);
+		SceneManager::Instance().SetPointAddOrSubVal(1000);
+		SceneManager::Instance().SetBPlayerWin();
+		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+	}
+
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.01f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.15f;
 	}
 }
 

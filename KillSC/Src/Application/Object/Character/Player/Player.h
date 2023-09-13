@@ -24,7 +24,7 @@ public:
 		idle = 1 << 0,
 		jump = 1 << 1,
 		fall = 1 << 2,
-		run = 1 << 3,
+		run  = 1 << 3,
 		grassHopperDashF = 1 << 4,
 		grassHopperDashB = 1 << 5,
 		grassHopperDashR = 1 << 6,
@@ -45,20 +45,30 @@ public:
 		blowingAwayHit = 1 << 18,
 		iaiKiriHit = 1 << 19,
 		nomalHit = 1 << 20,
-		hit = nomalHit | iaiKiriHit | blowingAwayHit,
-		stepF = 1 << 21,
-		stepR = 1 << 22,
-		stepL = 1 << 23,
-		stepB = 1 << 24,
+		cutRaiseHit = 1 << 21,
+		hit = nomalHit | iaiKiriHit | blowingAwayHit | cutRaiseHit,
+		stepF = 1 << 22,
+		stepR = 1 << 23,
+		stepL = 1 << 24,
+		stepB = 1 << 25,
 		step  = stepF | stepB | stepR | stepL,
-		blowingAwayRise  = 1 << 25,
-		iaiKiriRise      = 1 << 26,
+		blowingAwayRise  = 1 << 26,
+		iaiKiriRise      = 1 << 27,
 		rise             = iaiKiriRise | blowingAwayRise,
-		rlAttackOne      = 1 << 27,
-		rlAttackTwo      = 1 << 28,
-		rlAttackThree    = 1 << 29,
+		rlAttackOne      = 1 << 28,
+		rlAttackTwo      = 1 << 29,
+		rlAttackThree    = 1 << 30,
 		rlAttack         = rlAttackOne | rlAttackTwo | rlAttackThree,
-		rlAttackRush     = 1 << 30,
+		/*rlAttackRushOne     = 10000000 << 0,
+		rlAttackRushTwo     = 10000000 << 1,
+		rlAttackRushThree   = 10000000 << 2,
+		rlAttackRushFour    = 10000000 << 3,
+		rlAttackRushFive    = 10000000 << 4,
+		rlAttackRushSix     = 10000000 << 5,
+		rlAttackRushSeven   = 10000000 << 6,
+		rlAttackRusEight    = 10000000 << 7,*/
+		rlAttackRush        = 1 << 31  ,
+
 	};
 
 	Player() {}
@@ -95,15 +105,21 @@ public:
 	const float& GetEndurance()  { return m_endurance; }
 	const std::shared_ptr<KdModelWork>& GetModel() { return m_model; }
 	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }
+	const bool GetBRushAttackPossible() { return m_bRushAttackPossible; }
+	void SetBRushAttackPossible(bool a_bRushAttackPossible) { m_bRushAttackPossible = a_bRushAttackPossible; }
+
+	const int GetAnimationCnt() { return m_attackAnimeCnt; }
 	std::vector<std::shared_ptr<WeaponBase>> GetWeaponList() { return m_weaponList; }
 
 	void OnHit(Math::Vector3 a_KnocBackvec)override;
 	void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)override;
 	void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)override;
+	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec)override;
 	void HasDefense()override;
 
 private:
 
+	void PlayerKickHitAttackChaeck();
 	void UpdateRotate(Math::Vector3& a_srcMoveVec);
 	void GrassMoveVecDecision();
 	void ScorpionActionDecision();
@@ -202,4 +218,6 @@ private:
 	float         m_attackMoveSpd; // çUåÇÇµÇΩéûÇ…à⁄ìÆÇ∑ÇÈï˚å¸
 
 	int m_invincibilityTimeCnt;  // ñ≥ìGéûä‘
+
+	bool m_bRushAttackPossible = false;
 };

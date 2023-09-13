@@ -17,12 +17,13 @@ public:
 	void SetbPlayerWeapon() { m_bPlayerWeapon = true; }
 	void SetbEnemyWeapon() { m_bEnemyWeapon = true; }
 
-	void SetMantis(Math::Matrix a_mat, bool a_bMantis)override;
-	void SetBMantis(bool a_bMantis)override { m_bMantis = a_bMantis; }
+	void SetMantis(Math::Matrix a_mat, bool a_bMantis);
+	void SetBMantis(bool a_bMantis) { m_bMantis = a_bMantis; }
 
 private:
 	void Init()override;
 	void PlayerHitAttackChaeck();
+	void PlayerKickHitAttackChaeck();
 	void PlayerManAttackChaeck();
 	void EnemyHitAttackChaeck();
 	void EnemyManAttackChaeck();
