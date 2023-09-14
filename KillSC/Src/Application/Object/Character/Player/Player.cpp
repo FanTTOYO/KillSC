@@ -246,6 +246,16 @@ void Player::Update()
 	{
 		--m_hitStopCnt;
 		m_bMove = true;
+		m_pos.y -= m_gravity;
+		if (m_playerState & cutRaiseHit)
+		{
+			m_gravity += 0.0075f;
+		}
+		else
+		{
+			m_gravity += 0.01f;
+		}
+
 		if (m_hitStopCnt <= 0)
 		{
 			m_hitStopCnt = 0;
@@ -283,10 +293,23 @@ void Player::Update()
 			{
 				m_hitMoveSpd = 0;
 			}
+
+			if (m_enemy.lock()->GetEnemyState() & eRlAttackRush && m_enemy.lock()->GetAnimationCnt() >= 107)
+			{
+				m_hitMoveSpd *= 0.95f;
+			}
+			else
+			{
+				m_hitMoveSpd *= 0.75f;
+			}
+		}
+		else
+		{
+			m_hitMoveSpd *= 0.95f;
 		}
 
 		m_pos += m_knockBackVec * m_hitMoveSpd;
-		m_hitMoveSpd *= 0.95f;
+
 	}
 	else
 	{
@@ -930,16 +953,35 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 
 	m_playerState = nomalHit;
-	m_hitStopCnt = 40;
+	if (m_enemy.lock()->GetEnemyState() & eRlAttackThree)
+	{
+		m_hitStopCnt = 60;
+	}
+	else
+	{
+		m_hitStopCnt = 40;
+	}
+
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 15.0f;
 	m_attackHit = true;
-	if (m_enemy.lock()->GetEnemyState() & (eRAttackOne | eRAttackThree))
+	if (m_enemy.lock()->GetEnemyState() & (eRAttackOne | eRlAttackOne|
+		                                   eRlAttackThree))
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
 	}
-	else if (m_enemy.lock()->GetEnemyState() & (eRAttackTwo))
+	else if (m_enemy.lock()->GetEnemyState() & (eRAttackTwo | eRlAttackTwo))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+	}
+
+	if (m_enemy.lock()->GetEnemyState() & eRlAttackRush && m_enemy.lock()->GetAnimationCnt() < 8 ||
+		(m_enemy.lock()->GetAnimationCnt() >= 21 && m_enemy.lock()->GetAnimationCnt() < 31))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+	}
+	else if (m_enemy.lock()->GetEnemyState() & eRlAttackRush && (m_enemy.lock()->GetAnimationCnt() >= 8 && m_enemy.lock()->GetAnimationCnt() < 21))
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
 	}
@@ -970,9 +1012,17 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 		scopion2->SetBMantis(false);
 	}
 
+	if (m_enemy.lock()->GetEnemyState() & eRlAttackRush && m_enemy.lock()->GetAnimationCnt() >= 107)
+	{
+		m_hitMoveSpd = 0.65f;
+	}
+	else
+	{
+		m_hitMoveSpd = 0.3f;
+	}
+
 	m_playerState = blowingAwayHit;
 	m_hitStopCnt = 40;
-	m_hitMoveSpd = 0.3f;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 30.0f;
 	m_attackHit = true;
@@ -1030,7 +1080,31 @@ void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 void Player::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 {
+	m_playerState = cutRaiseHit;
+	m_hitStopCnt = 60;
+	m_hitMoveSpd = 0.0f;
+	m_gravity -= 0.1f;
+	m_endurance -= 15.0f;
+	m_attackHit = true;
+	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
+	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	if (m_endurance <= 0)
+	{
+		m_endurance = 0;
+		SceneManager::Instance().SetBAddOrSubVal(true);
+		SceneManager::Instance().SetPointAddOrSubVal(1000);
+		SceneManager::Instance().SetBPlayerWin();
+		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+	}
 
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.01f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.15f;
+	}
 }
 
 void Player::HasDefense()
@@ -2125,6 +2199,7 @@ void Player::ScorpionActionDecision()
 						}
 						else
 						{
+							m_bRushAttackPossible = false;
 							m_enemy.lock()->SetAttackHit(false);
 							m_enemy.lock()->SetDefenseSuc(false);
 							m_playerState |= rlAttackOne;
@@ -2174,6 +2249,7 @@ void Player::ScorpionActionDecision()
 						}
 						else
 						{
+							m_bRushAttackPossible = false;
 							m_enemy.lock()->SetAttackHit(false);
 							m_enemy.lock()->SetDefenseSuc(false);
 							m_playerState |= rlAttackOne;

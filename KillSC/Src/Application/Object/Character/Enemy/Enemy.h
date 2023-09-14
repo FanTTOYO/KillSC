@@ -9,41 +9,42 @@ enum EnemyState
 	eIdle = 1 << 0,
 	eJump = 1 << 1,
 	eFall = 1 << 2,
-	eRunF  = 1 << 3,
-	eRunB  = 1 << 4,
-	eRunR  = 1 << 5,
-	eRunL  = 1 << 6,
-	eRun   = eRunF | eRunB | eRunR | eRunL,
-	eGrassHopperDashF = 1 << 7,
-	eGrassHopperDashB = 1 << 8,
-	eGrassHopperDashR = 1 << 9,
-	eGrassHopperDashL = 1 << 10,
+	eRun  = 1 << 3,
+	eGrassHopperDashF = 1 << 4,
+	eGrassHopperDashB = 1 << 5,
+	eGrassHopperDashR = 1 << 6,
+	eGrassHopperDashL = 1 << 7,
 	eGrassHopperDash  = eGrassHopperDashF | eGrassHopperDashB | eGrassHopperDashR | eGrassHopperDashL,
-	eGrassHopperDashUp = 1 << 11,
-	eLAttackOne = 1 << 12,
-	eLAttackTwo = 1 << 13,
-	eLAttackThree = 1 << 14,
+	eGrassHopperDashUp = 1 << 8,
+	eLAttackOne = 1 << 9,
+	eLAttackTwo = 1 << 10,
+	eLAttackThree = 1 << 11,
 	eLAttack = eLAttackOne | eLAttackTwo | eLAttackThree,
-	eRAttackOne = 1 << 15,
-	eRAttackTwo = 1 << 16,
-	eRAttackThree = 1 << 17,
+	eRAttackOne = 1 << 12,
+	eRAttackTwo = 1 << 13,
+	eRAttackThree = 1 << 14,
 	eRAttack = eRAttackOne | eRAttackTwo | eRAttackThree,
-	eDefense = 1 << 18,
-	eMantis = 1 << 19,
-	eHasDefense = 1 << 20,
-	eBlowingAwayHit = 1 << 21,
-	eIaiKiriHit = 1 << 22,
-	eNomalHit = 1 << 23,
-	eCutRaiseHit = 1 << 24,
+	eDefense = 1 << 15,
+	eMantis = 1 << 16,
+	eHasDefense = 1 << 17,
+	eBlowingAwayHit = 1 << 18,
+	eIaiKiriHit = 1 << 19,
+	eNomalHit = 1 << 20,
+	eCutRaiseHit = 1 << 21,
 	eHit = eNomalHit | eIaiKiriHit | eBlowingAwayHit | eCutRaiseHit,
-	eStepF = 1 << 25,
-	eStepR = 1 << 26,
-	eStepL = 1 << 27,
-	eStepB = 1 << 28,
+	eStepF = 1 << 22,
+	eStepR = 1 << 23,
+	eStepL = 1 << 24,
+	eStepB = 1 << 25,
 	eStep = eStepF | eStepB | eStepR | eStepL,
-	eBlowingAwayRise = 1 << 29,
-	eIaiKiriRise = 1 << 30,
+	eBlowingAwayRise = 1 << 26,
+	eIaiKiriRise = 1 << 27,
 	eRise = eIaiKiriRise | eBlowingAwayRise,
+	eRlAttackOne = 1 << 28,
+	eRlAttackTwo = 1 << 29,
+	eRlAttackThree = 1 << 30,
+	eRlAttack = eRlAttackOne | eRlAttackTwo | eRlAttackThree,
+	eRlAttackRush = 1 << 31,
 };
 
 enum eWeaponType
@@ -71,6 +72,15 @@ public:
 		step             = 1 << 7,
 		grassDash        = 1 << 8,
 		avoidance        = 1 << 9,
+	};
+
+	enum WantToMoveCategory
+	{
+		attackCategory = 1 << 0,
+		defenseCategory = 1 << 1,
+		approachCategory = 1 << 2,
+		runCategory = 1 << 3,
+		grassCategory = 1 << 4,
 	};
 
 	Enemy() {}
@@ -105,7 +115,10 @@ public:
 	const float& GetDashSpd() { return m_dashSpd;}
 	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }
 	const std::shared_ptr<KdModelWork>& GetModel() { return m_model; }
+	const bool GetBRushAttackPossible() { return m_bRushAttackPossible; }
+	void SetBRushAttackPossible(bool a_bRushAttackPossible) { m_bRushAttackPossible = a_bRushAttackPossible; }
 
+	const int GetAnimationCnt() { return m_attackAnimeCnt; }
 	std::vector<std::shared_ptr<WeaponBase>> GetWeaponList() { return m_weaponList; }
 	void OnHit(Math::Vector3 a_KnocBackvec)override;
 	void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)override;
@@ -115,6 +128,7 @@ public:
 
 private:
 
+	void EnemyKickHitAttackChaeck();
 	void UpdateRotate(Math::Vector3& a_srcMoveVec);
 	void GrassMoveVecDecision();
 	void ScorpionDefenseDecision();
@@ -125,6 +139,7 @@ private:
 	void NormalMove();
 	void NormalMoveVecDecision();
 	void HasDefenseMove();
+	void Brain();
 
 	std::shared_ptr<KdModelWork> m_model;
 
@@ -137,6 +152,7 @@ private:
 	UINT m_EnemyState;
 	UINT m_weaponType;
 	UINT m_wantToMoveState;
+	UINT m_wantToMoveCategory;
 
 	int m_rightWeaponNumber = 0;
 	int m_leftWeaponNumber = 0;
@@ -223,6 +239,11 @@ private:
 	bool m_attackHitImmediatelyAfter; // UŒ‚‚­‚ç‚Á‚½’¼Œã
 	int m_grassSuccessionDelayCnt;
 	int m_enemyAirborneTimetoBeCnt;
-
+	Math::Vector3 m_attackMoveDir; // UŒ‚‚µ‚½‚ÉˆÚ“®‚·‚é•ûŒü
+	float         m_attackMoveSpd; // UŒ‚‚µ‚½‚ÉˆÚ“®‚·‚é•ûŒü
 	int m_invincibilityTimeCnt;  // –³“GŠÔ
+
+	bool m_bRushAttackPossible = false;
+
+	int m_disturbanceCnt = 0;
 };

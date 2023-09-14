@@ -144,7 +144,7 @@ void Scopion::Update()
 		{
 			EnemyHitAttackChaeck();
 		}
-		else
+		else if (!(enemy->GetEnemyState() & eRlAttackRush && enemy->GetAnimationCnt() >= 107))
 		{
 			EnemyManAttackChaeck();
 		}
@@ -1395,7 +1395,7 @@ void Scopion::EnemyHitAttackChaeck()
 // UŒ‚‚Ì“–‚½‚è”»’è
 	for (auto& wepLis : m_eTarget.lock()->GetWeaponList())
 	{
-		if (m_eTarget.lock()->GetPlayerState() & Player::PlayerState::defense && !m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack))
+		if (m_eTarget.lock()->GetPlayerState() & Player::PlayerState::defense && !m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack | eRlAttack))
 		{
 			if ((enemy->GetEnemyState() & eRAttack) && m_arrmType == lArrm)break;
 			if ((enemy->GetEnemyState() & eLAttack) && m_arrmType == rArrm)break;
@@ -1558,7 +1558,7 @@ void Scopion::EnemyHitAttackChaeck()
 	}
 	//}
 
-	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack) && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0)
+	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack | eRlAttack | eRlAttackRush) && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0)
 	{
 		if (enemy->GetEnemyState() & eRAttack && m_arrmType == lArrm)return;
 		if (enemy->GetEnemyState() & eLAttack && m_arrmType == rArrm)return;
@@ -1598,20 +1598,39 @@ void Scopion::EnemyHitAttackChaeck()
 
 		if (hit)
 		{
-			if(enemy->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemy->GetEnemyState() & (eGrassHopperDashF))
+			if (enemy->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemy->GetEnemyState() & (eGrassHopperDashF))
 			{
 				m_eTarget.lock()->IaiKiriAttackOnHit(enemy->GetMatrix().Backward());
+				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
 			else if (enemy->GetEnemyState() & (eRAttackOne | eRAttackTwo |
-				                          eLAttackOne | eRAttackTwo))
+				eLAttackOne | eLAttackTwo |
+				eRlAttack) ||
+				(eRlAttackRush && enemy->GetAnimationCnt() < 8) ||
+				(eRlAttackRush && (enemy->GetAnimationCnt() >= 8 && enemy->GetAnimationCnt() < 21)) ||
+				(eRlAttackRush && (enemy->GetAnimationCnt() >= 21 && enemy->GetAnimationCnt() < 31)))
 			{
+				if (enemy->GetEnemyState() & eRlAttackThree)
+				{
+					enemy->SetBRushAttackPossible(true);
+				}
+
 				m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
-			else if(enemy->GetEnemyState() & (eRAttackThree | eLAttackThree))
+			else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
 			{
 				m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
+				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
-			KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+			else if (enemy->GetEnemyState() & eRlAttackRush && (enemy->GetAnimationCnt() >= 31 && enemy->GetAnimationCnt() < 49) ||
+				(enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 74) ||
+				(enemy->GetAnimationCnt() >= 74 && enemy->GetAnimationCnt() < 89) ||
+				(enemy->GetAnimationCnt() >= 89 && enemy->GetAnimationCnt() < 107))
+			{
+				m_eTarget.lock()->CutRaiseOnHit(enemy->GetMatrix().Backward());
+				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+			}
 		}
 		else
 		{
@@ -1651,17 +1670,36 @@ void Scopion::EnemyHitAttackChaeck()
 				if (enemy->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemy->GetEnemyState() & (eGrassHopperDashF))
 				{
 					m_eTarget.lock()->IaiKiriAttackOnHit(enemy->GetMatrix().Backward());
+					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
 				else if (enemy->GetEnemyState() & (eRAttackOne | eRAttackTwo |
-					eLAttackOne | eRAttackTwo))
+					eLAttackOne | eLAttackTwo |
+					eRlAttack) ||
+					(eRlAttackRush && enemy->GetAnimationCnt() < 8) ||
+					(eRlAttackRush && (enemy->GetAnimationCnt() >= 8 && enemy->GetAnimationCnt() < 21)) ||
+					(eRlAttackRush && (enemy->GetAnimationCnt() >= 21 && enemy->GetAnimationCnt() < 31)))
 				{
+					if (enemy->GetEnemyState() & eRlAttackThree)
+					{
+						enemy->SetBRushAttackPossible(true);
+					}
+
 					m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
-				else if (enemy->GetEnemyState() & (eRAttackThree | eLAttackThree))
+				else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
 				{
 					m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
+					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
-				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+				else if (enemy->GetEnemyState() & eRlAttackRush && (enemy->GetAnimationCnt() >= 31 && enemy->GetAnimationCnt() < 49) ||
+					(enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 74) ||
+					(enemy->GetAnimationCnt() >= 74 && enemy->GetAnimationCnt() < 89) ||
+					(enemy->GetAnimationCnt() >= 89 && enemy->GetAnimationCnt() < 107))
+				{
+					m_eTarget.lock()->CutRaiseOnHit(enemy->GetMatrix().Backward());
+					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+				}
 			}
 			else
 			{
@@ -1701,17 +1739,36 @@ void Scopion::EnemyHitAttackChaeck()
 					if (enemy->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemy->GetEnemyState() & (eGrassHopperDashF))
 					{
 						m_eTarget.lock()->IaiKiriAttackOnHit(enemy->GetMatrix().Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
 					else if (enemy->GetEnemyState() & (eRAttackOne | eRAttackTwo |
-						eLAttackOne | eRAttackTwo))
+						                               eLAttackOne | eLAttackTwo |
+						                               eRlAttack) ||
+						                              (eRlAttackRush && enemy->GetAnimationCnt() < 8) ||
+						                              (eRlAttackRush && (enemy->GetAnimationCnt() >= 8 && enemy->GetAnimationCnt() < 21)) ||
+						                              (eRlAttackRush && (enemy->GetAnimationCnt() >= 21 && enemy->GetAnimationCnt() < 31)))
 					{
+						if (enemy->GetEnemyState() & eRlAttackThree)
+						{
+							enemy->SetBRushAttackPossible(true);
+						}
+
 						m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
-					else if (enemy->GetEnemyState() & (eRAttackThree | eLAttackThree))
+					else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
 					{
 						m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					else if (enemy->GetEnemyState() & eRlAttackRush && (enemy->GetAnimationCnt() >= 31 && enemy->GetAnimationCnt() < 49) ||
+						(enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 74) ||
+						(enemy->GetAnimationCnt() >= 74 && enemy->GetAnimationCnt() < 89) ||
+						(enemy->GetAnimationCnt() >= 89 && enemy->GetAnimationCnt() < 107))
+					{
+						m_eTarget.lock()->CutRaiseOnHit(enemy->GetMatrix().Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					}
 				}
 			}
 		}
