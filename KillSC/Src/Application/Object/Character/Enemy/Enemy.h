@@ -36,7 +36,7 @@ enum EnemyState
 	eStepR = 1 << 23,
 	eStepL = 1 << 24,
 	eStepB = 1 << 25,
-	eStep = eStepF | eStepB | eStepR | eStepL,
+	eStep  = eStepF | eStepB | eStepR | eStepL,
 	eBlowingAwayRise = 1 << 26,
 	eIaiKiriRise = 1 << 27,
 	eRise = eIaiKiriRise | eBlowingAwayRise,
@@ -267,4 +267,5 @@ private:
 
 	int m_stepCnt;
 	Math::Vector3 m_stepDashDir;
+	bool m_bMantisPossAng; // マンティスがあたる角度 true
 };
