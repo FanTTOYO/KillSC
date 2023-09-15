@@ -91,6 +91,46 @@ void Enemy::Init()
 	m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
 	//m_actionDelayTime = m_actionDelayTimeVal;
 	m_grassSuccessionDelayCnt = 0;
+
+	m_bMantisAttack = false;
+
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<int> intRand(0, 999);
+	int randNum[4] = {};
+	int rand = intRand(mt);
+	/*randNum[0] = 150;
+	randNum[1] = 300;
+	randNum[2] = 300;
+	randNum[3] = 250;*/
+
+	randNum[0] = 0;
+	randNum[1] = 3000;
+	randNum[2] = 300;
+	randNum[3] = 250;
+	for (int i = 0; i < 4; i++)
+	{
+		rand -= randNum[i];
+		if (rand < 0)
+		{
+			switch (i)
+			{
+			case 0:
+				m_enemyType = Enemy::EnemyType::allRounder;
+				break;
+			case 1:
+				m_enemyType = Enemy::EnemyType::striker;
+				break;
+			case 2:
+				m_enemyType = Enemy::EnemyType::defender;
+				break;
+			case 3:
+				m_enemyType = Enemy::EnemyType::speedSter;
+				break;
+			}
+			break;
+		}
+	}
 }
 
 void Enemy::Update()
@@ -234,7 +274,7 @@ void Enemy::Update()
 						}
 						else if (m_dashSpd == 0.4f || m_dashSpd == 0.35f)
 						{
-							if (src.Length() <= 3.5f)
+							if (src.Length() <= 4.0f)
 							{
 								if (m_weaponType & eGrassHopper)
 								{
@@ -304,7 +344,10 @@ void Enemy::Update()
 						GrassMoveVecDecision();
 						break;
 					case WantToMoveState::step:
-						NormalMove();
+						if (!(m_EnemyState & eStep))
+						{
+							StepVecDecision();
+						}
 						break;
 					case WantToMoveState::grassDash:
 						GrassMoveVecDecision();
@@ -317,13 +360,13 @@ void Enemy::Update()
 			}
 
 
-			if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp)))
+			if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)))
 			{
-				if (m_EnemyState & (eLAttack | eRAttack | eRlAttack | eRlAttackRush))
+				if (m_EnemyState & (eLAttack | eRAttack | eRlAttack | eRlAttackRush | eMantis))
 				{
 					ScorpionAttackMove();
 				}
-				else if (m_EnemyState & eRun)
+				else if (m_EnemyState & eRun | m_EnemyState & eJump)
 				{
 					NormalMove();
 				}
@@ -332,9 +375,13 @@ void Enemy::Update()
 					HasDefenseMove();
 				}
 			}
-			else
+			else if(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp))
 			{
 				GrassMove();
+			}
+			else if(m_EnemyState & eStep)
+			{
+				StepMove();
 			}
 		}
 
@@ -1081,10 +1128,8 @@ void Enemy::HasDefense()
 		m_animator->SetAnimation(m_model->GetAnimation("LHasDefense"), false);
 	}
 
-	m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
-	//m_actionDelayTime = m_actionDelayTimeVal;
-	m_wantToMoveState = none;
 	m_EnemyState = eHasDefense;
+	m_EnemyState &= eHasDefense;
 }
 
 void Enemy::DrawSprite()
@@ -1682,8 +1727,7 @@ void Enemy::ScorpionDefenseDecision()
 	if (!(m_EnemyState & (eRAttack | eLAttack | eDefense | eMantis | eRlAttack | eRlAttackRush)))
 	{
 		m_EnemyState =  eDefense;
-		m_EnemyState &= ~eRAttack;
-		m_EnemyState &= ~eLAttack;
+		m_EnemyState &=  eDefense;
 		m_bMove = true;
 		m_animator->SetAnimation(m_model->GetAnimation("Defense"), true);
 	}
@@ -1801,6 +1845,124 @@ void Enemy::GrassMove()
 	}*/
 }
 
+void Enemy::StepMove()
+{
+	--m_stepCnt;
+	if (m_stepCnt <= 0)
+	{
+		m_stepCnt = 0;
+	}
+
+	if (m_stepCnt != 0)
+	{
+		m_bMove = true;
+		if (m_stepCnt <= 60 && m_stepCnt > 50)
+		{
+			m_dashSpd = 0.2f;
+		}
+		else if (m_stepCnt <= 50 && m_stepCnt > 30)
+		{
+			m_dashSpd = 0.5f;
+		}
+		else if (m_stepCnt <= 30 && m_stepCnt > 20)
+		{
+			m_dashSpd = 0.2f;
+		}
+		else if (m_stepCnt <= 20 && m_stepCnt > 10)
+		{
+			m_dashSpd = 0.1f;
+		}
+		else if (m_stepCnt <= 10 && m_stepCnt > 0)
+		{
+			m_dashSpd = 0.05f;
+		}
+
+		if (m_stepCnt == 60)
+		{
+			if (m_EnemyState & eStepF)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
+			}
+			else if (m_EnemyState & eStepR)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRA"), true);
+			}
+			else if (m_EnemyState & eStepL)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLA"), true);
+			}
+			else if (m_EnemyState & eStepB)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashBA"), true);
+			}
+		}
+	}
+	else
+	{
+		m_bMove = false;
+		m_dashSpd = 0.0f;
+		m_stepDashDir = {};
+		m_gravity = 0;
+		m_EnemyState = eIdle;
+		Brain();
+	}
+
+	m_pos += m_stepDashDir * m_dashSpd;
+}
+
+void Enemy::StepVecDecision()
+{
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<int> intRand(0, 999);
+	int randNum[4] = {};
+
+	int rand = intRand(mt);
+	randNum[0] = 400;
+	randNum[1] = 400;
+	randNum[2] = 100;
+	randNum[3] = 100;
+
+	for (int i = 0; i < 2; i++)
+	{
+		rand -= randNum[i];
+		if (rand < 0)
+		{
+			switch (i)
+			{
+			case 0:
+				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 1, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_bMove = true;
+				m_stepCnt = 60;
+				m_EnemyState = eStepR;
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
+				break;
+			case 1:
+				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, -1, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_bMove = true;
+				m_stepCnt = 60;
+				m_EnemyState = eStepL;
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
+				break;
+			case 2:
+				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_bMove = true;
+				m_stepCnt = 60;
+				m_EnemyState = eStepF;
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
+				break;
+			case 3:
+				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, -1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_bMove = true;
+				m_stepCnt = 60;
+				m_EnemyState = eStepB;
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
+				break;
+			}
+		}
+	}
+}
+
 void Enemy::NormalMoveVecDecision()
 {
 	std::random_device rnd;
@@ -1877,7 +2039,7 @@ void Enemy::ScorpionDefenseMove()
 		Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
 		Math::Vector3 src = spTarget->GetPos() - m_pos;
 
-		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::grassHopperDashF))
 		{
 			m_bMove = true;
 			UpdateRotate(vTarget);
@@ -1907,6 +2069,273 @@ void Enemy::HasDefenseMove()
 }
 
 void Enemy::Brain()
+{
+	switch (m_enemyType)
+	{
+	case Enemy::EnemyType::striker:
+		StrikerBrain();
+		break;
+	case Enemy::EnemyType::defender:
+		DefenderBrain();
+		break;
+	case Enemy::EnemyType::speedSter:
+		SpeedSterBrain();
+		break;
+	case Enemy::EnemyType::allRounder:
+		AllRounderBrain();
+		break;
+	}
+	
+}
+
+void Enemy::StrikerBrain()
+{
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<int> intRand(0, 999);
+	int randNum[9] = {};
+	Math::Vector3 src;
+
+	std::shared_ptr<Player> spTarget = m_target.lock();
+	if (spTarget)
+	{
+		Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+		src = spTarget->GetPos() - m_pos;
+	}
+
+	int rand = intRand(mt);
+
+	if (src.Length() <= 1.2f)
+	{
+		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		{
+			randNum[0] = 450;
+			randNum[1] = 550;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			rand = intRand(mt);
+			randNum[0] = 750;
+			randNum[1] = 250;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						break;
+					}
+					break;
+				}
+			}
+
+		}
+
+	}
+	else
+	{
+		if (src.Length() <= 3.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
+		{
+			rand = intRand(mt);
+			randNum[0] = 650;
+			randNum[1] = 350;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory; rand = intRand(mt);
+						randNum[0] = 700;
+						randNum[1] = 300;
+						for (int i = 0; i < 2; i++)
+						{
+							rand -= randNum[i];
+							if (rand < 0)
+							{
+								switch (i)
+								{
+								case 1:
+									m_bMantisAttack = true;
+									break;
+								case 2:
+									m_bMantisAttack = false;
+									break;
+								}
+							}
+						}
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else if (src.Length() <= 2.5f && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & eGrassHopperDash))
+		{
+			rand = intRand(mt);
+			randNum[0] = 600;
+			randNum[1] = 400;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+		}
+	}
+
+	switch (m_wantToMoveCategory)
+	{
+	case Enemy::WantToMoveCategory::attackCategory:
+		m_wantToMoveState = Enemy::WantToMoveState::attack;
+		if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & eGrassHopperDash))
+		{
+			m_bMantisAttack = true;
+		}
+		break;
+	case Enemy::WantToMoveCategory::defenseCategory:
+		rand = intRand(mt);
+		randNum[0] = 800;
+		randNum[1] = 200;
+		for (int i = 0; i < 2; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				switch (i)
+				{
+				case 0:
+					m_wantToMoveState = Enemy::WantToMoveState::step;
+					break;
+				case 1:
+					m_wantToMoveState = Enemy::WantToMoveState::defense;
+					break;
+				}
+				break;
+			}
+		}
+		break;
+	case Enemy::WantToMoveCategory::approachCategory:
+		rand = intRand(mt);
+		randNum[0] = 990;
+		randNum[1] =  10;
+
+		for (int i = 0; i < 2; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				
+				switch (i)
+				{
+				case 0:
+					m_wantToMoveCategory = Enemy::WantToMoveCategory::runCategory;
+					break;
+				case 1:
+					m_wantToMoveCategory = Enemy::WantToMoveCategory::grassCategory;
+					break;
+				}
+				break;
+			}
+		}
+		break;
+	}
+
+	switch (m_wantToMoveCategory)
+	{
+	case Enemy::WantToMoveCategory::runCategory:
+		m_wantToMoveState = Enemy::WantToMoveState::run;
+		break;
+	case Enemy::WantToMoveCategory::grassCategory:
+		m_wantToMoveState = Enemy::WantToMoveState::dashAttack;
+		break;
+	}
+
+	switch (m_wantToMoveState)
+	{
+	case WantToMoveState::attack:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::escape:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::defense:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::dashAttack:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::run:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::disturbance:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::step:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::grassDash:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::avoidance:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	}
+}
+
+void Enemy::DefenderBrain()
 {
 	std::random_device rnd;
 	std::mt19937 mt(rnd());
@@ -1975,13 +2404,64 @@ void Enemy::Brain()
 	}
 	else
 	{
-		m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+		if (src.Length() <= 5.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
+		{
+			randNum[0] = 750;
+			randNum[1] = 250;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else if (src.Length() <= 2.5f && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & eGrassHopperDash))
+		{
+			randNum[0] = 600;
+			randNum[1] = 400;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+		}
 	}
 
 	switch (m_wantToMoveCategory)
 	{
 	case Enemy::WantToMoveCategory::attackCategory:
 		m_wantToMoveState = Enemy::WantToMoveState::attack;
+		if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & eGrassHopperDash))
+		{
+			m_bMantisAttack = true;
+		}
 		break;
 	case Enemy::WantToMoveCategory::defenseCategory:
 		rand = intRand(mt);
@@ -2061,7 +2541,567 @@ void Enemy::Brain()
 		{
 			randNum[0] = 250;
 			randNum[1] = 800;
-			randNum[2] =  50;
+			randNum[2] = 50;
+		}
+		else
+		{
+			randNum[0] = 450;
+			randNum[1] = 450;
+			randNum[2] = 100;
+		}
+
+		for (int i = 0; i < 3; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				switch (i)
+				{
+				case 0:
+					m_wantToMoveState = Enemy::WantToMoveState::grassDash;
+					break;
+				case 1:
+					m_wantToMoveState = Enemy::WantToMoveState::dashAttack;
+					break;
+				case 2:
+					m_wantToMoveState = Enemy::WantToMoveState::disturbance;
+					m_disturbanceCnt = 5;
+					break;
+				}
+				break;
+			}
+		}
+		break;
+	}
+
+	switch (m_wantToMoveState)
+	{
+	case WantToMoveState::attack:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::escape:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::defense:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::dashAttack:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::run:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::disturbance:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 2;
+		break;
+	case WantToMoveState::step:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::grassDash:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::avoidance:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 1;
+		break;
+	}
+}
+
+void Enemy::SpeedSterBrain()
+{
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<int> intRand(0, 999);
+	int randNum[9] = {};
+	Math::Vector3 src;
+
+	std::shared_ptr<Player> spTarget = m_target.lock();
+	if (spTarget)
+	{
+		Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+		src = spTarget->GetPos() - m_pos;
+	}
+
+	int rand = intRand(mt);
+
+	if (src.Length() <= 1.2f)
+	{
+		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		{
+			randNum[0] = 750;
+			randNum[1] = 250;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			rand = intRand(mt);
+			randNum[0] = 750;
+			randNum[1] = 250;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						break;
+					}
+					break;
+				}
+			}
+
+		}
+
+	}
+	else
+	{
+		if (src.Length() <= 5.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
+		{
+			randNum[0] = 750;
+			randNum[1] = 250;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else if (src.Length() <= 2.5f && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & eGrassHopperDash))
+		{
+			randNum[0] = 600;
+			randNum[1] = 400;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+		}
+	}
+
+	switch (m_wantToMoveCategory)
+	{
+	case Enemy::WantToMoveCategory::attackCategory:
+		m_wantToMoveState = Enemy::WantToMoveState::attack;
+		if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & eGrassHopperDash))
+		{
+			m_bMantisAttack = true;
+		}
+		break;
+	case Enemy::WantToMoveCategory::defenseCategory:
+		rand = intRand(mt);
+		randNum[0] = 600;
+		randNum[1] = 200;
+		randNum[2] = 200;
+		for (int i = 0; i < 3; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				switch (i)
+				{
+				case 0:
+					m_wantToMoveState = Enemy::WantToMoveState::defense;
+					break;
+				case 1:
+					m_wantToMoveState = Enemy::WantToMoveState::avoidance;
+					break;
+				case 2:
+					m_wantToMoveState = Enemy::WantToMoveState::escape;
+					break;
+				}
+				break;
+			}
+		}
+		break;
+	case Enemy::WantToMoveCategory::approachCategory:
+		rand = intRand(mt);
+		randNum[0] = 900;
+		randNum[1] = 100;
+
+		for (int i = 0; i < 3; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				if (src.Length() <= 5.0f)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::runCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::grassCategory;
+						break;
+					}
+					break;
+				}
+				else
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::grassCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::runCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		break;
+	}
+
+	switch (m_wantToMoveCategory)
+	{
+	case Enemy::WantToMoveCategory::runCategory:
+		m_wantToMoveState = Enemy::WantToMoveState::run;
+		break;
+	case Enemy::WantToMoveCategory::grassCategory:
+		rand = intRand(mt);
+		if (src.Length() >= 10.0f)
+		{
+			randNum[0] = 250;
+			randNum[1] = 800;
+			randNum[2] = 50;
+		}
+		else
+		{
+			randNum[0] = 450;
+			randNum[1] = 450;
+			randNum[2] = 100;
+		}
+
+		for (int i = 0; i < 3; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				switch (i)
+				{
+				case 0:
+					m_wantToMoveState = Enemy::WantToMoveState::grassDash;
+					break;
+				case 1:
+					m_wantToMoveState = Enemy::WantToMoveState::dashAttack;
+					break;
+				case 2:
+					m_wantToMoveState = Enemy::WantToMoveState::disturbance;
+					m_disturbanceCnt = 5;
+					break;
+				}
+				break;
+			}
+		}
+		break;
+	}
+
+	switch (m_wantToMoveState)
+	{
+	case WantToMoveState::attack:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::escape:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::defense:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::dashAttack:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::run:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::disturbance:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 2;
+		break;
+	case WantToMoveState::step:
+		m_leftWeaponNumber = 1;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::grassDash:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 1;
+		break;
+	case WantToMoveState::avoidance:
+		m_leftWeaponNumber = 2;
+		m_rightWeaponNumber = 1;
+		break;
+	}
+}
+
+void Enemy::AllRounderBrain()
+{
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<int> intRand(0, 999);
+	int randNum[9] = {};
+	Math::Vector3 src;
+
+	std::shared_ptr<Player> spTarget = m_target.lock();
+	if (spTarget)
+	{
+		Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+		src = spTarget->GetPos() - m_pos;
+	}
+
+	int rand = intRand(mt);
+
+	if (src.Length() <= 1.2f)
+	{
+		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		{
+			randNum[0] = 750;
+			randNum[1] = 250;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			rand = intRand(mt);
+			randNum[0] = 750;
+			randNum[1] = 250;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						break;
+					}
+					break;
+				}
+			}
+
+		}
+
+	}
+	else
+	{
+		if (src.Length() <= 5.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
+		{
+			randNum[0] = 750;
+			randNum[1] = 250;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else if (src.Length() <= 2.5f && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & eGrassHopperDash))
+		{
+			randNum[0] = 600;
+			randNum[1] = 400;
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
+		}
+	}
+
+	switch (m_wantToMoveCategory)
+	{
+	case Enemy::WantToMoveCategory::attackCategory:
+		m_wantToMoveState = Enemy::WantToMoveState::attack;
+		if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & eGrassHopperDash))
+		{
+			m_bMantisAttack = true;
+		}
+		break;
+	case Enemy::WantToMoveCategory::defenseCategory:
+		rand = intRand(mt);
+		randNum[0] = 600;
+		randNum[1] = 200;
+		randNum[2] = 200;
+		for (int i = 0; i < 3; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				switch (i)
+				{
+				case 0:
+					m_wantToMoveState = Enemy::WantToMoveState::defense;
+					break;
+				case 1:
+					m_wantToMoveState = Enemy::WantToMoveState::avoidance;
+					break;
+				case 2:
+					m_wantToMoveState = Enemy::WantToMoveState::escape;
+					break;
+				}
+				break;
+			}
+		}
+		break;
+	case Enemy::WantToMoveCategory::approachCategory:
+		rand = intRand(mt);
+		randNum[0] = 900;
+		randNum[1] = 100;
+
+		for (int i = 0; i < 3; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				if (src.Length() <= 5.0f)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::runCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::grassCategory;
+						break;
+					}
+					break;
+				}
+				else
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::grassCategory;
+						break;
+					case 1:
+						m_wantToMoveCategory = Enemy::WantToMoveCategory::runCategory;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		break;
+	}
+
+	switch (m_wantToMoveCategory)
+	{
+	case Enemy::WantToMoveCategory::runCategory:
+		m_wantToMoveState = Enemy::WantToMoveState::run;
+		break;
+	case Enemy::WantToMoveCategory::grassCategory:
+		rand = intRand(mt);
+		if (src.Length() >= 10.0f)
+		{
+			randNum[0] = 250;
+			randNum[1] = 800;
+			randNum[2] = 50;
 		}
 		else
 		{
@@ -2167,6 +3207,7 @@ void Enemy::ScorpionAttackMove()
 
 		if (m_EnemyState & (eRlAttack | eRlAttackRush | eMantis))
 		{
+			m_EnemyState = eIdle;
 			Brain();
 		}
 	}
@@ -2266,11 +3307,10 @@ void Enemy::ScorpionAttackDecision()
 	{
 		if (m_weaponType & eScorpion && m_weaponType & eLScorpion)
 		{
-			if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense)
+			if (m_bMantisAttack)
 			{
 				m_EnemyState |= eMantis;
-				m_EnemyState &= ~eRAttack;
-				m_EnemyState &= ~eLAttack;
+				m_EnemyState &= eMantis;
 				if (m_EnemyState & eGrassHopperDash)
 				{
 					m_EnemyState &= ~eGrassHopperDash;
@@ -2282,6 +3322,7 @@ void Enemy::ScorpionAttackDecision()
 				scopion2->SetBMantis(true);
 				m_bMove = true;
 				m_animator->SetAnimation(m_model->GetAnimation("Mantis"), false);
+				m_bMantisAttack = false;
 			}
 			else
 			{

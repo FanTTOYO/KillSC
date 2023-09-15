@@ -105,7 +105,8 @@ void Scopion::Update()
 			}
 			else
 			{
-				m_mWorld = m_mantisRot * node->m_worldTransform * enemy->GetMatrix();
+				node = enemy->GetModel()->FindNode("MantisPoint");
+				m_mWorld = node->m_worldTransform * enemy->GetMatrix();
 				m_mWorld._42 += 0.7f;
 			}
 		}
@@ -2200,7 +2201,7 @@ void Scopion::EnemyManAttackChaeck()
 
 		if (hit)
 		{
-			m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+			m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 			KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 		}
 		else
@@ -2238,7 +2239,7 @@ void Scopion::EnemyManAttackChaeck()
 
 			if (hit)
 			{
-				m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+				m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
 			else
@@ -2276,7 +2277,7 @@ void Scopion::EnemyManAttackChaeck()
 
 				if (hit)
 				{
-					m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+					m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
 				else
@@ -2314,7 +2315,7 @@ void Scopion::EnemyManAttackChaeck()
 
 					if (hit)
 					{
-						m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+						m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
 					else
@@ -2352,7 +2353,7 @@ void Scopion::EnemyManAttackChaeck()
 
 						if (hit)
 						{
-							m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+							m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 						}
 						else
@@ -2390,7 +2391,7 @@ void Scopion::EnemyManAttackChaeck()
 
 							if (hit)
 							{
-								m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+								m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 								KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 							}
 							else
@@ -2428,7 +2429,7 @@ void Scopion::EnemyManAttackChaeck()
 
 								if (hit)
 								{
-									m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
+									m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 									KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 								}
 							}

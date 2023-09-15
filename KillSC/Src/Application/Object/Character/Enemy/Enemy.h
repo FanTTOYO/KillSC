@@ -83,6 +83,14 @@ public:
 		grassCategory = 1 << 4,
 	};
 
+	enum EnemyType
+	{
+		striker,
+		defender,
+		speedSter,
+		allRounder
+	};
+
 	Enemy() {}
 	~Enemy() {}
 
@@ -136,10 +144,17 @@ private:
 	void ScorpionAttackMove();
 	void ScorpionDefenseMove();
 	void GrassMove();
+	void StepMove();
+	void StepVecDecision();
 	void NormalMove();
 	void NormalMoveVecDecision();
 	void HasDefenseMove();
 	void Brain();
+
+	void StrikerBrain();
+	void DefenderBrain();
+	void SpeedSterBrain();
+	void AllRounderBrain();
 
 	std::shared_ptr<KdModelWork> m_model;
 
@@ -153,6 +168,7 @@ private:
 	UINT m_weaponType;
 	UINT m_wantToMoveState;
 	UINT m_wantToMoveCategory;
+	UINT m_enemyType;
 
 	int m_rightWeaponNumber = 0;
 	int m_leftWeaponNumber = 0;
@@ -246,4 +262,9 @@ private:
 	bool m_bRushAttackPossible = false;
 
 	int m_disturbanceCnt = 0;
+
+	bool m_bMantisAttack = false; // マンティスアタックをしてほしい時にtrue	初期値はfalse
+
+	int m_stepCnt;
+	Math::Vector3 m_stepDashDir;
 };
