@@ -2162,7 +2162,7 @@ void Enemy::StrikerBrain()
 	}
 	else
 	{
-		if (src.Length() <= 3.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
+		if (src.Length() <= 8.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
 		{
 			rand = intRand(mt);
 			randNum[0] = 650;
