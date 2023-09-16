@@ -105,8 +105,8 @@ void Enemy::Init()
 	randNum[3] = 250;*/
 
 	randNum[0] = 0;
-	randNum[1] = 3000;
-	randNum[2] = 300;
+	randNum[1] = 0;
+	randNum[2] = 3000;
 	randNum[3] = 250;
 	for (int i = 0; i < 4; i++)
 	{
@@ -440,6 +440,7 @@ void Enemy::Update()
 				}
 				m_EnemyState = eIdle;
 				m_wantToMoveState = none;
+				Brain();
 			}
 			else if (m_EnemyState & eBlowingAwayHit)
 			{
@@ -458,8 +459,6 @@ void Enemy::Update()
 				m_EnemyState = eIaiKiriRise;
 			}
 			m_hitStopCnt = 0;
-			m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
-			//m_actionDelayTime = m_actionDelayTimeVal;
 			m_attackHitImmediatelyAfter = true;
 			m_hitMoveSpd = 0.0f;
 		}
