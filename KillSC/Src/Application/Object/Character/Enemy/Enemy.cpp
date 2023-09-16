@@ -106,8 +106,8 @@ void Enemy::Init()
 
 	randNum[0] = 0;
 	randNum[1] = 0;
-	randNum[2] = 3000;
-	randNum[3] = 250;
+	randNum[2] = 0;
+	randNum[3] = 2500;
 	for (int i = 0; i < 4; i++)
 	{
 		rand -= randNum[i];
@@ -2594,8 +2594,8 @@ void Enemy::SpeedSterBrain()
 	{
 		if (src.Length() <= 5.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
 		{
-			randNum[0] = 750;
-			randNum[1] = 250;
+			randNum[0] = 150;
+			randNum[1] = 850;
 			for (int i = 0; i < 2; i++)
 			{
 				rand -= randNum[i];
@@ -2645,17 +2645,20 @@ void Enemy::SpeedSterBrain()
 	switch (m_wantToMoveCategory)
 	{
 	case Enemy::WantToMoveCategory::attackCategory:
-		m_wantToMoveState = Enemy::WantToMoveState::attack;
 		if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & eGrassHopperDash))
 		{
+			m_wantToMoveState = Enemy::WantToMoveState::attack;
 			m_bMantisAttack = true;
+		}
+		else
+		{
+			m_wantToMoveState = Enemy::WantToMoveState::dashAttack;
 		}
 		break;
 	case Enemy::WantToMoveCategory::defenseCategory:
 		rand = intRand(mt);
-		randNum[0] = 600;
-		randNum[1] = 200;
-		randNum[2] = 200;
+		randNum[0] = 500;
+		randNum[1] = 500;
 		for (int i = 0; i < 3; i++)
 		{
 			rand -= randNum[i];
@@ -2664,12 +2667,9 @@ void Enemy::SpeedSterBrain()
 				switch (i)
 				{
 				case 0:
-					m_wantToMoveState = Enemy::WantToMoveState::defense;
-					break;
-				case 1:
 					m_wantToMoveState = Enemy::WantToMoveState::avoidance;
 					break;
-				case 2:
+				case 1:
 					m_wantToMoveState = Enemy::WantToMoveState::escape;
 					break;
 				}
@@ -2678,50 +2678,12 @@ void Enemy::SpeedSterBrain()
 		}
 		break;
 	case Enemy::WantToMoveCategory::approachCategory:
-		rand = intRand(mt);
-		randNum[0] = 900;
-		randNum[1] = 100;
-
-		for (int i = 0; i < 3; i++)
-		{
-			rand -= randNum[i];
-			if (rand < 0)
-			{
-				if (src.Length() <= 5.0f)
-				{
-					switch (i)
-					{
-					case 0:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::runCategory;
-						break;
-					case 1:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::grassCategory;
-						break;
-					}
-					break;
-				}
-				else
-				{
-					switch (i)
-					{
-					case 0:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::grassCategory;
-						break;
-					case 1:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::runCategory;
-						break;
-					}
-					break;
-				}
-			}
-		}
+		m_wantToMoveCategory = Enemy::WantToMoveCategory::grassCategory;
 		break;
 	}
 
 	switch (m_wantToMoveCategory)
 	{
-	case Enemy::WantToMoveCategory::runCategory:
-		m_wantToMoveState = Enemy::WantToMoveState::run;
 		break;
 	case Enemy::WantToMoveCategory::grassCategory:
 		rand = intRand(mt);
@@ -2731,11 +2693,17 @@ void Enemy::SpeedSterBrain()
 			randNum[1] = 800;
 			randNum[2] = 50;
 		}
-		else
+		else if (src.Length() >= 5.0f)
 		{
-			randNum[0] = 450;
-			randNum[1] = 450;
-			randNum[2] = 100;
+			randNum[0] = 250;
+			randNum[1] = 250;
+			randNum[2] = 500;
+		}
+		else if (src.Length() < 5.0f)
+		{
+			randNum[0] = 200;
+			randNum[1] = 600;
+			randNum[2] = 200;
 		}
 
 		for (int i = 0; i < 3; i++)
