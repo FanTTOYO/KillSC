@@ -121,6 +121,9 @@
     <Filter Include="Src\Application\Object\Bldg">
       <UniqueIdentifier>{927f1fb3-a981-450a-9f6a-9f37b2a14965}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Scene\TutorialScene">
+      <UniqueIdentifier>{fd94fb56-d20b-498c-9b9a-508e7b9a9049}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -300,6 +303,9 @@
     <ClInclude Include="Src\Application\Object\Bldg\Bldg.h">
       <Filter>Src\Application\Object\Bldg</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Scene\TutorialScene\TutorialScene.h">
+      <Filter>Src\Application\Scene\TutorialScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -457,6 +463,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Object\Bldg\Bldg.cpp">
       <Filter>Src\Application\Object\Bldg</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Scene\TutorialScene\TutorialScene.cpp">
+      <Filter>Src\Application\Scene\TutorialScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

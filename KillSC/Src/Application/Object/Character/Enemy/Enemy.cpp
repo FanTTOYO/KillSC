@@ -99,15 +99,15 @@ void Enemy::Init()
 	std::uniform_int_distribution<int> intRand(0, 999);
 	int randNum[4] = {};
 	int rand = intRand(mt);
-	/*randNum[0] = 150;
+	randNum[0] = 150;
 	randNum[1] = 300;
 	randNum[2] = 300;
-	randNum[3] = 250;*/
+	randNum[3] = 250;
 
-	randNum[0] = 0;
+	/*randNum[0] = 0;
 	randNum[1] = 0;
 	randNum[2] = 0;
-	randNum[3] = 2500;
+	randNum[3] = 2500;*/
 	for (int i = 0; i < 4; i++)
 	{
 		rand -= randNum[i];
@@ -133,28 +133,39 @@ void Enemy::Init()
 	}
 
 	m_bMantisPossAng = false;
+	m_hasDeTime = 0;
 }
 
 void Enemy::Update()
 {
-	m_torion -= m_graduallyTorionDecVal;
-	if (m_torion <= 0)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		m_torion = 0;
-		SceneManager::Instance().SetBAddOrSubVal(true);
-		SceneManager::Instance().SetPointAddOrSubVal(1000);
-		SceneManager::Instance().SetBPlayerWin();
-		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		m_torion -= m_graduallyTorionDecVal;
+		if (m_torion <= 0)
+		{
+			m_torion = 0;
+			SceneManager::Instance().SetBAddOrSubVal(true);
+			SceneManager::Instance().SetPointAddOrSubVal(1000);
+			SceneManager::Instance().SetBPlayerWin();
+			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		}
 	}
 
 	if (m_bFirstUpdate)
 	{
-		m_bFirstUpdate = false;
-		for (auto& WeaList : m_weaponList)
+		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 		{
-			WeaList->SetOwner(shared_from_this());
+			m_bFirstUpdate = false;
+			for (auto& WeaList : m_weaponList)
+			{
+				WeaList->SetOwner(shared_from_this());
+			}
 		}
-
+		else
+		{
+			m_bFirstUpdate = false;
+			m_weaponList.clear();
+		}
 		return;
 	}
 
@@ -170,229 +181,269 @@ void Enemy::Update()
 
 	if (!(m_EnemyState & (eHit | eRise)))
 	{
-		std::shared_ptr<Player> spTarget = m_target.lock();
-		if (spTarget)
+		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 		{
-			Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
-			UpdateRotate(vTarget);
-		}
-
-
-		if (!(m_EnemyState & (eFall | eJump)))
-		{
-			m_bMove = false;
-		}
-
-		if (m_wantToMoveState & none)
-		{
-			Brain();
-		}
-
-		switch (m_rightWeaponNumber) // 後に番号を自由に選べるようになるかも
-		{
-		case 1:
-			m_weaponType |= eScorpion;
-			m_weaponType &= ~eGrassHopper;
-			break;
-		case 2:
-			m_weaponType |= eGrassHopper;
-			m_weaponType &= ~eScorpion;
-			break;
-		}
-
-		switch (m_leftWeaponNumber) // 後に番号を自由に選べるようになるかも
-		{
-		case 1:
-			m_weaponType |= eLScorpion;
-			m_weaponType &= ~eLGrassHopper;
-			break;
-		case 2:
-			m_weaponType |= eLGrassHopper;
-			m_weaponType &= ~eLScorpion;
-			break;
-		}
-
-		Math::Vector3 src;
-		if (!(m_wantToMoveState & WantToMoveState::none))
-		{
-			if (!(m_EnemyState & eHasDefense))
+			std::shared_ptr<Player> spTarget = m_target.lock();
+			if (spTarget)
 			{
-				switch (m_wantToMoveState)
-				{
-				case WantToMoveState::attack:
-					ScorpionAttackDecision();
-					break;
-				case WantToMoveState::escape:
-					GrassMoveVecDecision();
-					break;
-				case WantToMoveState::defense:
-					if (m_EnemyState & eDefense)
-					{
-						ScorpionDefenseMove();
-					}
-					else
-					{
-						ScorpionDefenseDecision();
-					}
-
-					break;
-				case WantToMoveState::dashAttack:
-					src = spTarget->GetPos() - m_pos;
-					if (m_dashSpd == 0.8f || m_dashSpd == 0.5f)
-					{
-						if (src.Length() <= 8.0f)
-						{
-							if (m_weaponType & eGrassHopper)
-							{
-								if ((m_EnemyState & eGrassHopperDashF) && (m_rGrassHopperTime <= 80))
-								{
-									ScorpionAttackDecision();
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-							else if (m_weaponType & eLGrassHopper)
-							{
-								if ((m_EnemyState & eGrassHopperDashF) && (m_lGrassHopperTime <= 80))
-								{
-									ScorpionAttackDecision();
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-						}
-						else
-						{
-							GrassMoveVecDecision();
-						}
-					}
-					else if (m_dashSpd == 0.4f || m_dashSpd == 0.35f)
-					{
-						if (src.Length() <= 4.0f)
-						{
-							if (m_weaponType & eGrassHopper)
-							{
-								if ((m_EnemyState & eGrassHopperDashF) && (m_rGrassHopperTime <= 80))
-								{
-									ScorpionAttackDecision();
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-							else if (m_weaponType & eLGrassHopper)
-							{
-								if ((m_EnemyState & eGrassHopperDashF) && (m_lGrassHopperTime <= 80))
-								{
-									ScorpionAttackDecision();
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-						}
-						else
-						{
-							GrassMoveVecDecision();
-						}
-					}
-					else if (m_dashSpd <= 0.25f)
-					{
-						if (src.Length() <= 2.0f)
-						{
-							if (m_weaponType & eGrassHopper)
-							{
-								if ((m_EnemyState & eGrassHopperDashF) && (m_rGrassHopperTime <= 80))
-								{
-									ScorpionAttackDecision();
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-							else if (m_weaponType & eLGrassHopper)
-							{
-								if ((m_EnemyState & eGrassHopperDashF) && (m_lGrassHopperTime <= 80))
-								{
-									ScorpionAttackDecision();
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-						}
-						else
-						{
-							GrassMoveVecDecision();
-						}
-					}
-					break;
-				case WantToMoveState::run:
-					NormalMoveVecDecision();
-					break;
-				case WantToMoveState::disturbance:
-					GrassMoveVecDecision();
-					break;
-				case WantToMoveState::step:
-					if (!(m_EnemyState & eStep))
-					{
-						StepVecDecision();
-					}
-					break;
-				case WantToMoveState::grassDash:
-					GrassMoveVecDecision();
-					break;
-				case WantToMoveState::avoidance:
-					GrassMoveVecDecision();
-					break;
-				}
+				Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+				UpdateRotate(vTarget);
 			}
 
-			if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)))
-			{
-				if (m_EnemyState & (eLAttack | eRAttack | eRlAttack | eRlAttackRush | eMantis))
-				{
-					ScorpionAttackMove();
-				}
-				else if (m_EnemyState & eRun | m_EnemyState & eJump)
-				{
-					NormalMove();
-				}
-				else
-				{
-					HasDefenseMove();
-				}
-			}
-			else if (m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp))
-			{
-				GrassMove();
-			}
-			else if (m_EnemyState & eStep)
-			{
-				StepMove();
-			}
-		}
 
-		if (!m_bMove)
-		{
 			if (!(m_EnemyState & (eFall | eJump)))
 			{
-				m_EnemyState = eIdle;
-				m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
+				m_bMove = false;
 			}
+
+			if (m_wantToMoveState & none)
+			{
+				Brain();
+			}
+
+			switch (m_rightWeaponNumber) // 後に番号を自由に選べるようになるかも
+			{
+			case 1:
+				m_weaponType |= eScorpion;
+				m_weaponType &= ~eGrassHopper;
+				break;
+			case 2:
+				m_weaponType |= eGrassHopper;
+				m_weaponType &= ~eScorpion;
+				break;
+			}
+
+			switch (m_leftWeaponNumber) // 後に番号を自由に選べるようになるかも
+			{
+			case 1:
+				m_weaponType |= eLScorpion;
+				m_weaponType &= ~eLGrassHopper;
+				break;
+			case 2:
+				m_weaponType |= eLGrassHopper;
+				m_weaponType &= ~eLScorpion;
+				break;
+			}
+
+			Math::Vector3 src;
+			if (!(m_wantToMoveState & WantToMoveState::none))
+			{
+				if (!(m_EnemyState & eHasDefense))
+				{
+					switch (m_wantToMoveState)
+					{
+					case WantToMoveState::attack:
+						ScorpionAttackDecision();
+						break;
+					case WantToMoveState::escape:
+						GrassMoveVecDecision();
+						break;
+					case WantToMoveState::defense:
+						if (m_EnemyState & eDefense)
+						{
+							ScorpionDefenseMove();
+						}
+						else
+						{
+							ScorpionDefenseDecision();
+						}
+
+						break;
+					case WantToMoveState::dashAttack:
+						src = spTarget->GetPos() - m_pos;
+						if (m_dashSpd == 1.2f)
+						{
+							if (src.Length() <= 14.5f)
+							{
+								if (m_weaponType & eGrassHopper)
+								{
+									if ((m_EnemyState & eGrassHopperDashF) && (m_rGrassHopperTime <= 80))
+									{
+										ScorpionAttackDecision();
+									}
+									else
+									{
+										GrassMoveVecDecision();
+									}
+								}
+								else if (m_weaponType & eLGrassHopper)
+								{
+									if ((m_EnemyState & eGrassHopperDashF) && (m_lGrassHopperTime <= 80))
+									{
+										ScorpionAttackDecision();
+									}
+									else
+									{
+										GrassMoveVecDecision();
+									}
+								}
+							}
+							else
+							{
+								GrassMoveVecDecision();
+							}
+						}
+						else if (m_dashSpd == 0.8f || m_dashSpd == 0.5f)
+						{
+							if (src.Length() <= 8.0f)
+							{
+								if (m_weaponType & eGrassHopper)
+								{
+									if ((m_EnemyState & eGrassHopperDashF) && (m_rGrassHopperTime <= 80))
+									{
+										ScorpionAttackDecision();
+									}
+									else
+									{
+										GrassMoveVecDecision();
+									}
+								}
+								else if (m_weaponType & eLGrassHopper)
+								{
+									if ((m_EnemyState & eGrassHopperDashF) && (m_lGrassHopperTime <= 80))
+									{
+										ScorpionAttackDecision();
+									}
+									else
+									{
+										GrassMoveVecDecision();
+									}
+								}
+							}
+							else
+							{
+								GrassMoveVecDecision();
+							}
+						}
+						else if (m_dashSpd == 0.4f || m_dashSpd == 0.35f)
+						{
+							if (src.Length() <= 4.0f)
+							{
+								if (m_weaponType & eGrassHopper)
+								{
+									if ((m_EnemyState & eGrassHopperDashF) && (m_rGrassHopperTime <= 80))
+									{
+										ScorpionAttackDecision();
+									}
+									else
+									{
+										GrassMoveVecDecision();
+									}
+								}
+								else if (m_weaponType & eLGrassHopper)
+								{
+									if ((m_EnemyState & eGrassHopperDashF) && (m_lGrassHopperTime <= 80))
+									{
+										ScorpionAttackDecision();
+									}
+									else
+									{
+										GrassMoveVecDecision();
+									}
+								}
+							}
+							else
+							{
+								GrassMoveVecDecision();
+							}
+						}
+						else if (m_dashSpd <= 0.25f)
+						{
+							if (src.Length() <= 2.0f)
+							{
+								if (m_weaponType & eGrassHopper)
+								{
+									if ((m_EnemyState & eGrassHopperDashF) && (m_rGrassHopperTime <= 80))
+									{
+										ScorpionAttackDecision();
+									}
+									else
+									{
+										GrassMoveVecDecision();
+									}
+								}
+								else if (m_weaponType & eLGrassHopper)
+								{
+									if ((m_EnemyState & eGrassHopperDashF) && (m_lGrassHopperTime <= 80))
+									{
+										ScorpionAttackDecision();
+									}
+									else
+									{
+										GrassMoveVecDecision();
+									}
+								}
+							}
+							else
+							{
+								GrassMoveVecDecision();
+							}
+						}
+						break;
+					case WantToMoveState::run:
+						NormalMoveVecDecision();
+						break;
+					case WantToMoveState::disturbance:
+						GrassMoveVecDecision();
+						break;
+					case WantToMoveState::step:
+						if (!(m_EnemyState & eStep))
+						{
+							StepVecDecision();
+						}
+						break;
+					case WantToMoveState::grassDash:
+						GrassMoveVecDecision();
+						break;
+					case WantToMoveState::avoidance:
+						GrassMoveVecDecision();
+						break;
+					}
+				}
+
+				if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)))
+				{
+					if (m_EnemyState & (eLAttack | eRAttack | eRlAttack | eRlAttackRush | eMantis))
+					{
+						ScorpionAttackMove();
+					}
+					else if (m_EnemyState & eRun | m_EnemyState & eJump)
+					{
+						NormalMove();
+					}
+					else if(m_EnemyState & eHasDefense)
+					{
+						HasDefenseMove();
+					}
+				}
+				else if (m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp))
+				{
+					GrassMove();
+				}
+				else if (m_EnemyState & eStep)
+				{
+					StepMove();
+				}
+			}
+
+			if (!m_bMove)
+			{
+				if (!(m_EnemyState & (eFall | eJump)))
+				{
+					m_EnemyState = eIdle;
+					m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
+				}
+			}
+		}
+		else
+		{
+			/*m_pos.y -= m_gravity;
+			m_gravity += 0.01f;*/
 		}
 	}
 	else if (m_EnemyState & eHit)
 	{
-		m_pos.y -= m_gravity;
+		//m_pos.y -= m_gravity;
 
 		if (m_EnemyState & eCutRaiseHit)
 		{
@@ -440,7 +491,10 @@ void Enemy::Update()
 				}
 				m_EnemyState = eIdle;
 				m_wantToMoveState = none;
-				Brain();
+				if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
+				{
+					Brain();
+				}
 			}
 			else if (m_EnemyState & eBlowingAwayHit)
 			{
@@ -478,6 +532,14 @@ void Enemy::Update()
 		}
 	}
 
+	if (!(m_EnemyState& (eGrassHopperDash | eGrassHopperDashUp | 
+		               eRAttack | eLAttack | eRlAttack | eRlAttackRush|
+		               eMantis)))
+	{
+		m_pos.y -= m_gravity;
+		m_gravity += 0.01f;
+	}
+
 	//if (m_pos.y <= -1.05f)//今だけ 地面に着いたらカメラのXAngが180以下かつ0以上補正する
 	// ========================================
 	// 当たり判定
@@ -495,7 +557,7 @@ void Enemy::Update()
 		static float enableStepHight = 0.2f;
 		rayInfo.m_pos.y += enableStepHight;
 		rayInfo.m_range = m_gravity + enableStepHight;
-	}
+}
 	else
 	{
 		//rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
@@ -541,8 +603,6 @@ void Enemy::Update()
 		m_gravity = 0;
 		if (m_EnemyState & (eFall | eJump))
 		{
-			m_thinkActionDelayTime = m_thinkActionDelayTimeVal;
-			//m_actionDelayTime = m_actionDelayTimeVal;
 			m_wantToMoveState = none;
 		}
 		m_enemyAirborneTimetoBeCnt = ENEMYAIRBORNETIMETOBECNTVAL;
@@ -581,13 +641,21 @@ void Enemy::Update()
 	KdCollider::SphereInfo sphereInfo;
 	// 球の中心位置を設定
 	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
-	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)))
+	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep | eBlowingAwayHit | eIaiKiriHit)))
 	{
 		sphereInfo.m_sphere.Radius = 0.3f;
 	}
 	else
 	{
 		sphereInfo.m_sphere.Radius = 1.2f;
+		/*if (m_enemyType & EnemyType::speedSter)
+		{
+			if (m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp))
+			{
+			
+				sphereInfo.m_sphere.Radius = 1.8f;
+			}
+		}*/
 	}
 
 	// 当たり判定をしたいタイプを設定
@@ -781,9 +849,12 @@ void Enemy::Update()
 	Math::Matrix RotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
 	m_mWorld = RotMat * transMat;
 
-	for (auto& WeaList : m_weaponList)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		WeaList->Update();
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->Update();
+		}
 	}
 }
 
@@ -791,7 +862,7 @@ void Enemy::PostUpdate()
 {
 	if (m_gravity > 0)
 	{
-		if (!(m_EnemyState & eHit))
+		if (!(m_EnemyState & (eHit | eHasDefense)))
 		{
 			m_EnemyState = eFall;
 		}
@@ -994,13 +1065,17 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
 	}
 	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
-	if (m_endurance <= 0)
+
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		m_endurance = 0;
-		SceneManager::Instance().SetBAddOrSubVal(true);
-		SceneManager::Instance().SetPointAddOrSubVal(1000);
-		SceneManager::Instance().SetBPlayerWin();
-		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		if (m_endurance <= 0)
+		{
+			m_endurance = 0;
+			SceneManager::Instance().SetBAddOrSubVal(true);
+			SceneManager::Instance().SetPointAddOrSubVal(1000);
+			SceneManager::Instance().SetBPlayerWin();
+			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		}
 	}
 
 	if (m_graduallyTorionDecVal == 0)
@@ -1034,13 +1109,16 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
 
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-	if (m_endurance <= 0)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		m_endurance = 0;
-		SceneManager::Instance().SetBAddOrSubVal(true);
-		SceneManager::Instance().SetPointAddOrSubVal(1000);
-		SceneManager::Instance().SetBPlayerWin();
-		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		if (m_endurance <= 0)
+		{
+			m_endurance = 0;
+			SceneManager::Instance().SetBAddOrSubVal(true);
+			SceneManager::Instance().SetPointAddOrSubVal(1000);
+			SceneManager::Instance().SetBPlayerWin();
+			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		}
 	}
 
 	if (m_graduallyTorionDecVal == 0)
@@ -1064,13 +1142,16 @@ void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-	if (m_endurance <= 0)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		m_endurance = 0;
-		SceneManager::Instance().SetBAddOrSubVal(true);
-		SceneManager::Instance().SetPointAddOrSubVal(1000);
-		SceneManager::Instance().SetBPlayerWin();
-		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		if (m_endurance <= 0)
+		{
+			m_endurance = 0;
+			SceneManager::Instance().SetBAddOrSubVal(true);
+			SceneManager::Instance().SetPointAddOrSubVal(1000);
+			SceneManager::Instance().SetBPlayerWin();
+			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		}
 	}
 
 	if (m_graduallyTorionDecVal == 0)
@@ -1093,13 +1174,16 @@ void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-	if (m_endurance <= 0)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		m_endurance = 0;
-		SceneManager::Instance().SetBAddOrSubVal(true);
-		SceneManager::Instance().SetPointAddOrSubVal(1000);
-		SceneManager::Instance().SetBPlayerWin();
-		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		if (m_endurance <= 0)
+		{
+			m_endurance = 0;
+			SceneManager::Instance().SetBAddOrSubVal(true);
+			SceneManager::Instance().SetPointAddOrSubVal(1000);
+			SceneManager::Instance().SetBPlayerWin();
+			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		}
 	}
 
 	if (m_graduallyTorionDecVal == 0)
@@ -1114,7 +1198,7 @@ void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 
 void Enemy::HasDefense()
 {
-	if (m_EnemyState & eRAttack)
+	if (m_EnemyState & (eRAttack| eRlAttack))
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RHasDefense"), false);
 	}
@@ -1123,8 +1207,10 @@ void Enemy::HasDefense()
 		m_animator->SetAnimation(m_model->GetAnimation("LHasDefense"), false);
 	}
 
-	m_EnemyState = eHasDefense;
-	m_EnemyState &= eHasDefense;
+	m_EnemyState |=  eHasDefense;
+	m_EnemyState &=  eHasDefense;
+	m_hasDeTime = 30;
+	m_bMove = true;
 }
 
 void Enemy::DrawSprite()
@@ -1180,9 +1266,12 @@ void Enemy::DrawLit()
 {
 	if (!m_bEwaponDrawPosible)return;
 
-	for (auto& WeaList : m_weaponList)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		WeaList->DrawLit();
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->DrawLit();
+		}
 	}
 }
 
@@ -1190,9 +1279,12 @@ void Enemy::DrawBright()
 {
 	if (!m_bEwaponDrawPosible)return;
 
-	for (auto& WeaList : m_weaponList)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		WeaList->DrawBright();
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->DrawBright();
+		}
 	}
 }
 
@@ -1200,9 +1292,12 @@ void Enemy::GenerateDepthMapFromLight()
 {
 	if (!m_bEwaponDrawPosible)return;
 
-	for (auto& WeaList : m_weaponList)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		WeaList->GenerateDepthMapFromLight();
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->GenerateDepthMapFromLight();
+		}
 	}
 }
 
@@ -1343,7 +1438,7 @@ void Enemy::EnemyKickHitAttackChaeck()
 				}
 			}
 		}
-	}	//}
+}	//}
 }
 
 void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
@@ -1760,31 +1855,87 @@ void Enemy::GrassMove()
 		}
 		else if (m_lGrassHopperTime <= 75 && m_lGrassHopperTime > 30 || m_rGrassHopperTime <= 75 && m_rGrassHopperTime > 30)
 		{
-			m_dashSpd = 0.8f;
+			if (m_enemyType & EnemyType::speedSter)
+			{
+				if (m_lGrassHopperTime <= 75 && m_lGrassHopperTime > 60 || m_rGrassHopperTime <= 75 && m_rGrassHopperTime > 60)
+				{
+					m_dashSpd = 1.2f;
+				}
+				else
+				{
+					m_dashSpd = 0.5f;
+				}
+			}
+			else
+			{
+				m_dashSpd = 0.8f;
+			}
 		}
 		else if (m_lGrassHopperTime <= 30 && m_lGrassHopperTime > 25 || m_rGrassHopperTime <= 30 && m_rGrassHopperTime > 25)
 		{
-			m_dashSpd = 0.5f;
+			if (m_enemyType & EnemyType::speedSter)
+			{
+				m_dashSpd = 0.4f;
+			}
+			else
+			{
+				m_dashSpd = 0.5f;
+			}
 		}
 		else if (m_lGrassHopperTime <= 25 && m_lGrassHopperTime > 20 || m_rGrassHopperTime <= 25 && m_rGrassHopperTime > 20)
 		{
-			m_dashSpd = 0.40f;
+			if (m_enemyType & EnemyType::speedSter)
+			{
+				m_dashSpd = 0.35f;
+			}
+			else
+			{
+				m_dashSpd = 0.40f;
+			}
 		}
 		else if (m_lGrassHopperTime <= 20 && m_lGrassHopperTime > 15 || m_rGrassHopperTime <= 20 && m_rGrassHopperTime > 15)
 		{
-			m_dashSpd = 0.35f;
+			if (m_enemyType & EnemyType::speedSter)
+			{
+				m_dashSpd = 0.30f;
+			}
+			else
+			{
+				m_dashSpd = 0.35f;
+			}
 		}
 		else if (m_lGrassHopperTime <= 15 && m_lGrassHopperTime > 10 || m_rGrassHopperTime <= 15 && m_rGrassHopperTime > 10)
 		{
-			m_dashSpd = 0.30f;
+			if (m_enemyType & EnemyType::speedSter)
+			{
+				m_dashSpd = 0.25f;
+			}
+			else
+			{
+				m_dashSpd = 0.30f;
+			}
 		}
 		else if (m_lGrassHopperTime <= 10 && m_lGrassHopperTime > 5 || m_rGrassHopperTime <= 10 && m_rGrassHopperTime > 5)
 		{
-			m_dashSpd = 0.25f;
+			if (m_enemyType & EnemyType::speedSter)
+			{
+				m_dashSpd = 0.20f;
+			}
+			else
+			{
+				m_dashSpd = 0.25f;
+			}
 		}
 		else if (m_lGrassHopperTime <= 5 && m_lGrassHopperTime > 0 || m_rGrassHopperTime <= 5 && m_rGrassHopperTime > 0)
 		{
-			m_dashSpd = 0.20f;
+			if (m_enemyType & EnemyType::speedSter)
+			{
+				m_dashSpd = 0.10f;
+			}
+			else
+			{
+				m_dashSpd = 0.20f;
+			}
 		}
 
 		if (m_lGrassHopperTime == 80)
@@ -2062,13 +2213,16 @@ void Enemy::ScorpionDefenseMove()
 
 void Enemy::HasDefenseMove()
 {
-	m_pos.y -= m_gravity;
-	m_gravity += 0.01f;
 	m_bMove = true;
 	if (m_animator->IsAnimationEnd())
 	{
-		Brain();
-		m_EnemyState = eIdle;
+		--m_hasDeTime;
+		if (m_hasDeTime <= 0)
+		{
+			Brain();
+			m_EnemyState = eIdle;
+			m_hasDeTime = 0;
+		}
 	}
 }
 
@@ -2177,9 +2331,9 @@ void Enemy::StrikerBrain()
 						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory; rand = intRand(mt);
 						randNum[0] = 700;
 						randNum[1] = 300;
-						for (int i = 0; i < 2; i++)
+						for (int j = 0; j < 2; j++)
 						{
-							rand -= randNum[i];
+							rand -= randNum[j];
 							if (rand < 0)
 							{
 								switch (i)
@@ -2361,7 +2515,7 @@ void Enemy::DefenderBrain()
 		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
 		{
 			randNum[0] = 950;
-			randNum[1] =  50;
+			randNum[1] = 50;
 			for (int i = 0; i < 2; i++)
 			{
 				rand -= randNum[i];
@@ -2468,10 +2622,10 @@ void Enemy::DefenderBrain()
 		}
 		break;
 	case Enemy::WantToMoveCategory::defenseCategory:
-			m_wantToMoveState = Enemy::WantToMoveState::defense;
+		m_wantToMoveState = Enemy::WantToMoveState::defense;
 		break;
 	case Enemy::WantToMoveCategory::approachCategory:
-			m_wantToMoveCategory = Enemy::WantToMoveCategory::runCategory;
+		m_wantToMoveCategory = Enemy::WantToMoveCategory::runCategory;
 		break;
 	}
 

@@ -268,4 +268,5 @@ private:
 	int m_stepCnt;
 	Math::Vector3 m_stepDashDir;
 	bool m_bMantisPossAng; // マンティスがあたる角度 true
+	int m_hasDeTime;
 };

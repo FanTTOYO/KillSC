@@ -5,6 +5,7 @@
 class CameraBase;
 class WeaponBase;
 class Enemy;
+class Ui;
 
 enum WeaponType
 {
@@ -88,6 +89,7 @@ public:
 
 	void SetCamera(std::shared_ptr<CameraBase> a_camera) { m_wpCamera = a_camera; }
 	void SetEnemy(std::shared_ptr<Enemy> a_enemy) { m_enemy = a_enemy; }
+	void SetUi(std::shared_ptr<Ui> a_ui) { m_wpUi = a_ui; }
 
 	const UINT& GetPlayerState() { return m_playerState; }
 	const UINT& GetWeaponType() { return m_weaponType; }
@@ -130,6 +132,7 @@ private:
 	void ScorpionAttackMove();
 	void ScorpionDefenseMove();
 	void HasDefenseMove();
+	void TutorialUpdate();
 
 	std::shared_ptr<KdModelWork> m_model;
 
@@ -220,4 +223,6 @@ private:
 	int m_invincibilityTimeCnt;  // –³“GŽžŠÔ
 
 	bool m_bRushAttackPossible = false;
+	std::weak_ptr<Ui> m_wpUi;
+	int m_tuGardTime;
 };

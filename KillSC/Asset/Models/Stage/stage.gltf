@@ -39,6 +39,17 @@
 				"metallicFactor":0,
 				"roughnessFactor":0.5
 			}
+		},
+		{
+			"doubleSided":true,
+			"name":"\u30de\u30c6\u30ea\u30a2\u30eb",
+			"pbrMetallicRoughness":{
+				"baseColorTexture":{
+					"index":1
+				},
+				"metallicFactor":0,
+				"roughnessFactor":0.5
+			}
 		}
 	],
 	"meshes":[
@@ -53,6 +64,15 @@
 					},
 					"indices":3,
 					"material":0
+				},
+				{
+					"attributes":{
+						"POSITION":4,
+						"NORMAL":5,
+						"TEXCOORD_0":6
+					},
+					"indices":7,
+					"material":1
 				}
 			]
 		}
@@ -61,20 +81,29 @@
 		{
 			"sampler":0,
 			"source":0
+		},
+		{
+			"sampler":0,
+			"source":1
 		}
 	],
 	"images":[
 		{
 			"mimeType":"image/png",
-			"name":"StageLine",
-			"uri":"StageLine.png"
+			"name":"Tile01_02",
+			"uri":"Tile01_02.png"
+		},
+		{
+			"mimeType":"image/png",
+			"name":"Tile03_01",
+			"uri":"Tile03_01.png"
 		}
 	],
 	"accessors":[
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":24,
+			"count":64,
 			"max":[
 				1,
 				1,
@@ -90,45 +119,103 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":24,
+			"count":64,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":24,
+			"count":64,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
+			"count":102,
+			"type":"SCALAR"
+		},
+		{
+			"bufferView":4,
+			"componentType":5126,
 			"count":36,
+			"max":[
+				1,
+				1,
+				1
+			],
+			"min":[
+				-1,
+				-1,
+				-1
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":5,
+			"componentType":5126,
+			"count":36,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":6,
+			"componentType":5126,
+			"count":36,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":7,
+			"componentType":5123,
+			"count":78,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":288,
+			"byteLength":768,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":288,
-			"byteOffset":288,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":192,
-			"byteOffset":576,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":72,
+			"byteLength":768,
 			"byteOffset":768,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":512,
+			"byteOffset":1536,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":204,
+			"byteOffset":2048,
+			"target":34963
+		},
+		{
+			"buffer":0,
+			"byteLength":432,
+			"byteOffset":2252,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":432,
+			"byteOffset":2684,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":288,
+			"byteOffset":3116,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":156,
+			"byteOffset":3404,
 			"target":34963
 		}
 	],
@@ -140,7 +227,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":840,
+			"byteLength":3560,
 			"uri":"stage.bin"
 		}
 	]

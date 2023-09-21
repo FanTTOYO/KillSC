@@ -8,6 +8,7 @@ public:
 
 	void Init()override;
 	void Release(){};
+	void DrawUnLit()override;
 
 private:
 	

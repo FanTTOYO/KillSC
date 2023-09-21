@@ -4,12 +4,13 @@
 #include "../../Weapon/Hopper/Hopper.h"
 #include "../../Weapon/Scopion/Scopion.h"
 #include "../Enemy/Enemy.h"
+#include "../../Ui/Ui.h"
 
 void Player::Init()
 {
 	// À•Ws—ñ
 	Math::Matrix transMat;
-	transMat = Math::Matrix::CreateTranslation(0, 0, 0);
+	transMat = Math::Matrix::CreateTranslation(0, 0, -10);
 
 	// Šgks—ñ
 	Math::Matrix scaleMat;
@@ -115,6 +116,11 @@ void Player::Update()
 		--m_invincibilityTimeCnt;
 	}
 
+	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
+	{
+		TutorialUpdate();
+	}
+
 	if (!(m_playerState & (fall | jump)))
 	{
 		m_bMove = false;
@@ -132,6 +138,17 @@ void Player::Update()
 				{
 					m_leftWeaponNumber = FIRSTWEAPONTYPENUMBER;
 				}
+
+				if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
+				{
+					switch (m_wpUi.lock()->GetTutorialType())
+					{
+
+					case Ui::TutorialType::bukiTu:
+						m_wpUi.lock()->AddTutorialCnt();
+						break;
+					}
+				}
 			}
 		}
 		else
@@ -148,6 +165,17 @@ void Player::Update()
 				if (m_rightWeaponNumber > MAXWEAPONTYPE)
 				{
 					m_rightWeaponNumber = FIRSTWEAPONTYPENUMBER;
+				}
+
+				if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
+				{
+					switch (m_wpUi.lock()->GetTutorialType())
+					{
+
+					case Ui::TutorialType::bukiTu:
+						m_wpUi.lock()->AddTutorialCnt();
+						break;
+					}
 				}
 			}
 		}
@@ -2120,6 +2148,49 @@ void Player::HasDefenseMove()
 			m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
 		}
 		m_playerState = idle;
+	}
+}
+
+void Player::TutorialUpdate()
+{
+	switch (m_wpUi.lock()->GetTutorialType())
+	{
+	case Ui::TutorialType::kihonTu:
+		if (m_runAnimeCnt >= 39)
+		{
+			m_wpUi.lock()->AddTutorialCnt();
+		}
+
+		if (m_playerState & jump && m_animator->IsAnimationEnd())
+		{
+			m_wpUi.lock()->AddTutorialCnt();
+		}
+		break;
+	case Ui::TutorialType::bukiTu:
+		break;
+	case Ui::TutorialType::sukoADMoveTu:
+		if(m_playerState & (rlAttackThree | rlAttackRush | rAttackThree | lAttackThree | mantis) && m_animator->IsAnimationEnd())
+		{
+			m_wpUi.lock()->AddTutorialCnt();
+		}
+
+		else if (m_playerState & defense)
+		{
+			m_tuGardTime++;
+			if (m_tuGardTime >= 60)
+			{
+				m_tuGardTime = 0;
+				m_wpUi.lock()->AddTutorialCnt();
+			}
+		}
+
+		break;
+	case Ui::TutorialType::hopperTu:
+		if (m_playerState & (grassHopperDash | grassHopperDashUp) && m_rGrassHopperTime == 75 || m_playerState & (grassHopperDash | grassHopperDashUp) && m_lGrassHopperTime == 75)
+		{
+			m_wpUi.lock()->AddTutorialCnt();
+		}
+		break;
 	}
 }
 

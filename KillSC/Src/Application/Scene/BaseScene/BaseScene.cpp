@@ -71,7 +71,7 @@ void BaseScene::Draw()
 	{
 		for (auto& obj : m_objList)
 		{
-			obj->GenerateDepthMapFromLight(); // ポリモーフィズム
+			obj->GenerateDepthMapFromLight();
 		}
 	}
 	KdShaderManager::Instance().m_HD2DShader.EndGenerateDepthMapFromLight();

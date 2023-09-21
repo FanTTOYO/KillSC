@@ -1,4 +1,5 @@
 #include "InvisibleWall.h"
+#include "../../Scene/SceneManager.h"
 
 void InvisibleWall::Init()
 {
@@ -8,7 +9,7 @@ void InvisibleWall::Init()
 
 	// ägèkçsóÒ
 	Math::Matrix scaleMat;
-	scaleMat = Math::Matrix::CreateScale(50.0f,50.0f,50.0f);
+	scaleMat = Math::Matrix::CreateScale(25.0f,25.0f,25.0f);
 
 	// çsóÒçáê¨
 	m_mWorld = scaleMat * transMat;
@@ -21,4 +22,21 @@ void InvisibleWall::Init()
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape
 	("StageModel" ,m_model,KdCollider::TypeGround);
+}
+
+void InvisibleWall::DrawUnLit()
+{
+	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
+	{
+		Math::Matrix transMat;
+		transMat = Math::Matrix::CreateTranslation(0, -5, 0);
+
+		// ägèkçsóÒ
+		Math::Matrix scaleMat;
+		scaleMat = Math::Matrix::CreateScale(25.0f, 25.0f, 25.0f);
+
+		// çsóÒçáê¨
+		m_mWorld = scaleMat * transMat;
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
+	}
 }

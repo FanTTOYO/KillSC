@@ -13,7 +13,7 @@ void Sky::Init()
 
 	// ägèkçsóÒ
 	Math::Matrix scaleMat;
-	scaleMat = Math::Matrix::CreateScale(12.5f, 18.0f, 12.5f);
+	scaleMat = Math::Matrix::CreateScale(6.5f, 10.0f, 6.5f);
 
 	// çsóÒçáê¨
 	m_mWorld = scaleMat * transMat;

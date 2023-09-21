@@ -13,6 +13,7 @@ public:
 		result,
 		select,
 		art,
+		tutorial,
 	};
 
 	void PreUpdate();
@@ -38,6 +39,8 @@ public:
 	{
 		m_nextSceneType = _nextScene;
 	}
+
+	const SceneType GetSceneType() { return m_currentSceneType; }
 
 	const std::list<std::shared_ptr<KdGameObject>>&  GetObjList();
 	void AddObject(const std::shared_ptr<KdGameObject>& _obj);

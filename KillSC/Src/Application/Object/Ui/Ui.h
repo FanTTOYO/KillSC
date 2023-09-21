@@ -13,15 +13,24 @@ public:
 		game,
 		result,
 		select,
-		art,
+		tutorial,
+	};
+
+	enum TutorialType
+	{
+		kihonTu,
+		bukiTu,
+		hopperTu,
+		sonotaTu,
+		sukoADMoveTu,
 	};
 
 	void Update()override;
 	void TitleUpdate();
 	void GameUpdate();
+	void TutorialUpdate();
 	void ResultUpdate();
 	void SelectUpdate();
-	void ArtUpdate();
 	void DrawSprite()override;
 	void SetUiType(UiType a_uiType) { m_uiType = a_uiType; }
 	void SetAddFadeAlpha() { m_addFadeAlpha = true; }
@@ -29,6 +38,9 @@ public:
 	const bool GetBOption() { return m_bOption; }
 	void SetPlayer(std::shared_ptr<Player> a_spPlayer) { m_wpPlayer = a_spPlayer; }
 	const bool GetBSceneCangePossible() { return m_bSceneCangePossible; }
+	const bool GetBTutorial() { return m_bTutorialView; }
+	const TutorialType GetTutorialType() { return m_tutorialType; }
+	void AddTutorialCnt();
 
 private:
 	void Init()override;
@@ -60,28 +72,25 @@ private:
 	KdTexture m_Point8Tex;
 	KdTexture m_Point9Tex;
 
-	KdTexture m_artTex;
+	KdTexture m_tutorialTex;
 	KdTexture m_exitTex;
 	KdTexture m_gameTex;
 	KdTexture m_optionTex;
 	KdTexture m_titleTex;
 
-	KdTexture m_artFinleTex;
-	KdTexture m_artInTex;
-
-	float m_artScale = 0;
+	float m_tutorialScale = 0;
 	float m_exitScale = 0;
 	float m_gameScale = 0;
 	float m_optionScale = 0;
 	float m_titleScale = 0;
 
-	Math::Vector3 m_artPos = {};
+	Math::Vector3 m_tutorialPos = {};
 	Math::Vector3 m_exitPos = {};
 	Math::Vector3 m_gamePos = {};
 	Math::Vector3 m_optionPos = {};
 	Math::Vector3 m_titlePos = {};
 
-	bool m_bArt = false;
+	bool m_bTutorial = false;
 	bool m_bExit = false;
 	bool m_bFirstExit = false;
 	bool m_bGame = false;
@@ -116,12 +125,6 @@ private:
 	float m_countGoAlpha;
 	KdTexture m_countGoTex;
 
-	float m_artInScale;
-	Math::Vector3 m_artInPos;
-
-	float m_artFinleScale;
-	Math::Vector3 m_artFinlePos;
-
 	KdTexture m_backTex;
 	Math::Vector3 m_backPos;
 	float m_backScale;
@@ -135,6 +138,12 @@ private:
 	KdTexture m_howToTex;
 	KdTexture m_leftYaiTex;
 	KdTexture m_rightYaiTex;
+
+	KdTexture m_hopperTyuTex;
+	KdTexture m_sonotaTyuTex;
+	KdTexture m_sukoADMoveTex;
+	KdTexture m_tyubukiTex;
+	KdTexture m_tyuKihonTex;
 
 	float         m_infoScale;
 	Math::Vector3 m_infoPos;
@@ -158,5 +167,8 @@ private:
 	bool m_bHowToPage = false;
 
 	bool bLButtonKey = false;
-
+	bool m_bTutorialView = false;
+	int  m_tutorialCnt  =     0;
+	TutorialType m_tutorialType = kihonTu;
+	int m_tutorialSwitchAfterTime;
 };

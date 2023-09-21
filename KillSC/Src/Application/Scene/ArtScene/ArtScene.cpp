@@ -15,10 +15,5 @@ void ArtScene::Event()
 
 void ArtScene::Init()
 {
-	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
-	ui->SetUiType(Ui::UiType::art);
-	m_objList.push_back(ui);
-	m_wpUi = ui;
-
 	ShowCursor(true); // マウスカーソルを消す
 }
