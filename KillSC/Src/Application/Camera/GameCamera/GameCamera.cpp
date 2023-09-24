@@ -14,6 +14,11 @@ void GameCamera::Init()
 	m_bRotateEnemy = false;
 	SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
 	m_cameracChasePower = 0.0f;
+	m_startPos[0] = {};
+	m_startPos[1] = {};
+	m_startPos[2] = {};
+	m_startPos[3] = {};
+	m_startPos[4] = {};
 	CameraBase::Init();
 }
 
@@ -51,8 +56,35 @@ void GameCamera::Update()
 				{
 					m_cameracChasePower = 0;
 				}
-				targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
+
+				//===========================================================
+				// À•W‚Ì•âŠÔ
+
+				Math::Vector3 endPos;
+				Math::Vector3 nowPos;
+
+				if (m_wpPlayer.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDash | Player::PlayerState::grassHopperDashUp) && m_wpPlayer.lock()->GetLGrassHopperTime() <= 75 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 75)
+				{
+					m_startPos[0] = m_startPos[1];
+					m_startPos[1] = m_startPos[2];
+					m_startPos[2] = m_startPos[3];
+					m_startPos[3] = m_startPos[4];
+					m_startPos[4] = spTarget->GetMatrix().Translation();
+
+					endPos = spTarget->GetMatrix().Translation();
+
+					// ’†ŠÔ‚ð‹‚ß‚é
+					// üŒ`•âŠÔ
+					nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.5f);
+
+					targetMat = Math::Matrix::CreateTranslation(nowPos);
+				}
+				else
+				{
+					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
+				}
 				
+				//targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
 
 				//// ’n–ÊŠî€ –¢Š®
 				//if (spTarget->GetPos().y < m_stepOnPlayerPos.y + 5 && spTarget->GetPos().y > m_stepOnPlayerPos.y - 5 && !m_bCameraDown)

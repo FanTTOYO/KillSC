@@ -37,4 +37,5 @@ private:
 	float m_cameracChasePower = 0;
 	bool m_bCameraDown;
 	bool m_bRotateEnemy; // エネミーによってカメラの回転がかわる
+	Math::Vector3 m_startPos[5] = {};
 };

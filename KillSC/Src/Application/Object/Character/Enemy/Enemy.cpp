@@ -411,7 +411,7 @@ void Enemy::Update()
 					{
 						NormalMove();
 					}
-					else if(m_EnemyState & eHasDefense)
+					else if (m_EnemyState & eHasDefense)
 					{
 						HasDefenseMove();
 					}
@@ -435,15 +435,10 @@ void Enemy::Update()
 				}
 			}
 		}
-		else
-		{
-			/*m_pos.y -= m_gravity;
-			m_gravity += 0.01f;*/
-		}
 	}
 	else if (m_EnemyState & eHit)
 	{
-		//m_pos.y -= m_gravity;
+		m_pos.y -= m_gravity;
 
 		if (m_EnemyState & eCutRaiseHit)
 		{
@@ -534,7 +529,7 @@ void Enemy::Update()
 
 	if (!(m_EnemyState& (eGrassHopperDash | eGrassHopperDashUp | 
 		               eRAttack | eLAttack | eRlAttack | eRlAttackRush|
-		               eMantis)))
+		               eMantis | eHit)))
 	{
 		m_pos.y -= m_gravity;
 		m_gravity += 0.01f;
@@ -641,7 +636,7 @@ void Enemy::Update()
 	KdCollider::SphereInfo sphereInfo;
 	// ãÖÇÃíÜêSà íuÇê›íË
 	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
-	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep | eBlowingAwayHit | eIaiKiriHit)))
+	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)))
 	{
 		sphereInfo.m_sphere.Radius = 0.3f;
 	}

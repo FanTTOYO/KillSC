@@ -1860,39 +1860,42 @@ void Ui::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetTorion()), 30, &rc, &color, Math::Vector2(0, 0.5f));
 
 		}
-		
-		transMat = Math::Matrix::CreateTranslation(450,-300,0);
-		switch (m_tutorialCnt)
+
+		if (m_tutorialType != sonotaTu)
 		{
-		case 0:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
-			break;
-		case 1:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point1Tex, 0, 0, 102, 114);
-			break;
-		case 2:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point2Tex, 0, 0, 102, 114);
-			break;
-		case 3:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point3Tex, 0, 0, 102, 114);
-			break;
-		case 4:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point4Tex, 0, 0, 102, 114);
-			break;
-		case 5:
+			transMat = Math::Matrix::CreateTranslation(450, -300, 0);
+			switch (m_tutorialCnt)
+			{
+			case 0:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
+				break;
+			case 1:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point1Tex, 0, 0, 102, 114);
+				break;
+			case 2:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point2Tex, 0, 0, 102, 114);
+				break;
+			case 3:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point3Tex, 0, 0, 102, 114);
+				break;
+			case 4:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point4Tex, 0, 0, 102, 114);
+				break;
+			case 5:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point5Tex, 0, 0, 102, 114);
+				break;
+			}
+
+			transMat = Math::Matrix::CreateTranslation(550, -300, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point5Tex, 0, 0, 102, 114);
-			break;
 		}
-
-		transMat = Math::Matrix::CreateTranslation(550, -300, 0);
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point5Tex, 0, 0, 102, 114);
 
 		if (m_bOption)
 		{

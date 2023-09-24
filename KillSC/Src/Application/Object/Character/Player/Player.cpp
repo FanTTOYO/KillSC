@@ -86,6 +86,7 @@ void Player::Update()
 		{
 			WeaList->SetOwner(shared_from_this());
 		}
+
 		return;
 	}
 
