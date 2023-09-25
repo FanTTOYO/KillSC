@@ -38,4 +38,5 @@ private:
 	bool m_bCameraDown;
 	bool m_bRotateEnemy; // エネミーによってカメラの回転がかわる
 	Math::Vector3 m_startPos[5] = {};
+	bool m_startDelayFive = false; // 行列を5個使う true その他 false
 };

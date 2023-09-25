@@ -19,6 +19,7 @@ void GameCamera::Init()
 	m_startPos[2] = {};
 	m_startPos[3] = {};
 	m_startPos[4] = {};
+	m_startDelayFive = true;
 	CameraBase::Init();
 }
 
@@ -65,11 +66,20 @@ void GameCamera::Update()
 
 				if (m_wpPlayer.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDash | Player::PlayerState::grassHopperDashUp) && m_wpPlayer.lock()->GetLGrassHopperTime() <= 75 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 75)
 				{
-					m_startPos[0] = m_startPos[1];
-					m_startPos[1] = m_startPos[2];
-					m_startPos[2] = m_startPos[3];
-					m_startPos[3] = m_startPos[4];
-					m_startPos[4] = spTarget->GetMatrix().Translation();
+					if (m_startDelayFive)
+					{
+						m_startPos[0] = m_startPos[1];
+						m_startPos[1] = m_startPos[2];
+						m_startPos[2] = m_startPos[3];
+						m_startPos[3] = m_startPos[4];
+						m_startPos[4] = spTarget->GetMatrix().Translation();
+					}
+					else
+					{
+						m_startPos[0] = m_startPos[1];
+						m_startPos[1] = m_startPos[2];
+						m_startPos[2] = spTarget->GetMatrix().Translation();
+					}
 
 					endPos = spTarget->GetMatrix().Translation();
 
@@ -79,6 +89,26 @@ void GameCamera::Update()
 
 					targetMat = Math::Matrix::CreateTranslation(nowPos);
 				}
+				else if (m_wpPlayer.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDash | Player::PlayerState::grassHopperDashUp) && m_wpPlayer.lock()->GetLGrassHopperTime() > 75 || m_wpPlayer.lock()->GetRGrassHopperTime() > 75)
+				{
+					if (!m_bRotateEnemy)
+					{
+						m_startDelayFive = true;
+					}
+					else
+					{
+						m_startDelayFive = false;
+					}
+
+					endPos = spTarget->GetMatrix().Translation();
+
+					// ’†ŠÔ‚ð‹‚ß‚é
+					// üŒ`•âŠÔ
+					nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.5f);
+
+					targetMat = Math::Matrix::CreateTranslation(nowPos);
+				}
+
 				else
 				{
 					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
