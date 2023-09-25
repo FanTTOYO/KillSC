@@ -90,7 +90,6 @@ void TutorialScene::Init()
 	player->SetUi(ui);
 
 	SetCursorPos(640, 360);
-	KdAudioManager::Instance().Play("Asset/Audio/SE/CntDwon1.wav");
 
 	ShowCursor(false); // マウスカーソルを消す
 }

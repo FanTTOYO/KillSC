@@ -99,7 +99,7 @@ void Enemy::Init()
 	std::uniform_int_distribution<int> intRand(0, 999);
 	int randNum[4] = {};
 	int rand = intRand(mt);
-	randNum[0] = 150;
+	randNum[0] = 1500;
 	randNum[1] = 300;
 	randNum[2] = 300;
 	randNum[3] = 250;
