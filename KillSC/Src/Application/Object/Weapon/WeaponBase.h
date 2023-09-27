@@ -24,6 +24,7 @@ public:
 	virtual void StartAnime(){}
 
 	void SetTarget(std::shared_ptr<Enemy> a_enemy) { m_pTarget = a_enemy; }
+	void AddTarget(std::shared_ptr<Enemy> a_enemy) { m_pTargetList.push_back(a_enemy);}
 	void SetTarget(std::shared_ptr<Player> a_player) { m_eTarget = a_player; }
 
 protected:
@@ -39,5 +40,6 @@ protected:
 	float m_yAng = 0;
 
 	std::weak_ptr<Enemy> m_pTarget; // Playerのターゲット
+	std::list<std::weak_ptr<Enemy>> m_pTargetList; // Playerのターゲット
 	std::weak_ptr<Player>  m_eTarget; // Enemyのターゲット
 };

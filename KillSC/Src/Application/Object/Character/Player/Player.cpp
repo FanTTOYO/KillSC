@@ -48,29 +48,35 @@ void Player::Init()
 	m_animator = std::make_shared<KdAnimator>();
 	m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
 
+
 	std::shared_ptr<Scopion> sco;
 	sco = std::make_shared<Scopion>();
 	sco->SetArrmType(rArrm);
 	sco->SetbPlayerWeapon();
-	sco->SetTarget(m_enemy.lock());
 	m_weaponList.push_back(sco);
 
-	sco = std::make_shared<Scopion>();
-	sco->SetArrmType(lArrm);
-	sco->SetbPlayerWeapon();
-	sco->SetTarget(m_enemy.lock());
-	m_weaponList.push_back(sco);
+	std::shared_ptr<Scopion> sco2;
+	sco2 = std::make_shared<Scopion>();
+	sco2->SetArrmType(lArrm);
+	sco2->SetbPlayerWeapon();
+	m_weaponList.push_back(sco2);
 
+	for (auto& enemyList : m_enemyList)
+	{
+		sco->SetTarget(enemyList.lock());
+		sco2->SetTarget(enemyList.lock());
+	}
 	std::shared_ptr<Hopper> hopper;
 	hopper = std::make_shared<Hopper>();
 	hopper->SetArrmType(rArrm);
 	hopper->SetbPlayerWeapon();
 	m_weaponList.push_back(hopper);
 
-	hopper = std::make_shared<Hopper>();
-	hopper->SetArrmType(lArrm);
-	hopper->SetbPlayerWeapon();
-	m_weaponList.push_back(hopper);
+	std::shared_ptr<Hopper> hopper2;
+	hopper2 = std::make_shared<Hopper>();
+	hopper2->SetArrmType(lArrm);
+	hopper2->SetbPlayerWeapon();
+	m_weaponList.push_back(hopper2);
 	m_mWorldRot = {};
 	m_bFirstUpdate = true;
 	m_bEwaponDrawPosible = false;
@@ -218,7 +224,10 @@ void Player::Update()
 			if (!m_bMButtonState)
 			{
 				const std::shared_ptr<GameCamera> gCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
-				gCamera->SetEnemy(m_enemy.lock()); //デバックでここに出してる
+				for (auto& enemyList : m_enemyList)
+				{
+					gCamera->SetEnemy(enemyList.lock());
+				}
 				m_bMButtonState = true;
 			}
 		}
@@ -271,7 +280,7 @@ void Player::Update()
 			GrassMove();
 		}
 	}
-	else if(m_playerState & hit)
+	else if (m_playerState & hit)
 	{
 		--m_hitStopCnt;
 		m_bMove = true;
@@ -323,13 +332,16 @@ void Player::Update()
 				m_hitMoveSpd = 0;
 			}
 
-			if (m_enemy.lock()->GetEnemyState() & eRlAttackRush && m_enemy.lock()->GetAnimationCnt() >= 107)
+			for (auto& enemyList : m_enemyList)
 			{
-				m_hitMoveSpd *= 0.95f;
-			}
-			else
-			{
-				m_hitMoveSpd *= 0.75f;
+				if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107)
+				{
+					m_hitMoveSpd *= 0.95f;
+				}
+				else
+				{
+					m_hitMoveSpd *= 0.75f;
+				}
 			}
 		}
 		else
@@ -512,30 +524,83 @@ void Player::Update()
 		m_pos += (hitDir * maxOverLap);
 	}
 
-	if (m_enemy.lock()->GetEnemyState() & eDefense)
+	for (auto& enemyList : m_enemyList)
 	{
-		// 当たり判定をしたいタイプを設定
-		sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
-#ifdef _DEBUG
-		// デバック用
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius
-		);
-#endif
-		// 球の当たったオブジェクト情報
-		retSphereList.clear();
-
-		// 球と当たり判定 
-		for (auto& obj : m_enemy.lock()->GetWeaponList())
+		if (enemyList.lock()->GetEnemyState() & eDefense)
 		{
-			obj->Intersects
+			// 当たり判定をしたいタイプを設定
+			sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
+#ifdef _DEBUG
+			// デバック用
+			m_pDebugWire->AddDebugSphere
 			(
-				sphereInfo,
-				&retSphereList
+				sphereInfo.m_sphere.Center,
+				sphereInfo.m_sphere.Radius
 			);
+#endif
+			// 球の当たったオブジェクト情報
+			retSphereList.clear();
+
+			// 球と当たり判定 
+			for (auto& obj : m_enemy.lock()->GetWeaponList())
+			{
+				obj->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+			}
+
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
+			maxOverLap = 0;
+			hit = false;
+			hitDir = {}; // 当たった方向
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hit = true;
+					hitDir = ret.m_hitDir;
+				}
+			}
+
+			if (hit)
+			{
+				hitDir.y = 0.0f;
+				hitDir.Normalize();
+				// 球とモデルが当たっている
+				m_pos += (hitDir * maxOverLap);
+			}
 		}
+	}
+
+	sphereInfo.m_sphere.Radius = 0.3f;
+
+
+	// 当たり判定をしたいタイプを設定
+	sphereInfo.m_type = KdCollider::TypeBump;
+#ifdef _DEBUG
+	// デバック用
+	m_pDebugWire->AddDebugSphere
+	(
+		sphereInfo.m_sphere.Center,
+		sphereInfo.m_sphere.Radius
+	);
+#endif
+	// 球の当たったオブジェクト情報
+	retSphereList.clear();
+
+	// 球と当たり判定 
+
+	for (auto& enemyList : m_enemyList)
+	{
+		enemyList.lock()->Intersects
+		(
+			sphereInfo,
+			&retSphereList
+		);
 
 		// 球に当たったリスト情報から一番近いオブジェクトを検出
 		maxOverLap = 0;
@@ -560,55 +625,6 @@ void Player::Update()
 			m_pos += (hitDir * maxOverLap);
 		}
 	}
-
-
-	sphereInfo.m_sphere.Radius = 0.3f;
-
-
-	// 当たり判定をしたいタイプを設定
-	sphereInfo.m_type = KdCollider::TypeBump;
-#ifdef _DEBUG
-	// デバック用
-	m_pDebugWire->AddDebugSphere
-	(
-		sphereInfo.m_sphere.Center,
-		sphereInfo.m_sphere.Radius
-	);
-#endif
-	// 球の当たったオブジェクト情報
-	retSphereList.clear();
-
-	// 球と当たり判定 
-
-	m_enemy.lock()->Intersects
-	(
-		sphereInfo,
-		&retSphereList
-	);
-
-	// 球に当たったリスト情報から一番近いオブジェクトを検出
-	maxOverLap = 0;
-	hit = false;
-	hitDir = {}; // 当たった方向
-	for (auto& ret : retSphereList)
-	{
-		// 一番近くで当たったものを探す
-		if (maxOverLap < ret.m_overlapDistance)
-		{
-			maxOverLap = ret.m_overlapDistance;
-			hit = true;
-			hitDir = ret.m_hitDir;
-		}
-	}
-
-	if (hit)
-	{
-		hitDir.y = 0.0f;
-		hitDir.Normalize();
-		// 球とモデルが当たっている
-		m_pos += (hitDir * maxOverLap);
-	}
-
 	if ((m_playerState & Player::PlayerState::rlAttackRush) && m_attackAnimeCnt >= 107)
 	{
 		PlayerKickHitAttackChaeck();
@@ -664,56 +680,15 @@ void Player::PlayerKickHitAttackChaeck()
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
 
-	if (!m_enemy.lock()->GetAttackHit() && !m_enemy.lock()->GetDefenseSuc()  && m_enemy.lock()->GetInvincibilityTimeCnt() == 0)
+	for (auto& enemyList : m_enemyList)
 	{
-		/*if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
-		if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;*/
-
-		node = m_model->FindNode("LegAttackPoint");
-		KdCollider::SphereInfo sphereInfo;
-		mat = node->m_worldTransform * m_mWorld;
-		mat._42 += 0.7f;
-		sphereInfo.m_sphere.Center = mat.Translation();
-		sphereInfo.m_sphere.Radius = 0.30f;
-		sphereInfo.m_type = KdCollider::TypeDamage;
-
-#ifdef _DEBUG
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius,
-			{ 0,0,0,1 }
-		);
-#endif
-
-		std::list<KdCollider::CollisionResult> retSphereList;
-
-		/*for (auto& obj : SceneManager::Instance().GetObjList())
-		{*/
-		m_enemy.lock()->Intersects
-		(
-			sphereInfo,
-			&retSphereList
-		);
-
-		Math::Vector3 hitDir = {};
-		bool hit = false;
-		for (auto& ret : retSphereList)
+		if (!enemyList.lock()->GetAttackHit() && !enemyList.lock()->GetDefenseSuc() && enemyList.lock()->GetInvincibilityTimeCnt() == 0)
 		{
-			hit = true;
-			hitDir = ret.m_hitDir;
-		}
+			/*if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
+			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;*/
 
-		if (hit)
-		{
-
-			m_enemy.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
-			KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
-		}
-		else
-		{
-			node = m_model->FindNode("LegAttackHitPoint");
-			sphereInfo;
+			node = m_model->FindNode("LegAttackPoint");
+			KdCollider::SphereInfo sphereInfo;
 			mat = node->m_worldTransform * m_mWorld;
 			mat._42 += 0.7f;
 			sphereInfo.m_sphere.Center = mat.Translation();
@@ -729,18 +704,16 @@ void Player::PlayerKickHitAttackChaeck()
 			);
 #endif
 
-			retSphereList.clear();
+			std::list<KdCollider::CollisionResult> retSphereList;
 
-			/*for (auto& obj : SceneManager::Instance().GetObjList())
-			{*/
-			m_enemy.lock()->Intersects
+			enemyList.lock()->Intersects
 			(
 				sphereInfo,
 				&retSphereList
 			);
 
-			hitDir = {};
-			hit = false;
+			Math::Vector3 hitDir = {};
+			bool hit = false;
 			for (auto& ret : retSphereList)
 			{
 				hit = true;
@@ -749,12 +722,13 @@ void Player::PlayerKickHitAttackChaeck()
 
 			if (hit)
 			{
-				m_enemy.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
+
+				enemyList.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
 			}
 			else
 			{
-				node = m_model->FindNode("LegAttackHitPointTwo");
+				node = m_model->FindNode("LegAttackHitPoint");
 				sphereInfo;
 				mat = node->m_worldTransform * m_mWorld;
 				mat._42 += 0.7f;
@@ -773,9 +747,7 @@ void Player::PlayerKickHitAttackChaeck()
 
 				retSphereList.clear();
 
-				/*for (auto& obj : SceneManager::Instance().GetObjList())
-				{*/
-				m_enemy.lock()->Intersects
+				enemyList.lock()->Intersects
 				(
 					sphereInfo,
 					&retSphereList
@@ -791,8 +763,49 @@ void Player::PlayerKickHitAttackChaeck()
 
 				if (hit)
 				{
-					m_enemy.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
+					enemyList.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+				}
+				else
+				{
+					node = m_model->FindNode("LegAttackHitPointTwo");
+					sphereInfo;
+					mat = node->m_worldTransform * m_mWorld;
+					mat._42 += 0.7f;
+					sphereInfo.m_sphere.Center = mat.Translation();
+					sphereInfo.m_sphere.Radius = 0.30f;
+					sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+					m_pDebugWire->AddDebugSphere
+					(
+						sphereInfo.m_sphere.Center,
+						sphereInfo.m_sphere.Radius,
+						{ 0,0,0,1 }
+					);
+#endif
+
+					retSphereList.clear();
+
+					enemyList.lock()->Intersects
+					(
+						sphereInfo,
+						&retSphereList
+					);
+
+					hitDir = {};
+					hit = false;
+					for (auto& ret : retSphereList)
+					{
+						hit = true;
+						hitDir = ret.m_hitDir;
+					}
+
+					if (hit)
+					{
+						enemyList.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+					}
 				}
 			}
 		}
@@ -872,9 +885,9 @@ void Player::PostUpdate()
 
 			if (m_attackAnimeCnt == 20)
 			{
-				m_bAttackAnimeDelay   = true;
-				m_bAttackAnimeCnt     = false;
-				m_attackAnimeCnt      = 0;
+				m_bAttackAnimeDelay = true;
+				m_bAttackAnimeCnt = false;
+				m_attackAnimeCnt = 0;
 				m_attackAnimeDelayCnt = 10;
 			}
 		}
@@ -982,37 +995,44 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 
 	m_playerState = nomalHit;
-	if (m_enemy.lock()->GetEnemyState() & eRlAttackThree)
+	for (auto& enemyList : m_enemyList)
 	{
-		m_hitStopCnt = 60;
-	}
-	else
-	{
-		m_hitStopCnt = 40;
+		if (enemyList.lock()->GetEnemyState() & eRlAttackThree)
+		{
+			m_hitStopCnt = 60;
+		}
+		else
+		{
+			m_hitStopCnt = 40;
+		}
 	}
 
 	m_hitMoveSpd = 0.05f;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 15.0f;
 	m_attackHit = true;
-	if (m_enemy.lock()->GetEnemyState() & (eRAttackOne | eRlAttackOne|
-		                                   eRlAttackThree))
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-	}
-	else if (m_enemy.lock()->GetEnemyState() & (eRAttackTwo | eRlAttackTwo))
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
-	}
 
-	if (m_enemy.lock()->GetEnemyState() & eRlAttackRush && m_enemy.lock()->GetAnimationCnt() < 8 ||
-		(m_enemy.lock()->GetAnimationCnt() >= 21 && m_enemy.lock()->GetAnimationCnt() < 31))
+	for (auto& enemyList : m_enemyList)
 	{
-		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-	}
-	else if (m_enemy.lock()->GetEnemyState() & eRlAttackRush && (m_enemy.lock()->GetAnimationCnt() >= 8 && m_enemy.lock()->GetAnimationCnt() < 21))
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+		if (enemyList.lock()->GetEnemyState() & (eRAttackOne | eRlAttackOne |
+			eRlAttackThree))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+		}
+		else if (enemyList.lock()->GetEnemyState() & (eRAttackTwo | eRlAttackTwo))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+		}
+
+		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() < 8 ||
+			(enemyList.lock()->GetAnimationCnt() >= 21 && enemyList.lock()->GetAnimationCnt() < 31))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+		}
+		else if (enemyList.lock()->GetEnemyState() & eRlAttackRush && (enemyList.lock()->GetAnimationCnt() >= 8 && enemyList.lock()->GetAnimationCnt() < 21))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+		}
 	}
 
 	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
@@ -1041,13 +1061,16 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 		scopion2->SetBMantis(false);
 	}
 
-	if (m_enemy.lock()->GetEnemyState() & eRlAttackRush && m_enemy.lock()->GetAnimationCnt() >= 107)
+	for (auto& enemyList : m_enemyList)
 	{
-		m_hitMoveSpd = 0.65f;
-	}
-	else
-	{
-		m_hitMoveSpd = 0.3f;
+		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107)
+		{
+			m_hitMoveSpd = 0.65f;
+		}
+		else
+		{
+			m_hitMoveSpd = 0.3f;
+		}
 	}
 
 	m_playerState = blowingAwayHit;
@@ -1171,7 +1194,7 @@ void Player::DrawLit_SkinMesh()
 		m_invincibilityTimeCnt <= 50 && m_invincibilityTimeCnt > 40 ||
 		m_invincibilityTimeCnt <= 30 && m_invincibilityTimeCnt > 20 ||
 		m_invincibilityTimeCnt <= 15 && m_invincibilityTimeCnt > 10 ||
-		m_invincibilityTimeCnt <= 5  && m_invincibilityTimeCnt  > 3 ||
+		m_invincibilityTimeCnt <= 5 && m_invincibilityTimeCnt > 3 ||
 		m_invincibilityTimeCnt == 1
 		)return;
 	if (m_hitStopCnt <= 5)
@@ -1272,7 +1295,7 @@ void Player::GrassMoveVecDecision()
 	CameraVec.y = 0;
 	CameraVec.Normalize();
 
-	const KdModelWork::Node* node = nullptr;	
+	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
 
 	//std::shared_ptr<GameCamera> spCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
@@ -1303,7 +1326,7 @@ void Player::GrassMoveVecDecision()
 					node = m_model->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
-					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43}, spCamera->GetYAng());
+					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
 				{
@@ -2043,8 +2066,11 @@ void Player::ScorpionAttackMove()
 				m_attackMoveSpd *= 0.5f;
 				if (m_attackAnimeCnt == 17)
 				{
-					m_enemy.lock()->SetAttackHit(false);
-					m_enemy.lock()->SetDefenseSuc(false);
+					for (auto& enemyList : m_enemyList)
+					{
+						enemyList.lock()->SetAttackHit(false);
+						enemyList.lock()->SetDefenseSuc(false);
+					}
 				}
 			}
 			else if (m_playerState & rlAttackTwo)
@@ -2052,8 +2078,11 @@ void Player::ScorpionAttackMove()
 				m_attackMoveSpd *= 0.5f;
 				if (m_attackAnimeCnt == 16)
 				{
-					m_enemy.lock()->SetAttackHit(false);
-					m_enemy.lock()->SetDefenseSuc(false);
+					for (auto& enemyList : m_enemyList)
+					{
+						enemyList.lock()->SetAttackHit(false);
+						enemyList.lock()->SetDefenseSuc(false);
+					}
 				}
 			}
 			else if (m_playerState & rlAttackThree)
@@ -2061,23 +2090,29 @@ void Player::ScorpionAttackMove()
 				m_attackMoveSpd *= 0.5f;
 				if (m_attackAnimeCnt == 23)
 				{
-					m_enemy.lock()->SetAttackHit(false);
-					m_enemy.lock()->SetDefenseSuc(false);
+					for (auto& enemyList : m_enemyList)
+					{
+						enemyList.lock()->SetAttackHit(false);
+						enemyList.lock()->SetDefenseSuc(false);
+					}
 				}
 			}
 			else if (m_playerState & rlAttackRush)
 			{
 				m_attackMoveSpd *= 0.5f;
-				if (m_attackAnimeCnt ==  21 ||
-					m_attackAnimeCnt ==  31 || 
-					m_attackAnimeCnt ==  49 ||
-					m_attackAnimeCnt ==  74 ||
-					m_attackAnimeCnt ==  89 || 
+				if (m_attackAnimeCnt == 21 ||
+					m_attackAnimeCnt == 31 ||
+					m_attackAnimeCnt == 49 ||
+					m_attackAnimeCnt == 74 ||
+					m_attackAnimeCnt == 89 ||
 					m_attackAnimeCnt == 107
 					)
 				{
-					m_enemy.lock()->SetAttackHit(false);
-					m_enemy.lock()->SetDefenseSuc(false);
+					for (auto& enemyList : m_enemyList)
+					{
+						enemyList.lock()->SetAttackHit(false);
+						enemyList.lock()->SetDefenseSuc(false);
+					}
 
 					switch (m_attackAnimeCnt)
 					{
@@ -2097,7 +2132,7 @@ void Player::ScorpionAttackMove()
 				}
 			}
 		}
-		
+
 		m_pos += m_attackMoveDir * m_attackMoveSpd;
 	}
 }
@@ -2170,7 +2205,7 @@ void Player::TutorialUpdate()
 	case Ui::TutorialType::bukiTu:
 		break;
 	case Ui::TutorialType::sukoADMoveTu:
-		if(m_playerState & (rlAttackThree | rlAttackRush | rAttackThree | lAttackThree | mantis) && m_animator->IsAnimationEnd())
+		if (m_playerState & (rlAttackThree | rlAttackRush | rAttackThree | lAttackThree | mantis) && m_animator->IsAnimationEnd())
 		{
 			m_wpUi.lock()->AddTutorialCnt();
 		}
@@ -2248,8 +2283,12 @@ void Player::ScorpionActionDecision()
 						{
 							if (!(m_playerState & (mantis)))
 							{
-								m_enemy.lock()->SetAttackHit(false);
-								m_enemy.lock()->SetDefenseSuc(false);
+								for (auto& enemyList : m_enemyList)
+								{
+									enemyList.lock()->SetAttackHit(false);
+									enemyList.lock()->SetDefenseSuc(false);
+								}
+
 								m_playerState |= mantis;
 								m_playerState &= ~rAttack;
 								m_playerState &= ~lAttack;
@@ -2272,8 +2311,11 @@ void Player::ScorpionActionDecision()
 						else
 						{
 							m_bRushAttackPossible = false;
-							m_enemy.lock()->SetAttackHit(false);
-							m_enemy.lock()->SetDefenseSuc(false);
+							for (auto& enemyList : m_enemyList)
+							{
+								enemyList.lock()->SetAttackHit(false);
+								enemyList.lock()->SetDefenseSuc(false);
+							}
 							m_playerState |= rlAttackOne;
 							m_playerState &= ~rAttack;
 							m_playerState &= ~lAttack;
@@ -2298,8 +2340,11 @@ void Player::ScorpionActionDecision()
 						{
 							if (!(m_playerState & (mantis)))
 							{
-								m_enemy.lock()->SetAttackHit(false);
-								m_enemy.lock()->SetDefenseSuc(false);
+								for (auto& enemyList : m_enemyList)
+								{
+									enemyList.lock()->SetAttackHit(false);
+									enemyList.lock()->SetDefenseSuc(false);
+								}
 								m_playerState |= mantis;
 								m_playerState &= ~rAttack;
 								m_playerState &= ~lAttack;
@@ -2322,8 +2367,11 @@ void Player::ScorpionActionDecision()
 						else
 						{
 							m_bRushAttackPossible = false;
-							m_enemy.lock()->SetAttackHit(false);
-							m_enemy.lock()->SetDefenseSuc(false);
+							for (auto& enemyList : m_enemyList)
+							{
+								enemyList.lock()->SetAttackHit(false);
+								enemyList.lock()->SetDefenseSuc(false);
+							}
 							m_playerState |= rlAttackOne;
 							m_playerState &= ~rAttack;
 							m_playerState &= ~lAttack;
@@ -2350,8 +2398,11 @@ void Player::ScorpionActionDecision()
 				{
 					if (!(m_playerState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
 					{
-						m_enemy.lock()->SetAttackHit(false);
-						m_enemy.lock()->SetDefenseSuc(false);
+						for (auto& enemyList : m_enemyList)
+						{
+							enemyList.lock()->SetAttackHit(false);
+							enemyList.lock()->SetDefenseSuc(false);
+						}
 						m_playerState |= lAttackOne;
 						m_playerState &= ~rAttack;
 						m_bAttackAnimeDelay = false;
@@ -2382,8 +2433,11 @@ void Player::ScorpionActionDecision()
 				{
 					if (!(m_playerState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
 					{
-						m_enemy.lock()->SetAttackHit(false);
-						m_enemy.lock()->SetDefenseSuc(false);
+						for (auto& enemyList : m_enemyList)
+						{
+							enemyList.lock()->SetAttackHit(false);
+							enemyList.lock()->SetDefenseSuc(false);
+						}
 						m_playerState |= rAttackOne;
 						m_playerState &= ~lAttack;
 						m_bAttackAnimeDelay = false;
@@ -2419,8 +2473,11 @@ void Player::ScorpionActionDecision()
 					{
 						if (m_playerState & rlAttackOne)
 						{
-							m_enemy.lock()->SetAttackHit(false);
-							m_enemy.lock()->SetDefenseSuc(false);
+							for (auto& enemyList : m_enemyList)
+							{
+								enemyList.lock()->SetAttackHit(false);
+								enemyList.lock()->SetDefenseSuc(false);
+							}
 
 							m_playerState |= rlAttackTwo;
 							m_playerState &= ~rlAttackOne;
@@ -2434,8 +2491,11 @@ void Player::ScorpionActionDecision()
 						}
 						else if (m_playerState & rlAttackTwo)
 						{
-							m_enemy.lock()->SetAttackHit(false);
-							m_enemy.lock()->SetDefenseSuc(false);
+							for (auto& enemyList : m_enemyList)
+							{
+								enemyList.lock()->SetAttackHit(false);
+								enemyList.lock()->SetDefenseSuc(false);
+							}
 
 							m_playerState |= rlAttackThree;
 							m_playerState &= ~rlAttackTwo;
@@ -2449,8 +2509,11 @@ void Player::ScorpionActionDecision()
 						}
 						else if (m_playerState & rlAttackThree && m_bRushAttackPossible)
 						{
-							m_enemy.lock()->SetAttackHit(false);
-							m_enemy.lock()->SetDefenseSuc(false);
+							for (auto& enemyList : m_enemyList)
+							{
+								enemyList.lock()->SetAttackHit(false);
+								enemyList.lock()->SetDefenseSuc(false);
+							}
 
 							m_playerState |= rlAttackRush;
 							m_playerState &= rlAttackRush;
@@ -2475,8 +2538,11 @@ void Player::ScorpionActionDecision()
 					{
 						if (m_playerState & lAttackOne)
 						{
-							m_enemy.lock()->SetAttackHit(false);
-							m_enemy.lock()->SetDefenseSuc(false);
+							for (auto& enemyList : m_enemyList)
+							{
+								enemyList.lock()->SetAttackHit(false);
+								enemyList.lock()->SetDefenseSuc(false);
+							}
 
 							m_playerState |= lAttackTwo;
 							m_playerState &= ~lAttackOne;
@@ -2490,8 +2556,11 @@ void Player::ScorpionActionDecision()
 						}
 						else if (m_playerState & lAttackTwo)
 						{
-							m_enemy.lock()->SetAttackHit(false);
-							m_enemy.lock()->SetDefenseSuc(false);
+							for (auto& enemyList : m_enemyList)
+							{
+								enemyList.lock()->SetAttackHit(false);
+								enemyList.lock()->SetDefenseSuc(false);
+							}
 
 							m_playerState |= lAttackThree;
 							m_playerState &= ~lAttackTwo;
@@ -2514,8 +2583,11 @@ void Player::ScorpionActionDecision()
 					{
 						if (m_playerState & rAttackOne)
 						{
-							m_enemy.lock()->SetAttackHit(false);
-							m_enemy.lock()->SetDefenseSuc(false);
+							for (auto& enemyList : m_enemyList)
+							{
+								enemyList.lock()->SetAttackHit(false);
+								enemyList.lock()->SetDefenseSuc(false);
+							}
 
 							m_playerState |= rAttackTwo;
 							m_playerState &= ~rAttackOne;
@@ -2529,8 +2601,11 @@ void Player::ScorpionActionDecision()
 						}
 						else if (m_playerState & rAttackTwo)
 						{
-							m_enemy.lock()->SetAttackHit(false);
-							m_enemy.lock()->SetDefenseSuc(false);
+							for (auto& enemyList : m_enemyList)
+							{
+								enemyList.lock()->SetAttackHit(false);
+								enemyList.lock()->SetDefenseSuc(false);
+							}
 
 							m_playerState |= rAttackThree;
 							m_playerState &= ~rAttackTwo;

@@ -72,30 +72,50 @@ private:
 	KdTexture m_Point8Tex;
 	KdTexture m_Point9Tex;
 
-	KdTexture m_tutorialTex;
 	KdTexture m_exitTex;
-	KdTexture m_gameTex;
-	KdTexture m_optionTex;
 	KdTexture m_titleTex;
 
-	float m_tutorialScale = 0;
-	float m_exitScale = 0;
-	float m_gameScale = 0;
+	KdTexture m_selectTitleTex;
+	KdTexture m_selectExitTex;
+	KdTexture m_optionTex;
+
+	KdTexture m_gameTex;
+	KdTexture m_challengeTex;
+	KdTexture m_selectBackTex;
+	KdTexture m_trainingTex;
+	KdTexture m_tutorialTex;
+
+
 	float m_optionScale = 0;
 	float m_titleScale = 0;
+	float m_exitScale = 0;
 
-	Math::Vector3 m_tutorialPos = {};
+	float m_gameScale = 0;
+	float m_tutorialScale = 0;
+	float m_challengeScale = 0;
+	float m_trainingScale = 0;
+
 	Math::Vector3 m_exitPos = {};
-	Math::Vector3 m_gamePos = {};
 	Math::Vector3 m_optionPos = {};
 	Math::Vector3 m_titlePos = {};
 
-	bool m_bTutorial = false;
+	Math::Vector3 m_tutorialPos   = {};
+	Math::Vector3 m_gamePos       = {};
+	Math::Vector3 m_challengePos  = {};
+	Math::Vector3 m_selectBackPos = {};
+	Math::Vector3 m_trainingPos   = {};
+
+
 	bool m_bExit = false;
 	bool m_bFirstExit = false;
-	bool m_bGame = false;
 	bool m_bOption = false;
+
+	bool m_bTutorial = false;
+	bool m_bGame = false;
 	bool m_bTitle = false;
+	bool m_bChallenge = false;
+	bool m_bTraining = false;
+
 
 	int m_weaponPoint = 0;
 	std::string m_rank;

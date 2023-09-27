@@ -89,6 +89,7 @@ public:
 
 	void SetCamera(std::shared_ptr<CameraBase> a_camera) { m_wpCamera = a_camera; }
 	void SetEnemy(std::shared_ptr<Enemy> a_enemy) { m_enemy = a_enemy; }
+	void AddEnemy(std::shared_ptr<Enemy> a_enemy) { m_enemyList.push_back(a_enemy); }
 	void SetUi(std::shared_ptr<Ui> a_ui) { m_wpUi = a_ui; }
 
 	const UINT& GetPlayerState() { return m_playerState; }
@@ -196,6 +197,7 @@ private:
 
 
 	std::weak_ptr<Enemy> m_enemy;
+	std::list<std::weak_ptr<Enemy>> m_enemyList;
 
 	int m_attackAnimeCnt = 0;
 	int m_runAnimeCnt = 0;

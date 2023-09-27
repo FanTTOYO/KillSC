@@ -1341,11 +1341,12 @@ void Ui::SelectUpdate()
 	if (Dis.Length() <= 75)
 	{
 		m_tutorialScale = 1.1f;
-		m_exitScale = 1.0f;
 		m_gameScale = 1.0f;
-		m_optionScale = 1.0f;
-		m_titleScale = 1.0f;
+		m_challengeScale = 1.0f;
+		m_trainingScale = 1.1f;
 
+		m_exitScale  = 1.0f;
+		m_titleScale = 1.0f;
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
 			if (!m_addFadeAlpha)
@@ -1368,14 +1369,15 @@ void Ui::SelectUpdate()
 	ExitPos.z = m_exitPos.z;
 
 	Dis = ExitPos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 75)
+	if (Dis.Length() <= 25)
 	{
 		m_tutorialScale = 1.0f;
-		m_exitScale = 1.1f;
 		m_gameScale = 1.0f;
-		m_optionScale = 1.0f;
-		m_titleScale = 1.0f;
+		m_challengeScale = 1.0f;
+		m_trainingScale = 1.0f;
 
+		m_exitScale  = 1.1f;
+		m_titleScale = 1.0f;
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
 			if (!m_addFadeAlpha)
@@ -1402,11 +1404,12 @@ void Ui::SelectUpdate()
 	if (Dis.Length() <= 75)
 	{
 		m_tutorialScale = 1.0f;
-		m_exitScale = 1.0f;
 		m_gameScale = 1.1f;
-		m_optionScale = 1.0f;
-		m_titleScale = 1.0f;
+		m_challengeScale = 1.0f;
+		m_trainingScale = 1.0f;
 
+		m_exitScale  = 1.0f;
+		m_titleScale = 1.0f;
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
 			if (!m_addFadeAlpha)
@@ -1423,34 +1426,69 @@ void Ui::SelectUpdate()
 		m_gameScale = 1.0f;
 	}
 
-	Math::Vector3 OptionPos;
-	OptionPos.x = m_optionPos.x + (float)(pwi->rcWindow.left);
-	OptionPos.y = m_optionPos.y /*+ (float)(pwi->rcWindow.top)*/;
-	OptionPos.z = m_optionPos.z;
+	Math::Vector3 ChallengePos;
+	ChallengePos.x = m_challengePos.x + (float)(pwi->rcWindow.left);
+	ChallengePos.y = m_challengePos.y /*+ (float)(pwi->rcWindow.top)*/;
+	ChallengePos.z = m_challengePos.z;
 
-	Dis = OptionPos - Math::Vector3(mouseX, mouseY, 0.0f);
+	Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 75)
 	{
 		m_tutorialScale = 1.0f;
-		m_exitScale = 1.0f;
 		m_gameScale = 1.0f;
-		m_optionScale = 1.1f;
-		m_titleScale = 1.0f;
+		m_challengeScale = 1.1f;
+		m_trainingScale = 1.0f;
 
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		m_exitScale     = 1.0f;
+		m_titleScale    = 1.0f;
+
+		/*if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
-			/*if (!m_addFadeAlpha)
+			if (!m_addFadeAlpha)
 			{
-				m_bOption = true;
+				m_bChallenge = true;
 				m_addFadeAlpha = true;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
-			}*/
-		}
+			}
+		}*/
 
 	}
 	else
 	{
-		m_optionScale = 1.0f;
+		m_challengeScale = 1.0f;
+	}
+
+	Math::Vector3 OptionPos;
+	OptionPos.x = m_trainingPos.x + (float)(pwi->rcWindow.left);
+	OptionPos.y = m_trainingPos.y /*+ (float)(pwi->rcWindow.top)*/;
+	OptionPos.z = m_trainingPos.z;
+
+	Dis = OptionPos - Math::Vector3(mouseX, mouseY, 0.0f);
+	if (Dis.Length() <= 75)
+	{
+		m_tutorialScale  = 1.0f;
+		m_gameScale      = 1.0f;
+		m_challengeScale = 1.0f;
+		m_trainingScale  = 1.1f;
+
+		m_exitScale      = 1.f;
+		m_titleScale     = 1.0f;
+		//m_optionScale    = 1.1f;
+
+		/*if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		{
+			if (!m_addFadeAlpha)
+			{
+				m_bTraining = true;
+				m_addFadeAlpha = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+			}
+		}*/
+
+	}
+	else
+	{
+		m_trainingScale = 1.0f;
 	}
 
 	Math::Vector3 TitlePos;
@@ -1458,14 +1496,16 @@ void Ui::SelectUpdate()
 	TitlePos.y = m_titlePos.y /*+ (float)(pwi->rcWindow.top)*/;
 	TitlePos.z = m_titlePos.z;
 
-	Dis = m_titlePos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 75)
+	Dis = TitlePos - Math::Vector3(mouseX, mouseY, 0.0f);
+	if (Dis.Length() <= 25)
 	{
 		m_tutorialScale = 1.0f;
-		m_exitScale = 1.0f;
 		m_gameScale = 1.0f;
-		m_optionScale = 1.0f;
-		m_titleScale = 1.1f;
+		m_challengeScale = 1.0f;
+		m_trainingScale = 1.0f;
+
+		m_exitScale     = 1.0f;
+		m_titleScale    = 1.1f;
 
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
@@ -2446,29 +2486,33 @@ void Ui::DrawSprite()
 		break;
 	case UiType::select:
 		mat = Math::Matrix::Identity;
+		mat = Math::Matrix::CreateTranslation(m_selectBackPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		color = { 0,0,0,1.0f };
-		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectBackTex, 0, 0, 1280, 720);
 
 		mat = Math::Matrix::CreateScale(m_gameScale) * Math::Matrix::CreateTranslation(m_gamePos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_gameTex, 0, 0, 700, 120);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_gameTex, 0, 0, 420, 580);
 
-		mat = Math::Matrix::CreateScale(m_optionScale) * Math::Matrix::CreateTranslation(m_optionPos);
+		mat = Math::Matrix::CreateScale(m_challengeScale) * Math::Matrix::CreateTranslation(m_challengePos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_optionTex, 0, 0, 700, 120);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_challengeTex, 0, 0, 420, 580);
 
 		mat = Math::Matrix::CreateScale(m_tutorialScale) * Math::Matrix::CreateTranslation(m_tutorialPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_tutorialTex, 0, 0, 700, 120);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_tutorialTex, 0, 0, 150, 265);
+
+		mat = Math::Matrix::CreateScale(m_trainingScale) * Math::Matrix::CreateTranslation(m_trainingPos);
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_trainingTex, 0, 0, 150, 265);
 
 		mat = Math::Matrix::CreateScale(m_titleScale) * Math::Matrix::CreateTranslation(m_titlePos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_titleTex, 0, 0, 700, 120);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectTitleTex, 0, 0, 100, 50);
 
 		mat = Math::Matrix::CreateScale(m_exitScale) * Math::Matrix::CreateTranslation(m_exitPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_exitTex, 0, 0, 700, 120);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectExitTex, 0, 0, 100, 50);
 
 		mat = Math::Matrix::Identity;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -2519,9 +2563,7 @@ void Ui::Init()
 
 	m_pushToEnterTex.Load("Asset/Textures/Ui/shared/PushToEnter.png");
 
-	m_tutorialTex.Load("Asset/Textures/Ui/OPTION/Tutorial.png");
 	m_exitTex.Load("Asset/Textures/Ui/OPTION/EXIT.png");
-	m_gameTex.Load("Asset/Textures/Ui/OPTION/GAME.png");
 	m_optionTex.Load("Asset/Textures/Ui/OPTION/OPTION.png");
 	m_titleTex.Load("Asset/Textures/Ui/OPTION/TITLE.png");
 
@@ -2546,6 +2588,14 @@ void Ui::Init()
 	m_tyubukiTex.Load("Asset/Textures/Ui/Tutorial/tyubuki.png");
 	m_tyuKihonTex.Load("Asset/Textures/Ui/Tutorial/tyuKihon.png");
 
+	m_selectTitleTex.Load("Asset/Textures/Ui/Select/title.png");
+	m_selectExitTex.Load("Asset/Textures/Ui/Select/exit.png");
+	m_gameTex.Load("Asset/Textures/Ui/Select/Battle.png");
+	m_challengeTex.Load("Asset/Textures/Ui/Select/Challenge.png");
+	m_selectBackTex.Load("Asset/Textures/Ui/Select/SelectBack.png");
+	m_trainingTex.Load("Asset/Textures/Ui/Select/Training.png");
+	m_tutorialTex.Load("Asset/Textures/Ui/Select/Tutorial.png");
+
 	m_fadeAlpha = 1.0f;
 	m_addFadeAlpha = false;
 	m_bFirstInResult = true;
@@ -2554,16 +2604,23 @@ void Ui::Init()
 	m_bPushToEnterAlphaAdd = false;
 
 	m_tutorialScale = 1.0f;
-	m_exitScale = 1.0f;
 	m_gameScale = 1.0f;
-	m_optionScale = 1.0f;
-	m_titleScale = 1.0f;
+	m_challengeScale = 0;
+	m_trainingScale = 0;
 
-	m_gamePos = { 0,280,0 };
-	m_optionPos = { 0,140,0 };
-	m_tutorialPos = { 0,0,0 };
-	m_titlePos = { 0,-140,0 };
-	m_exitPos = { 0,-280,0 };
+	m_titleScale  = 1.0f;
+	m_optionScale = 1.0f;
+	m_exitScale   = 1.0f;
+
+	m_optionPos = { 550,-125,0 };
+	m_titlePos =  { 550,-180,0 };
+	m_exitPos =   { 550,-250,0 };
+
+	m_gamePos       = { -195, -20, 0};
+	m_challengePos  = {  265, -20, 0};
+	m_tutorialPos   = { -535, 138, 0};
+	m_trainingPos   = { -535,-178, 0};
+	m_selectBackPos = {    0,   0, 0};
 
 	m_bTutorial = false;
 	m_bExit = false;
