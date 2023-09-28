@@ -63,8 +63,8 @@ void Player::Init()
 
 	for (auto& enemyList : m_enemyList)
 	{
-		sco->SetTarget(enemyList.lock());
-		sco2->SetTarget(enemyList.lock());
+		sco->AddTarget(enemyList.lock());
+		sco2->AddTarget(enemyList.lock());
 	}
 	std::shared_ptr<Hopper> hopper;
 	hopper = std::make_shared<Hopper>();
@@ -224,9 +224,56 @@ void Player::Update()
 			if (!m_bMButtonState)
 			{
 				const std::shared_ptr<GameCamera> gCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
+				float smallAng = 0;
+				int i = 0;
 				for (auto& enemyList : m_enemyList)
 				{
-					gCamera->SetEnemy(enemyList.lock());
+					Math::Vector3 nowVec = m_mWorld.Backward();
+					nowVec.y = 0.0f;
+					nowVec.Normalize();
+
+					// 向きたい方向
+					Math::Vector3 toVec = enemyList.lock()->GetPos() - GetPos();
+					toVec.y = 0.0f;
+					toVec.Normalize();
+
+					Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, toVec);
+					if (dot.x > 1)
+					{
+						dot.x = 1;
+					}
+					if (dot.x < -1)
+					{
+						dot.x = -1;
+					}
+
+					// 角度を取得
+					float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+					if (i == 0)
+					{
+						smallAng = ang;
+						++i;
+						gCamera->SetEnemy(enemyList.lock());
+						continue;
+					}
+
+					if (smallAng > ang)
+					{
+						smallAng = ang;
+						gCamera->SetEnemy(enemyList.lock());
+						continue;
+					}
+					else if (smallAng == ang)
+					{
+						Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
+						if (cross.y >= 0)
+						{
+							smallAng == ang;
+							++i;
+							gCamera->SetEnemy(enemyList.lock());
+							continue;
+						}
+					}
 				}
 				m_bMButtonState = true;
 			}
@@ -542,36 +589,37 @@ void Player::Update()
 			retSphereList.clear();
 
 			// 球と当たり判定 
-			for (auto& obj : m_enemy.lock()->GetWeaponList())
+			for (auto& obj : enemyList.lock()->GetWeaponList())
 			{
 				obj->Intersects
 				(
 					sphereInfo,
 					&retSphereList
 				);
-			}
 
-			// 球に当たったリスト情報から一番近いオブジェクトを検出
-			maxOverLap = 0;
-			hit = false;
-			hitDir = {}; // 当たった方向
-			for (auto& ret : retSphereList)
-			{
-				// 一番近くで当たったものを探す
-				if (maxOverLap < ret.m_overlapDistance)
+
+				// 球に当たったリスト情報から一番近いオブジェクトを検出
+				maxOverLap = 0;
+				hit = false;
+				hitDir = {}; // 当たった方向
+				for (auto& ret : retSphereList)
 				{
-					maxOverLap = ret.m_overlapDistance;
-					hit = true;
-					hitDir = ret.m_hitDir;
+					// 一番近くで当たったものを探す
+					if (maxOverLap < ret.m_overlapDistance)
+					{
+						maxOverLap = ret.m_overlapDistance;
+						hit = true;
+						hitDir = ret.m_hitDir;
+					}
 				}
-			}
 
-			if (hit)
-			{
-				hitDir.y = 0.0f;
-				hitDir.Normalize();
-				// 球とモデルが当たっている
-				m_pos += (hitDir * maxOverLap);
+				if (hit)
+				{
+					hitDir.y = 0.0f;
+					hitDir.Normalize();
+					// 球とモデルが当たっている
+					m_pos += (hitDir * maxOverLap);
+				}
 			}
 		}
 	}

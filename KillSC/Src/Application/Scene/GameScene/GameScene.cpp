@@ -106,18 +106,25 @@ void GameScene::Init()
 	invisibleWall = std::make_shared<InvisibleWall>();
 	m_objList.push_back(invisibleWall);
 
-	std::shared_ptr<Enemy> enemy;
-	enemy = std::make_shared<Enemy>();
-	m_objList.push_back(enemy);
-
 	std::shared_ptr<Player> player;
 	player = std::make_shared<Player>();
 	m_objList.push_back(player);
 	m_wpPlayer = player;
-	enemy->SetTarget(player);
-	player->AddEnemy(enemy);
+
+
+	std::shared_ptr<Enemy> enemy;
+	
+	for (int i = 0; i < 3; ++i)
+	{
+		enemy = std::make_shared<Enemy>();
+		m_objList.push_back(enemy);
+		enemy->SetTarget(player);
+		player->AddEnemy(enemy);
+		enemy->Init();
+		enemy->SetPos(Math::Vector3(5 * i,0,20));
+	}
+
 	player->Init();
-	enemy->Init();
 
 	std::shared_ptr<GameCamera> camera = std::make_shared<GameCamera>();
 	camera->SetTarget(player);

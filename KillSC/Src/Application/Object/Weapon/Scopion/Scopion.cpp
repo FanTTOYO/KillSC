@@ -333,70 +333,18 @@ void Scopion::PlayerHitAttackChaeck()
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
 
-	/*for (auto& obj : m_pTargetList)
-	{*/
-	// UŒ‚‚Ì“–‚½‚è”»’è
-	for (auto& wepLis : m_pTarget.lock()->GetWeaponList())
+	for (auto& pTarget : m_pTargetList)
 	{
-		if (m_pTarget.lock()->GetEnemyState() & eDefense && !m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
+		// UŒ‚‚Ì“–‚½‚è”»’è
+		for (auto& wepLis : pTarget.lock()->GetWeaponList())
 		{
-			if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm)break;
-			if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm)break;
-
-			node = m_model->FindNode("AttackPointOne");
-			KdCollider::SphereInfo sphereInfo;
-			mat = node->m_worldTransform * m_mWorld;
-			sphereInfo.m_sphere.Center = mat.Translation();
-			sphereInfo.m_sphere.Radius = 0.25f;
-			sphereInfo.m_type = KdCollider::TypeGard;
-
-#ifdef _DEBUG
-			m_pDebugWire->AddDebugSphere
-			(
-				sphereInfo.m_sphere.Center,
-				sphereInfo.m_sphere.Radius,
-				{ 0,0,0,1 }
-			);
-#endif
-
-			std::list<KdCollider::CollisionResult> retSphereList;
-
-			wepLis->Intersects
-			(
-				sphereInfo,
-				&retSphereList
-			);
-
-			Math::Vector3 hitDir = {};
-			bool hit = false;
-			for (auto& ret : retSphereList)
+			if (pTarget.lock()->GetEnemyState() & eDefense && !pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
 			{
-				if (ret.m_overlapDistance > 0)
-				{
-					Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-					float dot = nowDir.Dot(targetDir);
-					dot = std::clamp(dot, -1.0f, 1.0f);
+				if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm)break;
+				if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm)break;
 
-					float betweenAng = acos(dot);
-					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-					if (betweenAng >= 0 && betweenAng <= 45)
-					{
-						hit = true;
-					}
-				}
-			}
-
-			if (hit)
-			{
-				m_pTarget.lock()->SetDefenseSuc(true);
-				m_owner.lock()->HasDefense();
-				KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
-			}
-			else
-			{
-				node = m_model->FindNode("AttackPointTwo");
-				sphereInfo;
+				node = m_model->FindNode("AttackPointOne");
+				KdCollider::SphereInfo sphereInfo;
 				mat = node->m_worldTransform * m_mWorld;
 				sphereInfo.m_sphere.Center = mat.Translation();
 				sphereInfo.m_sphere.Radius = 0.25f;
@@ -411,7 +359,7 @@ void Scopion::PlayerHitAttackChaeck()
 				);
 #endif
 
-				retSphereList.clear();
+				std::list<KdCollider::CollisionResult> retSphereList;
 
 				wepLis->Intersects
 				(
@@ -419,13 +367,14 @@ void Scopion::PlayerHitAttackChaeck()
 					&retSphereList
 				);
 
-				hit = false;
+				Math::Vector3 hitDir = {};
+				bool hit = false;
 				for (auto& ret : retSphereList)
 				{
 					if (ret.m_overlapDistance > 0)
 					{
-						Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+						Math::Vector3 nowDir = pTarget.lock()->GetMatrix().Backward();
+						Math::Vector3 targetDir = m_owner.lock()->GetPos() - pTarget.lock()->GetPos();
 						float dot = nowDir.Dot(targetDir);
 						dot = std::clamp(dot, -1.0f, 1.0f);
 
@@ -440,13 +389,13 @@ void Scopion::PlayerHitAttackChaeck()
 
 				if (hit)
 				{
-					m_pTarget.lock()->SetDefenseSuc(true);
+					pTarget.lock()->SetDefenseSuc(true);
 					m_owner.lock()->HasDefense();
 					KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
 				}
 				else
 				{
-					node = m_model->FindNode("AttackPointThree");
+					node = m_model->FindNode("AttackPointTwo");
 					sphereInfo;
 					mat = node->m_worldTransform * m_mWorld;
 					sphereInfo.m_sphere.Center = mat.Translation();
@@ -475,8 +424,8 @@ void Scopion::PlayerHitAttackChaeck()
 					{
 						if (ret.m_overlapDistance > 0)
 						{
-							Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-							Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
+							Math::Vector3 nowDir = pTarget.lock()->GetMatrix().Backward();
+							Math::Vector3 targetDir = m_owner.lock()->GetPos() - pTarget.lock()->GetPos();
 							float dot = nowDir.Dot(targetDir);
 							dot = std::clamp(dot, -1.0f, 1.0f);
 
@@ -491,94 +440,73 @@ void Scopion::PlayerHitAttackChaeck()
 
 					if (hit)
 					{
-						m_pTarget.lock()->SetDefenseSuc(true);
+						pTarget.lock()->SetDefenseSuc(true);
 						m_owner.lock()->HasDefense();
 						KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
+					}
+					else
+					{
+						node = m_model->FindNode("AttackPointThree");
+						sphereInfo;
+						mat = node->m_worldTransform * m_mWorld;
+						sphereInfo.m_sphere.Center = mat.Translation();
+						sphereInfo.m_sphere.Radius = 0.25f;
+						sphereInfo.m_type = KdCollider::TypeGard;
+
+#ifdef _DEBUG
+						m_pDebugWire->AddDebugSphere
+						(
+							sphereInfo.m_sphere.Center,
+							sphereInfo.m_sphere.Radius,
+							{ 0,0,0,1 }
+						);
+#endif
+
+						retSphereList.clear();
+
+						wepLis->Intersects
+						(
+							sphereInfo,
+							&retSphereList
+						);
+
+						hit = false;
+						for (auto& ret : retSphereList)
+						{
+							if (ret.m_overlapDistance > 0)
+							{
+								Math::Vector3 nowDir = pTarget.lock()->GetMatrix().Backward();
+								Math::Vector3 targetDir = m_owner.lock()->GetPos() - pTarget.lock()->GetPos();
+								float dot = nowDir.Dot(targetDir);
+								dot = std::clamp(dot, -1.0f, 1.0f);
+
+								float betweenAng = acos(dot);
+								betweenAng = DirectX::XMConvertToDegrees(betweenAng);
+								if (betweenAng >= 0 && betweenAng <= 45)
+								{
+									hit = true;
+								}
+							}
+						}
+
+						if (hit)
+						{
+							pTarget.lock()->SetDefenseSuc(true);
+							m_owner.lock()->HasDefense();
+							KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
+						}
 					}
 				}
 			}
 		}
-	}
-	//}
 
-	if (!m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush) && m_pTarget.lock()->GetInvincibilityTimeCnt() == 0)
-	{
-		if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
-		if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
-		node = m_model->FindNode("AttackPointOne");
-		KdCollider::SphereInfo sphereInfo;
-		mat = node->m_worldTransform * m_mWorld;
-		sphereInfo.m_sphere.Center = mat.Translation();
-		sphereInfo.m_sphere.Radius = 0.20f;
-		sphereInfo.m_type = KdCollider::TypeDamage;
 
-#ifdef _DEBUG
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius,
-			{ 0,0,0,1 }
-		);
-#endif
-
-		std::list<KdCollider::CollisionResult> retSphereList;
-
-		/*for (auto& obj : SceneManager::Instance().GetObjList())
-		{*/
-		m_pTarget.lock()->Intersects
-		(
-			sphereInfo,
-			&retSphereList
-		);
-
-		Math::Vector3 hitDir = {};
-		bool hit = false;
-		for (auto& ret : retSphereList)
+		if (!pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush) && pTarget.lock()->GetInvincibilityTimeCnt() == 0)
 		{
-			hit = true;
-			hitDir = ret.m_hitDir;
-		}
-
-		if (hit)
-		{
-			if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::lAttackOne) && player->GetPlayerState() & (Player::PlayerState::grassHopperDashF))
-			{
-				m_pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
-				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-			}
-			else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne |   Player::PlayerState::rAttackTwo |
-				                                 Player::PlayerState::lAttackOne |   Player::PlayerState::lAttackTwo | 
-				                                 Player::PlayerState::rlAttack)  || 
-				                                (Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 8) ||
-				                                (Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 8 && player->GetAnimationCnt()  < 21)) || 
-											    (Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31)))
-			{
-				if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
-				{
-					player->SetBRushAttackPossible(true);
-				}
-
-				m_pTarget.lock()->OnHit(player->GetMatrix().Backward());
-				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-			}
-			else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
-			{
-				m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
-				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-			}
-			else if(player->GetPlayerState() & Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49) || 
-				                                                                    (player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 74) ||
-				                                                                    (player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89)  || 
-				                                                                    (player->GetAnimationCnt() >= 89 && player->GetAnimationCnt() < 107))
-			{
-				m_pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
-				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-			}
-		}
-		else
-		{
-			node = m_model->FindNode("AttackPointTwo");
-			sphereInfo;
+			if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
+			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
+			node = m_model->FindNode("AttackPointOne");
+			KdCollider::SphereInfo sphereInfo;
 			mat = node->m_worldTransform * m_mWorld;
 			sphereInfo.m_sphere.Center = mat.Translation();
 			sphereInfo.m_sphere.Radius = 0.20f;
@@ -593,15 +521,10 @@ void Scopion::PlayerHitAttackChaeck()
 			);
 #endif
 
-			retSphereList.clear();
+			std::list<KdCollider::CollisionResult> retSphereList;
 
-			m_pTarget.lock()->Intersects
-			(
-				sphereInfo,
-				&retSphereList
-			);
-
-			hit = false;
+			Math::Vector3 hitDir = {};
+			bool hit = false;
 			for (auto& ret : retSphereList)
 			{
 				hit = true;
@@ -612,40 +535,41 @@ void Scopion::PlayerHitAttackChaeck()
 			{
 				if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::lAttackOne) && player->GetPlayerState() & (Player::PlayerState::grassHopperDashF))
 				{
-					m_pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
+					pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
 				else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
 					Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
 					Player::PlayerState::rlAttack) ||
 					(Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 8) ||
-					(Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 8 && player->GetAnimationCnt() < 21)))
+					(Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 8 && player->GetAnimationCnt() < 21)) ||
+					(Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31)))
 				{
 					if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
 					{
 						player->SetBRushAttackPossible(true);
 					}
 
-					m_pTarget.lock()->OnHit(player->GetMatrix().Backward());
+					pTarget.lock()->OnHit(player->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
 				else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
 				{
-					m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+					pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
-				else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31) ||
-					(player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49) ||
+				else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49) ||
 					(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 74) ||
-					(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89))
+					(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89) ||
+					(player->GetAnimationCnt() >= 89 && player->GetAnimationCnt() < 107))
 				{
-					m_pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
+					pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
 			}
 			else
 			{
-				node = m_model->FindNode("AttackPointThree");
+				node = m_model->FindNode("AttackPointTwo");
 				sphereInfo;
 				mat = node->m_worldTransform * m_mWorld;
 				sphereInfo.m_sphere.Center = mat.Translation();
@@ -663,7 +587,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 				retSphereList.clear();
 
-				m_pTarget.lock()->Intersects
+				pTarget.lock()->Intersects
 				(
 					sphereInfo,
 					&retSphereList
@@ -680,7 +604,7 @@ void Scopion::PlayerHitAttackChaeck()
 				{
 					if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::lAttackOne) && player->GetPlayerState() & (Player::PlayerState::grassHopperDashF))
 					{
-						m_pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
+						pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
 					else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
@@ -694,12 +618,12 @@ void Scopion::PlayerHitAttackChaeck()
 							player->SetBRushAttackPossible(true);
 						}
 
-						m_pTarget.lock()->OnHit(player->GetMatrix().Backward());
+						pTarget.lock()->OnHit(player->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
 					else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
 					{
-						m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+						pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
 					else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31) ||
@@ -707,523 +631,13 @@ void Scopion::PlayerHitAttackChaeck()
 						(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 74) ||
 						(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89))
 					{
-						m_pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
+						pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
 				}
-			}
-		}
-		//}
-	}
-}
-
-void Scopion::PlayerManAttackChaeck()
-{
-	const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
-	if (!(player->GetWeaponType() & (scorpion | lScorpion)))return;
-
-	const KdModelWork::Node* node = nullptr;
-	Math::Matrix mat = Math::Matrix::Identity;
-
-	/*for (auto& obj : m_pTargetList)
-	{*/
-	// UŒ‚‚Ì“–‚½‚è”»’è
-//	for (auto& wepLis : m_pTarget.lock()->GetWeaponList())
-//	{
-//		if (m_pTarget.lock()->GetEnemyState() & eDefense && !m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & Player::PlayerState::mantis)
-//		{
-//			if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm)break;
-//			if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm)break;
-//
-//			node = m_manModel->FindNode("AttackPointOne");
-//			KdCollider::SphereInfo sphereInfo;
-//			mat = node->m_worldTransform * m_mWorld;
-//			sphereInfo.m_sphere.Center = mat.Translation();
-//			sphereInfo.m_sphere.Radius = 0.25f;
-//			sphereInfo.m_type = KdCollider::TypeGard;
-//
-//#ifdef _DEBUG
-//			m_pDebugWire->AddDebugSphere
-//			(
-//				sphereInfo.m_sphere.Center,
-//				sphereInfo.m_sphere.Radius,
-//				{ 0,0,0,1 }
-//			);
-//#endif
-//
-//			std::list<KdCollider::CollisionResult> retSphereList;
-//
-//			wepLis->Intersects
-//			(
-//				sphereInfo,
-//				&retSphereList
-//			);
-//
-//			Math::Vector3 hitDir = {};
-//			bool hit = false;
-//			for (auto& ret : retSphereList)
-//			{
-//				if (ret.m_overlapDistance > 0)
-//				{
-//					Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-//					Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-//					float dot = nowDir.Dot(targetDir);
-//					dot = std::clamp(dot, -1.0f, 1.0f);
-//
-//					float betweenAng = acos(dot);
-//					betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-//					if (betweenAng >= 0 && betweenAng <= 45)
-//					{
-//						hit = true;
-//					}
-//				}
-//			}
-//
-//			if (hit)
-//			{
-//				m_pTarget.lock()->SetDefenseSuc(true);
-//				m_owner.lock()->HasDefense();
-//				KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
-//			}
-//			else
-//			{
-//				node = m_manModel->FindNode("AttackPointTwo");
-//				sphereInfo;
-//				mat = node->m_worldTransform * m_mWorld;
-//				sphereInfo.m_sphere.Center = mat.Translation();
-//				sphereInfo.m_sphere.Radius = 0.25f;
-//				sphereInfo.m_type = KdCollider::TypeGard;
-//
-//#ifdef _DEBUG
-//				m_pDebugWire->AddDebugSphere
-//				(
-//					sphereInfo.m_sphere.Center,
-//					sphereInfo.m_sphere.Radius,
-//					{ 0,0,0,1 }
-//				);
-//#endif
-//
-//				retSphereList.clear();
-//
-//				wepLis->Intersects
-//				(
-//					sphereInfo,
-//					&retSphereList
-//				);
-//
-//				hit = false;
-//				for (auto& ret : retSphereList)
-//				{
-//					if (ret.m_overlapDistance > 0)
-//					{
-//						Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-//						Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-//						float dot = nowDir.Dot(targetDir);
-//						dot = std::clamp(dot, -1.0f, 1.0f);
-//
-//						float betweenAng = acos(dot);
-//						betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-//						if (betweenAng >= 0 && betweenAng <= 45)
-//						{
-//							hit = true;
-//						}
-//					}
-//				}
-//
-//				if (hit)
-//				{
-//					m_pTarget.lock()->SetDefenseSuc(true);
-//					m_owner.lock()->HasDefense();
-//					KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
-//				}
-//				else
-//				{
-//					node = m_manModel->FindNode("AttackPointThree");
-//					sphereInfo;
-//					mat = node->m_worldTransform * m_mWorld;
-//					sphereInfo.m_sphere.Center = mat.Translation();
-//					sphereInfo.m_sphere.Radius = 0.25f;
-//					sphereInfo.m_type = KdCollider::TypeGard;
-//
-//#ifdef _DEBUG
-//					m_pDebugWire->AddDebugSphere
-//					(
-//						sphereInfo.m_sphere.Center,
-//						sphereInfo.m_sphere.Radius,
-//						{ 0,0,0,1 }
-//					);
-//#endif
-//
-//					retSphereList.clear();
-//
-//					wepLis->Intersects
-//					(
-//						sphereInfo,
-//						&retSphereList
-//					);
-//
-//					hit = false;
-//					for (auto& ret : retSphereList)
-//					{
-//						if (ret.m_overlapDistance > 0)
-//						{
-//							Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-//							Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-//							float dot = nowDir.Dot(targetDir);
-//							dot = std::clamp(dot, -1.0f, 1.0f);
-//
-//							float betweenAng = acos(dot);
-//							betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-//							if (betweenAng >= 0 && betweenAng <= 45)
-//							{
-//								hit = true;
-//							}
-//						}
-//					}
-//
-//					if (hit)
-//					{
-//						m_pTarget.lock()->SetDefenseSuc(true);
-//						m_owner.lock()->HasDefense();
-//						KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
-//					}
-//					else
-//					{
-//						node = m_manModel->FindNode("AttackPointFour");
-//						sphereInfo;
-//						mat = node->m_worldTransform * m_mWorld;
-//						sphereInfo.m_sphere.Center = mat.Translation();
-//						sphereInfo.m_sphere.Radius = 0.25f;
-//						sphereInfo.m_type = KdCollider::TypeGard;
-//
-//#ifdef _DEBUG
-//						m_pDebugWire->AddDebugSphere
-//						(
-//							sphereInfo.m_sphere.Center,
-//							sphereInfo.m_sphere.Radius,
-//							{ 0,0,0,1 }
-//						);
-//#endif
-//
-//						retSphereList.clear();
-//
-//						wepLis->Intersects
-//						(
-//							sphereInfo,
-//							&retSphereList
-//						);
-//
-//						hit = false;
-//						for (auto& ret : retSphereList)
-//						{
-//							if (ret.m_overlapDistance > 0)
-//							{
-//								Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-//								Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-//								float dot = nowDir.Dot(targetDir);
-//								dot = std::clamp(dot, -1.0f, 1.0f);
-//
-//								float betweenAng = acos(dot);
-//								betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-//								if (betweenAng >= 0 && betweenAng <= 45)
-//								{
-//									hit = true;
-//								}
-//							}
-//						}
-//
-//						if (hit)
-//						{
-//							m_pTarget.lock()->SetDefenseSuc(true);
-//							m_owner.lock()->HasDefense();
-//							KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
-//						}
-//						else
-//						{
-//							node = m_manModel->FindNode("AttackPointFive");
-//							sphereInfo;
-//							mat = node->m_worldTransform * m_mWorld;
-//							sphereInfo.m_sphere.Center = mat.Translation();
-//							sphereInfo.m_sphere.Radius = 0.25f;
-//							sphereInfo.m_type = KdCollider::TypeGard;
-//
-//#ifdef _DEBUG
-//							m_pDebugWire->AddDebugSphere
-//							(
-//								sphereInfo.m_sphere.Center,
-//								sphereInfo.m_sphere.Radius,
-//								{ 0,0,0,1 }
-//							);
-//#endif
-//
-//							retSphereList.clear();
-//
-//							wepLis->Intersects
-//							(
-//								sphereInfo,
-//								&retSphereList
-//							);
-//
-//							hit = false;
-//							for (auto& ret : retSphereList)
-//							{
-//								if (ret.m_overlapDistance > 0)
-//								{
-//									Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-//									Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-//									float dot = nowDir.Dot(targetDir);
-//									dot = std::clamp(dot, -1.0f, 1.0f);
-//
-//									float betweenAng = acos(dot);
-//									betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-//									if (betweenAng >= 0 && betweenAng <= 45)
-//									{
-//										hit = true;
-//									}
-//								}
-//							}
-//
-//							if (hit)
-//							{
-//								m_pTarget.lock()->SetDefenseSuc(true);
-//								m_owner.lock()->HasDefense();
-//								KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
-//							}
-//							else
-//							{
-//								node = m_manModel->FindNode("AttackPointSix");
-//								sphereInfo;
-//								mat = node->m_worldTransform * m_mWorld;
-//								sphereInfo.m_sphere.Center = mat.Translation();
-//								sphereInfo.m_sphere.Radius = 0.25f;
-//								sphereInfo.m_type = KdCollider::TypeGard;
-//
-//#ifdef _DEBUG
-//								m_pDebugWire->AddDebugSphere
-//								(
-//									sphereInfo.m_sphere.Center,
-//									sphereInfo.m_sphere.Radius,
-//									{ 0,0,0,1 }
-//								);
-//#endif
-//
-//								retSphereList.clear();
-//
-//								wepLis->Intersects
-//								(
-//									sphereInfo,
-//									&retSphereList
-//								);
-//
-//								hit = false;
-//								for (auto& ret : retSphereList)
-//								{
-//									if (ret.m_overlapDistance > 0)
-//									{
-//										Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-//										Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-//										float dot = nowDir.Dot(targetDir);
-//										dot = std::clamp(dot, -1.0f, 1.0f);
-//
-//										float betweenAng = acos(dot);
-//										betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-//										if (betweenAng >= 0 && betweenAng <= 45)
-//										{
-//											hit = true;
-//										}
-//									}
-//								}
-//
-//								if (hit)
-//								{
-//									m_pTarget.lock()->SetDefenseSuc(true);
-//									m_owner.lock()->HasDefense();
-//									KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
-//								}
-//								else
-//								{
-//									node = m_manModel->FindNode("AttackPointSeven");
-//									sphereInfo;
-//									mat = node->m_worldTransform * m_mWorld;
-//									sphereInfo.m_sphere.Center = mat.Translation();
-//									sphereInfo.m_sphere.Radius = 0.25f;
-//									sphereInfo.m_type = KdCollider::TypeGard;
-//
-//#ifdef _DEBUG
-//									m_pDebugWire->AddDebugSphere
-//									(
-//										sphereInfo.m_sphere.Center,
-//										sphereInfo.m_sphere.Radius,
-//										{ 0,0,0,1 }
-//									);
-//#endif
-//
-//									retSphereList.clear();
-//
-//									wepLis->Intersects
-//									(
-//										sphereInfo,
-//										&retSphereList
-//									);
-//
-//									hit = false;
-//									for (auto& ret : retSphereList)
-//									{
-//										if (ret.m_overlapDistance > 0)
-//										{
-//											Math::Vector3 nowDir = m_pTarget.lock()->GetMatrix().Backward();
-//											Math::Vector3 targetDir = m_owner.lock()->GetPos() - m_pTarget.lock()->GetPos();
-//											float dot = nowDir.Dot(targetDir);
-//											dot = std::clamp(dot, -1.0f, 1.0f);
-//
-//											float betweenAng = acos(dot);
-//											betweenAng = DirectX::XMConvertToDegrees(betweenAng);
-//											if (betweenAng >= 0 && betweenAng <= 45)
-//											{
-//												hit = true;
-//											}
-//										}
-//									}
-//
-//									if (hit)
-//									{
-//										m_pTarget.lock()->SetDefenseSuc(true);
-//										m_owner.lock()->HasDefense();
-//										KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
-//	//}
-
-	if (!m_pTarget.lock()->GetAttackHit() && !m_pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & Player::PlayerState::mantis && m_pTarget.lock()->GetInvincibilityTimeCnt() == 0)
-	{
-		if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
-		if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
-		node = m_manModel->FindNode("AttackPointOne");
-		KdCollider::SphereInfo sphereInfo;
-		mat = node->m_worldTransform * m_mWorld;
-		sphereInfo.m_sphere.Center = mat.Translation();
-		sphereInfo.m_sphere.Radius = 0.20f;
-		sphereInfo.m_type = KdCollider::TypeDamage;
-
-#ifdef _DEBUG
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius,
-			{ 0,0,0,1 }
-		);
-#endif
-
-		std::list<KdCollider::CollisionResult> retSphereList;
-
-		/*for (auto& obj : SceneManager::Instance().GetObjList())
-		{*/
-		m_pTarget.lock()->Intersects
-		(
-			sphereInfo,
-			&retSphereList
-		);
-
-		Math::Vector3 hitDir = {};
-		bool hit = false;
-		for (auto& ret : retSphereList)
-		{
-			hit = true;
-			hitDir = ret.m_hitDir;
-		}
-
-		if (hit)
-		{
-			m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
-			KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-		}
-		else
-		{
-			node = m_manModel->FindNode("AttackPointTwo");
-			sphereInfo;
-			mat = node->m_worldTransform * m_mWorld;
-			sphereInfo.m_sphere.Center = mat.Translation();
-			sphereInfo.m_sphere.Radius = 0.20f;
-			sphereInfo.m_type = KdCollider::TypeDamage;
-
-#ifdef _DEBUG
-			m_pDebugWire->AddDebugSphere
-			(
-				sphereInfo.m_sphere.Center,
-				sphereInfo.m_sphere.Radius,
-				{ 0,0,0,1 }
-			);
-#endif
-
-			retSphereList.clear();
-
-			m_pTarget.lock()->Intersects
-			(
-				sphereInfo,
-				&retSphereList
-			);
-
-			hit = false;
-			for (auto& ret : retSphereList)
-			{
-				hit = true;
-				hitDir = ret.m_hitDir;
-			}
-
-			if (hit)
-			{
-				m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
-				(player->GetMatrix().Backward());
-				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-			}
-			else
-			{
-				node = m_manModel->FindNode("AttackPointThree");
-				sphereInfo;
-				mat = node->m_worldTransform * m_mWorld;
-				sphereInfo.m_sphere.Center = mat.Translation();
-				sphereInfo.m_sphere.Radius = 0.20f;
-				sphereInfo.m_type = KdCollider::TypeDamage;
-
-#ifdef _DEBUG
-				m_pDebugWire->AddDebugSphere
-				(
-					sphereInfo.m_sphere.Center,
-					sphereInfo.m_sphere.Radius,
-					{ 0,0,0,1 }
-				);
-#endif
-
-				retSphereList.clear();
-
-				m_pTarget.lock()->Intersects
-				(
-					sphereInfo,
-					&retSphereList
-				);
-
-				hit = false;
-				for (auto& ret : retSphereList)
-				{
-					hit = true;
-					hitDir = ret.m_hitDir;
-				}
-
-				if (hit)
-				{
-					m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
-					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-				}
 				else
 				{
-					node = m_manModel->FindNode("AttackPointFour");
+					node = m_model->FindNode("AttackPointThree");
 					sphereInfo;
 					mat = node->m_worldTransform * m_mWorld;
 					sphereInfo.m_sphere.Center = mat.Translation();
@@ -1241,7 +655,7 @@ void Scopion::PlayerManAttackChaeck()
 
 					retSphereList.clear();
 
-					m_pTarget.lock()->Intersects
+					pTarget.lock()->Intersects
 					(
 						sphereInfo,
 						&retSphereList
@@ -1256,12 +670,178 @@ void Scopion::PlayerManAttackChaeck()
 
 					if (hit)
 					{
-						m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+						if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::lAttackOne) && player->GetPlayerState() & (Player::PlayerState::grassHopperDashF))
+						{
+							pTarget.lock()->IaiKiriAttackOnHit(player->GetMatrix().Backward());
+							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						}
+						else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
+							Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
+							Player::PlayerState::rlAttack) ||
+							(Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 8) ||
+							(Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 8 && player->GetAnimationCnt() < 21)))
+						{
+							if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
+							{
+								player->SetBRushAttackPossible(true);
+							}
+
+							pTarget.lock()->OnHit(player->GetMatrix().Backward());
+							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						}
+						else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
+						{
+							pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						}
+						else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31) ||
+							(player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49) ||
+							(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 74) ||
+							(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89))
+						{
+							pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
+							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void Scopion::PlayerManAttackChaeck()
+{
+	const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
+	if (!(player->GetWeaponType() & (scorpion | lScorpion)))return;
+
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+
+	for (auto& pTarget : m_pTargetList)
+	{
+		if (!pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & Player::PlayerState::mantis && pTarget.lock()->GetInvincibilityTimeCnt() == 0)
+		{
+			if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
+			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
+			node = m_manModel->FindNode("AttackPointOne");
+			KdCollider::SphereInfo sphereInfo;
+			mat = node->m_worldTransform * m_mWorld;
+			sphereInfo.m_sphere.Center = mat.Translation();
+			sphereInfo.m_sphere.Radius = 0.20f;
+			sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+			m_pDebugWire->AddDebugSphere
+			(
+				sphereInfo.m_sphere.Center,
+				sphereInfo.m_sphere.Radius,
+				{ 0,0,0,1 }
+			);
+#endif
+
+			std::list<KdCollider::CollisionResult> retSphereList;
+
+			/*for (auto& obj : SceneManager::Instance().GetObjList())
+			{*/
+			pTarget.lock()->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
+
+			Math::Vector3 hitDir = {};
+			bool hit = false;
+			for (auto& ret : retSphereList)
+			{
+				hit = true;
+				hitDir = ret.m_hitDir;
+			}
+
+			if (hit)
+			{
+				pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+			}
+			else
+			{
+				node = m_manModel->FindNode("AttackPointTwo");
+				sphereInfo;
+				mat = node->m_worldTransform * m_mWorld;
+				sphereInfo.m_sphere.Center = mat.Translation();
+				sphereInfo.m_sphere.Radius = 0.20f;
+				sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+				m_pDebugWire->AddDebugSphere
+				(
+					sphereInfo.m_sphere.Center,
+					sphereInfo.m_sphere.Radius,
+					{ 0,0,0,1 }
+				);
+#endif
+
+				retSphereList.clear();
+
+				pTarget.lock()->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+
+				hit = false;
+				for (auto& ret : retSphereList)
+				{
+					hit = true;
+					hitDir = ret.m_hitDir;
+				}
+
+				if (hit)
+				{
+					pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+					(player->GetMatrix().Backward());
+					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+				}
+				else
+				{
+					node = m_manModel->FindNode("AttackPointThree");
+					sphereInfo;
+					mat = node->m_worldTransform * m_mWorld;
+					sphereInfo.m_sphere.Center = mat.Translation();
+					sphereInfo.m_sphere.Radius = 0.20f;
+					sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+					m_pDebugWire->AddDebugSphere
+					(
+						sphereInfo.m_sphere.Center,
+						sphereInfo.m_sphere.Radius,
+						{ 0,0,0,1 }
+					);
+#endif
+
+					retSphereList.clear();
+
+					pTarget.lock()->Intersects
+					(
+						sphereInfo,
+						&retSphereList
+					);
+
+					hit = false;
+					for (auto& ret : retSphereList)
+					{
+						hit = true;
+						hitDir = ret.m_hitDir;
+					}
+
+					if (hit)
+					{
+						pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
 					else
 					{
-						node = m_manModel->FindNode("AttackPointFive");
+						node = m_manModel->FindNode("AttackPointFour");
 						sphereInfo;
 						mat = node->m_worldTransform * m_mWorld;
 						sphereInfo.m_sphere.Center = mat.Translation();
@@ -1279,7 +859,7 @@ void Scopion::PlayerManAttackChaeck()
 
 						retSphereList.clear();
 
-						m_pTarget.lock()->Intersects
+						pTarget.lock()->Intersects
 						(
 							sphereInfo,
 							&retSphereList
@@ -1294,12 +874,12 @@ void Scopion::PlayerManAttackChaeck()
 
 						if (hit)
 						{
-							m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+							pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
 							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 						}
 						else
 						{
-							node = m_manModel->FindNode("AttackPointSix");
+							node = m_manModel->FindNode("AttackPointFive");
 							sphereInfo;
 							mat = node->m_worldTransform * m_mWorld;
 							sphereInfo.m_sphere.Center = mat.Translation();
@@ -1317,7 +897,7 @@ void Scopion::PlayerManAttackChaeck()
 
 							retSphereList.clear();
 
-							m_pTarget.lock()->Intersects
+							pTarget.lock()->Intersects
 							(
 								sphereInfo,
 								&retSphereList
@@ -1332,12 +912,12 @@ void Scopion::PlayerManAttackChaeck()
 
 							if (hit)
 							{
-								m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+								pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
 								KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 							}
 							else
 							{
-								node = m_manModel->FindNode("AttackPointSeven");
+								node = m_manModel->FindNode("AttackPointSix");
 								sphereInfo;
 								mat = node->m_worldTransform * m_mWorld;
 								sphereInfo.m_sphere.Center = mat.Translation();
@@ -1355,7 +935,7 @@ void Scopion::PlayerManAttackChaeck()
 
 								retSphereList.clear();
 
-								m_pTarget.lock()->Intersects
+								pTarget.lock()->Intersects
 								(
 									sphereInfo,
 									&retSphereList
@@ -1370,8 +950,47 @@ void Scopion::PlayerManAttackChaeck()
 
 								if (hit)
 								{
-									m_pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+									pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
 									KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+								}
+								else
+								{
+									node = m_manModel->FindNode("AttackPointSeven");
+									sphereInfo;
+									mat = node->m_worldTransform * m_mWorld;
+									sphereInfo.m_sphere.Center = mat.Translation();
+									sphereInfo.m_sphere.Radius = 0.20f;
+									sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+									m_pDebugWire->AddDebugSphere
+									(
+										sphereInfo.m_sphere.Center,
+										sphereInfo.m_sphere.Radius,
+										{ 0,0,0,1 }
+									);
+#endif
+
+									retSphereList.clear();
+
+									pTarget.lock()->Intersects
+									(
+										sphereInfo,
+										&retSphereList
+									);
+
+									hit = false;
+									for (auto& ret : retSphereList)
+									{
+										hit = true;
+										hitDir = ret.m_hitDir;
+									}
+
+									if (hit)
+									{
+										pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+										KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+									}
 								}
 							}
 						}
@@ -1379,7 +998,6 @@ void Scopion::PlayerManAttackChaeck()
 				}
 			}
 		}
-		//}
 	}
 }
 
@@ -1391,7 +1009,7 @@ void Scopion::EnemyHitAttackChaeck()
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
 
-	/*for (auto& obj : m_pTargetList)
+	/*for (auto& obj : m_eTargetList)
 {*/
 // UŒ‚‚Ì“–‚½‚è”»’è
 	for (auto& wepLis : m_eTarget.lock()->GetWeaponList())
@@ -1785,7 +1403,7 @@ void Scopion::EnemyManAttackChaeck()
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
 
-	/*for (auto& obj : m_pTargetList)
+	/*for (auto& obj : m_eTargetList)
 {*/
 // UŒ‚‚Ì“–‚½‚è”»’è
 //	for (auto& wepLis : m_eTarget.lock()->GetWeaponList())
