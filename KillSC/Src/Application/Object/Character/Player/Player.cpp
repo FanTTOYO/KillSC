@@ -274,7 +274,7 @@ void Player::Update()
 							Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
 							if (cross.y >= 0)
 							{
-								smallAng == ang;
+								smallAng = ang;
 								++i;
 								gCamera->SetEnemy(enemyList.lock());
 								continue;
