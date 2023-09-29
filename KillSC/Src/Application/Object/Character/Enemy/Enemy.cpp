@@ -979,6 +979,7 @@ void Enemy::PostUpdate()
 					m_attackAnimeCnt == 21 ||
 					m_attackAnimeCnt == 31 ||
 					m_attackAnimeCnt == 49 ||
+					m_attackAnimeCnt == 57 ||
 					m_attackAnimeCnt == 74 ||
 					m_attackAnimeCnt == 89)
 				{
@@ -1051,7 +1052,7 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 
 	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() < 8 ||
-		(m_target.lock()->GetAnimationCnt() >= 21 && m_target.lock()->GetAnimationCnt() < 31))
+		(m_target.lock()->GetAnimationCnt() >= 21 && m_target.lock()->GetAnimationCnt() < 41))
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
 	}
@@ -3295,6 +3296,7 @@ void Enemy::ScorpionAttackMove()
 				if (m_attackAnimeCnt == 21 ||
 					m_attackAnimeCnt == 31 ||
 					m_attackAnimeCnt == 49 ||
+					m_attackAnimeCnt == 57 ||
 					m_attackAnimeCnt == 74 ||
 					m_attackAnimeCnt == 89 ||
 					m_attackAnimeCnt == 107

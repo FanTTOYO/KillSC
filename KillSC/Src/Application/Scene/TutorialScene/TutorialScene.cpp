@@ -72,7 +72,7 @@ void TutorialScene::Init()
 	m_objList.push_back(player);
 	m_wpPlayer = player;
 	enemy->SetTarget(player);
-	player->SetEnemy(enemy);
+	player->AddEnemy(enemy);
 	player->Init();
 	enemy->Init();
 

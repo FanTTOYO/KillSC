@@ -16,6 +16,8 @@ public:
 
 	void SetPlayer(std::shared_ptr<Player> a_player) { m_wpPlayer = a_player; }
 	void SetEnemy(std::shared_ptr<Enemy> a_enemy);
+	void SetBRotateEnemy(bool a_bRotateEnemy) { m_bRotateEnemy = a_bRotateEnemy; }
+	bool GetBRotateEnemy() { return m_bRotateEnemy; }
 
 private:
 	void Init()					override;

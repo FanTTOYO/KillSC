@@ -224,54 +224,61 @@ void Player::Update()
 			if (!m_bMButtonState)
 			{
 				const std::shared_ptr<GameCamera> gCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
-				float smallAng = 0;
-				int i = 0;
-				for (auto& enemyList : m_enemyList)
+				if (gCamera->GetBRotateEnemy())
 				{
-					Math::Vector3 nowVec = m_mWorld.Backward();
-					nowVec.y = 0.0f;
-					nowVec.Normalize();
+					gCamera->SetBRotateEnemy(false);
+				}
+				else
+				{
+					float smallAng = 0;
+					int i = 0;
+					for (auto& enemyList : m_enemyList)
+					{
+						Math::Vector3 nowVec = gCamera->GetMatrix().Backward();
+						nowVec.y = 0.0f;
+						nowVec.Normalize();
 
-					// Œü‚«‚½‚¢•ûŒü
-					Math::Vector3 toVec = enemyList.lock()->GetPos() - GetPos();
-					toVec.y = 0.0f;
-					toVec.Normalize();
+						// Œü‚«‚½‚¢•ûŒü
+						Math::Vector3 toVec = enemyList.lock()->GetPos() - GetPos();
+						toVec.y = 0.0f;
+						toVec.Normalize();
 
-					Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, toVec);
-					if (dot.x > 1)
-					{
-						dot.x = 1;
-					}
-					if (dot.x < -1)
-					{
-						dot.x = -1;
-					}
-
-					// Šp“x‚ðŽæ“¾
-					float ang = DirectX::XMConvertToDegrees(acos(dot.x));
-					if (i == 0)
-					{
-						smallAng = ang;
-						++i;
-						gCamera->SetEnemy(enemyList.lock());
-						continue;
-					}
-
-					if (smallAng > ang)
-					{
-						smallAng = ang;
-						gCamera->SetEnemy(enemyList.lock());
-						continue;
-					}
-					else if (smallAng == ang)
-					{
-						Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
-						if (cross.y >= 0)
+						Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, toVec);
+						if (dot.x > 1)
 						{
-							smallAng == ang;
+							dot.x = 1;
+						}
+						if (dot.x < -1)
+						{
+							dot.x = -1;
+						}
+
+						// Šp“x‚ðŽæ“¾
+						float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+						if (i == 0)
+						{
+							smallAng = ang;
 							++i;
 							gCamera->SetEnemy(enemyList.lock());
 							continue;
+						}
+
+						if (smallAng > ang)
+						{
+							smallAng = ang;
+							gCamera->SetEnemy(enemyList.lock());
+							continue;
+						}
+						else if (smallAng == ang)
+						{
+							Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
+							if (cross.y >= 0)
+							{
+								smallAng == ang;
+								++i;
+								gCamera->SetEnemy(enemyList.lock());
+								continue;
+							}
 						}
 					}
 				}
@@ -986,6 +993,7 @@ void Player::PostUpdate()
 					m_attackAnimeCnt == 21 ||
 					m_attackAnimeCnt == 31 ||
 					m_attackAnimeCnt == 49 ||
+					m_attackAnimeCnt == 57 ||
 					m_attackAnimeCnt == 74 ||
 					m_attackAnimeCnt == 89)
 				{
@@ -1073,7 +1081,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 		}
 
 		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() < 8 ||
-			(enemyList.lock()->GetAnimationCnt() >= 21 && enemyList.lock()->GetAnimationCnt() < 31))
+			(enemyList.lock()->GetAnimationCnt() >= 21 && enemyList.lock()->GetAnimationCnt() < 41))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
 		}
@@ -2151,6 +2159,7 @@ void Player::ScorpionAttackMove()
 				if (m_attackAnimeCnt == 21 ||
 					m_attackAnimeCnt == 31 ||
 					m_attackAnimeCnt == 49 ||
+					m_attackAnimeCnt == 57 ||
 					m_attackAnimeCnt == 74 ||
 					m_attackAnimeCnt == 89 ||
 					m_attackAnimeCnt == 107
@@ -2169,12 +2178,12 @@ void Player::ScorpionAttackMove()
 						m_attackMoveSpd = 0.2f;
 						break;
 					case 49:
+						m_attackMoveSpd = 0.2f;
+						break;
 					case 74:
 					case 89:
-						m_attackMoveSpd = 0.1f;
-						break;
 					case 107:
-						m_attackMoveSpd = 0.05f;
+						m_attackMoveSpd = 0.1f;
 						break;
 					}
 				}

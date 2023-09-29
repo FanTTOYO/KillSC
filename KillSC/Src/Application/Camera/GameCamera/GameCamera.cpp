@@ -246,7 +246,7 @@ void GameCamera::Update()
 void GameCamera::SetEnemy(std::shared_ptr<Enemy> a_enemy)
 {
 	m_wpEnemy = a_enemy;
-	m_bRotateEnemy = !m_bRotateEnemy;
+	m_bRotateEnemy = true;
 }
 
 void GameCamera::UpdateRotateByMouse()
