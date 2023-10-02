@@ -271,14 +271,6 @@ void GameCamera::UpdateRotateByMouse()
 
 void GameCamera::UpdateRotateByEnemy()
 {
-	//Math::Matrix mInvertRideObject;
-	//m_mWorld.Invert(mInvertRideObject);
-	//enemyMat.CreatePerspectiveFieldOfView(); // ‚±‚ê‚Å‚¢‚¯‚é‚©‚à
-	//Math::Matrix enemyMat = m_wpEnemy.lock()->GetMatrix() * mInvertRideObject;
-	//Math::Vector3 enemyPos = enemyMat.Translation();
-	//enemyPos.x = enemyPos.x - m_FixMousePos.x;
-	//enemyPos.y = (enemyPos.y + 0.5f) - m_FixMousePos.y;
-
 	Math::Vector3 nowVec = m_mWorld.Backward();
 	nowVec.y = 0.0f;
 	nowVec.Normalize();

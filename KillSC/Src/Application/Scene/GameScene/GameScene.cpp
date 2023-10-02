@@ -113,6 +113,8 @@ void GameScene::Init()
 
 
 	std::shared_ptr<Enemy> enemy;
+	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
+	ui->SetPlayer(player);
 	
 	for (int i = 0; i < 3; ++i)
 	{
@@ -122,7 +124,13 @@ void GameScene::Init()
 		enemy->Init();
 		enemy->SetPos(Math::Vector3(-5 + 5 * i,0,20));
 		m_objList.push_back(enemy);
+		ui->AddEnemy(enemy);
 	}
+
+	ui->SetPlayer(player);
+	ui->SetUiType(Ui::UiType::game);
+	m_objList.push_back(ui);
+	m_wpUi = ui;
 
 	player->Init();
 
@@ -130,13 +138,9 @@ void GameScene::Init()
 	camera->SetTarget(player);
 	camera->SetPlayer(player);
 	player->SetCamera(camera);
+	ui->SetCamera(camera);
 	m_objList.push_back(camera);
 
-	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
-	ui->SetPlayer(player);
-	ui->SetUiType(Ui::UiType::game);
-	m_objList.push_back(ui);
-	m_wpUi = ui;
 
 	SetCursorPos(640, 360);
 	KdAudioManager::Instance().Play("Asset/Audio/SE/CntDwon1.wav");

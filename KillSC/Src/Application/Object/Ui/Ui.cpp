@@ -2,6 +2,8 @@
 #include "../../main.h"
 #include "../../Scene/SceneManager.h"
 #include "../Character/Player/Player.h"
+#include "../Character/Enemy/Enemy.h"
+#include "../../Camera/GameCamera/GameCamera.h"
 
 void Ui::Update()
 {
@@ -1735,6 +1737,52 @@ void Ui::DrawSprite()
 			color = { 1, 1, 1, 1 };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetTorion()), 30, &rc, &color, Math::Vector2(0, 0.5f));
 
+			for (auto& list : m_wpEnemyList)
+			{
+				Math::Vector3 cameraPos = list.lock()->GetPos() - m_wpCamera.lock()->GetCamera()->GetCameraMatrix().Translation();
+
+				POINT dev;
+				KdDirect3D::Instance().WorldToClient(cameraPos, dev, m_wpCamera.lock()->GetCamera()->GetCameraMatrix(), m_wpCamera.lock()->GetCamera()->GetProjMatrix());
+				dev.x -= (long)640.0f;
+				dev.y = (long)(dev.y * -1 + 360.0f);
+				dev.y += 20;
+				mat = Math::Matrix::CreateTranslation(dev.x, dev.y, 0.0f);
+
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				rc = { 0,0,(int)(list.lock()->GetEndurance()),50 };
+				color = { 1, 1, 1, 1 };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+
+				rc = { 0,0,400,50 };
+				color = { 1, 1, 1, 1 };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
+
+				//ID3D11Device* g_pd3dDevice;           // DirectX 11のデバイス
+				//ID3D11DeviceContext* g_pd3dContext;   // デバイスコンテキスト
+				//DirectX::XMMATRIX g_matView;          // ビュー変換行列
+				//DirectX::XMMATRIX g_matProjection;    // プロジェクション変換行列
+				//DirectX::XMMATRIX g_matWorld;         // ワールド変換行列
+				//DirectX::XMFLOAT3 g_vec3ObjectPos = list.lock()->GetPos();    // 3Dオブジェクトの位置
+
+				//
+				//// ワールド座標をクリップ座標に変換
+				//DirectX::XMVECTOR worldPos = DirectX::XMVectorSet(g_vec3ObjectPos.x, g_vec3ObjectPos.y, g_vec3ObjectPos.z, 1.0f);
+				//DirectX::XMVECTOR clipPos = DirectX::XMVector3TransformCoord(worldPos, g_matWorld * g_matView * g_matProjection);
+
+				//// クリップ座標をスクリーン座標に変換
+				//Math::Vector3 screenPos;
+				//screenPos.x = (1.0f + DirectX::XMVectorGetX(clipPos)) * 0.5f;
+				//screenPos.y = (1.0f - DirectX::XMVectorGetY(clipPos)) * 0.5f;
+
+				//// スクリーン座標をウィンドウの解像度にスケーリング
+				//screenPos.x *= static_cast<float>(1280);
+				//screenPos.y *= static_cast<float>(720);
+
+				//screenPos;
+			}
+
+
+
 		}
 
 		if (m_bOption)
@@ -2523,6 +2571,29 @@ void Ui::DrawSprite()
 
 	transMat = Math::Matrix::Identity;
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+}
+
+void Ui::DrawUnLit()
+{
+	//for (auto& list : m_wpEnemyList)
+	//{
+	//	Math::Vector3 pos = list.lock()->GetPos();
+	//	Math::Matrix scaleMat = Math::Matrix::CreateScale(0.001 * pos.z);
+	//	pos.z = 0.0f;
+	//	Math::Matrix mat = scaleMat * Math::Matrix::CreateTranslation(pos);
+	//	/*mat.Backward(m_wpCamera.lock()->GetCamera()->GetCameraMatrix().Backward());
+	//	mat.Up(m_wpCamera.lock()->GetCamera()->GetCameraMatrix().Up());
+	//	mat.Right(m_wpCamera.lock()->GetCamera()->GetCameraMatrix().Right());*/
+
+	//	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+	//	Math::Rectangle rc = { 0,0,(int)(list.lock()->GetEndurance()),50 };
+	//	Math::Color color = { 1, 1, 1, 1 };
+	//	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+
+	//	rc = { 0,0,400,50 };
+	//	color = { 1, 1, 1, 1 };
+	//	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
+	//}
 }
 
 void Ui::AddTutorialCnt()

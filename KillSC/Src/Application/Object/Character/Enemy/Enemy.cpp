@@ -33,6 +33,9 @@ void Enemy::Init()
 	m_pCollider->RegisterCollisionShape
 	("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage);
 
+	m_enduranceBarTex.Load("Asset/Textures/Ui/Game/enduranceBar.png");
+	m_enduranceTex.Load("Asset/Textures/Ui/Game/endurance.png");
+
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 
 	m_EnemyState = eIdle;
@@ -636,7 +639,7 @@ void Enemy::Update()
 	KdCollider::SphereInfo sphereInfo;
 	// ‹…‚Ì’†SˆÊ’u‚ðÝ’è
 	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
-	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)))
+	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)) || !(m_wantToMoveState & (escape | dashAttack | disturbance | grassDash | avoidance)))
 	{
 		sphereInfo.m_sphere.Radius = 0.3f;
 	}
@@ -1269,6 +1272,23 @@ void Enemy::DrawLit()
 			WeaList->DrawLit();
 		}
 	}
+}
+
+void Enemy::DrawUnLit()
+{
+	//Math::Matrix mat = Math::Matrix::CreateTranslation(m_pos);
+	///*mat.Backward(camMat.Backward());
+	//mat.Up(camMat.Up());
+	//mat.Right(camMat.Right());*/
+
+	//KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+	//Math::Rectangle rc = { 0,0,(int)m_endurance,50 };
+	//Math::Color color = { 1, 1, 1, 1 };
+	//KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)m_endurance, 50, &rc, &color, Math::Vector2(0, 0.5f));
+
+	//rc = { 0,0,400,50 };
+	//color = { 1, 1, 1, 1 };
+	//KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
 }
 
 void Enemy::DrawBright()

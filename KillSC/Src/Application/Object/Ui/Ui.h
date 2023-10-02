@@ -1,5 +1,7 @@
 #pragma once
 class Player;
+class Enemy;
+class GameCamera;
 
 class Ui : public KdGameObject
 {
@@ -32,11 +34,14 @@ public:
 	void ResultUpdate();
 	void SelectUpdate();
 	void DrawSprite()override;
+	void DrawUnLit()override;
 	void SetUiType(UiType a_uiType) { m_uiType = a_uiType; }
 	void SetAddFadeAlpha() { m_addFadeAlpha = true; }
 	int GetTime() {return m_time;}
 	const bool GetBOption() { return m_bOption; }
 	void SetPlayer(std::shared_ptr<Player> a_spPlayer) { m_wpPlayer = a_spPlayer; }
+	void AddEnemy(std::shared_ptr<Enemy> a_spEnemy) { m_wpEnemyList.push_back(a_spEnemy); }
+	void SetCamera(std::shared_ptr<GameCamera> a_spCamera) { m_wpCamera = a_spCamera; }
 	const bool GetBSceneCangePossible() { return m_bSceneCangePossible; }
 	const bool GetBTutorial() { return m_bTutorialView; }
 	const TutorialType GetTutorialType() { return m_tutorialType; }
@@ -123,6 +128,8 @@ private:
 	float m_fadeAlpha = 0;
 	bool m_addFadeAlpha = false;
 	std::weak_ptr<Player> m_wpPlayer;
+	std::list<std::weak_ptr<Enemy>> m_wpEnemyList;
+	std::weak_ptr<GameCamera> m_wpCamera;
 	bool m_bFirstInResult = false;
 	int m_pointAddOrSubVal = 0;
 	bool m_bSceneCangePossible = false;

@@ -19,6 +19,8 @@ public:
 	void SetBRotateEnemy(bool a_bRotateEnemy) { m_bRotateEnemy = a_bRotateEnemy; }
 	bool GetBRotateEnemy() { return m_bRotateEnemy; }
 
+	const std::weak_ptr<Enemy> GetEnemy() {return m_wpEnemy;}
+
 private:
 	void Init()					override;
 

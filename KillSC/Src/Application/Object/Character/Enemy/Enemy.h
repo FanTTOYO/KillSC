@@ -95,6 +95,7 @@ public:
 	~Enemy() {}
 
 	void DrawLit()override;
+	void DrawUnLit()override;
 	void GenerateDepthMapFromLight_SkinMesh()	override;
 	void DrawLit_SkinMesh()						override;
 	void Init()override;
@@ -122,6 +123,7 @@ public:
 
 	const float& GetGravity() { return m_gravity; }
 	const float& GetDashSpd() { return m_dashSpd;}
+	const float& GetEndurance() { return m_endurance; }
 	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }
 	const std::shared_ptr<KdModelWork>& GetModel() { return m_model; }
 	const bool GetBRushAttackPossible() { return m_bRushAttackPossible; }
@@ -270,4 +272,7 @@ private:
 	Math::Vector3 m_stepDashDir;
 	bool m_bMantisPossAng; // マンティスがあたる角度 true
 	int m_hasDeTime;
+
+	KdTexture m_enduranceBarTex;
+	KdTexture m_enduranceTex;
 };

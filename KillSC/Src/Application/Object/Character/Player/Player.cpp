@@ -777,7 +777,6 @@ void Player::PlayerKickHitAttackChaeck()
 
 			if (hit)
 			{
-
 				enemyList.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
 			}
