@@ -108,7 +108,7 @@ public:
 
 	void GenerateDepthMapFromLight()override;
 	void SetTarget(std::shared_ptr<Player> a_target) { m_target = a_target; }
-	void SetPos(Math::Vector3& a_pos) { m_pos = a_pos;}
+	void SetPos(Math::Vector3 a_pos) { m_pos = a_pos;}
 	//void Release() {};
 
 	const UINT& GetEnemyState() { return m_EnemyState; }
@@ -273,6 +273,6 @@ private:
 	bool m_bMantisPossAng; // マンティスがあたる角度 true
 	int m_hasDeTime;
 
-	KdTexture m_enduranceBarTex;
-	KdTexture m_enduranceTex;
+	KdPolygon m_enduranceBarPoly;
+	KdPolygon m_endurancePoly;
 };

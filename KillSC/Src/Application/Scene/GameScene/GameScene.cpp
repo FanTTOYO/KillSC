@@ -122,7 +122,7 @@ void GameScene::Init()
 		enemy->SetTarget(player);
 		player->AddEnemy(enemy);
 		enemy->Init();
-		enemy->SetPos(Math::Vector3(-5 + 5 * i,0,20));
+		enemy->SetPos(Math::Vector3(-5.0f + 5.0f * i,0.0f,20.0f));
 		m_objList.push_back(enemy);
 		ui->AddEnemy(enemy);
 	}

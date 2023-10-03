@@ -28,6 +28,7 @@ public:
 	};
 
 	void Update()override;
+	void PostUpdate()override;
 	void TitleUpdate();
 	void GameUpdate();
 	void TutorialUpdate();
@@ -40,7 +41,7 @@ public:
 	int GetTime() {return m_time;}
 	const bool GetBOption() { return m_bOption; }
 	void SetPlayer(std::shared_ptr<Player> a_spPlayer) { m_wpPlayer = a_spPlayer; }
-	void AddEnemy(std::shared_ptr<Enemy> a_spEnemy) { m_wpEnemyList.push_back(a_spEnemy); }
+	void AddEnemy(std::shared_ptr<Enemy> a_spEnemy);
 	void SetCamera(std::shared_ptr<GameCamera> a_spCamera) { m_wpCamera = a_spCamera; }
 	const bool GetBSceneCangePossible() { return m_bSceneCangePossible; }
 	const bool GetBTutorial() { return m_bTutorialView; }
@@ -198,4 +199,6 @@ private:
 	int  m_tutorialCnt  =     0;
 	TutorialType m_tutorialType = kihonTu;
 	int m_tutorialSwitchAfterTime;
+
+	std::vector<Math::Vector2> m_enemyScPosList;
 };

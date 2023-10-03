@@ -33,8 +33,8 @@ void Enemy::Init()
 	m_pCollider->RegisterCollisionShape
 	("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage);
 
-	m_enduranceBarTex.Load("Asset/Textures/Ui/Game/enduranceBar.png");
-	m_enduranceTex.Load("Asset/Textures/Ui/Game/endurance.png");
+	m_enduranceBarPoly.SetMaterial("Asset/Textures/Ui/Game/enduranceBar.png");
+	m_endurancePoly.SetMaterial("Asset/Textures/Ui/Game/endurance.png");
 
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 
@@ -1276,19 +1276,13 @@ void Enemy::DrawLit()
 
 void Enemy::DrawUnLit()
 {
-	//Math::Matrix mat = Math::Matrix::CreateTranslation(m_pos);
-	///*mat.Backward(camMat.Backward());
-	//mat.Up(camMat.Up());
-	//mat.Right(camMat.Right());*/
+	/*Math::Matrix mat = Math::Matrix::CreateScale(1.0f) * Math::Matrix::CreateTranslation(m_pos.x, m_pos.y + 3.0f, m_pos.z);
 
-	//KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-	//Math::Rectangle rc = { 0,0,(int)m_endurance,50 };
-	//Math::Color color = { 1, 1, 1, 1 };
-	//KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)m_endurance, 50, &rc, &color, Math::Vector2(0, 0.5f));
+	Math::Color color = { 1, 1, 1, 1 };
+	KdShaderManager::Instance().m_HD2DShader.DrawPolygon(m_endurancePoly, mat,color);
 
-	//rc = { 0,0,400,50 };
-	//color = { 1, 1, 1, 1 };
-	//KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
+	color = { 1, 1, 1, 1 };
+	KdShaderManager::Instance().m_HD2DShader.DrawPolygon(m_enduranceBarPoly, mat, color);*/
 }
 
 void Enemy::DrawBright()
