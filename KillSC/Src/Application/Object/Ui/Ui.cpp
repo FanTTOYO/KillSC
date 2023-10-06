@@ -1350,222 +1350,352 @@ void Ui::SelectUpdate()
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 
-	mousePos.x -= 640;
-	mousePos.y = mousePos.y * -1 + 360;
-	Math::Vector3 Dis;
-	float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
-	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
 
-	Math::Vector3 artPos;
-	artPos.x = m_tutorialPos.x + (float)(pwi->rcWindow.left);
-	artPos.y = m_tutorialPos.y /*+ (float)(pwi->rcWindow.top)*/;
-	artPos.z = m_tutorialPos.z;
-
-	Dis = artPos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 75)
+	if (m_bBattlehelp)
 	{
-		m_tutorialScale = 1.1f;
+		mousePos.x -= 640;
+		mousePos.y = mousePos.y * -1 + 360;
+		Math::Vector3 Dis;
+		float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
+		float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
 
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		Math::Vector3 BackPos;
+		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
+		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		BackPos.z = m_backPos.z;
+		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 40)
 		{
-			if (!m_addFadeAlpha)
+			m_backScale = 1.0f;
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
-				m_bTutorial = true;
-				m_addFadeAlpha = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				if (!bLButtonKey)
+				{
+					bLButtonKey = true;
+					m_bBattlehelp = false;
+					SetCursorPos(640, 360);
+					KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+				}
 			}
+			else
+			{
+				bLButtonKey = false;
+			}
+
+		}
+		else
+		{
+			m_backScale = 0.8f;
+		}
+	}
+	else if (m_bChalengehelp)
+	{
+		mousePos.x -= 640;
+		mousePos.y = mousePos.y * -1 + 360;
+		Math::Vector3 Dis;
+		float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
+		float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
+
+		Math::Vector3 BackPos;
+		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
+		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		BackPos.z = m_backPos.z;
+		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 40)
+		{
+			m_backScale = 1.0f;
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			{
+				if (!bLButtonKey)
+				{
+					bLButtonKey = true;
+					m_bChalengehelp = false;
+					SetCursorPos(640, 360);
+					KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+				}
+			}
+			else
+			{
+				bLButtonKey = false;
+			}
+
+		}
+		else
+		{
+			m_backScale = 0.8f;
+		}
+	}
+	else
+	{
+
+
+		mousePos.x -= 640;
+		mousePos.y = mousePos.y * -1 + 360;
+		Math::Vector3 Dis;
+		float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
+		float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
+
+		Math::Vector3 artPos;
+		artPos.x = m_tutorialPos.x + (float)(pwi->rcWindow.left);
+		artPos.y = m_tutorialPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		artPos.z = m_tutorialPos.z;
+
+		Dis = artPos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 75)
+		{
+			m_tutorialScale = 1.1f;
+
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			{
+				if (!m_addFadeAlpha)
+				{
+					m_bTutorial = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
+			}
+
+		}
+		else
+		{
+			m_tutorialScale = 1.0f;
 		}
 
-	}
-	else
-	{
-		m_tutorialScale = 1.0f;
-	}
+		Math::Vector3 ExitPos;
+		ExitPos.x = m_exitPos.x + (float)(pwi->rcWindow.left);
+		ExitPos.y = m_exitPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		ExitPos.z = m_exitPos.z;
 
-	Math::Vector3 ExitPos;
-	ExitPos.x = m_exitPos.x + (float)(pwi->rcWindow.left);
-	ExitPos.y = m_exitPos.y /*+ (float)(pwi->rcWindow.top)*/;
-	ExitPos.z = m_exitPos.z;
-
-	Dis = ExitPos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 25)
-	{
-		m_exitScale  = 1.1f;
-		
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		Dis = ExitPos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 25)
 		{
-			if (!m_addFadeAlpha)
+			m_exitScale = 1.1f;
+
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
-				m_bExit = true;
-				m_addFadeAlpha = true;
-				m_bFirstExit = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				if (!m_addFadeAlpha)
+				{
+					m_bExit = true;
+					m_addFadeAlpha = true;
+					m_bFirstExit = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
 			}
+
+		}
+		else
+		{
+			m_exitScale = 1.0f;
 		}
 
-	}
-	else
-	{
-		m_exitScale = 1.0f;
-	}
+		Math::Vector3 GamePos;
+		GamePos.x = m_oneEnemyTotalPos.x + (float)(pwi->rcWindow.left);
+		GamePos.y = m_oneEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		GamePos.z = m_oneEnemyTotalPos.z;
 
-	Math::Vector3 GamePos;
-	GamePos.x = m_oneEnemyTotalPos.x + (float)(pwi->rcWindow.left);
-	GamePos.y = m_oneEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
-	GamePos.z = m_oneEnemyTotalPos.z;
-
-	Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 30)
-	{
-		m_oneEnemyScale = 1.1f;
-	
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 30)
 		{
-			if (!m_addFadeAlpha)
+			m_oneEnemyScale = 1.1f;
+
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
-				m_bOneEnemyTotal = true;
-				m_bGame = true;
-				m_addFadeAlpha = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				if (!m_addFadeAlpha)
+				{
+					m_bOneEnemyTotal = true;
+					m_bGame = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
 			}
+
+		}
+		else
+		{
+			m_oneEnemyScale = 1.0f;
 		}
 
-	}
-	else
-	{
-		m_oneEnemyScale = 1.0f;
-	}
+		GamePos.x = m_twoEnemyTotalPos.x + (float)(pwi->rcWindow.left);
+		GamePos.y = m_twoEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		GamePos.z = m_twoEnemyTotalPos.z;
 
-	GamePos.x = m_twoEnemyTotalPos.x + (float)(pwi->rcWindow.left);
-	GamePos.y = m_twoEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
-	GamePos.z = m_twoEnemyTotalPos.z;
-
-	Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 30)
-	{
-		m_twoEnemyScale = 1.1f;
-		
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 30)
 		{
-			if (!m_addFadeAlpha)
+			m_twoEnemyScale = 1.1f;
+
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
-				m_bTwoEnemyTotal = true;
-				m_bGame = true;
-				m_addFadeAlpha = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				if (!m_addFadeAlpha)
+				{
+					m_bTwoEnemyTotal = true;
+					m_bGame = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
 			}
+
+		}
+		else
+		{
+			m_twoEnemyScale = 1.0f;
 		}
 
-	}
-	else
-	{
-		m_twoEnemyScale = 1.0f;
-	}
+		GamePos.x = m_threeEnemyTotalPos.x + (float)(pwi->rcWindow.left);
+		GamePos.y = m_threeEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		GamePos.z = m_threeEnemyTotalPos.z;
 
-	GamePos.x = m_threeEnemyTotalPos.x + (float)(pwi->rcWindow.left);
-	GamePos.y = m_threeEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
-	GamePos.z = m_threeEnemyTotalPos.z;
-
-	Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 30)
-	{
-		m_threeEnemyScale = 1.1f;
-
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 30)
 		{
-			if (!m_addFadeAlpha)
+			m_threeEnemyScale = 1.1f;
+
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
-				m_bThreeEnemyTotal = true;
-				m_bGame = true;
-				m_addFadeAlpha = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				if (!m_addFadeAlpha)
+				{
+					m_bThreeEnemyTotal = true;
+					m_bGame = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
 			}
+
+		}
+		else
+		{
+			m_threeEnemyScale = 1.0f;
 		}
 
-	}
-	else
-	{
-		m_threeEnemyScale = 1.0f;
-	}
+		Math::Vector3 ChallengePos;
+		ChallengePos.x = m_challengePos.x + (float)(pwi->rcWindow.left);
+		ChallengePos.y = m_challengePos.y /*+ (float)(pwi->rcWindow.top)*/;
+		ChallengePos.z = m_challengePos.z;
 
-	Math::Vector3 ChallengePos;
-	ChallengePos.x = m_challengePos.x + (float)(pwi->rcWindow.left);
-	ChallengePos.y = m_challengePos.y /*+ (float)(pwi->rcWindow.top)*/;
-	ChallengePos.z = m_challengePos.z;
-
-	Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 75)
-	{
-		m_challengeScale = 1.1f;
-
-		/*if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 75)
 		{
-			if (!m_addFadeAlpha)
+			m_challengeScale = 1.1f;
+
+			/*if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
-				m_bChallenge = true;
-				m_addFadeAlpha = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
-			}
-		}*/
+				if (!m_addFadeAlpha)
+				{
+					m_bChallenge = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
+			}*/
 
-	}
-	else
-	{
-		m_challengeScale = 1.0f;
-	}
-
-	Math::Vector3 OptionPos;
-	OptionPos.x = m_trainingPos.x + (float)(pwi->rcWindow.left);
-	OptionPos.y = m_trainingPos.y /*+ (float)(pwi->rcWindow.top)*/;
-	OptionPos.z = m_trainingPos.z;
-
-	Dis = OptionPos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 75)
-	{
-		m_trainingScale  = 1.1f;
-
-		//m_optionScale    = 1.1f;
-
-		/*if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		}
+		else
 		{
-			if (!m_addFadeAlpha)
-			{
-				m_bTraining = true;
-				m_addFadeAlpha = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
-			}
-		}*/
-
-	}
-	else
-	{
-		m_trainingScale = 1.0f;
-	}
-
-	Math::Vector3 TitlePos;
-	TitlePos.x = m_titlePos.x + (float)(pwi->rcWindow.left);
-	TitlePos.y = m_titlePos.y /*+ (float)(pwi->rcWindow.top)*/;
-	TitlePos.z = m_titlePos.z;
-
-	Dis = TitlePos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 25)
-	{
-		m_titleScale    = 1.1f;
-
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
-		{
-			if (!m_addFadeAlpha)
-			{
-				m_bTitle = true;
-				m_addFadeAlpha = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
-			}
+			m_challengeScale = 1.0f;
 		}
 
-	}
-	else
-	{
-		m_titleScale = 1.0f;
+		Math::Vector3 TrainingPos;
+		TrainingPos.x = m_trainingPos.x + (float)(pwi->rcWindow.left);
+		TrainingPos.y = m_trainingPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		TrainingPos.z = m_trainingPos.z;
+
+		Dis = TrainingPos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 75)
+		{
+			m_trainingScale = 1.1f;
+
+			//m_optionScale    = 1.1f;
+
+			/*if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			{
+				if (!m_addFadeAlpha)
+				{
+					m_bTraining = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
+			}*/
+
+		}
+		else
+		{
+			m_trainingScale = 1.0f;
+		}
+
+		Math::Vector3 TitlePos;
+		TitlePos.x = m_titlePos.x + (float)(pwi->rcWindow.left);
+		TitlePos.y = m_titlePos.y /*+ (float)(pwi->rcWindow.top)*/;
+		TitlePos.z = m_titlePos.z;
+
+		Dis = TitlePos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 75)
+		{
+			m_titleScale = 1.1f;
+
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			{
+				if (!m_addFadeAlpha)
+				{
+					m_bTitle = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
+			}
+
+		}
+		else
+		{
+			m_titleScale = 1.0f;
+		}
+
+		Math::Vector3 BattlehelpMkPos;
+		BattlehelpMkPos.x = m_BattlehelpMkPos.x + (float)(pwi->rcWindow.left);
+		BattlehelpMkPos.y = m_BattlehelpMkPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		BattlehelpMkPos.z = m_BattlehelpMkPos.z;
+
+		Dis = BattlehelpMkPos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 25)
+		{
+			m_BattlehelpMkScale = 1.1f;
+
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			{
+				if (!m_addFadeAlpha)
+				{
+					m_bBattlehelp = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
+			}
+
+		}
+		else
+		{
+			m_BattlehelpMkScale = 1.0f;
+		}
+
+		Math::Vector3 ChalengehelpMkPos;
+		ChalengehelpMkPos.x = m_chalengehelpMkPos.x + (float)(pwi->rcWindow.left);
+		ChalengehelpMkPos.y = m_chalengehelpMkPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		ChalengehelpMkPos.z = m_chalengehelpMkPos.z;
+
+		Dis = ChalengehelpMkPos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 25)
+		{
+			m_chalengehelpMkScale = 1.1f;
+
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			{
+				if (!m_addFadeAlpha)
+				{
+					m_bBattlehelp = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
+			}
+
+		}
+		else
+		{
+			m_chalengehelpMkScale = 1.0f;
+		}
 	}
 
 	if (m_addFadeAlpha)
@@ -2620,9 +2750,17 @@ void Ui::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_threeEnemyTotalTex, 0, 0, 210, 80);
 
+		mat = Math::Matrix::CreateScale(m_BattlehelpMkScale) * Math::Matrix::CreateTranslation(m_BattlehelpMkPos);
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_helpMkTex, 0, 0, 50, 50);
+
 		mat = Math::Matrix::CreateScale(m_challengeScale) * Math::Matrix::CreateTranslation(m_challengePos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_challengeTex, 0, 0, 420, 580);
+
+		mat = Math::Matrix::CreateScale(m_chalengehelpMkScale) * Math::Matrix::CreateTranslation(m_chalengehelpMkPos);
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_helpMkTex, 0, 0, 50, 50);
 
 		mat = Math::Matrix::CreateScale(m_tutorialScale) * Math::Matrix::CreateTranslation(m_tutorialPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -2644,6 +2782,26 @@ void Ui::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		color = { 0,0,0,m_fadeAlpha };
 		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
+
+		if (m_bBattlehelp)
+		{
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(Math::Matrix::Identity);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_battlehelpTex, 0, 0, 880, 520);
+
+			mat = Math::Matrix::CreateScale(m_backScale) * Math::Matrix::CreateTranslation(m_backPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_backTex, 0, 0, 182, 80);
+		}
+		else if (m_bChalengehelp)
+		{
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(Math::Matrix::Identity);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_chalengebattlehelpTex, 0, 0, 880, 520);
+
+			mat = Math::Matrix::CreateScale(m_backScale) * Math::Matrix::CreateTranslation(m_backPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_backTex, 0, 0, 182, 80);
+		}
+
 		break;
 	}
 
@@ -2756,6 +2914,10 @@ void Ui::Init()
 	m_twoEnemyTotalTex.Load("Asset/Textures/Ui/Select/TwoEnemy.png");
 	m_threeEnemyTotalTex.Load("Asset/Textures/Ui/Select/threeEnemy.png");
 
+	m_helpMkTex.Load("Asset/Textures/Ui/Select/help.png");
+	m_battlehelpTex.Load("Asset/Textures/Ui/Select/BattleHelp.png");
+	//m_chalengebattlehelpTex.Load("Asset/Textures/Ui/Select/threeEnemy.png");
+
 	m_fadeAlpha = 1.0f;
 	m_addFadeAlpha = false;
 	m_bFirstInResult = true;
@@ -2776,12 +2938,14 @@ void Ui::Init()
 	m_titlePos =  { 550,-180,0 };
 	m_exitPos =   { 550,-250,0 };
 
-	m_gamePos            = { -195, -20, 0};
-	m_oneEnemyTotalPos   = { -195, -80, 0};
+	m_gamePos            = { -195,  -20, 0};
+	m_oneEnemyTotalPos   = { -195,  -80, 0};
 	m_twoEnemyTotalPos   = { -195, -170, 0};
 	m_threeEnemyTotalPos = { -195, -260, 0};
+	m_BattlehelpMkPos    = {  -35,  235, 0};
 
 	m_challengePos       = {  265, -20, 0};
+	m_chalengehelpMkPos  = {  450, 250, 0};
 	m_tutorialPos        = { -535, 138, 0};
 	m_trainingPos        = { -535,-178, 0};
 	m_selectBackPos      = {    0,   0, 0};
@@ -2840,4 +3004,11 @@ void Ui::Init()
 	m_tutorialType = kihonTu;
 	m_bTutorialView = true;
 	m_tutorialSwitchAfterTime = 120;
+
+	m_BattlehelpMkScale = 1.0f;
+	m_bBattlehelp = false;
+
+	m_chalengehelpMkScale = 1.0f;
+	m_bChalengehelp = false;
+
 }

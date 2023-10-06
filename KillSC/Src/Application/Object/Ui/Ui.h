@@ -216,4 +216,16 @@ private:
 	Math::Vector3  m_threeEnemyTotalPos;
 	float          m_threeEnemyScale;
 	bool           m_bThreeEnemyTotal;
+
+	KdTexture m_helpMkTex;
+
+	KdTexture     m_battlehelpTex;
+	Math::Vector3 m_BattlehelpMkPos;
+	float         m_BattlehelpMkScale;
+	bool          m_bBattlehelp;
+
+	KdTexture     m_chalengebattlehelpTex;
+	Math::Vector3 m_chalengehelpMkPos;
+	float         m_chalengehelpMkScale;
+	bool          m_bChalengehelp;
 };
