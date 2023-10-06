@@ -227,4 +227,6 @@ private:
 	bool m_bRushAttackPossible = false;
 	std::weak_ptr<Ui> m_wpUi;
 	int m_tuGardTime;
+
+	int m_overStageTime;
 };

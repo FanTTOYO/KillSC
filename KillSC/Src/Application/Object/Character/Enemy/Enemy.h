@@ -137,6 +137,8 @@ public:
 	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec)override;
 	void HasDefense()override;
 
+	const bool GetBEnemyLose() { return m_bEnemyLose; }
+
 private:
 
 	void EnemyKickHitAttackChaeck();
@@ -275,4 +277,7 @@ private:
 
 	KdPolygon m_enduranceBarPoly;
 	KdPolygon m_endurancePoly;
+
+	bool m_bEnemyLose;
+	int m_overStageTime;
 };

@@ -201,4 +201,19 @@ private:
 	int m_tutorialSwitchAfterTime;
 
 	std::vector<Math::Vector2> m_enemyScPosList;
+
+	KdTexture      m_oneEnemyTotalTex;
+	Math::Vector3  m_oneEnemyTotalPos;
+	float          m_oneEnemyScale;
+	bool           m_bOneEnemyTotal;
+
+	KdTexture      m_twoEnemyTotalTex;
+	Math::Vector3  m_twoEnemyTotalPos;
+	float          m_twoEnemyScale;
+	bool           m_bTwoEnemyTotal;
+
+	KdTexture      m_threeEnemyTotalTex;
+	Math::Vector3  m_threeEnemyTotalPos;
+	float          m_threeEnemyScale;
+	bool           m_bThreeEnemyTotal;
 };

@@ -34,13 +34,15 @@ void Ui::PostUpdate()
 		int i = 0;
 		for (auto& list : m_wpEnemyList)
 		{
-			Math::Vector3 cameraPos = Math::Vector3(list.lock()->GetPos().x, list.lock()->GetPos().y + 1.2f, list.lock()->GetPos().z);
+			Math::Vector3 pos = Math::Vector3(list.lock()->GetPos().x, list.lock()->GetPos().y + 1.2f, list.lock()->GetPos().z);
 
 			POINT dev;
-			KdDirect3D::Instance().WorldToClient(cameraPos, dev, m_wpCamera.lock()->GetCamera()->GetCameraMatrix(), m_wpCamera.lock()->GetCamera()->GetProjMatrix());
+			KdDirect3D::Instance().WorldToClient(pos, dev, m_wpCamera.lock()->GetCamera()->GetCameraMatrix(), m_wpCamera.lock()->GetCamera()->GetProjMatrix());
 			dev.x -= (long)640.0f;
 			dev.y = (long)(dev.y * -1 + 360.0f);
-			dev.y += 20;
+			float z = m_wpCamera.lock()->GetPos().z - list.lock()->GetPos().z;
+			dev.y += 180 - (std::fabs(z) * 1.5f);
+			dev.x -= 50;
 			m_enemyScPosList[i] = Math::Vector2((float)dev.x,(float)dev.y);
 			++i;
 		}
@@ -1363,12 +1365,7 @@ void Ui::SelectUpdate()
 	if (Dis.Length() <= 75)
 	{
 		m_tutorialScale = 1.1f;
-		m_gameScale = 1.0f;
-		m_challengeScale = 1.0f;
-		m_trainingScale = 1.1f;
 
-		m_exitScale  = 1.0f;
-		m_titleScale = 1.0f;
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
 			if (!m_addFadeAlpha)
@@ -1393,13 +1390,8 @@ void Ui::SelectUpdate()
 	Dis = ExitPos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 25)
 	{
-		m_tutorialScale = 1.0f;
-		m_gameScale = 1.0f;
-		m_challengeScale = 1.0f;
-		m_trainingScale = 1.0f;
-
 		m_exitScale  = 1.1f;
-		m_titleScale = 1.0f;
+		
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
 			if (!m_addFadeAlpha)
@@ -1418,24 +1410,20 @@ void Ui::SelectUpdate()
 	}
 
 	Math::Vector3 GamePos;
-	GamePos.x = m_gamePos.x + (float)(pwi->rcWindow.left);
-	GamePos.y = m_gamePos.y /*+ (float)(pwi->rcWindow.top)*/;
-	GamePos.z = m_gamePos.z;
+	GamePos.x = m_oneEnemyTotalPos.x + (float)(pwi->rcWindow.left);
+	GamePos.y = m_oneEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
+	GamePos.z = m_oneEnemyTotalPos.z;
 
 	Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-	if (Dis.Length() <= 75)
+	if (Dis.Length() <= 30)
 	{
-		m_tutorialScale = 1.0f;
-		m_gameScale = 1.1f;
-		m_challengeScale = 1.0f;
-		m_trainingScale = 1.0f;
-
-		m_exitScale  = 1.0f;
-		m_titleScale = 1.0f;
+		m_oneEnemyScale = 1.1f;
+	
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
 			if (!m_addFadeAlpha)
 			{
+				m_bOneEnemyTotal = true;
 				m_bGame = true;
 				m_addFadeAlpha = true;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
@@ -1445,7 +1433,59 @@ void Ui::SelectUpdate()
 	}
 	else
 	{
-		m_gameScale = 1.0f;
+		m_oneEnemyScale = 1.0f;
+	}
+
+	GamePos.x = m_twoEnemyTotalPos.x + (float)(pwi->rcWindow.left);
+	GamePos.y = m_twoEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
+	GamePos.z = m_twoEnemyTotalPos.z;
+
+	Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
+	if (Dis.Length() <= 30)
+	{
+		m_twoEnemyScale = 1.1f;
+		
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		{
+			if (!m_addFadeAlpha)
+			{
+				m_bTwoEnemyTotal = true;
+				m_bGame = true;
+				m_addFadeAlpha = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+			}
+		}
+
+	}
+	else
+	{
+		m_twoEnemyScale = 1.0f;
+	}
+
+	GamePos.x = m_threeEnemyTotalPos.x + (float)(pwi->rcWindow.left);
+	GamePos.y = m_threeEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
+	GamePos.z = m_threeEnemyTotalPos.z;
+
+	Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
+	if (Dis.Length() <= 30)
+	{
+		m_threeEnemyScale = 1.1f;
+
+		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		{
+			if (!m_addFadeAlpha)
+			{
+				m_bThreeEnemyTotal = true;
+				m_bGame = true;
+				m_addFadeAlpha = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+			}
+		}
+
+	}
+	else
+	{
+		m_threeEnemyScale = 1.0f;
 	}
 
 	Math::Vector3 ChallengePos;
@@ -1456,13 +1496,7 @@ void Ui::SelectUpdate()
 	Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 75)
 	{
-		m_tutorialScale = 1.0f;
-		m_gameScale = 1.0f;
 		m_challengeScale = 1.1f;
-		m_trainingScale = 1.0f;
-
-		m_exitScale     = 1.0f;
-		m_titleScale    = 1.0f;
 
 		/*if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
@@ -1488,13 +1522,8 @@ void Ui::SelectUpdate()
 	Dis = OptionPos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 75)
 	{
-		m_tutorialScale  = 1.0f;
-		m_gameScale      = 1.0f;
-		m_challengeScale = 1.0f;
 		m_trainingScale  = 1.1f;
 
-		m_exitScale      = 1.f;
-		m_titleScale     = 1.0f;
 		//m_optionScale    = 1.1f;
 
 		/*if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -1521,12 +1550,6 @@ void Ui::SelectUpdate()
 	Dis = TitlePos - Math::Vector3(mouseX, mouseY, 0.0f);
 	if (Dis.Length() <= 25)
 	{
-		m_tutorialScale = 1.0f;
-		m_gameScale = 1.0f;
-		m_challengeScale = 1.0f;
-		m_trainingScale = 1.0f;
-
-		m_exitScale     = 1.0f;
 		m_titleScale    = 1.1f;
 
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -1562,6 +1585,19 @@ void Ui::SelectUpdate()
 
 			if (m_bGame)
 			{
+				if (m_bOneEnemyTotal)
+				{
+					SceneManager::Instance().SetEnemyTotal(1);
+				}
+				else if (m_bTwoEnemyTotal)
+				{
+					SceneManager::Instance().SetEnemyTotal(2);
+				}
+				else if (m_bThreeEnemyTotal)
+				{
+					SceneManager::Instance().SetEnemyTotal(3);
+				}
+
 				SceneManager::Instance().SetNextScene
 				(
 					SceneManager::SceneType::game
@@ -1760,6 +1796,12 @@ void Ui::DrawSprite()
 			int i = 0;
 			for (auto& list : m_wpEnemyList)
 			{
+				if (list.lock()->GetBEnemyLose())
+				{
+					++i;
+					continue;
+				}
+
 				Math::Vector3 nowVec = m_wpCamera.lock()->GetMatrix().Backward();
 				nowVec.y = 0.0f;
 				nowVec.x = 0.0f;
@@ -1791,7 +1833,7 @@ void Ui::DrawSprite()
 					POINT dev;
 					KdDirect3D::Instance().WorldToClient(cameraPos, dev, m_wpCamera.lock()->GetCamera()->GetCameraMatrix(), m_wpCamera.lock()->GetCamera()->GetProjMatrix());
 					dev.y += 120;*/
-					mat = Math::Matrix::CreateTranslation(m_enemyScPosList[i].x, m_enemyScPosList[i].y, 0.0f);
+					mat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation(m_enemyScPosList[i].x, m_enemyScPosList[i].y, 0.0f);
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 					rc = { 0,0,(int)(list.lock()->GetEndurance()),50 };
@@ -2566,6 +2608,18 @@ void Ui::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_gameTex, 0, 0, 420, 580);
 
+		mat = Math::Matrix::CreateScale(m_oneEnemyScale) * Math::Matrix::CreateTranslation(m_oneEnemyTotalPos);
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_oneEnemyTotalTex, 0, 0, 210, 80);
+
+		mat = Math::Matrix::CreateScale(m_twoEnemyScale) * Math::Matrix::CreateTranslation(m_twoEnemyTotalPos);
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_twoEnemyTotalTex, 0, 0, 210, 80);
+
+		mat = Math::Matrix::CreateScale(m_threeEnemyScale) * Math::Matrix::CreateTranslation(m_threeEnemyTotalPos);
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_threeEnemyTotalTex, 0, 0, 210, 80);
+
 		mat = Math::Matrix::CreateScale(m_challengeScale) * Math::Matrix::CreateTranslation(m_challengePos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_challengeTex, 0, 0, 420, 580);
@@ -2697,6 +2751,11 @@ void Ui::Init()
 	m_trainingTex.Load("Asset/Textures/Ui/Select/Training.png");
 	m_tutorialTex.Load("Asset/Textures/Ui/Select/Tutorial.png");
 
+
+	m_oneEnemyTotalTex.Load("Asset/Textures/Ui/Select/oneEnemy.png");
+	m_twoEnemyTotalTex.Load("Asset/Textures/Ui/Select/TwoEnemy.png");
+	m_threeEnemyTotalTex.Load("Asset/Textures/Ui/Select/threeEnemy.png");
+
 	m_fadeAlpha = 1.0f;
 	m_addFadeAlpha = false;
 	m_bFirstInResult = true;
@@ -2717,11 +2776,15 @@ void Ui::Init()
 	m_titlePos =  { 550,-180,0 };
 	m_exitPos =   { 550,-250,0 };
 
-	m_gamePos       = { -195, -20, 0};
-	m_challengePos  = {  265, -20, 0};
-	m_tutorialPos   = { -535, 138, 0};
-	m_trainingPos   = { -535,-178, 0};
-	m_selectBackPos = {    0,   0, 0};
+	m_gamePos            = { -195, -20, 0};
+	m_oneEnemyTotalPos   = { -195, -80, 0};
+	m_twoEnemyTotalPos   = { -195, -170, 0};
+	m_threeEnemyTotalPos = { -195, -260, 0};
+
+	m_challengePos       = {  265, -20, 0};
+	m_tutorialPos        = { -535, 138, 0};
+	m_trainingPos        = { -535,-178, 0};
+	m_selectBackPos      = {    0,   0, 0};
 
 	m_bTutorial = false;
 	m_bExit = false;
@@ -2729,6 +2792,10 @@ void Ui::Init()
 	m_bGame = false;
 	m_bOption = false;
 	m_bTitle = false;
+	m_bOneEnemyTotal = false;
+	m_bTwoEnemyTotal = false;
+	m_bThreeEnemyTotal = false;
+
 
 	m_countOneScale = 0.1f;
 	m_countOneAlpha = 0.0f;

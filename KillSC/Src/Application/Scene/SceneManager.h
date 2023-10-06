@@ -49,6 +49,8 @@ public:
 	const bool GetBPlayerWin() { return m_bPlayerWin; }
 
 	void SetPointAddOrSubVal(int a_pointAddOrSubVal) { m_pointAddOrSubVal = a_pointAddOrSubVal; }
+	void AddPointAddOrSubVal(int a_pointAddOrSubVal) { m_pointAddOrSubVal += a_pointAddOrSubVal; }
+
 	const int GetPointAddOrSubVal() { return m_pointAddOrSubVal; }
 
 	void SetBAddOrSubVal(int a_bAddOrSubVal) { m_bAddOrSubVal = a_bAddOrSubVal; }
@@ -58,6 +60,10 @@ public:
 
 	void SetUpdateStopCnt(int a_updateStopCnt) { m_updateStopCnt = a_updateStopCnt; }
 	const int GetUpdateStopCnt() { return m_updateStopCnt; }
+
+	void SetEnemyTotal(int a_enemyTotal) { m_enemyTotal = a_enemyTotal; }
+	void SubEnemyTotal() { --m_enemyTotal; }
+	const int GetEnemyTotal() { return m_enemyTotal; }
 
 private:
 
@@ -76,6 +82,7 @@ private:
 	bool m_bAddOrSubVal = true; // true 加算値  false 減算値
 	bool m_bWinEnd;   // gameが終了してwindowが閉じるとき
 	int m_updateStopCnt;
+	int m_enemyTotal;
 
 // シングルトンパターン
 	// 生成するインスタンスの数を1つに制限する

@@ -56,7 +56,7 @@ void Enemy::Init()
 	m_bTough = false;
 	m_bFirstUpdate = true;
 	m_bRushAttackPossible = false;
-
+	m_bEnemyLose = false;
 	m_graduallyTorionDecVal = 0;
 	m_enemyAirborneTimetoBeCnt = ENEMYAIRBORNETIMETOBECNTVAL;
 
@@ -141,16 +141,38 @@ void Enemy::Init()
 
 void Enemy::Update()
 {
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
+	if (GetAsyncKeyState('P') & 0x8000)
+	{
+		m_pos = Math::Vector3::Zero;
+	}
+
+	if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < -1.0f || m_pos.y > 62.5f)
+	{
+		m_overStageTime++;
+		if (m_overStageTime >= 90)
+		{
+			m_pos = { 0,0,0 };
+			m_overStageTime = 0;
+		}
+	}
+
 	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
 		m_torion -= m_graduallyTorionDecVal;
 		if (m_torion <= 0)
 		{
 			m_torion = 0;
-			SceneManager::Instance().SetBAddOrSubVal(true);
-			SceneManager::Instance().SetPointAddOrSubVal(1000);
-			SceneManager::Instance().SetBPlayerWin();
-			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+			if (!m_bEnemyLose)
+			{
+				SceneManager::Instance().AddPointAddOrSubVal(500);
+				SceneManager::Instance().SubEnemyTotal();
+				m_bEnemyLose = true;
+			}
 		}
 	}
 
@@ -202,6 +224,14 @@ void Enemy::Update()
 			if (m_wantToMoveState & none)
 			{
 				Brain();
+			}	
+			else
+			{
+				Math::Vector3 src = spTarget->GetPos() - m_pos;
+				if (src.Length() >= 20.0f && !(m_EnemyState & (eGrassHopperDashF)))
+				{
+					Brain();
+				}
 			}
 
 			switch (m_rightWeaponNumber) // å„Ç…î‘çÜÇé©óRÇ…ëIÇ◊ÇÈÇÊÇ§Ç…Ç»ÇÈÇ©Ç‡
@@ -1070,10 +1100,12 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 		if (m_endurance <= 0)
 		{
 			m_endurance = 0;
-			SceneManager::Instance().SetBAddOrSubVal(true);
-			SceneManager::Instance().SetPointAddOrSubVal(1000);
-			SceneManager::Instance().SetBPlayerWin();
-			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+			if (!m_bEnemyLose)
+			{
+				SceneManager::Instance().AddPointAddOrSubVal(500);
+				SceneManager::Instance().SubEnemyTotal();
+				m_bEnemyLose = true;
+			}
 		}
 	}
 
@@ -1113,10 +1145,12 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 		if (m_endurance <= 0)
 		{
 			m_endurance = 0;
-			SceneManager::Instance().SetBAddOrSubVal(true);
-			SceneManager::Instance().SetPointAddOrSubVal(1000);
-			SceneManager::Instance().SetBPlayerWin();
-			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+			if (!m_bEnemyLose)
+			{
+				SceneManager::Instance().AddPointAddOrSubVal(500);
+				SceneManager::Instance().SubEnemyTotal();
+				m_bEnemyLose = true;
+			}
 		}
 	}
 
@@ -1146,10 +1180,12 @@ void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 		if (m_endurance <= 0)
 		{
 			m_endurance = 0;
-			SceneManager::Instance().SetBAddOrSubVal(true);
-			SceneManager::Instance().SetPointAddOrSubVal(1000);
-			SceneManager::Instance().SetBPlayerWin();
-			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+			if (!m_bEnemyLose)
+			{
+				SceneManager::Instance().AddPointAddOrSubVal(500);
+				SceneManager::Instance().SubEnemyTotal();
+				m_bEnemyLose = true;
+			}
 		}
 	}
 
@@ -1219,6 +1255,11 @@ void Enemy::DrawSprite()
 
 void Enemy::DrawDebug()
 {
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
 #ifdef _DEBUG
 	if (!m_pDebugWire)return;
 	m_pDebugWire->Draw();
@@ -1232,6 +1273,11 @@ void Enemy::DrawDebug()
 
 void Enemy::GenerateDepthMapFromLight_SkinMesh()
 {
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
 	if (!m_model) return;
 
 	KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
@@ -1239,6 +1285,11 @@ void Enemy::GenerateDepthMapFromLight_SkinMesh()
 
 void Enemy::DrawLit_SkinMesh()
 {
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
 	if (!m_model) return;
 
 	if (m_invincibilityTimeCnt <= 90 && m_invincibilityTimeCnt > 80 ||
@@ -1263,6 +1314,11 @@ void Enemy::DrawLit_SkinMesh()
 
 void Enemy::DrawLit()
 {
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
 	if (!m_bEwaponDrawPosible)return;
 
 	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
@@ -1287,6 +1343,11 @@ void Enemy::DrawUnLit()
 
 void Enemy::DrawBright()
 {
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
 	if (!m_bEwaponDrawPosible)return;
 
 	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
@@ -1300,6 +1361,11 @@ void Enemy::DrawBright()
 
 void Enemy::GenerateDepthMapFromLight()
 {
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
 	if (!m_bEwaponDrawPosible)return;
 
 	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
@@ -2000,14 +2066,14 @@ void Enemy::GrassMove()
 
 	m_pos += m_grassHopperDashDir * m_dashSpd;
 
-	/*if (m_EnemyState & eGrassHopperDash)
+	if (m_EnemyState & eGrassHopperDash)
 	{
 		UpdateRotate(m_grassHopperDashDir);
 	}
 	else if (m_EnemyState & eGrassHopperDashUp)
 	{
 		UpdateRotate(Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(m_mWorldRot.y)));
-	}*/
+	}
 }
 
 void Enemy::StepMove()
@@ -3328,10 +3394,10 @@ void Enemy::ScorpionAttackMove()
 					case 49:
 					case 74:
 					case 89:
-						m_attackMoveSpd = 0.1f;
+						m_attackMoveSpd = 0.2f;
 						break;
 					case 107:
-						m_attackMoveSpd = 0.05f;
+						m_attackMoveSpd = 0.1f;
 						break;
 					}
 				}

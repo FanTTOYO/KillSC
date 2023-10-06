@@ -80,11 +80,21 @@ void Player::Init()
 	m_mWorldRot = {};
 	m_bFirstUpdate = true;
 	m_bEwaponDrawPosible = false;
-
+	m_overStageTime = 0;
 }
 
 void Player::Update()
 {
+	if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < -1.0f)
+	{
+		m_overStageTime++;
+		if (m_overStageTime >= 90)
+		{
+			m_pos = { 0,0,0 };
+			m_overStageTime = 0;
+		}
+	}
+
 	if (m_bFirstUpdate)
 	{
 		m_bFirstUpdate = false;
@@ -234,6 +244,11 @@ void Player::Update()
 					int i = 0;
 					for (auto& enemyList : m_enemyList)
 					{
+						if (enemyList.lock()->GetBEnemyLose())
+						{
+							continue;
+						}
+
 						Math::Vector3 nowVec = gCamera->GetMatrix().Backward();
 						nowVec.y = 0.0f;
 						nowVec.Normalize();
@@ -386,16 +401,20 @@ void Player::Update()
 				m_hitMoveSpd = 0;
 			}
 
+			int cnt = 0;
 			for (auto& enemyList : m_enemyList)
 			{
 				if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107)
 				{
 					m_hitMoveSpd *= 0.95f;
+					cnt++;
+					break;
 				}
-				else
-				{
-					m_hitMoveSpd *= 0.75f;
-				}
+			}
+
+			if (cnt == 0)
+			{
+				m_hitMoveSpd *= 0.75f;
 			}
 		}
 		else
@@ -1116,16 +1135,19 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 		scopion2->SetBMantis(false);
 	}
 
+	int cnt = 0;
 	for (auto& enemyList : m_enemyList)
 	{
 		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107)
 		{
 			m_hitMoveSpd = 0.65f;
+			break;
 		}
-		else
-		{
-			m_hitMoveSpd = 0.3f;
-		}
+	}
+
+	if (cnt == 0)
+	{
+		m_hitMoveSpd = 0.3f;
 	}
 
 	m_playerState = blowingAwayHit;

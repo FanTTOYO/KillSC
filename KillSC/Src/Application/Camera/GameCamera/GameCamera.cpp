@@ -227,6 +227,11 @@ void GameCamera::Update()
 	}
 	else
 	{
+		if (m_wpEnemy.lock()->GetBEnemyLose())
+		{
+			m_bRotateEnemy = false;
+		}	
+
 		UpdateRotateByEnemy();
 		SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
 		rotMatX = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(10));

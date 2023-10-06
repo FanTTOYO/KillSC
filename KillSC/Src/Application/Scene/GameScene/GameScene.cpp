@@ -32,6 +32,13 @@ void GameScene::Event()
 	{
 		m_wpUi.lock()->Update();
 	}
+
+	if (SceneManager::Instance().GetEnemyTotal() == 0)
+	{
+		SceneManager::Instance().SetBAddOrSubVal(true);
+		SceneManager::Instance().SetBPlayerWin();
+		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+	}
 }
 
 void GameScene::Init()
@@ -116,13 +123,25 @@ void GameScene::Init()
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
 	ui->SetPlayer(player);
 	
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < SceneManager::Instance().GetEnemyTotal(); ++i)
 	{
 		enemy = std::make_shared<Enemy>();
 		enemy->SetTarget(player);
 		player->AddEnemy(enemy);
 		enemy->Init();
-		enemy->SetPos(Math::Vector3(-5.0f + 5.0f * i,0.0f,20.0f));
+		switch (SceneManager::Instance().GetEnemyTotal())
+		{
+		case 1:
+			enemy->SetPos(Math::Vector3(0, 0.0f, 20.0f));
+			break;
+		case 2:
+			enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, 20.0f));
+			break;
+		case 3:
+			enemy->SetPos(Math::Vector3(-5.0f + 5.0f * i, 0.0f, 20.0f));
+			break;
+		}
+
 		m_objList.push_back(enemy);
 		ui->AddEnemy(enemy);
 	}
