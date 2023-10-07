@@ -48,6 +48,12 @@ public:
 	const TutorialType GetTutorialType() { return m_tutorialType; }
 	void AddTutorialCnt();
 
+	const int GetGameTimeS1() { return m_gameTimeS10; }
+	const int GetGameTimeS10() { return m_gameTimeS1; }
+
+	const int GetGameTimeM1() { return m_gameTimeM10; }
+	const int GetGameTimeM10() { return m_gameTimeM1; }
+
 private:
 	void Init()override;
 
@@ -228,4 +234,23 @@ private:
 	Math::Vector3 m_chalengehelpMkPos;
 	float         m_chalengehelpMkScale;
 	bool          m_bChalengehelp;
+
+	int           m_gameTimeS10 = 0;
+	int           m_gameTimeS1 = 0;
+
+	int           m_gameTimeM10 = 0;
+	int           m_gameTimeM1 = 0;
+	int           m_gameTimeCntDeray = 0;
+
+	KdTexture m_time0Tex;
+	KdTexture m_time1Tex;
+	KdTexture m_time2Tex;
+	KdTexture m_time3Tex;
+	KdTexture m_time4Tex;
+	KdTexture m_time5Tex;
+	KdTexture m_time6Tex;
+	KdTexture m_time7Tex;
+	KdTexture m_time8Tex;
+	KdTexture m_time9Tex;
+	KdTexture m_conmaTex;
 };

@@ -1868,7 +1868,7 @@ void Player::NormalMove()
 	Math::Vector3 moveVec = {};
 	float moveSpd = 0.25f;
 
-	if (!(m_playerState & (lAttack | rAttack | defense | mantis)))
+	if (!(m_playerState & (lAttack | rAttack | defense | mantis | rlAttack | rlAttackRush)))
 	{
 		if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
 		{
@@ -2394,6 +2394,7 @@ void Player::ScorpionActionDecision()
 								enemyList.lock()->SetAttackHit(false);
 								enemyList.lock()->SetDefenseSuc(false);
 							}
+
 							m_playerState |= rlAttackOne;
 							m_playerState &= ~rAttack;
 							m_playerState &= ~lAttack;
@@ -2404,9 +2405,17 @@ void Player::ScorpionActionDecision()
 							m_bMove = true;
 
 							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
-							m_attackMoveSpd = 0.5f;
+							if (KdInputManager::Instance().GetButtonState("forward"))
+							{
+								m_attackMoveSpd = 3.5f;
+							}
+							else
+							{
+								m_attackMoveSpd = 0.5f;
+							}
 
 							m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
 						}
@@ -2462,7 +2471,14 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
-							m_attackMoveSpd = 0.5f;
+							if (KdInputManager::Instance().GetButtonState("forward"))
+							{
+								m_attackMoveSpd = 3.5f;
+							}
+							else
+							{
+								m_attackMoveSpd = 0.5f;
+							}
 
 							m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
 						}
