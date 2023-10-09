@@ -36,9 +36,9 @@ void GameScene::Event()
 	if (m_wpUi.lock()->GetGameTimeM10() == 0 &&
 		m_wpUi.lock()->GetGameTimeM1()  == 0 &&
 		m_wpUi.lock()->GetGameTimeS10() == 0 &&
-		m_wpUi.lock()->GetGameTimeM1()  == 0)
+		m_wpUi.lock()->GetGameTimeS1()  == 0)
 	{
-		if (SceneManager::Instance().GetEnemyTotal() < 3)
+		if (SceneManager::Instance().GetEnemyIeftover() < SceneManager::Instance().GetEnemyTotal())
 		{
 			SceneManager::Instance().SetBAddOrSubVal(true);
 			SceneManager::Instance().SetBPlayerWin();
@@ -48,10 +48,11 @@ void GameScene::Event()
 			SceneManager::Instance().SetBAddOrSubVal(false);
 			SceneManager::Instance().SetPointAddOrSubVal(500);
 		}
+
 		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
 	}
 
-	if (SceneManager::Instance().GetEnemyTotal() == 0)
+	if (SceneManager::Instance().GetEnemyIeftover() == 0)
 	{
 		SceneManager::Instance().SetBAddOrSubVal(true);
 		SceneManager::Instance().SetBPlayerWin();

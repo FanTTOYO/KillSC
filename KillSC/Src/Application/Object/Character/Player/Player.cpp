@@ -81,6 +81,10 @@ void Player::Init()
 	m_bFirstUpdate = true;
 	m_bEwaponDrawPosible = false;
 	m_overStageTime = 0;
+	m_bPlayerDeath = false;
+
+	m_rocKOnPolygon = std::make_shared<KdSquarePolygon>();
+	m_rocKOnPolygon->SetMaterial("Asset/Textures/Ui/Game/ターゲット N 白.png");
 }
 
 void Player::Update()
@@ -92,6 +96,62 @@ void Player::Update()
 		{
 			m_pos = { 0,0,0 };
 			m_overStageTime = 0;
+		}
+	}
+	else
+	{
+		if (m_overStageTime >= 90)
+		{
+			m_pos = { 0,0,0 };
+			m_overStageTime = 0;
+		}
+
+		KdCollider::SphereInfo sphereInfo;
+		// 球の中心位置を設定
+		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
+		// 球の半径を設定
+		
+		sphereInfo.m_sphere.Radius = 0.4f;
+
+		// 当たり判定をしたいタイプを設定
+		sphereInfo.m_type = KdCollider::TypeBuried;
+#ifdef _DEBUG
+		// デバック用
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius
+		);
+#endif
+		// 球の当たったオブジェクト情報
+		std::list<KdCollider::CollisionResult> retSphereList;
+
+		// 球と当たり判定 
+		for (auto& obj : SceneManager::Instance().GetObjList())
+		{
+			obj->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
+		}
+
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		float maxOverLap = 0;
+		bool hit = false;
+		for (auto& ret : retSphereList)
+		{
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+			}
+		}
+
+		if (hit)
+		{
+			++m_overStageTime;
 		}
 	}
 
@@ -115,17 +175,23 @@ void Player::Update()
 	if (m_torion <= 0)
 	{
 		m_torion = 0;
-		SceneManager::Instance().SetBAddOrSubVal(false);
-		SceneManager::Instance().SetPointAddOrSubVal(500);
-		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		if (!m_bPlayerDeath)
+		{
+			m_bPlayerDeath = true;
+			m_animator->SetAnimation(m_model->GetAnimation("Death"), false);
+			m_playerState = idle;
+		}
 	}
 
 	if (m_endurance <= 0)
 	{
 		m_endurance = 0;
-		SceneManager::Instance().SetBAddOrSubVal(false);
-		SceneManager::Instance().SetPointAddOrSubVal(500);
-		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		if (!m_bPlayerDeath)
+		{
+			m_bPlayerDeath = true;
+			m_animator->SetAnimation(m_model->GetAnimation("Death"), false);
+			m_playerState = idle;
+		}
 	}
 
 	if (m_invincibilityTimeCnt > 0)
@@ -136,6 +202,13 @@ void Player::Update()
 	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
 	{
 		TutorialUpdate();
+	}
+	else
+	{
+		if (GetAsyncKeyState('L') & 0x8000)
+		{
+			m_torion = 0;
+		}
 	}
 
 	if (!(m_playerState & (fall | jump)))
@@ -226,9 +299,8 @@ void Player::Update()
 		break;
 	}
 
-	if (!(m_playerState & (hit | rise)))
+	if (!(m_playerState & (hit | rise)) && !m_bPlayerDeath)
 	{
-
 		if (GetAsyncKeyState(VK_MBUTTON) & 0x80000)
 		{
 			if (!m_bMButtonState)
@@ -237,6 +309,7 @@ void Player::Update()
 				if (gCamera->GetBRotateEnemy())
 				{
 					gCamera->SetBRotateEnemy(false);
+					m_enemy.reset();
 				}
 				else
 				{
@@ -275,6 +348,7 @@ void Player::Update()
 							smallAng = ang;
 							++i;
 							gCamera->SetEnemy(enemyList.lock());
+							m_enemy = enemyList.lock();
 							continue;
 						}
 
@@ -282,6 +356,7 @@ void Player::Update()
 						{
 							smallAng = ang;
 							gCamera->SetEnemy(enemyList.lock());
+							m_enemy = enemyList.lock();
 							continue;
 						}
 						else if (smallAng == ang)
@@ -292,6 +367,7 @@ void Player::Update()
 								smallAng = ang;
 								++i;
 								gCamera->SetEnemy(enemyList.lock());
+								m_enemy = enemyList.lock();
 								continue;
 							}
 						}
@@ -425,7 +501,7 @@ void Player::Update()
 		m_pos += m_knockBackVec * m_hitMoveSpd;
 
 	}
-	else
+	else if(!!m_bPlayerDeath)
 	{
 		m_bMove = true;
 		if (m_animator->IsAnimationEnd())
@@ -438,7 +514,7 @@ void Player::Update()
 		}
 	}
 
-	if (!m_bMove)
+	if (!m_bMove && !m_bPlayerDeath)
 	{
 		if (!(m_playerState & (fall | jump)))
 		{
@@ -514,7 +590,7 @@ void Player::Update()
 			//m_pos = groundPos;
 			m_pos = groundPos + Math::Vector3(0, -0.7f, 0);
 			m_gravity = 0;
-			if (m_playerState & (fall | jump))
+			if (m_playerState & (fall | jump) && !m_bPlayerDeath)
 			{
 				m_bMove = false;
 				if (!(m_playerState & idle))
@@ -650,6 +726,65 @@ void Player::Update()
 		}
 	}
 
+	if (m_playerState & (rlAttack | rlAttackRush | PlayerState::hit))
+	{
+		sphereInfo;
+		// 球の中心位置を設定
+		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
+		// 球の半径を設定
+
+		sphereInfo.m_sphere.Radius = 0.4f;
+
+		// 当たり判定をしたいタイプを設定
+		sphereInfo.m_type = KdCollider::TypeBuried;
+#ifdef _DEBUG
+		// デバック用
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius
+		);
+#endif
+		// 球の当たったオブジェクト情報
+		retSphereList.clear();
+
+		// 球と当たり判定 
+		for (auto& obj : SceneManager::Instance().GetObjList())
+		{
+			obj->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
+		}
+
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		maxOverLap = 0;
+		hit = false;
+		hitDir = {}; // 当たった方向
+		for (auto& ret : retSphereList)
+		{
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+				hitDir = ret.m_hitDir;
+			}
+		}
+
+		if (hit)
+		{
+			hitDir.y = 0.0f;
+			hitDir.Normalize();
+			// 球とモデルが当たっている
+			m_pos += (hitDir * maxOverLap);
+
+			m_attackMoveSpd = 0.0f;
+			m_hitMoveSpd = 0.0f;
+		}
+	}
+
 	sphereInfo.m_sphere.Radius = 0.3f;
 
 
@@ -747,6 +882,17 @@ void Player::Update()
 	{
 		WeaList->Update();
 	}
+
+	if (m_enemy.expired())return;
+
+	Math::Matrix mat = Math::Matrix::CreateTranslation(m_enemy.lock()->GetMatrix().Translation());
+	m_rockOnPolyMat = mat;
+	m_rockOnPolyMat._42 += 1.75f;
+	m_rockOnPolyMat._41 += 0.5f * m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Forward().x;
+	m_rockOnPolyMat._43 += 0.5f * m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Forward().z;
+	m_rockOnPolyMat.Backward(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Backward());
+	m_rockOnPolyMat.Up(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Up());
+	m_rockOnPolyMat.Right(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Right());
 }
 
 void Player::PlayerKickHitAttackChaeck()
@@ -756,7 +902,7 @@ void Player::PlayerKickHitAttackChaeck()
 
 	for (auto& enemyList : m_enemyList)
 	{
-		if (!enemyList.lock()->GetAttackHit() && !enemyList.lock()->GetDefenseSuc() && enemyList.lock()->GetInvincibilityTimeCnt() == 0)
+		if (!enemyList.lock()->GetAttackHit() && !enemyList.lock()->GetDefenseSuc() && enemyList.lock()->GetInvincibilityTimeCnt() == 0 && !enemyList.lock()->GetBEnemyDeath()) // ここにはなくてもいいかも
 		{
 			/*if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
 			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;*/
@@ -882,146 +1028,82 @@ void Player::PlayerKickHitAttackChaeck()
 				}
 			}
 		}
-	}	//}
+	}
 }
 
 void Player::PostUpdate()
 {
-	if (m_gravity > 0)
+	if (!m_bPlayerDeath)
 	{
-		if (!(m_playerState & hit))
+		if (m_gravity > 0)
 		{
-			if (!(m_playerState & fall))
+			if (!(m_playerState & hit))
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
-			}
-
-			m_playerState = fall;
-		}
-	}
-
-	if (m_rGrassHopperPauCnt > 0)
-	{
-		--m_rGrassHopperPauCnt;
-	}
-
-	if (m_lGrassHopperPauCnt > 0)
-	{
-		--m_lGrassHopperPauCnt;
-	}
-
-	if (m_bAttackAnimeDelay)
-	{
-		m_attackAnimeDelayCnt--;
-		if (m_attackAnimeDelayCnt <= 0)
-		{
-			m_bAttackAnimeDelay = false;
-			m_attackAnimeDelayCnt = 0;
-		}
-	}
-
-	if (!m_animator) return;
-
-	if (!(m_playerState & (lAttack | rAttack | rlAttack | rlAttackRush)))
-	{
-		m_animator->AdvanceTime(m_model->WorkNodes());
-		if (m_playerState & run)
-		{
-			++m_runAnimeCnt;
-			if (m_runAnimeCnt == 16)
-			{
-				KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
-			}
-			else if (m_runAnimeCnt == 31)
-			{
-				KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
-			}
-
-			if (m_runAnimeCnt == 40)
-			{
-				m_runAnimeCnt = 0;
-			}
-		}
-	}
-	else if (m_playerState & (lAttack | rAttack) && !m_bAttackAnimeDelay)
-	{
-		if (m_bAttackAnimeCnt)
-		{
-			m_attackAnimeCnt++;
-			if (m_playerState & (lAttackOne | lAttackTwo | rAttackOne | rAttackTwo))
-			{
-				if (m_attackAnimeCnt == 10)
+				if (!(m_playerState & fall))
 				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+					m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
 				}
-			}
 
-			if (m_attackAnimeCnt == 20)
-			{
-				m_bAttackAnimeDelay = true;
-				m_bAttackAnimeCnt = false;
-				m_attackAnimeCnt = 0;
-				m_attackAnimeDelayCnt = 10;
-			}
-		}
-		else
-		{
-			m_attackAnimeCnt++;
-			if (m_playerState & (lAttackThree | rAttackThree))
-			{
-				if (m_attackAnimeCnt == 15)
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
+				m_playerState = fall;
 			}
 		}
 
-		m_animator->AdvanceTime(m_model->WorkNodes());
-		m_model->CalcNodeMatrices();
-	}
-	else if (m_playerState & (rlAttack | rlAttackRush))
-	{
-		if (m_bAttackAnimeCnt)
+		if (m_rGrassHopperPauCnt > 0)
 		{
-			m_attackAnimeCnt++;
-			if (m_playerState & rlAttackOne)
-			{
-				if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 17)
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-			else if (m_playerState & rlAttackTwo)
-			{
-				if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 16)
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-			else if (m_playerState & rlAttackThree)
-			{
-				if (m_attackAnimeCnt == 15 || m_attackAnimeCnt == 23)
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-			else if (m_playerState & rlAttackRush)
-			{
-				if (m_attackAnimeCnt == 8 ||
-					m_attackAnimeCnt == 21 ||
-					m_attackAnimeCnt == 31 ||
-					m_attackAnimeCnt == 49 ||
-					m_attackAnimeCnt == 57 ||
-					m_attackAnimeCnt == 74 ||
-					m_attackAnimeCnt == 89)
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
+			--m_rGrassHopperPauCnt;
+		}
 
+		if (m_lGrassHopperPauCnt > 0)
+		{
+			--m_lGrassHopperPauCnt;
+		}
 
-			if (m_playerState & rlAttackOne)
+		if (m_bAttackAnimeDelay)
+		{
+			m_attackAnimeDelayCnt--;
+			if (m_attackAnimeDelayCnt <= 0)
 			{
+				m_bAttackAnimeDelay = false;
+				m_attackAnimeDelayCnt = 0;
+			}
+		}
+
+		if (!m_animator) return;
+
+		if (!(m_playerState & (lAttack | rAttack | rlAttack | rlAttackRush)))
+		{
+			m_animator->AdvanceTime(m_model->WorkNodes());
+			if (m_playerState & run)
+			{
+				++m_runAnimeCnt;
+				if (m_runAnimeCnt == 16)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
+				}
+				else if (m_runAnimeCnt == 31)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
+				}
+
+				if (m_runAnimeCnt == 40)
+				{
+					m_runAnimeCnt = 0;
+				}
+			}
+		}
+		else if (m_playerState & (lAttack | rAttack) && !m_bAttackAnimeDelay)
+		{
+			if (m_bAttackAnimeCnt)
+			{
+				m_attackAnimeCnt++;
+				if (m_playerState & (lAttackOne | lAttackTwo | rAttackOne | rAttackTwo))
+				{
+					if (m_attackAnimeCnt == 10)
+					{
+						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+					}
+				}
+
 				if (m_attackAnimeCnt == 20)
 				{
 					m_bAttackAnimeDelay = true;
@@ -1030,32 +1112,110 @@ void Player::PostUpdate()
 					m_attackAnimeDelayCnt = 10;
 				}
 			}
-			else if (m_playerState & rlAttackTwo)
+			else
 			{
-				if (m_attackAnimeCnt == 20)
+				m_attackAnimeCnt++;
+				if (m_playerState & (lAttackThree | rAttackThree))
 				{
-					m_bAttackAnimeDelay = true;
-					m_bAttackAnimeCnt = false;
-					m_attackAnimeCnt = 0;
-					m_attackAnimeDelayCnt = 10;
+					if (m_attackAnimeCnt == 15)
+					{
+						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+					}
 				}
 			}
-			else if (m_playerState & rlAttackThree)
-			{
-				if (m_attackAnimeCnt == 40)
-				{
-					m_bAttackAnimeDelay = true;
-					m_bAttackAnimeCnt = false;
-					m_attackAnimeCnt = 0;
-					m_attackAnimeDelayCnt = 10;
-				}
-			}
-		}
 
+			m_animator->AdvanceTime(m_model->WorkNodes());
+			m_model->CalcNodeMatrices();
+		}
+		else if (m_playerState & (rlAttack | rlAttackRush))
+		{
+			if (m_bAttackAnimeCnt)
+			{
+				m_attackAnimeCnt++;
+				if (m_playerState & rlAttackOne)
+				{
+					if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 17)
+					{
+						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+					}
+				}
+				else if (m_playerState & rlAttackTwo)
+				{
+					if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 16)
+					{
+						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+					}
+				}
+				else if (m_playerState & rlAttackThree)
+				{
+					if (m_attackAnimeCnt == 15 || m_attackAnimeCnt == 23)
+					{
+						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+					}
+				}
+				else if (m_playerState & rlAttackRush)
+				{
+					if (m_attackAnimeCnt == 8 ||
+						m_attackAnimeCnt == 21 ||
+						m_attackAnimeCnt == 31 ||
+						m_attackAnimeCnt == 49 ||
+						m_attackAnimeCnt == 57 ||
+						m_attackAnimeCnt == 74 ||
+						m_attackAnimeCnt == 89)
+					{
+						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+					}
+				}
+
+
+				if (m_playerState & rlAttackOne)
+				{
+					if (m_attackAnimeCnt == 20)
+					{
+						m_bAttackAnimeDelay = true;
+						m_bAttackAnimeCnt = false;
+						m_attackAnimeCnt = 0;
+						m_attackAnimeDelayCnt = 10;
+					}
+				}
+				else if (m_playerState & rlAttackTwo)
+				{
+					if (m_attackAnimeCnt == 20)
+					{
+						m_bAttackAnimeDelay = true;
+						m_bAttackAnimeCnt = false;
+						m_attackAnimeCnt = 0;
+						m_attackAnimeDelayCnt = 10;
+					}
+				}
+				else if (m_playerState & rlAttackThree)
+				{
+					if (m_attackAnimeCnt == 40)
+					{
+						m_bAttackAnimeDelay = true;
+						m_bAttackAnimeCnt = false;
+						m_attackAnimeCnt = 0;
+						m_attackAnimeDelayCnt = 10;
+					}
+				}
+			}
+
+			m_animator->AdvanceTime(m_model->WorkNodes());
+			m_model->CalcNodeMatrices();
+		}
+	}
+	else
+	{
 		m_animator->AdvanceTime(m_model->WorkNodes());
 		m_model->CalcNodeMatrices();
-	}
 
+		if (m_animator->IsAnimationEnd())
+		{
+			SceneManager::Instance().SetBAddOrSubVal(false);
+			SceneManager::Instance().SetPointAddOrSubVal(500);
+			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+		}
+	}
 }
 
 void Player::OnHit(Math::Vector3 a_KnocBackvec)
@@ -1141,7 +1301,12 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107)
 		{
 			m_hitMoveSpd = 0.65f;
+			SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
 			break;
+		}
+		else
+		{
+			SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
 		}
 	}
 
@@ -1157,7 +1322,6 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
 	m_invincibilityTimeCnt = 100;
-	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
 	if (m_endurance < 0)
 	{
 		m_endurance = 0;
@@ -1307,6 +1471,12 @@ void Player::DrawLit()
 	{
 		WeaList->DrawLit();
 	}
+}
+
+void Player::DrawUnLit()
+{
+	if (m_enemy.expired())return;
+	KdShaderManager::Instance().m_HD2DShader.DrawPolygon(*m_rocKOnPolygon, m_rockOnPolyMat);
 }
 
 void Player::DrawBright()
@@ -1957,6 +2127,10 @@ void Player::NormalMove()
 						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}
+					else if(m_runAnimeCnt == 0)
+					{
+						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+					}
 					m_playerState = run;
 				}
 			}
@@ -2410,7 +2584,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.Normalize();
 							if (KdInputManager::Instance().GetButtonState("forward"))
 							{
-								m_attackMoveSpd = 3.5f;
+								m_attackMoveSpd = 1.5f;
 							}
 							else
 							{
@@ -2473,7 +2647,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.Normalize();
 							if (KdInputManager::Instance().GetButtonState("forward"))
 							{
-								m_attackMoveSpd = 3.5f;
+								m_attackMoveSpd = 1.5f;
 							}
 							else
 							{

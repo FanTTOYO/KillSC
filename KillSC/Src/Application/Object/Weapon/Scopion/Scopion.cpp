@@ -338,7 +338,7 @@ void Scopion::PlayerHitAttackChaeck()
 		// UŒ‚‚Ì“–‚½‚è”»’è
 		for (auto& wepLis : pTarget.lock()->GetWeaponList())
 		{
-			if (pTarget.lock()->GetEnemyState() & eDefense && !pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
+			if (pTarget.lock()->GetEnemyState() & eDefense && !pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetBEnemyDeath() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
 			{
 				if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm)break;
 				if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm)break;
@@ -501,7 +501,7 @@ void Scopion::PlayerHitAttackChaeck()
 		}
 
 
-		if (!pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush) && pTarget.lock()->GetInvincibilityTimeCnt() == 0)
+		if (!pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush) && pTarget.lock()->GetInvincibilityTimeCnt() == 0 && !pTarget.lock()->GetBEnemyDeath())
 		{
 			if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
 			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
@@ -718,7 +718,7 @@ void Scopion::PlayerManAttackChaeck()
 
 	for (auto& pTarget : m_pTargetList)
 	{
-		if (!pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & Player::PlayerState::mantis && pTarget.lock()->GetInvincibilityTimeCnt() == 0)
+		if (!pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && !pTarget.lock()->GetBEnemyDeath() && player->GetPlayerState() & Player::PlayerState::mantis && pTarget.lock()->GetInvincibilityTimeCnt() == 0)
 		{
 			if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
 			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;
@@ -1013,7 +1013,7 @@ void Scopion::EnemyHitAttackChaeck()
 // UŒ‚‚Ì“–‚½‚è”»’è
 	for (auto& wepLis : m_eTarget.lock()->GetWeaponList())
 	{
-		if (m_eTarget.lock()->GetPlayerState() & Player::PlayerState::defense && !m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack | eRlAttack))
+		if (m_eTarget.lock()->GetPlayerState() & Player::PlayerState::defense && !m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack | eRlAttack) && !m_eTarget.lock()->GetBPlayerDeath())
 		{
 			if ((enemy->GetEnemyState() & eRAttack) && m_arrmType == lArrm)break;
 			if ((enemy->GetEnemyState() & eLAttack) && m_arrmType == rArrm)break;
@@ -1176,7 +1176,7 @@ void Scopion::EnemyHitAttackChaeck()
 	}
 	//}
 
-	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack | eRlAttack | eRlAttackRush) && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0)
+	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack | eRlAttack | eRlAttackRush) && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0 && !m_eTarget.lock()->GetBPlayerDeath())
 	{
 		if (enemy->GetEnemyState() & eRAttack && m_arrmType == lArrm)return;
 		if (enemy->GetEnemyState() & eLAttack && m_arrmType == rArrm)return;
@@ -1775,7 +1775,7 @@ void Scopion::EnemyManAttackChaeck()
 //	}
 //	//}
 
-	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & eMantis && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0)
+	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & eMantis && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0 && !m_eTarget.lock()->GetBPlayerDeath())
 	{
 		if (enemy->GetEnemyState() & eRAttack && m_arrmType == lArrm)return;
 		if (enemy->GetEnemyState() & eLAttack && m_arrmType == rArrm)return;

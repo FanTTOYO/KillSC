@@ -62,8 +62,10 @@ public:
 	const int GetUpdateStopCnt() { return m_updateStopCnt; }
 
 	void SetEnemyTotal(int a_enemyTotal) { m_enemyTotal = a_enemyTotal; }
-	void SubEnemyTotal() { --m_enemyTotal; }
+	void SetEnemyIeftover(int a_enemyIeftover) { m_enemyIeftover = a_enemyIeftover; }
+	void SubEnemyIeftover() { --m_enemyIeftover; }
 	const int GetEnemyTotal() { return m_enemyTotal; }
+	const int GetEnemyIeftover() { return m_enemyIeftover; }
 
 private:
 
@@ -83,6 +85,7 @@ private:
 	bool m_bWinEnd;   // gameが終了してwindowが閉じるとき
 	int m_updateStopCnt;
 	int m_enemyTotal;
+	int m_enemyIeftover;
 
 // シングルトンパターン
 	// 生成するインスタンスの数を1つに制限する

@@ -138,6 +138,7 @@ public:
 	void HasDefense()override;
 
 	const bool GetBEnemyLose() { return m_bEnemyLose; }
+	const bool GetBEnemyDeath() { return m_bEnemyDeath; }
 
 private:
 
@@ -279,5 +280,6 @@ private:
 	KdPolygon m_endurancePoly;
 
 	bool m_bEnemyLose;
+	bool m_bEnemyDeath;
 	int m_overStageTime;
 };

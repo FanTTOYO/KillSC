@@ -37,11 +37,11 @@ void Ui::PostUpdate()
 			Math::Vector3 pos = Math::Vector3(list.lock()->GetPos().x, list.lock()->GetPos().y + 1.2f, list.lock()->GetPos().z);
 
 			POINT dev;
-			KdDirect3D::Instance().WorldToClient(pos, dev, m_wpCamera.lock()->GetCamera()->GetCameraMatrix(), m_wpCamera.lock()->GetCamera()->GetProjMatrix());
+			KdDirect3D::Instance().WorldToClient(pos, dev, m_wpCamera.lock()->WorkCamera()->GetCameraMatrix(), m_wpCamera.lock()->WorkCamera()->GetProjMatrix());
 			dev.x -= (long)640.0f;
 			dev.y = (long)(dev.y * -1 + 360.0f);
 			float z = m_wpCamera.lock()->GetPos().z - list.lock()->GetPos().z;
-			dev.y += 180 - (std::fabs(z) * 1.5f);
+			dev.y += (long)(180 - (std::fabs(z) * 1.5f));
 			dev.x -= 50;
 			m_enemyScPosList[i] = Math::Vector2((float)dev.x,(float)dev.y);
 			++i;
@@ -1220,6 +1220,10 @@ void Ui::ResultUpdate()
 			{
 				m_pointAddOrSubVal--;
 				m_weaponPoint++;
+				if (m_weaponPoint >= 99999)
+				{
+					m_weaponPoint = 99999;
+				}
 			}
 			else if (m_pointAddOrSubVal == 0)
 			{
@@ -1310,23 +1314,35 @@ void Ui::ResultUpdate()
 
 		if (GetAsyncKeyState(VK_RETURN) & 0x8000)
 		{
-			if (m_pointAddOrSubVal > 0)
+			if (!m_bEnterKey)
 			{
-				if (SceneManager::Instance().GetBAddOrSubVal())
+				if (m_pointAddOrSubVal > 0)
 				{
-					m_weaponPoint += m_pointAddOrSubVal;
-				}
-				else
-				{
-					m_weaponPoint -= m_pointAddOrSubVal;
-					if (m_weaponPoint <= 0)
+					if (SceneManager::Instance().GetBAddOrSubVal())
 					{
-						m_weaponPoint = 0;
+						m_weaponPoint += m_pointAddOrSubVal;
+						if (m_weaponPoint >= 99999)
+						{
+							m_weaponPoint = 99999;
+						}
 					}
-				}
+					else
+					{
+						m_weaponPoint -= m_pointAddOrSubVal;
+						if (m_weaponPoint <= 0)
+						{
+							m_weaponPoint = 0;
+						}
+					}
 
-				m_pointAddOrSubVal = 0;
+					m_pointAddOrSubVal = 0;
+				}
+				m_bEnterKey = true;
 			}
+		}
+		else
+		{
+			m_bEnterKey = false;
 		}
 	}
 
@@ -1760,14 +1776,17 @@ void Ui::SelectUpdate()
 				if (m_bOneEnemyTotal)
 				{
 					SceneManager::Instance().SetEnemyTotal(1);
+					SceneManager::Instance().SetEnemyIeftover(1);
 				}
 				else if (m_bTwoEnemyTotal)
 				{
 					SceneManager::Instance().SetEnemyTotal(2);
+					SceneManager::Instance().SetEnemyIeftover(2);
 				}
 				else if (m_bThreeEnemyTotal)
 				{
 					SceneManager::Instance().SetEnemyTotal(3);
+					SceneManager::Instance().SetEnemyIeftover(3);
 				}
 
 				SceneManager::Instance().SetNextScene
@@ -1968,7 +1987,7 @@ void Ui::DrawSprite()
 			int i = 0;
 			for (auto& list : m_wpEnemyList)
 			{
-				if (list.lock()->GetBEnemyLose())
+				if (list.lock()->GetBEnemyDeath())
 				{
 					++i;
 					continue;
@@ -2520,10 +2539,21 @@ void Ui::DrawSprite()
 
 		break;
 	case UiType::result:
-		transMat = Math::Matrix::Identity;
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		color = { 0,0.2f,0.6f,1.0f };
-		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
+		if (SceneManager::Instance().GetBPlayerWin())
+		{
+			transMat = Math::Matrix::Identity;
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			color = { 0.15f,0.15f,0.7f,1.0f };
+			KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
+
+		}
+		else
+		{
+			transMat = Math::Matrix::Identity;
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			color = { 0.4f,0.1f,0.1f,1.0f };
+			KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
+		}
 
 		if (m_time >= 60)
 		{
@@ -2533,18 +2563,117 @@ void Ui::DrawSprite()
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winTex, 0, 0, 246, 114);
 
+				transMat = Math::Matrix::CreateTranslation(425, 30, 0);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+
+				switch (SceneManager::Instance().GetEnemyTotal())
+				{
+				case 1:
+					transMat = Math::Matrix::CreateTranslation(-400, 0, 0);
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+					break;
+				case 2:
+					switch (SceneManager::Instance().GetEnemyIeftover())
+					{
+					case 0:
+						transMat = Math::Matrix::CreateTranslation(-400, 100, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+
+						transMat = Math::Matrix::CreateTranslation(-400, -100, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						break;
+					case 1:
+						transMat = Math::Matrix::CreateTranslation(-400, 0, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						break;
+					}
+					break;
+				case 3:
+					switch (SceneManager::Instance().GetEnemyIeftover())
+					{
+					case 0:
+						transMat = Math::Matrix::CreateTranslation(-400, 200, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+
+						transMat = Math::Matrix::CreateTranslation(-400, 0, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+
+						transMat = Math::Matrix::CreateTranslation(-400, -200, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						break;
+					case 1:
+						transMat = Math::Matrix::CreateTranslation(-400, 100, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+
+						transMat = Math::Matrix::CreateTranslation(-400, -100, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						break;
+					case 2:
+						transMat = Math::Matrix::CreateTranslation(-400, 0, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						break;
+					}
+					break;
+				}
+
 			}
 			else
 			{
 				transMat = Math::Matrix::CreateTranslation(0, 225, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_lossTex, 0, 0, 512, 172);
+
+				transMat = Math::Matrix::CreateTranslation(400, 0, 0);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+
+				switch (SceneManager::Instance().GetEnemyTotal())
+				{
+				case 1:
+					transMat = Math::Matrix::CreateTranslation(-425, 30, 0);
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					break;
+				case 2:
+					transMat = Math::Matrix::CreateTranslation(-405, 30, 0);
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+						
+					transMat = Math::Matrix::CreateTranslation(-485, 30, 0);
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					break;
+				case 3:
+					transMat = Math::Matrix::CreateTranslation(-340, 30, 0);
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+
+					transMat = Math::Matrix::CreateTranslation(-485, 30, 0);
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+
+					transMat = Math::Matrix::CreateTranslation(-420, 30, 0);
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					break;
+				}
 			}
 		}
 
 		if (m_time >= 120)
 		{
-			transMat = Math::Matrix::CreateTranslation(-145, 25, 0);
+			transMat = Math::Matrix::CreateTranslation(-125, 45, 0);
 			switch ((m_pointAddOrSubVal / 1000) % 10)
 			{
 			case 0:
@@ -2593,7 +2722,7 @@ void Ui::DrawSprite()
 				break;
 			}
 
-			transMat = Math::Matrix::CreateTranslation(-65, 25, 0);
+			transMat = Math::Matrix::CreateTranslation(-45, 45, 0);
 			switch ((m_pointAddOrSubVal / 100) % 10)
 			{
 			case 0:
@@ -2642,7 +2771,7 @@ void Ui::DrawSprite()
 				break;
 			}
 
-			transMat = Math::Matrix::CreateTranslation(15, 25, 0);
+			transMat = Math::Matrix::CreateTranslation(35, 45, 0);
 			switch ((m_pointAddOrSubVal / 10) % 10)
 			{
 			case 0:
@@ -2691,7 +2820,7 @@ void Ui::DrawSprite()
 				break;
 			}
 
-			transMat = Math::Matrix::CreateTranslation(105, 25, 0);
+			transMat = Math::Matrix::CreateTranslation(125, 45, 0);
 			switch ((m_pointAddOrSubVal / 1) % 10)
 			{
 			case 0:
@@ -2743,7 +2872,57 @@ void Ui::DrawSprite()
 
 		if (m_time >= 180)
 		{
-			transMat = Math::Matrix::CreateTranslation(-145, -100, 0);
+			transMat = Math::Matrix::CreateTranslation(-205, -80, 0);
+			switch ((m_weaponPoint / 10000) % 10)
+			{
+			case 0:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
+				break;
+			case 1:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point1Tex, 0, 0, 102, 114);
+				break;
+			case 2:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point2Tex, 0, 0, 102, 114);
+				break;
+			case 3:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point3Tex, 0, 0, 102, 114);
+				break;
+			case 4:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point4Tex, 0, 0, 102, 114);
+				break;
+			case 5:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point5Tex, 0, 0, 102, 114);
+				break;
+			case 6:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point6Tex, 0, 0, 102, 114);
+				break;
+			case 7:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point7Tex, 0, 0, 102, 114);
+				break;
+			case 8:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point8Tex, 0, 0, 102, 114);
+				break;
+			case 9:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point9Tex, 0, 0, 102, 114);
+				break;
+			/*default:
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
+				break;*/
+			}
+
+			transMat = Math::Matrix::CreateTranslation(-125, -80, 0);
 			switch ((m_weaponPoint / 1000) % 10)
 			{
 			case 0:
@@ -2792,7 +2971,7 @@ void Ui::DrawSprite()
 				break;
 			}
 
-			transMat = Math::Matrix::CreateTranslation(-65, -100, 0);
+			transMat = Math::Matrix::CreateTranslation(-45, -80, 0);
 			switch ((m_weaponPoint / 100) % 10)
 			{
 			case 0:
@@ -2841,7 +3020,7 @@ void Ui::DrawSprite()
 				break;
 			}
 
-			transMat = Math::Matrix::CreateTranslation(15, -100, 0);
+			transMat = Math::Matrix::CreateTranslation(35, -80, 0);
 			switch ((m_weaponPoint / 10) % 10)
 			{
 			case 0:
@@ -2890,7 +3069,7 @@ void Ui::DrawSprite()
 				break;
 			}
 
-			transMat = Math::Matrix::CreateTranslation(105, -100, 0);
+			transMat = Math::Matrix::CreateTranslation(125, -80, 0);
 			switch ((m_weaponPoint / 1) % 10)
 			{
 			case 0:
@@ -3155,6 +3334,10 @@ void Ui::Init()
 	m_time8Tex.Load("Asset/Textures/Ui/shared/Eight.png");
 	m_time9Tex.Load("Asset/Textures/Ui/shared/Nine.png");
 	m_conmaTex.Load("Asset/Textures/Ui/shared/Conma.png");
+
+	m_winCharaTex.Load("Asset/Textures/Ui/Result/winChara.png");
+	m_loseCharaTex.Load("Asset/Textures/Ui/Result/loseChara.png");
+
 
 
 	m_fadeAlpha = 1.0f;

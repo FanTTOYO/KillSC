@@ -48,11 +48,12 @@ public:
 	const TutorialType GetTutorialType() { return m_tutorialType; }
 	void AddTutorialCnt();
 
-	const int GetGameTimeS1() { return m_gameTimeS10; }
-	const int GetGameTimeS10() { return m_gameTimeS1; }
+	const int GetGameTimeS1() { return m_gameTimeS1; }
+	const int GetGameTimeS10() { return m_gameTimeS10; }
 
-	const int GetGameTimeM1() { return m_gameTimeM10; }
-	const int GetGameTimeM10() { return m_gameTimeM1; }
+	const int GetGameTimeM1() { return m_gameTimeM1; }
+	const int GetGameTimeM10() { return m_gameTimeM10; }
+	const bool GetBEnterKey() { return m_bEnterKey; }
 
 private:
 	void Init()override;
@@ -164,6 +165,7 @@ private:
 	float m_backScale;
 
 	bool m_bTABKey = false;
+	bool m_bEnterKey = false;
 
 	KdTexture m_infoTex;
 	KdTexture m_hopperDataTex;
@@ -253,4 +255,7 @@ private:
 	KdTexture m_time8Tex;
 	KdTexture m_time9Tex;
 	KdTexture m_conmaTex;
+
+	KdTexture m_winCharaTex;
+	KdTexture m_loseCharaTex;
 };

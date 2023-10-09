@@ -78,6 +78,7 @@ public:
 	void Update()								override;
 	void PostUpdate()							override;
 	void DrawLit()								override;
+	void DrawUnLit()							override;
 	void DrawBright()							override;
 	void DrawSprite()							override;
 	void GenerateDepthMapFromLight()			override;
@@ -119,6 +120,8 @@ public:
 	void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)override;
 	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec)override;
 	void HasDefense()override;
+
+	const bool GetBPlayerDeath() { return m_bPlayerDeath; }
 
 private:
 
@@ -196,7 +199,7 @@ private:
 	bool m_bEwaponDrawPosible = false;
 
 
-	//std::weak_ptr<Enemy> m_enemy;
+	std::weak_ptr<Enemy> m_enemy;
 	std::list<std::weak_ptr<Enemy>> m_enemyList;
 
 	int m_attackAnimeCnt = 0;
@@ -229,4 +232,10 @@ private:
 	int m_tuGardTime;
 
 	int m_overStageTime;
+
+	bool m_bPlayerDeath;
+
+	std::shared_ptr<KdSquarePolygon> m_rocKOnPolygon;
+
+	Math::Matrix m_rockOnPolyMat;
 };
