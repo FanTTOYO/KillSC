@@ -237,6 +237,16 @@ private:
 	float         m_chalengehelpMkScale;
 	bool          m_bChalengehelp;
 
+	KdTexture      m_chalenge50Tex;
+	Math::Vector3  m_chalenge50Pos;
+	float          m_chalenge50Scale;
+	bool           m_bChalenge50;
+
+	KdTexture      m_chalenge100Tex;
+	Math::Vector3  m_chalenge100Pos;
+	float          m_chalenge100Scale;
+	bool           m_bChalenge100;
+
 	int           m_gameTimeS10 = 0;
 	int           m_gameTimeS1 = 0;
 

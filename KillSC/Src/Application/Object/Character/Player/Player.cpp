@@ -87,71 +87,83 @@ void Player::Init()
 	m_rocKOnPolygon->SetMaterial("Asset/Textures/Ui/Game/ターゲット N 白.png");
 }
 
+void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_enemy)
+{
+	const std::shared_ptr<Scopion> gScopion1 = std::dynamic_pointer_cast<Scopion>(m_weaponList[0]);
+	const std::shared_ptr<Scopion> gScopion2 = std::dynamic_pointer_cast<Scopion>(m_weaponList[1]);
+
+	gScopion1->AddTarget(a_enemy);
+	gScopion2->AddTarget(a_enemy);
+}
+
 void Player::Update()
 {
-	if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < -1.0f)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		m_overStageTime++;
-		if (m_overStageTime >= 90)
+		if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < -1.0f)
 		{
-			m_pos = { 0,0,0 };
-			m_overStageTime = 0;
-		}
-	}
-	else
-	{
-		if (m_overStageTime >= 90)
-		{
-			m_pos = { 0,0,0 };
-			m_overStageTime = 0;
-		}
-
-		KdCollider::SphereInfo sphereInfo;
-		// 球の中心位置を設定
-		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
-		// 球の半径を設定
-		
-		sphereInfo.m_sphere.Radius = 0.4f;
-
-		// 当たり判定をしたいタイプを設定
-		sphereInfo.m_type = KdCollider::TypeBuried;
-#ifdef _DEBUG
-		// デバック用
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius
-		);
-#endif
-		// 球の当たったオブジェクト情報
-		std::list<KdCollider::CollisionResult> retSphereList;
-
-		// 球と当たり判定 
-		for (auto& obj : SceneManager::Instance().GetObjList())
-		{
-			obj->Intersects
-			(
-				sphereInfo,
-				&retSphereList
-			);
-		}
-
-		// 球に当たったリスト情報から一番近いオブジェクトを検出
-		float maxOverLap = 0;
-		bool hit = false;
-		for (auto& ret : retSphereList)
-		{
-			// 一番近くで当たったものを探す
-			if (maxOverLap < ret.m_overlapDistance)
+			m_overStageTime++;
+			if (m_overStageTime >= 90)
 			{
-				maxOverLap = ret.m_overlapDistance;
-				hit = true;
+				m_pos = { 0,0,0 };
+				m_overStageTime = 0;
 			}
 		}
-
-		if (hit)
+		else
 		{
-			++m_overStageTime;
+			if (m_overStageTime >= 90)
+			{
+				m_pos = { 0,0,0 };
+				m_overStageTime = 0;
+			}
+
+			KdCollider::SphereInfo sphereInfo;
+			// 球の中心位置を設定
+			sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
+			// 球の半径を設定
+
+			sphereInfo.m_sphere.Radius = 0.4f;
+
+			// 当たり判定をしたいタイプを設定
+			sphereInfo.m_type = KdCollider::TypeBuried;
+#ifdef _DEBUG
+			// デバック用
+			m_pDebugWire->AddDebugSphere
+			(
+				sphereInfo.m_sphere.Center,
+				sphereInfo.m_sphere.Radius
+			);
+#endif
+			// 球の当たったオブジェクト情報
+			std::list<KdCollider::CollisionResult> retSphereList;
+
+			// 球と当たり判定 
+			for (auto& obj : SceneManager::Instance().GetObjList())
+			{
+				obj->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+			}
+
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
+			float maxOverLap = 0;
+			bool hit = false;
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hit = true;
+				}
+			}
+
+			if (hit)
+			{
+				++m_overStageTime;
+			}
 		}
 	}
 
@@ -177,9 +189,12 @@ void Player::Update()
 		m_torion = 0;
 		if (!m_bPlayerDeath)
 		{
+			const std::shared_ptr<GameCamera> gCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
 			m_bPlayerDeath = true;
 			m_animator->SetAnimation(m_model->GetAnimation("Death"), false);
 			m_playerState = idle;
+			gCamera->SetBRotateEnemy(false);
+			m_enemy.reset();
 		}
 	}
 
@@ -188,9 +203,12 @@ void Player::Update()
 		m_endurance = 0;
 		if (!m_bPlayerDeath)
 		{
+			const std::shared_ptr<GameCamera> gCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
 			m_bPlayerDeath = true;
 			m_animator->SetAnimation(m_model->GetAnimation("Death"), false);
 			m_playerState = idle;
+			gCamera->SetBRotateEnemy(false);
+			m_enemy.reset();
 		}
 	}
 
@@ -453,7 +471,7 @@ void Player::Update()
 			}
 			else if (m_playerState & blowingAwayHit)
 			{
-				if (!(m_playerState & idle))
+				if (!(m_playerState & blowingAwayRise))
 				{
 					m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayRise"), false);
 				}
@@ -461,7 +479,7 @@ void Player::Update()
 			}
 			else if (m_playerState & iaiKiriHit)
 			{
-				if (!(m_playerState & idle))
+				if (!(m_playerState & iaiKiriRise))
 				{
 					m_animator->SetAnimation(m_model->GetAnimation("IaiKiriRise"), false);
 				}
@@ -501,7 +519,7 @@ void Player::Update()
 		m_pos += m_knockBackVec * m_hitMoveSpd;
 
 	}
-	else if(!!m_bPlayerDeath)
+	else if (m_playerState & rise)
 	{
 		m_bMove = true;
 		if (m_animator->IsAnimationEnd())
@@ -512,6 +530,11 @@ void Player::Update()
 			}
 			m_playerState = idle;
 		}
+	}
+	else
+	{
+		m_pos.y -= m_gravity;
+		m_gravity += 0.01f;
 	}
 
 	if (!m_bMove && !m_bPlayerDeath)
@@ -1212,7 +1235,15 @@ void Player::PostUpdate()
 		if (m_animator->IsAnimationEnd())
 		{
 			SceneManager::Instance().SetBAddOrSubVal(false);
-			SceneManager::Instance().SetPointAddOrSubVal(500);
+			if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+			{
+				SceneManager::Instance().SetPointAddOrSubVal(0);
+			}
+			else
+			{
+				SceneManager::Instance().SetPointAddOrSubVal(500);
+			}
+
 			SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
 		}
 	}
@@ -2385,6 +2416,10 @@ void Player::ScorpionAttackMove()
 			}
 		}
 
+		if (!(m_playerState & mantis))
+		{
+			UpdateRotate(m_attackMoveDir);
+		}
 		m_pos += m_attackMoveDir * m_attackMoveSpd;
 	}
 }
@@ -2754,6 +2789,10 @@ void Player::ScorpionActionDecision()
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
 
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.5f;
 							m_animator->SetAnimation(m_model->GetAnimation("RLAttackTwo"), false);
 						}
@@ -2772,6 +2811,10 @@ void Player::ScorpionActionDecision()
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
 
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.8f;
 							m_animator->SetAnimation(m_model->GetAnimation("RLAttackThree"), false);
 						}
@@ -2819,6 +2862,10 @@ void Player::ScorpionActionDecision()
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
 
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("LAttack2"), false);
 						}
@@ -2837,6 +2884,10 @@ void Player::ScorpionActionDecision()
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
 
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
 						}
@@ -2864,6 +2915,10 @@ void Player::ScorpionActionDecision()
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
 
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("RAttack2"), false);
 						}
@@ -2882,6 +2937,10 @@ void Player::ScorpionActionDecision()
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
 
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.05f;
 							m_animator->SetAnimation(m_model->GetAnimation("RAttack3"), false);
 						}

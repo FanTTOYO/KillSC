@@ -139,6 +139,23 @@ void Ui::GameUpdate()
 		m_titlePos = { 0,0,0 };
 		m_exitPos = { 0,-250,0 };
 		m_fadeAlpha = 0.0f;
+
+		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+		{
+			m_gameTimeS10 = 0;
+			m_gameTimeS1 = 0;
+
+			m_gameTimeM10 = 1;
+			m_gameTimeM1 = 0;
+		}
+		else
+		{
+			m_gameTimeS10 = 0;
+			m_gameTimeS1 = 0;
+
+			m_gameTimeM10 = 0;
+			m_gameTimeM1 = 5;
+		}
 	}
 
 	if (m_time <= 240)
@@ -1626,29 +1643,55 @@ void Ui::SelectUpdate()
 		}
 
 		Math::Vector3 ChallengePos;
-		ChallengePos.x = m_challengePos.x + (float)(pwi->rcWindow.left);
-		ChallengePos.y = m_challengePos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ChallengePos.z = m_challengePos.z;
+		ChallengePos.x = m_chalenge50Pos.x + (float)(pwi->rcWindow.left);
+		ChallengePos.y = m_chalenge50Pos.y /*+ (float)(pwi->rcWindow.top)*/;
+		ChallengePos.z = m_chalenge50Pos.z;
 
 		Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 75)
+		if (Dis.Length() <= 30)
 		{
-			m_challengeScale = 1.1f;
+			m_chalenge50Scale = 1.1f;
 
-			/*if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
 				if (!m_addFadeAlpha)
 				{
-					m_bChallenge = true;
+					m_bChalenge50 = true;
 					m_addFadeAlpha = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
 				}
-			}*/
+			}
 
 		}
 		else
 		{
-			m_challengeScale = 1.0f;
+			m_chalenge50Scale = 1.0f;
+		}
+
+		ChallengePos;
+		ChallengePos.x = m_chalenge100Pos.x + (float)(pwi->rcWindow.left);
+		ChallengePos.y = m_chalenge100Pos.y /*+ (float)(pwi->rcWindow.top)*/;
+		ChallengePos.z = m_chalenge100Pos.z;
+
+		Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
+		if (Dis.Length() <= 30)
+		{
+			m_chalenge100Scale = 1.1f;
+
+			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			{
+				if (!m_addFadeAlpha)
+				{
+					m_bChalenge100 = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				}
+			}
+
+		}
+		else
+		{
+			m_chalenge100Scale = 1.0f;
 		}
 
 		Math::Vector3 TrainingPos;
@@ -1791,7 +1834,7 @@ void Ui::SelectUpdate()
 
 				SceneManager::Instance().SetNextScene
 				(
-					SceneManager::SceneType::game
+					SceneManager::SceneType::battle
 				);
 			}
 
@@ -1816,6 +1859,28 @@ void Ui::SelectUpdate()
 					m_addFadeAlpha = false;
 					m_fadeAlpha = 0.0f;
 				}
+			}
+
+			if (m_bChalenge50)
+			{
+				SceneManager::Instance().SetEnemyTotal(50);
+				SceneManager::Instance().SetEnemyIeftover(50);
+
+				SceneManager::Instance().SetNextScene
+				(
+					SceneManager::SceneType::challenge
+				);
+			}
+
+			if (m_bChalenge100)
+			{
+				SceneManager::Instance().SetEnemyTotal(100);
+				SceneManager::Instance().SetEnemyIeftover(100);
+
+				SceneManager::Instance().SetNextScene
+				(
+					SceneManager::SceneType::challenge
+				);
 			}
 		}
 	}
@@ -2029,7 +2094,21 @@ void Ui::DrawSprite()
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 					rc = { 0,0,(int)(list.lock()->GetEndurance()),50 };
 					color = { 1, 1, 1, 1 };
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+					if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+					{
+						if (SceneManager::Instance().GetEnemyIeftover() > SceneManager::Instance().GetEnemyTotal() - 5)
+						{
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+						}
+						else
+						{
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 2.6f), 50, &rc, &color, Math::Vector2(0, 0.5f));
+						}
+					}
+					else
+					{
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+					}
 
 					rc = { 0,0,400,50 };
 					color = { 1, 1, 1, 1 };
@@ -2557,6 +2636,9 @@ void Ui::DrawSprite()
 
 		if (m_time >= 60)
 		{
+			int ieftover = 0;
+			int ieftoverExcess = 0;
+
 			if (SceneManager::Instance().GetBPlayerWin())
 			{
 				transMat = Math::Matrix::CreateTranslation(0, 225, 0);
@@ -2578,13 +2660,19 @@ void Ui::DrawSprite()
 					switch (SceneManager::Instance().GetEnemyIeftover())
 					{
 					case 0:
-						transMat = Math::Matrix::CreateTranslation(-400, 100, 0);
-						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						if (m_time >= 80)
+						{
+							transMat = Math::Matrix::CreateTranslation(-400, 100, 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
 
-						transMat = Math::Matrix::CreateTranslation(-400, -100, 0);
-						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						if (m_time >= 100)
+						{
+							transMat = Math::Matrix::CreateTranslation(-400, -100, 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
 						break;
 					case 1:
 						transMat = Math::Matrix::CreateTranslation(-400, 0, 0);
@@ -2597,26 +2685,41 @@ void Ui::DrawSprite()
 					switch (SceneManager::Instance().GetEnemyIeftover())
 					{
 					case 0:
-						transMat = Math::Matrix::CreateTranslation(-400, 200, 0);
-						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						if (m_time >= 70)
+						{
+							transMat = Math::Matrix::CreateTranslation(-400, 200, 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
 
-						transMat = Math::Matrix::CreateTranslation(-400, 0, 0);
-						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						if (m_time >= 90)
+						{
+							transMat = Math::Matrix::CreateTranslation(-400, 0, 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
 
-						transMat = Math::Matrix::CreateTranslation(-400, -200, 0);
-						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						if (m_time >= 110)
+						{
+							transMat = Math::Matrix::CreateTranslation(-400, -200, 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
 						break;
 					case 1:
-						transMat = Math::Matrix::CreateTranslation(-400, 100, 0);
-						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						if (m_time >= 80)
+						{
+							transMat = Math::Matrix::CreateTranslation(-400, 100, 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
 
-						transMat = Math::Matrix::CreateTranslation(-400, -100, 0);
-						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						if (m_time >= 100)
+						{
+							transMat = Math::Matrix::CreateTranslation(-400, -100, 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
 						break;
 					case 2:
 						transMat = Math::Matrix::CreateTranslation(-400, 0, 0);
@@ -2624,6 +2727,50 @@ void Ui::DrawSprite()
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
 						break;
 					}
+					break;
+				case 50:
+					ieftover       = (50 - SceneManager::Instance().GetEnemyIeftover()) / 5;
+					ieftoverExcess = (50 - SceneManager::Instance().GetEnemyIeftover()) % 5;
+
+					for (int i = 0; i < ieftover; i++)
+					{
+						for (int j = 0; j < 5; j++)
+						{
+							transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation((float)( -600 + 80 * j), (float)(320 - 70 * i), 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
+					}
+
+					for (int k = 0; k < ieftoverExcess; k++)
+					{
+						transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation((float)(-600 + 80 * k), (float)(320 - 70 * ieftover), 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+					}
+
+					break;
+				case 100:
+					ieftover = (100 - SceneManager::Instance().GetEnemyIeftover()) / 5;
+					ieftoverExcess = (100 - SceneManager::Instance().GetEnemyIeftover()) % 5;
+
+					for (int i = 0; i < ieftover; i++)
+					{
+						for (int j = 0; j < 5; j++)
+						{
+							transMat = Math::Matrix::CreateScale(0.075f) * Math::Matrix::CreateTranslation((float)(-600 + 80 * j), (float)(320 - 35 * i), 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
+					}
+
+					for (int k = 0; k < ieftoverExcess; k++)
+					{
+						transMat = Math::Matrix::CreateScale(0.075f) * Math::Matrix::CreateTranslation((float)(-600 + 80 * k), (float)(320 - 35 * ieftover), 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+					}
+
 					break;
 				}
 
@@ -2646,26 +2793,86 @@ void Ui::DrawSprite()
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
 					break;
 				case 2:
-					transMat = Math::Matrix::CreateTranslation(-405, 30, 0);
-					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					if (m_time >= 80)
+					{
+						transMat = Math::Matrix::CreateTranslation(-405, 30, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					}
 						
-					transMat = Math::Matrix::CreateTranslation(-485, 30, 0);
-					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					if (m_time >= 100)
+					{
+						transMat = Math::Matrix::CreateTranslation(-485, 30, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					}
 					break;
 				case 3:
-					transMat = Math::Matrix::CreateTranslation(-340, 30, 0);
-					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					if (m_time >= 70)
+					{
+						transMat = Math::Matrix::CreateTranslation(-340, 30, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					}
 
-					transMat = Math::Matrix::CreateTranslation(-485, 30, 0);
-					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					if (m_time >= 90)
+					{
+						transMat = Math::Matrix::CreateTranslation(-485, 30, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					}
 
-					transMat = Math::Matrix::CreateTranslation(-420, 30, 0);
-					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					if (m_time >= 110)
+					{
+						transMat = Math::Matrix::CreateTranslation(-420, 30, 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
+					}
+
+					break;
+				case 50:
+					ieftover = (50 - SceneManager::Instance().GetEnemyIeftover()) / 5;
+					ieftoverExcess = (50 - SceneManager::Instance().GetEnemyIeftover()) % 5;
+
+					for (int i = 0; i < ieftover; i++)
+					{
+						for (int j = 0; j < 5; j++)
+						{
+							transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation((float)(-600 + 80 * j), (float)(320 - 70 * i), 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
+					}
+
+					for (int k = 0; k < ieftoverExcess; k++)
+					{
+						transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation((float)(-600 + 80 * k), (float)(320 - 70 * ieftover), 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+					}
+
+					break;
+				case 100:
+					ieftover = (50 - SceneManager::Instance().GetEnemyIeftover()) / 5;
+					ieftoverExcess = (50 - SceneManager::Instance().GetEnemyIeftover()) % 5;
+
+					for (int i = 0; i < ieftover; i++)
+					{
+						for (int j = 0; j < 5; j++)
+						{
+							transMat = Math::Matrix::CreateScale(0.075f) * Math::Matrix::CreateTranslation((float)(-600 + 80 * j), (float)(320 - 35 * i), 0);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+						}
+					}
+
+					for (int k = 0; k < ieftoverExcess; k++)
+					{
+						transMat = Math::Matrix::CreateScale(0.075f) * Math::Matrix::CreateTranslation((float)(-600 + 80 * k), (float)(320 - 35 * ieftover), 0);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
+					}
+
 					break;
 				}
 			}
@@ -2875,11 +3082,6 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(-205, -80, 0);
 			switch ((m_weaponPoint / 10000) % 10)
 			{
-			case 0:
-				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
-				break;
 			case 1:
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point1Tex, 0, 0, 102, 114);
@@ -2916,10 +3118,6 @@ void Ui::DrawSprite()
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point9Tex, 0, 0, 102, 114);
 				break;
-			/*default:
-				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point0Tex, 0, 0, 102, 114);
-				break;*/
 			}
 
 			transMat = Math::Matrix::CreateTranslation(-125, -80, 0);
@@ -3159,9 +3357,17 @@ void Ui::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_helpMkTex, 0, 0, 50, 50);
 
-		mat = Math::Matrix::CreateScale(m_challengeScale) * Math::Matrix::CreateTranslation(m_challengePos);
+		mat = Math::Matrix::CreateTranslation(m_challengePos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_challengeTex, 0, 0, 420, 580);
+
+		mat = Math::Matrix::CreateScale(m_chalenge50Scale) * Math::Matrix::CreateTranslation(m_chalenge50Pos);
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_chalenge50Tex, 0, 0, 210, 80);
+
+		mat = Math::Matrix::CreateScale(m_chalenge100Scale) * Math::Matrix::CreateTranslation(m_chalenge100Pos);
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_chalenge100Tex, 0, 0, 210, 80);
 
 		mat = Math::Matrix::CreateScale(m_chalengehelpMkScale) * Math::Matrix::CreateTranslation(m_chalengehelpMkPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -3338,7 +3544,8 @@ void Ui::Init()
 	m_winCharaTex.Load("Asset/Textures/Ui/Result/winChara.png");
 	m_loseCharaTex.Load("Asset/Textures/Ui/Result/loseChara.png");
 
-
+	m_chalenge50Tex.Load("Asset/Textures/Ui/Select/Challenge50.png");
+	m_chalenge100Tex.Load("Asset/Textures/Ui/Select/Challenge100.png");
 
 	m_fadeAlpha = 1.0f;
 	m_addFadeAlpha = false;
@@ -3366,12 +3573,20 @@ void Ui::Init()
 	m_threeEnemyTotalPos = { -195, -260, 0};
 	m_BattlehelpMkPos    = {  -35,  235, 0};
 
-	m_challengePos       = {  265, -20, 0};
+	m_challengePos       = {  265,  -20, 0};
+	m_chalenge50Pos      = {  265, -180, 0 };
+	m_chalenge100Pos     = {  265, -270, 0 };
 	m_chalengehelpMkPos  = {  450, 250, 0};
 	m_tutorialPos        = { -535, 138, 0};
 	m_trainingPos        = { -535,-178, 0};
 	m_selectBackPos      = {    0,   0, 0};
 
+
+	m_chalenge50Scale = 1.0f;
+	m_chalenge100Scale = 1.0f;
+
+	m_bChalenge50 = false;
+	m_bChalenge100 = false;
 	m_bTutorial = false;
 	m_bExit = false;
 	m_bFirstExit = false;
@@ -3432,12 +3647,6 @@ void Ui::Init()
 
 	m_chalengehelpMkScale = 1.0f;
 	m_bChalengehelp = false;
-
-	m_gameTimeS10 = 0;
-	m_gameTimeS1  = 0;
-
-	m_gameTimeM10 = 0;
-	m_gameTimeM1  = 5;
 	m_gameTimeCntDeray = 0;
 
 }

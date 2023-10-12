@@ -50,8 +50,56 @@ void Enemy::Init()
 	m_hitStopCnt = 0;
 	m_hitMoveSpd = 0.0f;
 	m_gardMoveSpd = 0.0f;
-	m_torion = 300.0f;
-	m_endurance = 400.0f;
+
+	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+	{
+		m_torion = 200.0f;
+		m_endurance = 150.0f;
+
+		std::random_device rnd;
+		std::mt19937 mt(rnd());
+		std::uniform_int_distribution<int> intRand(0, 999);
+		int randNum[4] = {};
+		int rand = intRand(mt);
+		randNum[0] = 150;
+		randNum[1] = 300;
+		randNum[2] = 300;
+		randNum[3] = 250;
+
+		/*randNum[0] = 0;
+		randNum[1] = 0;
+		randNum[2] = 0;
+		randNum[3] = 2500;*/
+		for (int i = 0; i < 4; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				switch (i)
+				{
+				case 0:
+					m_enemyType = Enemy::EnemyType::allRounder;
+					break;
+				case 1:
+					m_enemyType = Enemy::EnemyType::striker;
+					break;
+				case 2:
+					m_enemyType = Enemy::EnemyType::defender;
+					break;
+				case 3:
+					m_enemyType = Enemy::EnemyType::speedSter;
+					break;
+				}
+				break;
+			}
+		}
+	}
+	else
+	{
+		m_torion = 300.0f;
+		m_endurance = 400.0f;
+		m_enemyType = Enemy::EnemyType::allRounder;
+	}
 	m_invincibilityTimeCnt = 0;
 	m_bTough = false;
 	m_bFirstUpdate = true;
@@ -97,43 +145,6 @@ void Enemy::Init()
 
 	m_bMantisAttack = false;
 	m_bEnemyDeath = false;
-	std::random_device rnd;
-	std::mt19937 mt(rnd());
-	std::uniform_int_distribution<int> intRand(0, 999);
-	int randNum[4] = {};
-	int rand = intRand(mt);
-	randNum[0] = 1500;
-	randNum[1] = 300;
-	randNum[2] = 300;
-	randNum[3] = 250;
-
-	/*randNum[0] = 0;
-	randNum[1] = 0;
-	randNum[2] = 0;
-	randNum[3] = 2500;*/
-	for (int i = 0; i < 4; i++)
-	{
-		rand -= randNum[i];
-		if (rand < 0)
-		{
-			switch (i)
-			{
-			case 0:
-				m_enemyType = Enemy::EnemyType::allRounder;
-				break;
-			case 1:
-				m_enemyType = Enemy::EnemyType::striker;
-				break;
-			case 2:
-				m_enemyType = Enemy::EnemyType::defender;
-				break;
-			case 3:
-				m_enemyType = Enemy::EnemyType::speedSter;
-				break;
-			}
-			break;
-		}
-	}
 
 	m_bMantisPossAng = false;
 	m_bEnemyLose = false;
@@ -156,76 +167,80 @@ void Enemy::Update()
 	if (GetAsyncKeyState('K') & 0x8000)
 	{
 		m_torion = 0;
+		//m_endurance -= 5;
 	}
 
-	if (m_pos.x >=  62.5 || 
-		m_pos.x <= -62.5 || 
-		m_pos.z >=  62.5 || 
-		m_pos.z <= -62.5 || 
-		m_pos.y <= -1.0f || 
-		m_pos.y >= 62.5f)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{
-		m_overStageTime++;
-		if (m_overStageTime >= 90)
+		if (m_pos.x >= 62.5 ||
+			m_pos.x <= -62.5 ||
+			m_pos.z >= 62.5 ||
+			m_pos.z <= -62.5 ||
+			m_pos.y <= -1.0f ||
+			m_pos.y >= 62.5f)
 		{
-			m_pos = { 0,0,0 };
-			m_overStageTime = 0;
-		}
-	}
-	else
-	{
-		if (m_overStageTime >= 90)
-		{
-			m_pos = { 0,0,0 };
-			m_overStageTime = 0;
-		}
-
-		KdCollider::SphereInfo sphereInfo;
-		// 球の中心位置を設定
-		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
-		// 球の半径を設定
-
-		sphereInfo.m_sphere.Radius = 0.4f;
-
-		// 当たり判定をしたいタイプを設定
-		sphereInfo.m_type = KdCollider::TypeBuried;
-#ifdef _DEBUG
-		// デバック用
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius
-		);
-#endif
-		// 球の当たったオブジェクト情報
-		std::list<KdCollider::CollisionResult> retSphereList;
-
-		// 球と当たり判定 
-		for (auto& obj : SceneManager::Instance().GetObjList())
-		{
-			obj->Intersects
-			(
-				sphereInfo,
-				&retSphereList
-			);
-		}
-
-		// 球に当たったリスト情報から一番近いオブジェクトを検出
-		float maxOverLap = 0;
-		bool hit = false;
-		for (auto& ret : retSphereList)
-		{
-			// 一番近くで当たったものを探す
-			if (maxOverLap < ret.m_overlapDistance)
+			m_overStageTime++;
+			if (m_overStageTime >= 90)
 			{
-				maxOverLap = ret.m_overlapDistance;
-				hit = true;
+				m_pos = { 0,0,0 };
+				m_overStageTime = 0;
 			}
 		}
-
-		if (hit)
+		else
 		{
-			++m_overStageTime;
+			if (m_overStageTime >= 90)
+			{
+				m_pos = { 0,0,0 };
+				m_overStageTime = 0;
+			}
+
+			KdCollider::SphereInfo sphereInfo;
+			// 球の中心位置を設定
+			sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
+			// 球の半径を設定
+
+			sphereInfo.m_sphere.Radius = 0.4f;
+
+			// 当たり判定をしたいタイプを設定
+			sphereInfo.m_type = KdCollider::TypeBuried;
+#ifdef _DEBUG
+			// デバック用
+			m_pDebugWire->AddDebugSphere
+			(
+				sphereInfo.m_sphere.Center,
+				sphereInfo.m_sphere.Radius
+			);
+#endif
+			// 球の当たったオブジェクト情報
+			std::list<KdCollider::CollisionResult> retSphereList;
+
+			// 球と当たり判定 
+			for (auto& obj : SceneManager::Instance().GetObjList())
+			{
+				obj->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+			}
+
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
+			float maxOverLap = 0;
+			bool hit = false;
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hit = true;
+				}
+			}
+
+			if (hit)
+			{
+				++m_overStageTime;
+			}
 		}
 	}
 
@@ -1213,8 +1228,12 @@ void Enemy::PostUpdate()
 		{
 			if (!m_bEnemyLose)
 			{
-				SceneManager::Instance().AddPointAddOrSubVal(500);
 				SceneManager::Instance().SubEnemyIeftover();
+				if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+				{
+					SceneManager::Instance().SubEnemyDrawTotal();
+				}
+
 				m_bEnemyLose = true;
 			}
 		}

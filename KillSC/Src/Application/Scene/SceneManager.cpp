@@ -72,7 +72,8 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 		m_bPlayerWin = false;
 		m_currentScene = std::make_shared<TitleScene>();
 		break;
-	case SceneType::game:
+	case SceneType::battle:
+	case SceneType::challenge:
 		m_currentScene = std::make_shared<GameScene>();
 		break;
 	case SceneType::result:

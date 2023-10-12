@@ -9,7 +9,8 @@ public:
 	enum class SceneType
 	{
 		title,
-		game,
+		battle,
+		challenge,
 		result,
 		select,
 		art,
@@ -63,9 +64,13 @@ public:
 
 	void SetEnemyTotal(int a_enemyTotal) { m_enemyTotal = a_enemyTotal; }
 	void SetEnemyIeftover(int a_enemyIeftover) { m_enemyIeftover = a_enemyIeftover; }
+	void SetEnemyDrawTotal(int a_enemyDrawTotal) { m_enemyDrawTotal = a_enemyDrawTotal; }
 	void SubEnemyIeftover() { --m_enemyIeftover; }
+	void SubEnemyDrawTotal() { --m_enemyDrawTotal; }
+	void AddEnemyDrawTotal() { ++m_enemyDrawTotal; }
 	const int GetEnemyTotal() { return m_enemyTotal; }
 	const int GetEnemyIeftover() { return m_enemyIeftover; }
+	const int GetEnemyDrawTotal() { return m_enemyDrawTotal; }
 
 private:
 
@@ -86,6 +91,7 @@ private:
 	int m_updateStopCnt;
 	int m_enemyTotal;
 	int m_enemyIeftover;
+	int m_enemyDrawTotal;
 
 // シングルトンパターン
 	// 生成するインスタンスの数を1つに制限する
