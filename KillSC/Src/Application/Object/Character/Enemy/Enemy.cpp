@@ -101,6 +101,10 @@ void Enemy::Init()
 	m_bEnemyLose = false;
 	m_hasDeTime = 0;
 	m_overStageTime = 0;
+
+	m_torion = 300.0f;
+	m_endurance = 400.0f;
+	m_enemyType = Enemy::EnemyType::allRounder;
 }
 
 void Enemy::Update()
@@ -1235,7 +1239,8 @@ void Enemy::PostUpdate()
 					SceneManager::Instance().SubEnemyDrawTotal();
 				}
 
-				m_bEnemyLose = true;
+				//m_bEnemyLose = true;
+				m_isExpired = true;
 			}
 		}
 	}

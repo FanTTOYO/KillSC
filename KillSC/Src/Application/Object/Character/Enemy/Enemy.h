@@ -138,6 +138,7 @@ public:
 	void HasDefense()override;
 
 	const bool GetBEnemyLose() { return m_bEnemyLose; }
+
 	const bool GetBEnemyDeath() { return m_bEnemyDeath; }
 
 private:

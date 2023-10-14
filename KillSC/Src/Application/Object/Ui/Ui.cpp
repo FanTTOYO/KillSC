@@ -31,6 +31,21 @@ void Ui::PostUpdate()
 {
 	if (m_uiType == UiType::game)
 	{
+		auto it = m_wpEnemyList.begin();
+		while (it != m_wpEnemyList.end()) // 数が変動するため範囲ベースForが使えない
+		{
+			// 不要になったオブジェクトを消す
+			if ((*it).expired())
+			{
+				// 消す
+				it = m_wpEnemyList.erase(it); // 戻り値で次の場所を返してくれる
+			}
+			else
+			{
+				++it; // 次へ
+			}
+		}
+
 		int i = 0;
 		for (auto& list : m_wpEnemyList)
 		{

@@ -10,6 +10,7 @@ public:
 	~Scopion() {}
 
 	void Update()override;
+	void PostUpdate()override;
 	void DrawBright()override;
 	void DrawLit()override;
 	void GenerateDepthMapFromLight()override;

@@ -161,6 +161,24 @@ void Scopion::Update()
 	}
 }
 
+void Scopion::PostUpdate()
+{
+	auto it = m_pTargetList.begin();
+	while (it != m_pTargetList.end()) // 数が変動するため範囲ベースForが使えない
+	{
+		// 不要になったオブジェクトを消す
+		if ((*it).expired())
+		{
+			// 消す
+			it = m_pTargetList.erase(it); // 戻り値で次の場所を返してくれる
+		}
+		else
+		{
+			++it; // 次へ
+		}
+	}
+}
+
 void Scopion::DrawBright()
 {
 	/*const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
@@ -335,6 +353,9 @@ void Scopion::PlayerHitAttackChaeck()
 
 	for (auto& pTarget : m_pTargetList)
 	{
+		if (pTarget.expired())continue;
+
+		if (pTarget.lock()->IsExpired())continue;
 		// 攻撃の当たり判定
 		for (auto& wepLis : pTarget.lock()->GetWeaponList())
 		{
@@ -718,6 +739,8 @@ void Scopion::PlayerManAttackChaeck()
 
 	for (auto& pTarget : m_pTargetList)
 	{
+		if (pTarget.expired())continue;
+
 		if (!pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && !pTarget.lock()->GetBEnemyDeath() && player->GetPlayerState() & Player::PlayerState::mantis && pTarget.lock()->GetInvincibilityTimeCnt() == 0)
 		{
 			if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;

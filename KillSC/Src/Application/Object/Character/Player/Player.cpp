@@ -335,7 +335,7 @@ void Player::Update()
 					int i = 0;
 					for (auto& enemyList : m_enemyList)
 					{
-						if (enemyList.lock()->GetBEnemyLose())
+						if (enemyList.expired())
 						{
 							continue;
 						}
@@ -698,6 +698,8 @@ void Player::Update()
 
 	for (auto& enemyList : m_enemyList)
 	{
+		if (enemyList.expired())continue;
+
 		if (enemyList.lock()->GetEnemyState() & eDefense)
 		{
 			// 当たり判定をしたいタイプを設定
@@ -828,6 +830,8 @@ void Player::Update()
 
 	for (auto& enemyList : m_enemyList)
 	{
+		if (enemyList.expired())continue;
+
 		enemyList.lock()->Intersects
 		(
 			sphereInfo,
@@ -925,6 +929,8 @@ void Player::PlayerKickHitAttackChaeck()
 
 	for (auto& enemyList : m_enemyList)
 	{
+		if (enemyList.expired())continue;
+
 		if (!enemyList.lock()->GetAttackHit() && !enemyList.lock()->GetDefenseSuc() && enemyList.lock()->GetInvincibilityTimeCnt() == 0 && !enemyList.lock()->GetBEnemyDeath()) // ここにはなくてもいいかも
 		{
 			/*if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
@@ -1058,6 +1064,21 @@ void Player::PostUpdate()
 {
 	if (!m_bPlayerDeath)
 	{
+		auto it = m_enemyList.begin();
+		while (it != m_enemyList.end()) // 数が変動するため範囲ベースForが使えない
+		{
+			// 不要になったオブジェクトを消す
+			if ((*it).expired())
+			{
+				// 消す
+				it = m_enemyList.erase(it); // 戻り値で次の場所を返してくれる
+			}
+			else
+			{
+				++it; // 次へ
+			}
+		}
+
 		if (m_gravity > 0)
 		{
 			if (!(m_playerState & hit))
@@ -1225,6 +1246,11 @@ void Player::PostUpdate()
 
 			m_animator->AdvanceTime(m_model->WorkNodes());
 			m_model->CalcNodeMatrices();
+		}
+
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->PostUpdate();
 		}
 	}
 	else
