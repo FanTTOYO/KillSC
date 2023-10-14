@@ -204,6 +204,7 @@ void GameScene::Init()
 		enemy = std::make_shared<Enemy>();
 		enemy->SetTarget(player);
 		player->AddEnemy(enemy);
+		ui->AddEnemy(enemy);
 		enemy->Init();
 		switch (total)
 		{
@@ -225,7 +226,6 @@ void GameScene::Init()
 		}
 
 		m_objList.push_back(enemy);
-		ui->AddEnemy(enemy);
 	}
 
 	ui->SetPlayer(player);

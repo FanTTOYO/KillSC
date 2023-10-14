@@ -1728,7 +1728,7 @@ void Ui::SelectUpdate()
 		TitlePos.z = m_titlePos.z;
 
 		Dis = TitlePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 75)
+		if (Dis.Length() <= 25)
 		{
 			m_titleScale = 1.1f;
 
@@ -2096,14 +2096,7 @@ void Ui::DrawSprite()
 					color = { 1, 1, 1, 1 };
 					if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
 					{
-						if (SceneManager::Instance().GetEnemyIeftover() > SceneManager::Instance().GetEnemyTotal() - 5)
-						{
-							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
-						}
-						else
-						{
-							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 2.6f), 50, &rc, &color, Math::Vector2(0, 0.5f));
-						}
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 2.6f), 50, &rc, &color, Math::Vector2(0, 0.5f));
 					}
 					else
 					{
@@ -3576,7 +3569,7 @@ void Ui::Init()
 	m_challengePos       = {  265,  -20, 0};
 	m_chalenge50Pos      = {  265, -180, 0 };
 	m_chalenge100Pos     = {  265, -270, 0 };
-	m_chalengehelpMkPos  = {  450, 250, 0};
+	m_chalengehelpMkPos  = {  425, 235, 0};
 	m_tutorialPos        = { -535, 138, 0};
 	m_trainingPos        = { -535,-178, 0};
 	m_selectBackPos      = {    0,   0, 0};

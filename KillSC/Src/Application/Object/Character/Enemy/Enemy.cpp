@@ -51,55 +51,6 @@ void Enemy::Init()
 	m_hitMoveSpd = 0.0f;
 	m_gardMoveSpd = 0.0f;
 
-	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
-	{
-		m_torion = 200.0f;
-		m_endurance = 150.0f;
-
-		std::random_device rnd;
-		std::mt19937 mt(rnd());
-		std::uniform_int_distribution<int> intRand(0, 999);
-		int randNum[4] = {};
-		int rand = intRand(mt);
-		randNum[0] = 150;
-		randNum[1] = 300;
-		randNum[2] = 300;
-		randNum[3] = 250;
-
-		/*randNum[0] = 0;
-		randNum[1] = 0;
-		randNum[2] = 0;
-		randNum[3] = 2500;*/
-		for (int i = 0; i < 4; i++)
-		{
-			rand -= randNum[i];
-			if (rand < 0)
-			{
-				switch (i)
-				{
-				case 0:
-					m_enemyType = Enemy::EnemyType::allRounder;
-					break;
-				case 1:
-					m_enemyType = Enemy::EnemyType::striker;
-					break;
-				case 2:
-					m_enemyType = Enemy::EnemyType::defender;
-					break;
-				case 3:
-					m_enemyType = Enemy::EnemyType::speedSter;
-					break;
-				}
-				break;
-			}
-		}
-	}
-	else
-	{
-		m_torion = 300.0f;
-		m_endurance = 400.0f;
-		m_enemyType = Enemy::EnemyType::allRounder;
-	}
 	m_invincibilityTimeCnt = 0;
 	m_bTough = false;
 	m_bFirstUpdate = true;
@@ -257,7 +208,7 @@ void Enemy::Update()
 				m_EnemyState = eIdle;
 				m_wantToMoveState = none;
 				m_animator->SetAnimation(m_model->GetAnimation("Death"), false);
-				
+
 			}
 		}
 
@@ -283,6 +234,56 @@ void Enemy::Update()
 			for (auto& WeaList : m_weaponList)
 			{
 				WeaList->SetOwner(shared_from_this());
+			}
+
+			if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+			{
+				m_torion = 100.0f;
+				m_endurance = 150.0f;
+
+				std::random_device rnd;
+				std::mt19937 mt(rnd());
+				std::uniform_int_distribution<int> intRand(0, 999);
+				int randNum[4] = {};
+				int rand = intRand(mt);
+				randNum[0] = 150;
+				randNum[1] = 300;
+				randNum[2] = 300;
+				randNum[3] = 250;
+
+				/*randNum[0] = 0;
+				randNum[1] = 0;
+				randNum[2] = 0;
+				randNum[3] = 2500;*/
+				for (int i = 0; i < 4; i++)
+				{
+					rand -= randNum[i];
+					if (rand < 0)
+					{
+						switch (i)
+						{
+						case 0:
+							m_enemyType = Enemy::EnemyType::allRounder;
+							break;
+						case 1:
+							m_enemyType = Enemy::EnemyType::striker;
+							break;
+						case 2:
+							m_enemyType = Enemy::EnemyType::defender;
+							break;
+						case 3:
+							m_enemyType = Enemy::EnemyType::speedSter;
+							break;
+						}
+						break;
+					}
+				}
+			}
+			else
+			{
+				m_torion = 300.0f;
+				m_endurance = 400.0f;
+				m_enemyType = Enemy::EnemyType::allRounder;
 			}
 		}
 		else
@@ -323,11 +324,11 @@ void Enemy::Update()
 			if (m_wantToMoveState & none && !m_bEnemyDeath)
 			{
 				Brain();
-			}	
-			else if(!m_bEnemyDeath)
+			}
+			else if (!m_bEnemyDeath)
 			{
 				Math::Vector3 src = spTarget->GetPos() - m_pos;
-				if (src.Length() >= 20.0f && !(m_EnemyState & (eGrassHopperDashF)))
+				if (src.Length() >= 20.0f && !(m_EnemyState & (eGrassHopperDash &~eGrassHopperDashB)))
 				{
 					Brain();
 				}
@@ -659,9 +660,9 @@ void Enemy::Update()
 		}
 	}
 
-	if (!(m_EnemyState& (eGrassHopperDash | eGrassHopperDashUp | 
-		               eRAttack | eLAttack | eRlAttack | eRlAttackRush|
-		               eMantis | eHit)))
+	if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp |
+		eRAttack | eLAttack | eRlAttack | eRlAttackRush |
+		eMantis | eHit)))
 	{
 		m_pos.y -= m_gravity;
 		m_gravity += 0.01f;
@@ -684,7 +685,7 @@ void Enemy::Update()
 		static float enableStepHight = 0.2f;
 		rayInfo.m_pos.y += enableStepHight;
 		rayInfo.m_range = m_gravity + enableStepHight;
-}
+	}
 	else
 	{
 		//rayInfo.m_pos += Math::Vector3(0, 0.5f, 0);
@@ -779,7 +780,7 @@ void Enemy::Update()
 		{
 			if (m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp))
 			{
-			
+
 				sphereInfo.m_sphere.Radius = 1.8f;
 			}
 		}*/
@@ -1042,7 +1043,7 @@ void Enemy::Update()
 			WeaList->Update();
 		}
 	}
-}
+	}
 
 void Enemy::PostUpdate()
 {
@@ -1087,7 +1088,7 @@ void Enemy::PostUpdate()
 		{
 			m_animator->AdvanceTime(m_model->WorkNodes());
 			m_model->CalcNodeMatrices();
-			
+
 			if (m_EnemyState & run)
 			{
 				++m_runAnimeCnt;
@@ -1364,7 +1365,7 @@ void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 
 void Enemy::HasDefense()
 {
-	if (m_EnemyState & (eRAttack| eRlAttack))
+	if (m_EnemyState & (eRAttack | eRlAttack))
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RHasDefense"), false);
 	}
@@ -1373,8 +1374,8 @@ void Enemy::HasDefense()
 		m_animator->SetAnimation(m_model->GetAnimation("LHasDefense"), false);
 	}
 
-	m_EnemyState |=  eHasDefense;
-	m_EnemyState &=  eHasDefense;
+	m_EnemyState |= eHasDefense;
+	m_EnemyState &= eHasDefense;
 	m_hasDeTime = 30;
 	m_bMove = true;
 }
@@ -1645,7 +1646,7 @@ void Enemy::EnemyKickHitAttackChaeck()
 				}
 			}
 		}
-}	//}
+	}	//}
 }
 
 void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
