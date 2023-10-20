@@ -838,6 +838,15 @@ void Enemy::Update()
 
 	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::defense))
 	{
+		if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)) || !(m_wantToMoveState & (escape | dashAttack | disturbance | grassDash | avoidance)))
+		{
+			sphereInfo.m_sphere.Radius = 0.3f;
+		}
+		else
+		{
+			sphereInfo.m_sphere.Radius = 0.6f;
+		}
+
 		// “–‚½‚è”»’è‚ğ‚µ‚½‚¢ƒ^ƒCƒv‚ğİ’è
 		sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
 

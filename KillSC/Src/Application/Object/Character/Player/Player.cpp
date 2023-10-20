@@ -702,6 +702,15 @@ void Player::Update()
 
 		if (enemyList.lock()->GetEnemyState() & eDefense)
 		{
+			if (!(m_playerState & (grassHopperDash | grassHopperDashUp | step)))
+			{
+				sphereInfo.m_sphere.Radius = 0.3f;
+			}
+			else
+			{
+				sphereInfo.m_sphere.Radius = 0.6f;
+			}
+
 			// “–‚½‚è”»’è‚ğ‚µ‚½‚¢ƒ^ƒCƒv‚ğİ’è
 			sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
 #ifdef _DEBUG
