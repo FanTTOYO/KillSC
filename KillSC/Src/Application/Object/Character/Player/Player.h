@@ -124,6 +124,8 @@ public:
 
 	const bool GetBPlayerDeath() { return m_bPlayerDeath; }
 
+	const float GetAngleY() { return m_mWorldRot.y;}
+
 private:
 
 	void PlayerKickHitAttackChaeck();

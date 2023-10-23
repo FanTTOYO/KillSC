@@ -546,10 +546,12 @@ void Scopion::PlayerHitAttackChaeck()
 
 			Math::Vector3 hitDir = {};
 			bool hit = false;
+			Math::Vector3 hitPos;
 			for (auto& ret : retSphereList)
 			{
 				hit = true;
 				hitDir = ret.m_hitDir;
+				hitPos = ret.m_hitPos;
 			}
 
 			if (hit)
@@ -586,6 +588,13 @@ void Scopion::PlayerHitAttackChaeck()
 					pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
+
+				KdEffekseerManager::GetInstance().
+					Play("Hit.efk", hitPos);
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+				Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(player->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
+				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
 			}
 			else
 			{
@@ -618,6 +627,7 @@ void Scopion::PlayerHitAttackChaeck()
 				{
 					hit = true;
 					hitDir = ret.m_hitDir;
+					hitPos = ret.m_hitPos;
 				}
 
 				if (hit)
@@ -654,6 +664,13 @@ void Scopion::PlayerHitAttackChaeck()
 						pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
+
+					KdEffekseerManager::GetInstance().
+						Play("Hit.efk", hitPos);
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(player->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
+					KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
 				}
 				else
 				{
@@ -686,6 +703,7 @@ void Scopion::PlayerHitAttackChaeck()
 					{
 						hit = true;
 						hitDir = ret.m_hitDir;
+						hitPos = ret.m_hitPos;
 					}
 
 					if (hit)
@@ -722,6 +740,13 @@ void Scopion::PlayerHitAttackChaeck()
 							pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
 							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 						}
+
+						KdEffekseerManager::GetInstance().
+							Play("Hit.efk", hitPos);
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+						Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(player->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
 					}
 				}
 			}
@@ -1231,10 +1256,12 @@ void Scopion::EnemyHitAttackChaeck()
 
 		Math::Vector3 hitDir = {};
 		bool hit = false;
+		Math::Vector3 hitPos;
 		for (auto& ret : retSphereList)
 		{
 			hit = true;
 			hitDir = ret.m_hitDir;
+			hitPos = ret.m_hitPos;
 		}
 
 		if (hit)
@@ -1271,6 +1298,13 @@ void Scopion::EnemyHitAttackChaeck()
 				m_eTarget.lock()->CutRaiseOnHit(enemy->GetMatrix().Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
+
+			KdEffekseerManager::GetInstance().
+				Play("Hit.efk", hitPos);
+			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+			//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+			Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
+			KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
 		}
 		else
 		{
@@ -1303,6 +1337,7 @@ void Scopion::EnemyHitAttackChaeck()
 			{
 				hit = true;
 				hitDir = ret.m_hitDir;
+				hitPos = ret.m_hitPos;
 			}
 
 			if (hit)
@@ -1339,6 +1374,13 @@ void Scopion::EnemyHitAttackChaeck()
 					m_eTarget.lock()->CutRaiseOnHit(enemy->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
+
+				KdEffekseerManager::GetInstance().
+					Play("Hit.efk", hitPos);
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+				Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
+				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
 			}
 			else
 			{
@@ -1371,6 +1413,7 @@ void Scopion::EnemyHitAttackChaeck()
 				{
 					hit = true;
 					hitDir = ret.m_hitDir;
+					hitPos = ret.m_hitPos;
 				}
 
 				if (hit)
@@ -1407,6 +1450,13 @@ void Scopion::EnemyHitAttackChaeck()
 						m_eTarget.lock()->CutRaiseOnHit(enemy->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
+
+					KdEffekseerManager::GetInstance().
+						Play("Hit.efk", hitPos);
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
+					KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
 				}
 			}
 		}

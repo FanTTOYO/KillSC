@@ -972,16 +972,25 @@ void Player::PlayerKickHitAttackChaeck()
 
 			Math::Vector3 hitDir = {};
 			bool hit = false;
+			Math::Vector3 hitPos = {};
 			for (auto& ret : retSphereList)
 			{
 				hit = true;
 				hitDir = ret.m_hitDir;
+				hitPos = ret.m_hitPos;
 			}
 
 			if (hit)
 			{
 				enemyList.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+
+				KdEffekseerManager::GetInstance().
+					Play("Hit3.efk", hitPos);
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
+				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+				Math::Matrix efcMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
 			}
 			else
 			{
@@ -1016,12 +1025,21 @@ void Player::PlayerKickHitAttackChaeck()
 				{
 					hit = true;
 					hitDir = ret.m_hitDir;
+					hitPos = ret.m_hitPos;
 				}
 
 				if (hit)
 				{
 					enemyList.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+
+					KdEffekseerManager::GetInstance().
+						Play("Hit3.efk", hitPos);
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+					KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
+
 				}
 				else
 				{
@@ -1056,12 +1074,20 @@ void Player::PlayerKickHitAttackChaeck()
 					{
 						hit = true;
 						hitDir = ret.m_hitDir;
+						hitPos = ret.m_hitPos;
 					}
 
 					if (hit)
 					{
 						enemyList.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+
+						KdEffekseerManager::GetInstance().
+							Play("Hit3.efk", hitPos);
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
+						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+						Math::Matrix efcMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
 					}
 				}
 			}
@@ -2385,6 +2411,7 @@ void Player::ScorpionAttackMove()
 				{
 					for (auto& enemyList : m_enemyList)
 					{
+						if (enemyList.expired())continue;
 						enemyList.lock()->SetAttackHit(false);
 						enemyList.lock()->SetDefenseSuc(false);
 					}
@@ -2397,6 +2424,7 @@ void Player::ScorpionAttackMove()
 				{
 					for (auto& enemyList : m_enemyList)
 					{
+						if (enemyList.expired())continue;
 						enemyList.lock()->SetAttackHit(false);
 						enemyList.lock()->SetDefenseSuc(false);
 					}
@@ -2409,6 +2437,7 @@ void Player::ScorpionAttackMove()
 				{
 					for (auto& enemyList : m_enemyList)
 					{
+						if (enemyList.expired())continue;
 						enemyList.lock()->SetAttackHit(false);
 						enemyList.lock()->SetDefenseSuc(false);
 					}
@@ -2428,6 +2457,7 @@ void Player::ScorpionAttackMove()
 				{
 					for (auto& enemyList : m_enemyList)
 					{
+						if (enemyList.expired())continue;
 						enemyList.lock()->SetAttackHit(false);
 						enemyList.lock()->SetDefenseSuc(false);
 					}

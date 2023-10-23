@@ -75,11 +75,24 @@
 #pragma comment(lib, "DirectXTex.lib")
 #include <DirectXTex.h>
 
+
+//===============================================
+// Effekseer
+//===============================================
+#ifdef _DEBUG
+#pragma comment(lib, "Effekseerd.lib")
+#pragma comment(lib, "EffekseerRendererDX11d.lib")
+#else
+#pragma comment(lib, "Effekseer.lib")
+#pragma comment(lib, "EffekseerRendererDX11.lib")
+#endif
+#include<Effekseer.h>
+
 //===============================================
 // 文字コード変換
 //===============================================
 #include <strconv.h>
-
+#include <EffekseerRendererDX11.h>
 //===============================================
 //
 // 自作Framework

@@ -137,6 +137,8 @@ public:
 	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec)override;
 	void HasDefense()override;
 
+	const float GetAngleY() { return m_mWorldRot.y; }
+
 	const bool GetBEnemyLose() { return m_bEnemyLose; }
 
 	const bool GetBEnemyDeath() { return m_bEnemyDeath; }

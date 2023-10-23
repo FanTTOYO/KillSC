@@ -1,5 +1,4 @@
 ﻿#include "main.h"
-
 #include "Scene/SceneManager.h"
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -52,6 +51,8 @@ void Application::PreUpdate()
 void Application::Update()
 {
 	SceneManager::Instance().Update();
+
+	KdEffekseerManager::GetInstance().Update();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -85,6 +86,8 @@ void Application::PreDraw()
 void Application::Draw()
 {
 	SceneManager::Instance().Draw();
+
+	KdEffekseerManager::GetInstance().Draw();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -154,7 +157,15 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	KdShaderManager::Instance().Init();
 
+	//===================================================================
+	// サウンド初期化
+	//===================================================================
 	KdAudioManager::Instance().Init();
+
+	//===================================================================
+	// Effekseer初期化
+	//===================================================================
+	KdEffekseerManager::GetInstance().Create(w, h);
 
 	return true;
 }
@@ -275,6 +286,8 @@ void Application::Execute()
 // アプリケーション終了
 void Application::Release()
 {
+	KdEffekseerManager::GetInstance().Release();
+
 	KdInputManager::Instance().Release();
 
 	KdShaderManager::Instance().Release();

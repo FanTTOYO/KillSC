@@ -74,3 +74,6 @@
 // デバックライン表示
 #include "Utility/KdDebugWireFrame.h"
 
+// Effekseer管理クラス
+#include "Effekseer/KdEffekseerManager.h"
+

@@ -242,6 +242,8 @@ void GameScene::Init()
 	ui->SetCamera(camera);
 	m_objList.push_back(camera);
 
+	KdEffekseerManager::GetInstance().SetCamera(camera);
+
 
 	SetCursorPos(640, 360);
 	KdAudioManager::Instance().Play("Asset/Audio/SE/CntDwon1.wav");

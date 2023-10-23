@@ -124,6 +124,9 @@
     <Filter Include="Src\Application\Scene\TutorialScene">
       <UniqueIdentifier>{fd94fb56-d20b-498c-9b9a-508e7b9a9049}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Framework\Effekseer">
+      <UniqueIdentifier>{8b35de41-b602-4ce0-b0b9-816a45cac03e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -306,6 +309,9 @@
     <ClInclude Include="Src\Application\Scene\TutorialScene\TutorialScene.h">
       <Filter>Src\Application\Scene\TutorialScene</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Framework\Effekseer\KdEffekseerManager.h">
+      <Filter>Src\Framework\Effekseer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -466,6 +472,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Scene\TutorialScene\TutorialScene.cpp">
       <Filter>Src\Application\Scene\TutorialScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Framework\Effekseer\KdEffekseerManager.cpp">
+      <Filter>Src\Framework\Effekseer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
