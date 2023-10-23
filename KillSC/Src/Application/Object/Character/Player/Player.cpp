@@ -629,10 +629,10 @@ void Player::Update()
 		{
 			//m_pos = groundPos /*+ Math::Vector3(0,-0.1,0)*/;
 			m_gravity = 0;
-			m_playerState = fall;
+			//m_playerState = fall;
 			m_rGrassHopperTime = 0;
 			m_lGrassHopperTime = 0;
-			m_bMove = false;
+			//m_bMove = false;
 			m_grassHopperDashDir = {};
 			m_dashSpd = 0.0f;
 		}
