@@ -248,6 +248,8 @@ void GameCamera::Update()
 
 	m_mWorld = m_LocalPos * rotMatX * m_Rotation * targetMat;
 
+	UpdateCollision();
+
 	CameraBase::Update();
 }
 
@@ -454,6 +456,64 @@ void GameCamera::CameraSetUpdate()
 	else
 	{
 		m_bCameraSet = false;
+	}
+}
+
+void GameCamera::UpdateCollision()
+{
+	const std::shared_ptr<const KdGameObject>spTarget = m_wpTarget.lock();
+	if (!spTarget)return;
+
+	// ①当たり判定(レイ判定)用の情報作成
+	KdCollider::RayInfo rayInfo;
+	// レイの発射位置を設定
+	rayInfo.m_pos = spTarget->GetPos();
+	rayInfo.m_pos.y += 1.5f;
+
+	// レイの発射方向を設定
+	Math::Vector3 dir = GetPos() - rayInfo.m_pos;
+	dir.Normalize();
+	rayInfo.m_dir = dir;
+
+	// レイの長さ
+	rayInfo.m_range = (GetPos() - rayInfo.m_pos).Length();
+
+	// 当たり判定をしたいタイプを設定
+	rayInfo.m_type = KdCollider::TypeGround;
+
+	// ②HIT判定対象オブジェクトに総当たり
+	std::list<KdCollider::CollisionResult> retRayList;
+
+	float maxOverLap = 0;
+	for (auto& hitObj : m_hitObjList)
+	{
+		std::shared_ptr<KdGameObject> spGameObj = hitObj.lock();
+		if (spGameObj)
+		{
+			spGameObj->Intersects(rayInfo, &retRayList);
+
+			// ③結果を使って座標を補完する
+			// レイに当たったリストから一番近いオブジェクトを検出
+			Math::Vector3 hitPos = Math::Vector3::Zero;
+			bool hit = false;
+			for (auto& ret : retRayList)
+			{
+				// レイを遮断しオーバーした長さが
+				// 一番長いものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hitPos = ret.m_hitPos;
+					hit = true;
+				}
+			}
+			// 何かしらの上に乗ってる
+
+			if (hit)
+			{
+				SetPos(hitPos);
+			}
+		}
 	}
 }
 

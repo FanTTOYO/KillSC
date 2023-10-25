@@ -1575,11 +1575,12 @@ void Enemy::EnemyKickHitAttackChaeck()
 			m_target.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
 			KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
 
+			hitPos.y += 0.35f;
 			KdEffekseerManager::GetInstance().
 				Play("Hit3.efk", hitPos);
 			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
-			//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
-			Math::Matrix efcMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+			//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+			Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
 			KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
 		}
 		else
@@ -1626,11 +1627,12 @@ void Enemy::EnemyKickHitAttackChaeck()
 				m_target.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
 
+				hitPos.y += 0.35f;
 				KdEffekseerManager::GetInstance().
 					Play("Hit3.efk", hitPos);
 				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
-				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
-				Math::Matrix efcMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+				Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
 				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
 			}
 			else
@@ -1676,11 +1678,12 @@ void Enemy::EnemyKickHitAttackChaeck()
 					m_target.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
 
+					hitPos.y += 0.35f;
 					KdEffekseerManager::GetInstance().
 						Play("Hit3.efk", hitPos);
 					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
-					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
-					Math::Matrix efcMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
 					KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
 				}
 			}

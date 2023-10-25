@@ -18,6 +18,7 @@ public:
 	void SetEnemy(std::shared_ptr<Enemy> a_enemy);
 	void SetBRotateEnemy(bool a_bRotateEnemy) { m_bRotateEnemy = a_bRotateEnemy; }
 	bool GetBRotateEnemy() { return m_bRotateEnemy; }
+	void SetHitObj(std::shared_ptr<KdGameObject> a_hitObj) { m_hitObjList.push_back(a_hitObj); }
 
 	const std::weak_ptr<Enemy> GetEnemy() {return m_wpEnemy;}
 
@@ -28,6 +29,7 @@ private:
 	void UpdateRotateByEnemy();
 
 	void CameraSetUpdate();
+	void UpdateCollision();
 
 	//void SetBCameraSet(Math::Vector3 _mobeVec)override;
 
@@ -43,4 +45,5 @@ private:
 	bool m_bRotateEnemy; // エネミーによってカメラの回転がかわる
 	Math::Vector3 m_startPos[5] = {};
 	bool m_startDelayFive = false; // 行列を5個使う true その他 false
+	std::list<std::weak_ptr<KdGameObject>> m_hitObjList; //	当たり判定するオブジェクト
 };

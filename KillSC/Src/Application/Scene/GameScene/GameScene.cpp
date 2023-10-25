@@ -146,9 +146,11 @@ void GameScene::Init()
 	sky = std::make_shared<Sky>();
 	m_objList.push_back(sky);
 
+	std::shared_ptr<GameCamera> camera = std::make_shared<GameCamera>();
 	std::shared_ptr<Ground> ground;
 	ground = std::make_shared<Ground>();
 	m_objList.push_back(ground);
+	camera->SetHitObj(ground);
 
 	std::shared_ptr<Bldg> bldg;
 	std::ifstream ifs("Asset/Data/BldgInfo.csv");
@@ -175,6 +177,8 @@ void GameScene::Init()
 			bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4]);
 		}
 		m_objList.push_back(bldg);
+
+		camera->SetHitObj(bldg);
 	}
 
 	std::shared_ptr<InvisibleWall> invisibleWall;
@@ -235,7 +239,7 @@ void GameScene::Init()
 
 	player->Init();
 
-	std::shared_ptr<GameCamera> camera = std::make_shared<GameCamera>();
+	
 	camera->SetTarget(player);
 	camera->SetPlayer(player);
 	player->SetCamera(camera);
