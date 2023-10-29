@@ -105,6 +105,8 @@ void Enemy::Init()
 	m_torion = 300.0f;
 	m_endurance = 400.0f;
 	m_enemyType = Enemy::EnemyType::allRounder;
+
+	m_bEnemyBetweenPlayer = false;
 }
 
 void Enemy::Update()
@@ -751,10 +753,10 @@ void Enemy::Update()
 		else
 		{
 			m_gravity = 0;
-			//m_EnemyState = eFall;
+			m_EnemyState = eFall;
 			m_rGrassHopperTime = 0;
 			m_lGrassHopperTime = 0;
-			//m_bMove = false;
+			m_bMove = false;
 			m_grassHopperDashDir = {};
 			m_dashSpd = 0.0f;
 		}
@@ -998,6 +1000,46 @@ void Enemy::Update()
 			m_attackMoveSpd = 0.0f;
 			m_hitMoveSpd = 0.0f;
 		}
+	}
+
+	if (!m_target.expired())
+	{
+		rayInfo.m_pos = m_pos + Math::Vector3(0, 1.2f, 0);
+		rayInfo.m_dir = (m_target.lock()->GetPos() + Math::Vector3(0,1.2f,0)) - (m_pos + Math::Vector3(0, 1.2f, 0));
+		rayInfo.m_range = rayInfo.m_dir.Length();
+		rayInfo.m_dir.Normalize();
+		rayInfo.m_type = KdCollider::Type::TypeGround;
+
+		retRayList.clear();
+
+		for (auto& obj : SceneManager::Instance().GetObjList())
+		{
+			obj->Intersects(rayInfo, &retRayList);
+		}
+
+		maxOverLap = 0;
+		hit = false;
+		Math::Vector3 hitPos;
+		for (auto& ret : retRayList)
+		{
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				hitPos = ret.m_hitPos;
+				hit = true;
+			}
+		}
+
+		if (hit && rayInfo.m_range <= 30.0f)
+		{
+			m_bEnemyBetweenPlayer = true;
+			m_enemyBetweenPlayerHitPos = hitPos;
+		}
+		else
+		{
+			m_bEnemyBetweenPlayer = false;
+		}
+		
 	}
 
 	if ((m_EnemyState & eRlAttackRush) && m_attackAnimeCnt >= 107)
@@ -1798,6 +1840,25 @@ void Enemy::GrassMoveVecDecision()
 				break;
 			case WantToMoveState::disturbance:
 				if (m_grassSuccessionDelayCnt != 0)return;
+				if (m_disturbanceCnt > 0)
+				{
+					--m_disturbanceCnt;
+				}
+
+				if (m_disturbanceCnt == 0)
+				{
+					Brain();
+
+					/*m_enemyAirborneTimetoBeCnt = 0;
+					if (!(m_EnemyState & eFall))
+					{
+						m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
+					}
+
+					m_EnemyState = eFall;
+					m_wantToMoveState = none;*/
+				}
+
 				randNum[0] = 200;
 				randNum[1] = 200;
 				randNum[2] = 200;
@@ -1923,7 +1984,7 @@ void Enemy::GrassMoveVecDecision()
 
 			int rand = intRand(mt);
 			Math::Vector3 src;
-			float y = m_target.lock()->GetPos().y - m_pos.y;;
+			float y = m_target.lock()->GetPos().y - m_pos.y;
 			switch (m_wantToMoveState)
 			{
 			case WantToMoveState::escape:
@@ -1967,6 +2028,26 @@ void Enemy::GrassMoveVecDecision()
 				break;
 			case WantToMoveState::disturbance:
 				if (m_grassSuccessionDelayCnt != 0)return;
+
+				if (m_disturbanceCnt > 0)
+				{
+					--m_disturbanceCnt;
+				}
+
+				if (m_disturbanceCnt == 0)
+				{
+					Brain();
+
+					/*m_enemyAirborneTimetoBeCnt = 0;
+					if (!(m_EnemyState & eFall))
+					{
+						m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
+					}
+
+					m_EnemyState = eFall;
+					m_wantToMoveState = none;*/
+				}
+
 				randNum[0] = 200;
 				randNum[1] = 200;
 				randNum[2] = 200;
@@ -1986,11 +2067,54 @@ void Enemy::GrassMoveVecDecision()
 				}
 				else
 				{
-					randNum[0] = 350;
-					randNum[1] = 150;
-					randNum[2] = 200;
-					randNum[3] = 200;
-					randNum[4] = 100;
+					if (m_bEnemyBetweenPlayer)
+					{
+						Math::Vector3 nowVec = m_mWorld.Backward();
+						nowVec.y = 0.0f;
+						nowVec.Normalize();
+
+						Math::Vector3 toVec = m_enemyBetweenPlayerHitPos - m_pos;
+						toVec.y = 0.0f;
+						toVec.Normalize();
+						Math::Vector3 dot = DirectX::XMVector3Dot(nowVec,toVec);
+
+						if(dot.x > 1.0f)
+						{
+							dot.x = 1.0f;
+						}
+						else if(dot.x < -1.0f)
+						{
+							dot.x = -1.0f;
+						}
+
+						float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+						if (ang <= 30 || ang > 150 && ang <= 180)
+						{
+							randNum[0] =    0;
+							randNum[1] =    0;
+							randNum[2] =  500;
+							randNum[3] =  500;
+							randNum[4] =    0;
+						}
+						else if (ang > 30 && ang <= 150)
+						{
+														
+							randNum[0] = 1000;
+							randNum[1] = 0;
+							randNum[2] = 0;
+							randNum[3] = 0;
+							randNum[4] = 0;
+						}
+					}
+					else
+					{
+						randNum[0] = 350;
+						randNum[1] = 150;
+						randNum[2] = 200;
+						randNum[3] = 200;
+						randNum[4] = 100;
+					}
 				}
 				break;
 			case WantToMoveState::avoidance:
@@ -2261,14 +2385,18 @@ void Enemy::GrassMove()
 
 		if (m_wantToMoveState & WantToMoveState::disturbance)
 		{
-			if (m_disturbanceCnt > 0)
-			{
-				--m_disturbanceCnt;
-			}
-
 			if (m_disturbanceCnt == 0)
 			{
-				Brain();
+				//Brain();
+
+				/*m_enemyAirborneTimetoBeCnt = 0;
+				if (!(m_EnemyState & eFall))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
+				}
+
+				m_EnemyState = eFall;
+				m_wantToMoveState = none;*/
 			}
 		}
 		else
@@ -2531,20 +2659,31 @@ void Enemy::Brain()
 		break;
 	case Enemy::EnemyType::allRounder:
 		AllRounderBrain();
+
+		if (m_bEnemyBetweenPlayer)
+		{
+			m_wantToMoveState = Enemy::WantToMoveState::grassDash;
+
+			m_leftWeaponNumber = 2;
+			m_rightWeaponNumber = 1;
+		}
 		break;
 	}
 
-	float y = m_target.lock()->GetPos().y - m_pos.y;
-	if (y <= -0.85f)
+	if (!m_bEnemyBetweenPlayer)
 	{
-		if (!(m_EnemyState & (eHit | eHasDefense)))
+		float y = m_target.lock()->GetPos().y - m_pos.y;
+		if (y <= -0.85f)
 		{
-			if (!(m_EnemyState & eFall))
+			if (!(m_EnemyState & (eHit | eHasDefense)))
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
+				if (!(m_EnemyState & eFall))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
+				}
+				m_EnemyState = eFall;
+				m_wantToMoveState = none;
 			}
-			m_EnemyState = eFall;
-			m_wantToMoveState = none;
 		}
 	}
 }

@@ -285,4 +285,7 @@ private:
 	bool m_bEnemyLose;
 	bool m_bEnemyDeath;
 	int m_overStageTime;
+
+	bool          m_bEnemyBetweenPlayer;
+	Math::Vector3 m_enemyBetweenPlayerHitPos;
 };
