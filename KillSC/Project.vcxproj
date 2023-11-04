@@ -270,6 +270,10 @@
     <None Include="Src\Framework\Shader\SpriteShader\inc_KdSpriteShader.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Src\Framework\Shader\HD2DShader\KdHD2DShader_PS_Outline.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="Src\Framework\Shader\HD2DShader\KdHD2DShader_PS_UnLit.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -293,6 +297,10 @@
     <FxCompile Include="Src\Framework\Shader\HD2DShader\KdHD2DShader_VS_Lit.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Src\Framework\Shader\HD2DShader\KdHD2DShader_VS_Outline.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Src\Framework\Shader\HD2DShader\KdHD2DShader_VS_Skin.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>

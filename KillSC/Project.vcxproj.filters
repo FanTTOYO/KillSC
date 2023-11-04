@@ -534,5 +534,11 @@
     <FxCompile Include="Src\Framework\Shader\HD2DShader\KdHD2DShader_VS_Skin.hlsl">
       <Filter>Src\Framework\Shader\HD2DShader</Filter>
     </FxCompile>
+    <FxCompile Include="Src\Framework\Shader\HD2DShader\KdHD2DShader_PS_Outline.hlsl">
+      <Filter>Src\Framework\Shader\HD2DShader</Filter>
+    </FxCompile>
+    <FxCompile Include="Src\Framework\Shader\HD2DShader\KdHD2DShader_VS_Outline.hlsl">
+      <Filter>Src\Framework\Shader\HD2DShader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

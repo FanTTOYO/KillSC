@@ -1490,12 +1490,12 @@ void Enemy::DrawLit_SkinMesh()
 	if (m_hitStopCnt <= 5)
 	{
 		Math::Color color = { 1,1,1,1 };
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, color);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld,false, color);
 	}
 	else if (m_hitStopCnt > 5)
 	{
 		Math::Color color = { 1,0,0,1 };
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, color);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, false,color);
 	}
 }
 

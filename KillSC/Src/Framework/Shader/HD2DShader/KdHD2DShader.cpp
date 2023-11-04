@@ -199,6 +199,26 @@ void KdHD2DShader::EndGenerateDepthMapFromLight_SkinMesh()
 	m_depthMapFromLightRTChanger.UndoRenderTarget();
 }
 
+// 輪郭
+void KdHD2DShader::SetToDevice_Outline()
+{
+	// 頂点シェーダーのパイプライン変更
+	if (KdShaderManager::Instance().SetVertexShader(m_outlineVS))
+	{
+		KdShaderManager::Instance().SetInputLayout(m_outlineInputLayout);
+
+		KdShaderManager::Instance().SetVSConstantBuffer(0, m_cb0_Obj.GetAddress());
+		KdShaderManager::Instance().SetVSConstantBuffer(1, m_cb1_Mesh.GetAddress());
+	}
+
+	// ピクセルシェーダーのパイプライン変更
+	if (KdShaderManager::Instance().SetPixelShader(m_outlinePS))
+	{
+		KdShaderManager::Instance().SetPSConstantBuffer(0, m_cb0_Obj.GetAddress());
+		KdShaderManager::Instance().SetPSConstantBuffer(2, m_cb2_Material.GetAddress());
+	}
+}
+
 //================================================
 // 描画関数
 //================================================
@@ -210,6 +230,35 @@ void KdHD2DShader::EndGenerateDepthMapFromLight_SkinMesh()
 // サブセットごとに描画命令を呼び出す：サブセットの個数分処理が重くなる
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void KdHD2DShader::DrawMesh(const KdMesh* mesh, const Math::Matrix& mWorld,
+	const std::vector<KdMaterial>& materials, const Math::Vector4& colRate, const Math::Vector3& emissive)
+{
+	if (mesh == nullptr) { return; }
+
+	// メッシュの頂点情報転送
+	mesh->SetToDevice();
+
+	// 3Dワールド行列転送
+	m_cb1_Mesh.Work().mW = mWorld;
+	m_cb1_Mesh.Write();
+
+	// 全サブセット
+	for (UINT subi = 0; subi < mesh->GetSubsets().size(); subi++)
+	{
+		// 面が１枚も無い場合はスキップ
+		if (mesh->GetSubsets()[subi].FaceCount == 0)continue;
+
+		// マテリアルデータの転送
+		const KdMaterial& material = materials[mesh->GetSubsets()[subi].MaterialNo];
+		WriteMaterial(material, colRate, emissive);
+
+		//-----------------------
+		// サブセット描画
+		//-----------------------
+		mesh->DrawSubset(subi);
+	}
+}
+
+void KdHD2DShader::DrawMesh_OutLine(const KdMesh* mesh, const Math::Matrix& mWorld, 
 	const std::vector<KdMaterial>& materials, const Math::Vector4& colRate, const Math::Vector3& emissive)
 {
 	if (mesh == nullptr) { return; }
@@ -274,7 +323,7 @@ void KdHD2DShader::DrawModel(const KdModelData& rModel, const Math::Matrix& mWor
 // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 // データに所属する全ての描画用メッシュをワークの3D行列に従って描画する
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
-void KdHD2DShader::DrawModel(KdModelWork& rModel, const Math::Matrix& mWorld,
+void KdHD2DShader::DrawModel(KdModelWork& rModel,const Math::Matrix& mWorld, const bool enableOutLine,
 	const Math::Color& colRate, const Math::Vector3& emissive)
 {
 	if (!rModel.IsEnable()) { return; }
@@ -322,6 +371,30 @@ void KdHD2DShader::DrawModel(KdModelWork& rModel, const Math::Matrix& mWorld,
 		// 描画
 		DrawMesh(dataNodes[nodeIdx].m_spMesh.get(), workNodes[nodeIdx].m_worldTransform * mWorld,
 			data->GetMaterials(), colRate, emissive);
+	}
+
+	//------------------------
+	// 輪郭描画
+	//------------------------
+	//if (enableOutLine)
+	if (0)
+	{
+		// 表面をカリング(非表示)にするラスタライザステートをセット
+		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullFront);
+		//輪郭シェーダーの情報を設定
+		SetToDevice_Outline();
+
+		for (auto& nodeIdx : data->GetDrawMeshNodeIndices())
+		{
+			DrawMesh_OutLine(dataNodes[nodeIdx].m_spMesh.get(), workNodes[nodeIdx].m_worldTransform * mWorld,
+				data->GetMaterials(), colRate, emissive);
+		}
+
+		// カリング設定をリセット
+		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullBack);
+
+		// 描画情報をリセット
+		BeginLit_SkinMesh();
 	}
 
 	// 定数に変更があった場合は自動的に初期状態に戻す
@@ -588,6 +661,43 @@ bool KdHD2DShader::Init()
 	}
 
 	//-------------------------------------
+	// 輪郭用　頂点シェーダ
+	//-------------------------------------
+	{
+		// コンパイル済みのシェーダーヘッダーファイルをインクルード
+#include "KdHD2DShader_VS_Outline.shaderInc"
+
+// 頂点シェーダー作成
+		if (FAILED(KdDirect3D::Instance().WorkDev()->CreateVertexShader(compiledBuffer, sizeof(compiledBuffer), nullptr, &m_outlineVS)))
+		{
+			assert(0 && "頂点シェーダー作成失敗");
+			Release();
+			return false;
+		}
+		// １頂点の詳細な情報
+		std::vector<D3D11_INPUT_ELEMENT_DESC> layout = {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,		0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,			0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR",    0, DXGI_FORMAT_R8G8B8A8_UNORM,		0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		// 頂点入力レイアウト作成
+		if (FAILED(KdDirect3D::Instance().WorkDev()->CreateInputLayout(
+			&layout[0],			// 入力エレメント先頭アドレス
+			layout.size(),		// 入力エレメント数
+			&compiledBuffer[0],				// 頂点バッファのバイナリデータ
+			sizeof(compiledBuffer),			// 上記のバッファサイズ
+			&m_outlineInputLayout))			// 
+			) {
+			assert(0 && "CreateInputLayout失敗");
+			Release();
+			return false;
+		}
+	}
+
+	//-------------------------------------
 	// ピクセルシェーダ
 	//-------------------------------------
 	{
@@ -619,6 +729,21 @@ bool KdHD2DShader::Init()
 			return false;
 		}
 	}
+
+	//-------------------------------------
+	// 輪郭用　ピクセルシェーダ
+	//-------------------------------------
+	{
+		// コンパイル済みのシェーダーヘッダーファイルをインクルード
+#include "KdHD2DShader_PS_Outline.shaderInc"
+
+		if (FAILED(KdDirect3D::Instance().WorkDev()->CreatePixelShader(compiledBuffer, sizeof(compiledBuffer), nullptr, &m_outlinePS))) {
+			assert(0 && "ピクセルシェーダー作成失敗");
+			Release();
+			return false;
+		}
+	}
+
 	//-------------------------------------
 	// 定数バッファ作成
 	//-------------------------------------
@@ -666,6 +791,11 @@ void KdHD2DShader::Release()
 	KdSafeRelease(m_PS_Lit);
 	KdSafeRelease(m_PS_GenDepthFromLight);
 	KdSafeRelease(m_PS_UnLit);
+
+	// 輪郭
+	KdSafeRelease(m_outlineVS);
+	KdSafeRelease(m_outlinePS);
+	KdSafeRelease(m_outlineInputLayout);
 
 	m_cb0_Obj.Release();
 	m_cb1_Mesh.Release();

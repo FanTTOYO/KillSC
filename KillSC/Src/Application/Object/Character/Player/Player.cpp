@@ -1533,12 +1533,12 @@ void Player::DrawLit_SkinMesh()
 		)return;
 	if (m_hitStopCnt <= 5)
 	{
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld,true);
 	}
 	else
 	{
 		Math::Color color = { 1,0,0,1 };
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, color);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true,color);
 	}
 }
 

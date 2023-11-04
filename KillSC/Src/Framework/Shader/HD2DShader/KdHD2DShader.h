@@ -168,12 +168,16 @@ public:
 	void DrawMesh(const KdMesh* mesh, const Math::Matrix& mWorld, const std::vector<KdMaterial>& materials,
 		const Math::Vector4& col, const Math::Vector3& emissive);
 
+	// １つのメッシュを描画(アウトライン追加)
+	void DrawMesh_OutLine(const KdMesh* mesh, const Math::Matrix& mWorld, const std::vector<KdMaterial>& materials,
+		const Math::Vector4& col, const Math::Vector3& emissive);
+
 	// モデルデータ描画：アニメーションに非対応
 	void DrawModel(const KdModelData& rModel, const Math::Matrix& mWorld = Math::Matrix::Identity, 
 		const Math::Color& colRate = kWhiteColor, const Math::Vector3& emissive = Math::Vector3::Zero);
 
 	// モデルワーク描画：アニメーションに対応
-	void DrawModel(KdModelWork& rModel, const Math::Matrix& mWorld = Math::Matrix::Identity,
+	void DrawModel(KdModelWork& rModel,const Math::Matrix& mWorld = Math::Matrix::Identity, const bool enableOutLine = false,
 		const Math::Color& colRate = kWhiteColor, const Math::Vector3& emissive = Math::Vector3::Zero);
 
 	// 任意の頂点群からなるポリゴン描画
@@ -211,6 +215,9 @@ private:
 	// 定数バッファを初期状態に戻す
 	void ResetCBObject();
 
+	// 輪郭描画としてデバイスへセット
+	void SetToDevice_Outline();
+
 	// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 	// Lit：陰影をつけるオブジェクトの描画用（不透明な物体やキャラクタの板ポリなど
 	// 平行光・点光源などの影響を受け角度によって色を変化させるオブジェクトを描画するシェーダー
@@ -238,6 +245,11 @@ private:
 	ID3D11PixelShader* m_PS_Lit = nullptr;					// 陰影あり
 	ID3D11PixelShader* m_PS_UnLit = nullptr;				// 陰影なし
 	ID3D11PixelShader* m_PS_GenDepthFromLight = nullptr;	// 光からの深度
+
+	// 輪郭描画用シェーダー
+	ID3D11VertexShader* m_outlineVS = nullptr;			// (輪郭用)頂点シェーダー
+	ID3D11PixelShader* m_outlinePS = nullptr;			// (輪郭用)ピクセルシェーダー
+	ID3D11InputLayout* m_outlineInputLayout = nullptr;	// (輪郭用)頂点入力レイアウト
 
 	// テクスチャ
 	std::shared_ptr<KdTexture>	m_dissolveTex = nullptr;	// ディゾルブで使用するデフォルトテクスチャ
