@@ -1579,134 +1579,210 @@ void Ui::SelectUpdate()
 		}
 
 		Math::Vector3 GamePos;
-		GamePos.x = m_oneEnemyTotalPos.x + (float)(pwi->rcWindow.left);
-		GamePos.y = m_oneEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		GamePos.z = m_oneEnemyTotalPos.z;
+		GamePos.x = m_battleCharaPos.x + (float)(pwi->rcWindow.left);
+		GamePos.y = m_battleCharaPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		GamePos.z = m_battleCharaPos.z;
 
 		Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
+		if (Dis.Length() <= 62.5f)
 		{
-			m_oneEnemyScale = 1.1f;
+			m_battleCharaScale = 1.1f;
 
 			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
-				if (!m_addFadeAlpha)
+				if (!m_addFadeAlpha && !m_bBattleSelect)
 				{
-					m_bOneEnemyTotal = true;
-					m_bGame = true;
-					m_addFadeAlpha = true;
+					m_bBattleChara = !m_bBattleChara;
+
+					if (m_bChallengeChara)
+					{
+						m_bChallengeChara = false;
+					}
+
+					m_bBattleSelect = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
 				}
+			}
+			else
+			{
+				m_bBattleSelect = false;
 			}
 
 		}
 		else
 		{
-			m_oneEnemyScale = 1.0f;
+			m_battleCharaScale = 1.0f;
 		}
 
-		GamePos.x = m_twoEnemyTotalPos.x + (float)(pwi->rcWindow.left);
-		GamePos.y = m_twoEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		GamePos.z = m_twoEnemyTotalPos.z;
-
-		Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
+		if (m_bBattleChara)
 		{
-			m_twoEnemyScale = 1.1f;
+			GamePos.x = m_oneEnemyTotalPos.x + (float)(pwi->rcWindow.left);
+			GamePos.y = m_oneEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
+			GamePos.z = m_oneEnemyTotalPos.z;
 
-			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
+			if (Dis.Length() <= 30)
 			{
-				if (!m_addFadeAlpha)
+				m_oneEnemyScale = 1.1f;
+
+				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
-					m_bTwoEnemyTotal = true;
-					m_bGame = true;
-					m_addFadeAlpha = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					if (!m_addFadeAlpha)
+					{
+						m_bOneEnemyTotal = true;
+						m_bGame = true;
+						m_addFadeAlpha = true;
+						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					}
 				}
+
+			}
+			else
+			{
+				m_oneEnemyScale = 1.0f;
 			}
 
-		}
-		else
-		{
-			m_twoEnemyScale = 1.0f;
-		}
+			GamePos.x = m_twoEnemyTotalPos.x + (float)(pwi->rcWindow.left);
+			GamePos.y = m_twoEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
+			GamePos.z = m_twoEnemyTotalPos.z;
 
-		GamePos.x = m_threeEnemyTotalPos.x + (float)(pwi->rcWindow.left);
-		GamePos.y = m_threeEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		GamePos.z = m_threeEnemyTotalPos.z;
-
-		Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
-		{
-			m_threeEnemyScale = 1.1f;
-
-			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
+			if (Dis.Length() <= 30)
 			{
-				if (!m_addFadeAlpha)
+				m_twoEnemyScale = 1.1f;
+
+				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
-					m_bThreeEnemyTotal = true;
-					m_bGame = true;
-					m_addFadeAlpha = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					if (!m_addFadeAlpha)
+					{
+						m_bTwoEnemyTotal = true;
+						m_bGame = true;
+						m_addFadeAlpha = true;
+						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					}
 				}
+
+			}
+			else
+			{
+				m_twoEnemyScale = 1.0f;
 			}
 
-		}
-		else
-		{
-			m_threeEnemyScale = 1.0f;
+			GamePos.x = m_threeEnemyTotalPos.x + (float)(pwi->rcWindow.left);
+			GamePos.y = m_threeEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
+			GamePos.z = m_threeEnemyTotalPos.z;
+
+			Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
+			if (Dis.Length() <= 30)
+			{
+				m_threeEnemyScale = 1.1f;
+
+				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+				{
+					if (!m_addFadeAlpha)
+					{
+						m_bThreeEnemyTotal = true;
+						m_bGame = true;
+						m_addFadeAlpha = true;
+						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					}
+				}
+
+			}
+			else
+			{
+				m_threeEnemyScale = 1.0f;
+			}
 		}
 
 		Math::Vector3 ChallengePos;
-		ChallengePos.x = m_chalenge50Pos.x + (float)(pwi->rcWindow.left);
-		ChallengePos.y = m_chalenge50Pos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ChallengePos.z = m_chalenge50Pos.z;
+		ChallengePos.x = m_challengeCharaPos.x + (float)(pwi->rcWindow.left);
+		ChallengePos.y = m_challengeCharaPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		ChallengePos.z = m_challengeCharaPos.z;
 
 		Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
+		if (Dis.Length() <= 62.5f)
 		{
-			m_chalenge50Scale = 1.1f;
+			m_challengeCharaScale = 1.1f;
 
 			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
-				if (!m_addFadeAlpha)
+				if (!m_addFadeAlpha && !m_bChallengeSelect)
 				{
-					m_bChalenge50 = true;
-					m_addFadeAlpha = true;
+					m_bChallengeChara = !m_bChallengeChara;
+
+					if (m_bBattleChara)
+					{
+						m_bBattleChara = false;
+					}
+
+					m_bChallengeSelect = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
 				}
+			}
+			else
+			{
+				m_bChallengeSelect = false;
 			}
 
 		}
 		else
 		{
-			m_chalenge50Scale = 1.0f;
+			m_challengeCharaScale = 1.0f;
 		}
 
-		ChallengePos;
-		ChallengePos.x = m_chalenge100Pos.x + (float)(pwi->rcWindow.left);
-		ChallengePos.y = m_chalenge100Pos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ChallengePos.z = m_chalenge100Pos.z;
-
-		Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
+		if (m_bChallengeChara)
 		{
-			m_chalenge100Scale = 1.1f;
+			ChallengePos.x = m_chalenge50Pos.x + (float)(pwi->rcWindow.left);
+			ChallengePos.y = m_chalenge50Pos.y /*+ (float)(pwi->rcWindow.top)*/;
+			ChallengePos.z = m_chalenge50Pos.z;
 
-			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+			Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
+			if (Dis.Length() <= 30)
 			{
-				if (!m_addFadeAlpha)
+				m_chalenge50Scale = 1.1f;
+
+				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
-					m_bChalenge100 = true;
-					m_addFadeAlpha = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					if (!m_addFadeAlpha)
+					{
+						m_bChalenge50 = true;
+						m_addFadeAlpha = true;
+						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					}
 				}
+
+			}
+			else
+			{
+				m_chalenge50Scale = 1.0f;
 			}
 
-		}
-		else
-		{
-			m_chalenge100Scale = 1.0f;
+			ChallengePos;
+			ChallengePos.x = m_chalenge100Pos.x + (float)(pwi->rcWindow.left);
+			ChallengePos.y = m_chalenge100Pos.y /*+ (float)(pwi->rcWindow.top)*/;
+			ChallengePos.z = m_chalenge100Pos.z;
+
+			Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
+			if (Dis.Length() <= 30)
+			{
+				m_chalenge100Scale = 1.1f;
+
+				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+				{
+					if (!m_addFadeAlpha)
+					{
+						m_bChalenge100 = true;
+						m_addFadeAlpha = true;
+						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					}
+				}
+
+			}
+			else
+			{
+				m_chalenge100Scale = 1.0f;
+			}
 		}
 
 		Math::Vector3 TrainingPos;
@@ -3345,49 +3421,66 @@ void Ui::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectBackTex, 0, 0, 1280, 720);
 
-		mat = Math::Matrix::CreateScale(m_gameScale) * Math::Matrix::CreateTranslation(m_gamePos);
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_gameTex, 0, 0, 420, 580);
+		if (m_bBattleChara)
+		{
+			mat = Math::Matrix::CreateTranslation(m_gamePos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_gameTex, 0, 0, 507, 700);
 
-		mat = Math::Matrix::CreateScale(m_oneEnemyScale) * Math::Matrix::CreateTranslation(m_oneEnemyTotalPos);
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_oneEnemyTotalTex, 0, 0, 210, 80);
 
-		mat = Math::Matrix::CreateScale(m_twoEnemyScale) * Math::Matrix::CreateTranslation(m_twoEnemyTotalPos);
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_twoEnemyTotalTex, 0, 0, 210, 80);
+			mat = Math::Matrix::CreateScale(m_oneEnemyScale) * Math::Matrix::CreateTranslation(m_oneEnemyTotalPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_oneEnemyTotalTex, 0, 0, 210, 80);
 
-		mat = Math::Matrix::CreateScale(m_threeEnemyScale) * Math::Matrix::CreateTranslation(m_threeEnemyTotalPos);
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_threeEnemyTotalTex, 0, 0, 210, 80);
+			mat = Math::Matrix::CreateScale(m_twoEnemyScale) * Math::Matrix::CreateTranslation(m_twoEnemyTotalPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_twoEnemyTotalTex, 0, 0, 210, 80);
 
-		mat = Math::Matrix::CreateScale(m_BattlehelpMkScale) * Math::Matrix::CreateTranslation(m_BattlehelpMkPos);
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_helpMkTex, 0, 0, 50, 50);
+			mat = Math::Matrix::CreateScale(m_threeEnemyScale) * Math::Matrix::CreateTranslation(m_threeEnemyTotalPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_threeEnemyTotalTex, 0, 0, 210, 80);
 
-		mat = Math::Matrix::CreateTranslation(m_challengePos);
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_challengeTex, 0, 0, 420, 580);
+			mat = Math::Matrix::CreateScale(m_BattlehelpMkScale) * Math::Matrix::CreateTranslation(m_BattlehelpMkPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_helpMkTex, 0, 0, 50, 50);
+		}
 
-		mat = Math::Matrix::CreateScale(m_chalenge50Scale) * Math::Matrix::CreateTranslation(m_chalenge50Pos);
+		mat = Math::Matrix::CreateScale(m_battleCharaScale) * Math::Matrix::CreateTranslation(m_battleCharaPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_chalenge50Tex, 0, 0, 210, 80);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_battleCharaTex, 0, 0, 520, 125);
 
-		mat = Math::Matrix::CreateScale(m_chalenge100Scale) * Math::Matrix::CreateTranslation(m_chalenge100Pos);
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_chalenge100Tex, 0, 0, 210, 80);
+		if (m_bChallengeChara)
+		{
+			mat = Math::Matrix::CreateTranslation(m_challengePos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_challengeTex, 0, 0, 507, 700);
 
-		mat = Math::Matrix::CreateScale(m_chalengehelpMkScale) * Math::Matrix::CreateTranslation(m_chalengehelpMkPos);
+
+			mat = Math::Matrix::CreateScale(m_chalenge50Scale) * Math::Matrix::CreateTranslation(m_chalenge50Pos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_chalenge50Tex, 0, 0, 210, 80);
+
+			mat = Math::Matrix::CreateScale(m_chalenge100Scale) * Math::Matrix::CreateTranslation(m_chalenge100Pos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_chalenge100Tex, 0, 0, 210, 80);
+
+
+			mat = Math::Matrix::CreateScale(m_chalengehelpMkScale) * Math::Matrix::CreateTranslation(m_chalengehelpMkPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_helpMkTex, 0, 0, 50, 50);
+		}
+
+		mat = Math::Matrix::CreateScale(m_challengeCharaScale) * Math::Matrix::CreateTranslation(m_challengeCharaPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_helpMkTex, 0, 0, 50, 50);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_challengeCharaTex, 0, 0, 520, 125);
 
 		mat = Math::Matrix::CreateScale(m_tutorialScale) * Math::Matrix::CreateTranslation(m_tutorialPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_tutorialTex, 0, 0, 150, 265);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_tutorialTex, 0, 0, 235, 265);
 
 		mat = Math::Matrix::CreateScale(m_trainingScale) * Math::Matrix::CreateTranslation(m_trainingPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_trainingTex, 0, 0, 150, 265);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_trainingTex, 0, 0, 235, 265);
 
 		mat = Math::Matrix::CreateScale(m_titleScale) * Math::Matrix::CreateTranslation(m_titlePos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -3414,7 +3507,7 @@ void Ui::DrawSprite()
 		else if (m_bChalengehelp)
 		{
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(Math::Matrix::Identity);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_chalengebattlehelpTex, 0, 0, 880, 520);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_chalengehelpTex, 0, 0, 880, 520);
 
 			mat = Math::Matrix::CreateScale(m_backScale) * Math::Matrix::CreateTranslation(m_backPos);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -3523,10 +3616,12 @@ void Ui::Init()
 	m_selectTitleTex.Load("Asset/Textures/Ui/Select/title.png");
 	m_selectExitTex.Load("Asset/Textures/Ui/Select/exit.png");
 	m_gameTex.Load("Asset/Textures/Ui/Select/Battle.png");
+	m_battleCharaTex.Load("Asset/Textures/Ui/Select/BattleChara.png");
 	m_challengeTex.Load("Asset/Textures/Ui/Select/Challenge.png");
+	m_challengeCharaTex.Load("Asset/Textures/Ui/Select/ChallengeChara.png");
 	m_selectBackTex.Load("Asset/Textures/Ui/Select/SelectBack.png");
-	m_trainingTex.Load("Asset/Textures/Ui/Select/Training.png");
-	m_tutorialTex.Load("Asset/Textures/Ui/Select/Tutorial.png");
+	m_trainingTex.Load("Asset/Textures/Ui/Select/Training2.png");
+	m_tutorialTex.Load("Asset/Textures/Ui/Select/Tutorial2.png");
 
 
 	m_oneEnemyTotalTex.Load("Asset/Textures/Ui/Select/oneEnemy.png");
@@ -3555,6 +3650,9 @@ void Ui::Init()
 	m_chalenge50Tex.Load("Asset/Textures/Ui/Select/Challenge50.png");
 	m_chalenge100Tex.Load("Asset/Textures/Ui/Select/Challenge100.png");
 
+	m_bBattleSelect = false;
+	m_bChallengeSelect = false;
+
 	m_fadeAlpha = 1.0f;
 	m_addFadeAlpha = false;
 	m_bFirstInResult = true;
@@ -3572,24 +3670,27 @@ void Ui::Init()
 	m_exitScale   = 1.0f;
 
 	m_optionPos = { 550,-125,0 };
-	m_titlePos =  { 550,-180,0 };
-	m_exitPos =   { 550,-250,0 };
+	m_titlePos =  { -555,-310,0 };
+	m_exitPos =   { -420,-310,0 };
 
-	m_gamePos            = { -195,  -20, 0};
-	m_oneEnemyTotalPos   = { -195,  -80, 0};
-	m_twoEnemyTotalPos   = { -195, -170, 0};
-	m_threeEnemyTotalPos = { -195, -260, 0};
-	m_BattlehelpMkPos    = {  -35,  235, 0};
+	m_gamePos                   = {  265,    0, 0 };
+	m_battleCharaPos            = { -350,  225, 0 };
+	m_oneEnemyTotalPos          = {  265,  -80, 0 };
+	m_twoEnemyTotalPos          = {  265, -170, 0 };
+	m_threeEnemyTotalPos        = {  265, -260, 0 };
+	m_BattlehelpMkPos           = {  485,  325, 0 };
+						        
+	m_challengePos              = {  265,    0, 0 };
+	m_challengeCharaPos         = { -350,   75, 0 };
+	m_chalenge50Pos             = {  265, -180, 0 };
+	m_chalenge100Pos            = {  265, -270, 0 };
+	m_chalengehelpMkPos         = {  485,  325, 0 };
+	m_tutorialPos				= { -488, -138, 0 };
+	m_trainingPos               = { -205, -138, 0 };
+	m_selectBackPos             = {    0,    0, 0 };
 
-	m_challengePos       = {  265,  -20, 0};
-	m_chalenge50Pos      = {  265, -180, 0 };
-	m_chalenge100Pos     = {  265, -270, 0 };
-	m_chalengehelpMkPos  = {  425, 235, 0};
-	m_tutorialPos        = { -535, 138, 0};
-	m_trainingPos        = { -535,-178, 0};
-	m_selectBackPos      = {    0,   0, 0};
-
-
+	m_battleCharaScale = 1.0f;
+	m_challengeCharaScale = 1.0f;
 	m_chalenge50Scale = 1.0f;
 	m_chalenge100Scale = 1.0f;
 
@@ -3604,6 +3705,10 @@ void Ui::Init()
 	m_bOneEnemyTotal = false;
 	m_bTwoEnemyTotal = false;
 	m_bThreeEnemyTotal = false;
+	m_bBattleSelect = false;
+	m_bChallengeSelect = false;
+	m_bBattleChara = false;
+	m_bChallengeChara = false;
 
 
 	m_countOneScale = 0.1f;

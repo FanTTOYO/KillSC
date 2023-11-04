@@ -1528,7 +1528,7 @@ void Player::DrawLit_SkinMesh()
 		m_invincibilityTimeCnt <= 50 && m_invincibilityTimeCnt > 40 ||
 		m_invincibilityTimeCnt <= 30 && m_invincibilityTimeCnt > 20 ||
 		m_invincibilityTimeCnt <= 15 && m_invincibilityTimeCnt > 10 ||
-		m_invincibilityTimeCnt <= 5 && m_invincibilityTimeCnt > 3 ||
+		m_invincibilityTimeCnt <= 5  && m_invincibilityTimeCnt >  3 ||
 		m_invincibilityTimeCnt == 1
 		)return;
 	if (m_hitStopCnt <= 5)

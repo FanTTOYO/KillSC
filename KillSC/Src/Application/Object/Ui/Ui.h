@@ -232,10 +232,20 @@ private:
 	float         m_BattlehelpMkScale;
 	bool          m_bBattlehelp;
 
-	KdTexture     m_chalengebattlehelpTex;
+	KdTexture     m_battleCharaTex;
+	Math::Vector3 m_battleCharaPos;
+	float         m_battleCharaScale;
+	bool          m_bBattleChara;
+
+	KdTexture     m_chalengehelpTex;
 	Math::Vector3 m_chalengehelpMkPos;
 	float         m_chalengehelpMkScale;
 	bool          m_bChalengehelp;
+
+	KdTexture     m_challengeCharaTex;
+	Math::Vector3 m_challengeCharaPos;
+	float         m_challengeCharaScale;
+	bool          m_bChallengeChara;
 
 	KdTexture      m_chalenge50Tex;
 	Math::Vector3  m_chalenge50Pos;
@@ -268,4 +278,7 @@ private:
 
 	KdTexture m_winCharaTex;
 	KdTexture m_loseCharaTex;
+
+	bool m_bBattleSelect = false;
+	bool m_bChallengeSelect = false;
 };
