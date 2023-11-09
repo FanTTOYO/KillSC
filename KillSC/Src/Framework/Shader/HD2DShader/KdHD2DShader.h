@@ -29,6 +29,10 @@ public:
 
 		Math::Vector3	DissolveEmissive = { 0.0f, 1.0f, 1.0f };
 		float			_blank2 = 0.0f;
+
+		// 輪郭
+		Math::Vector3   OutLineColor = {1,0,0};
+		float           _blank3 = 0.0f;
 	};
 
 	// 定数バッファ(メッシュ単位更新)
@@ -57,6 +61,14 @@ public:
 	//================================================
 	// 設定・取得
 	//================================================
+
+	// UVタイリング設定
+	void SetOutLineColor(const Math::Vector3& color)
+	{
+		m_cb0_Obj.Work().OutLineColor = color;
+
+		m_dirtyCBObj = true;
+	}
 
 	// UVタイリング設定
 	void SetUVTiling(const Math::Vector2& tiling)

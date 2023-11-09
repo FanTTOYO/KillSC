@@ -85,6 +85,8 @@ void Player::Init()
 
 	m_rocKOnPolygon = std::make_shared<KdSquarePolygon>();
 	m_rocKOnPolygon->SetMaterial("Asset/Textures/Ui/Game/ターゲット N 白.png");
+
+	m_hitColorChangeTimeCnt = 0;
 }
 
 void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_enemy)
@@ -181,6 +183,11 @@ void Player::Update()
 	if (!m_bEwaponDrawPosible)
 	{
 		m_bEwaponDrawPosible = true;
+	}
+
+	if (m_hitColorChangeTimeCnt > 0)
+	{
+		--m_hitColorChangeTimeCnt;
 	}
 
 	m_torion -= m_graduallyTorionDecVal;
@@ -1335,6 +1342,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 
 	m_hitMoveSpd = 0.05f;
+	m_hitColorChangeTimeCnt = 15;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 15.0f;
 	m_attackHit = true;
@@ -1394,6 +1402,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107)
 		{
 			m_hitMoveSpd = 0.65f;
+			cnt++;
 			SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
 			break;
 		}
@@ -1410,6 +1419,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 	m_playerState = blowingAwayHit;
 	m_hitStopCnt = 40;
+	m_hitColorChangeTimeCnt = 15;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 30.0f;
 	m_attackHit = true;
@@ -1442,6 +1452,7 @@ void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 	m_playerState = iaiKiriHit;
 	m_hitStopCnt = 40;
+	m_hitColorChangeTimeCnt = 15;
 	m_hitMoveSpd = 0.0f;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 50.0f;
@@ -1468,8 +1479,22 @@ void Player::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 {
 	m_playerState = cutRaiseHit;
 	m_hitStopCnt = 60;
+	m_hitColorChangeTimeCnt = 15;
 	m_hitMoveSpd = 0.0f;
-	m_gravity -= 0.1f;
+	if (m_gravity == 0)
+	{
+		m_gravity -= 0.1f;
+	}
+	else if (m_gravity <= 0.03f)
+	{
+		m_gravity -= 0.04f;
+	}
+	else
+	{
+		m_gravity = 0;
+		m_gravity = -0.05f;
+	}
+
 	m_endurance -= 15.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
@@ -1477,10 +1502,6 @@ void Player::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 	if (m_endurance <= 0)
 	{
 		m_endurance = 0;
-		SceneManager::Instance().SetBAddOrSubVal(true);
-		SceneManager::Instance().SetPointAddOrSubVal(1000);
-		SceneManager::Instance().SetBPlayerWin();
-		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
 	}
 
 	if (m_graduallyTorionDecVal == 0)
@@ -1531,7 +1552,9 @@ void Player::DrawLit_SkinMesh()
 		m_invincibilityTimeCnt <= 5  && m_invincibilityTimeCnt >  3 ||
 		m_invincibilityTimeCnt == 1
 		)return;
-	if (m_hitStopCnt <= 5)
+
+	KdShaderManager::Instance().m_HD2DShader.SetOutLineColor({ 0,0,1 });
+	if (m_hitColorChangeTimeCnt == 0)
 	{
 		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld,true);
 	}
@@ -2239,6 +2262,10 @@ void Player::NormalMove()
 						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}
+					else if (m_runAnimeCnt == 0)
+					{
+						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+					}
 					m_playerState = run;
 				}
 			}
@@ -2254,6 +2281,10 @@ void Player::NormalMove()
 						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}
+					else if (m_runAnimeCnt == 0)
+					{
+						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+					}
 					m_playerState = run;
 				}
 			}
@@ -2268,6 +2299,10 @@ void Player::NormalMove()
 					{
 						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
+					}
+					else if (m_runAnimeCnt == 0)
+					{
+						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 					}
 					m_playerState = run;
 				}
@@ -2470,12 +2505,13 @@ void Player::ScorpionAttackMove()
 						m_attackMoveSpd = 0.2f;
 						break;
 					case 49:
-						m_attackMoveSpd = 0.2f;
+					case 55:
+						m_attackMoveSpd = 0.25f;
 						break;
 					case 74:
 					case 89:
 					case 107:
-						m_attackMoveSpd = 0.1f;
+						m_attackMoveSpd = 0.15f;
 						break;
 					}
 				}
@@ -2685,7 +2721,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.Normalize();
 							if (KdInputManager::Instance().GetButtonState("forward"))
 							{
-								m_attackMoveSpd = 1.5f;
+								m_attackMoveSpd = 1.0f;
 							}
 							else
 							{
@@ -2748,7 +2784,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.Normalize();
 							if (KdInputManager::Instance().GetButtonState("forward"))
 							{
-								m_attackMoveSpd = 1.5f;
+								m_attackMoveSpd = 1.0f;
 							}
 							else
 							{
@@ -2786,7 +2822,7 @@ void Player::ScorpionActionDecision()
 						m_attackMoveSpd = 0.05f;
 						if (m_playerState & grassHopperDash)
 						{
-							m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+							m_animator->SetAnimation(m_model->GetAnimation("GrassDashLAttack"), false);
 						}
 						else
 						{

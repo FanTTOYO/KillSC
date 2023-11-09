@@ -1453,8 +1453,19 @@ void Ui::SelectUpdate()
 		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
 		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
 		BackPos.z = m_backPos.z;
-		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 40)
+
+		float MouseLeft = mouseX - 2.0f;
+		float MouseRight = mouseX + 2.0f;
+		float MouseTop = mouseY + 2.0f;
+		float MouseBottom = mouseY - 2.0f;
+
+		float BackLeft   = BackPos.x - 91;
+		float BackRight  = BackPos.x + 91;
+		float BackTop    = BackPos.y + 40;
+		float BackBottom = BackPos.y - 40;
+		
+		if(MouseRight > BackLeft && BackRight > MouseLeft &&
+			MouseTop > BackBottom && BackTop > MouseBottom)
 		{
 			m_backScale = 1.0f;
 			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -1490,8 +1501,19 @@ void Ui::SelectUpdate()
 		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
 		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
 		BackPos.z = m_backPos.z;
-		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 40)
+
+		float MouseLeft = mouseX - 2.0f;
+		float MouseRight = mouseX + 2.0f;
+		float MouseTop = mouseY + 2.0f;
+		float MouseBottom = mouseY - 2.0f;
+
+		float BackLeft = BackPos.x - 91;
+		float BackRight = BackPos.x + 91;
+		float BackTop = BackPos.y + 40;
+		float BackBottom = BackPos.y - 40;
+
+		if (MouseRight > BackLeft && BackRight > MouseLeft &&
+			MouseTop > BackBottom && BackTop > MouseBottom)
 		{
 			m_backScale = 1.0f;
 			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -1525,13 +1547,23 @@ void Ui::SelectUpdate()
 		float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
 		float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
 
-		Math::Vector3 artPos;
-		artPos.x = m_tutorialPos.x + (float)(pwi->rcWindow.left);
-		artPos.y = m_tutorialPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		artPos.z = m_tutorialPos.z;
+		Math::Vector3 TutrorialPos;
+		TutrorialPos.x = m_tutorialPos.x + (float)(pwi->rcWindow.left);
+		TutrorialPos.y = m_tutorialPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		TutrorialPos.z = m_tutorialPos.z;
 
-		Dis = artPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 75)
+		float MouseLeft = mouseX - 2.0f;
+		float MouseRight = mouseX + 2.0f;
+		float MouseTop = mouseY + 2.0f;
+		float MouseBottom = mouseY - 2.0f;
+
+		float TutorialLeft = TutrorialPos.x - 117.5f;
+		float TutorialRight = TutrorialPos.x + 117.5f;
+		float TutorialTop = TutrorialPos.y + 132.5f;
+		float TutorialBottom = TutrorialPos.y - 132.5f;
+
+		if (MouseRight > TutorialLeft && TutorialRight > MouseLeft &&
+			MouseTop > TutorialBottom && TutorialTop > MouseBottom)
 		{
 			m_tutorialScale = 1.1f;
 
@@ -1556,8 +1588,13 @@ void Ui::SelectUpdate()
 		ExitPos.y = m_exitPos.y /*+ (float)(pwi->rcWindow.top)*/;
 		ExitPos.z = m_exitPos.z;
 
-		Dis = ExitPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 25)
+		float ExitLeft = ExitPos.x - 50;
+		float ExitRight = ExitPos.x + 50;
+		float ExitTop = ExitPos.y + 25;
+		float ExitBottom = ExitPos.y - 25;
+
+		if (MouseRight > ExitLeft && ExitRight > MouseLeft &&
+			MouseTop > ExitBottom && ExitTop > MouseBottom)
 		{
 			m_exitScale = 1.1f;
 
@@ -1583,8 +1620,13 @@ void Ui::SelectUpdate()
 		GamePos.y = m_battleCharaPos.y /*+ (float)(pwi->rcWindow.top)*/;
 		GamePos.z = m_battleCharaPos.z;
 
-		Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 62.5f)
+		float GameLeft = GamePos.x - 260;
+		float GameRight = GamePos.x + 260;
+		float GameTop = GamePos.y + 65;
+		float GameBottom = GamePos.y - 65;
+
+		if (MouseRight > GameLeft && GameRight > MouseLeft &&
+			MouseTop > GameBottom && GameTop > MouseBottom)
 		{
 			m_battleCharaScale = 1.1f;
 
@@ -1620,8 +1662,13 @@ void Ui::SelectUpdate()
 			GamePos.y = m_oneEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
 			GamePos.z = m_oneEnemyTotalPos.z;
 
-			Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
+			GameLeft = GamePos.x - 105;
+			GameRight = GamePos.x + 105;
+			GameTop = GamePos.y + 40;
+			GameBottom = GamePos.y - 40;
+
+			if (MouseRight > GameLeft && GameRight > MouseLeft &&
+				MouseTop > GameBottom && GameTop > MouseBottom)
 			{
 				m_oneEnemyScale = 1.1f;
 
@@ -1646,8 +1693,13 @@ void Ui::SelectUpdate()
 			GamePos.y = m_twoEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
 			GamePos.z = m_twoEnemyTotalPos.z;
 
-			Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
+			GameLeft = GamePos.x - 105;
+			GameRight = GamePos.x + 105;
+			GameTop = GamePos.y + 40;
+			GameBottom = GamePos.y - 40;
+
+			if (MouseRight > GameLeft && GameRight > MouseLeft &&
+				MouseTop > GameBottom && GameTop > MouseBottom)
 			{
 				m_twoEnemyScale = 1.1f;
 
@@ -1672,8 +1724,13 @@ void Ui::SelectUpdate()
 			GamePos.y = m_threeEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
 			GamePos.z = m_threeEnemyTotalPos.z;
 
-			Dis = GamePos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
+			GameLeft = GamePos.x - 105;
+			GameRight = GamePos.x + 105;
+			GameTop = GamePos.y + 40;
+			GameBottom = GamePos.y - 40;
+
+			if (MouseRight > GameLeft && GameRight > MouseLeft &&
+				MouseTop > GameBottom && GameTop > MouseBottom)
 			{
 				m_threeEnemyScale = 1.1f;
 
@@ -1700,8 +1757,13 @@ void Ui::SelectUpdate()
 		ChallengePos.y = m_challengeCharaPos.y /*+ (float)(pwi->rcWindow.top)*/;
 		ChallengePos.z = m_challengeCharaPos.z;
 
-		Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 62.5f)
+		float ChallengeLeft = ChallengePos.x - 260;
+		float ChallengeRight = ChallengePos.x + 260;
+		float ChallengeTop = ChallengePos.y + 65;
+		float ChallengeBottom = ChallengePos.y - 65;
+
+		if (MouseRight > ChallengeLeft && ChallengeRight > MouseLeft &&
+			MouseTop > ChallengeBottom && ChallengeTop > MouseBottom)
 		{
 			m_challengeCharaScale = 1.1f;
 
@@ -1737,8 +1799,13 @@ void Ui::SelectUpdate()
 			ChallengePos.y = m_chalenge50Pos.y /*+ (float)(pwi->rcWindow.top)*/;
 			ChallengePos.z = m_chalenge50Pos.z;
 
-			Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
+			ChallengeLeft = ChallengePos.x - 105;
+			ChallengeRight = ChallengePos.x + 105;
+			ChallengeTop = ChallengePos.y + 40;
+			ChallengeBottom = ChallengePos.y - 40;
+
+			if (MouseRight > ChallengeLeft && ChallengeRight > MouseLeft &&
+				MouseTop > ChallengeBottom && ChallengeTop > MouseBottom)
 			{
 				m_chalenge50Scale = 1.1f;
 
@@ -1763,8 +1830,13 @@ void Ui::SelectUpdate()
 			ChallengePos.y = m_chalenge100Pos.y /*+ (float)(pwi->rcWindow.top)*/;
 			ChallengePos.z = m_chalenge100Pos.z;
 
-			Dis = ChallengePos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
+			ChallengeLeft = ChallengePos.x - 105;
+			ChallengeRight = ChallengePos.x + 105;
+			ChallengeTop = ChallengePos.y + 40;
+			ChallengeBottom = ChallengePos.y - 40;
+
+			if (MouseRight > ChallengeLeft && ChallengeRight > MouseLeft &&
+				MouseTop > ChallengeBottom && ChallengeTop > MouseBottom)
 			{
 				m_chalenge100Scale = 1.1f;
 
@@ -1790,8 +1862,13 @@ void Ui::SelectUpdate()
 		TrainingPos.y = m_trainingPos.y /*+ (float)(pwi->rcWindow.top)*/;
 		TrainingPos.z = m_trainingPos.z;
 
-		Dis = TrainingPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 75)
+		float TrainingLeft = TrainingPos.x - 117.5f;
+		float TrainingRight = TrainingPos.x + 117.5f;
+		float TrainingTop = TrainingPos.y + 132.5f;
+		float TrainingBottom = TrainingPos.y - 132.5f;
+
+		if (MouseRight > TrainingLeft && TrainingRight > MouseLeft &&
+			MouseTop > TrainingBottom && TrainingTop > MouseBottom)
 		{
 			m_trainingScale = 1.1f;
 
@@ -1818,8 +1895,13 @@ void Ui::SelectUpdate()
 		TitlePos.y = m_titlePos.y /*+ (float)(pwi->rcWindow.top)*/;
 		TitlePos.z = m_titlePos.z;
 
-		Dis = TitlePos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 25)
+		float TitleLeft = TitlePos.x - 50;
+		float TitleRight = TitlePos.x + 50;
+		float TitleTop = TitlePos.y + 25;
+		float TitleBottom = TitlePos.y - 25;
+
+		if (MouseRight > TitleLeft && TitleRight > MouseLeft &&
+			MouseTop > TitleBottom && TitleTop > MouseBottom)
 		{
 			m_titleScale = 1.1f;
 
@@ -1845,7 +1927,8 @@ void Ui::SelectUpdate()
 		BattlehelpMkPos.z = m_BattlehelpMkPos.z;
 
 		Dis = BattlehelpMkPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 25)
+
+		if (Dis.Length() < 25)
 		{
 			m_BattlehelpMkScale = 1.1f;
 
@@ -1869,8 +1952,9 @@ void Ui::SelectUpdate()
 		ChalengehelpMkPos.y = m_chalengehelpMkPos.y /*+ (float)(pwi->rcWindow.top)*/;
 		ChalengehelpMkPos.z = m_chalengehelpMkPos.z;
 
-		Dis = ChalengehelpMkPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 25)
+		Dis = BattlehelpMkPos - Math::Vector3(mouseX, mouseY, 0.0f);
+
+		if (Dis.Length() < 25)
 		{
 			m_chalengehelpMkScale = 1.1f;
 

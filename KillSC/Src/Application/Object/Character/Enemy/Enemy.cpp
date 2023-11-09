@@ -48,6 +48,7 @@ void Enemy::Init()
 	m_leftWeaponNumber = 1;
 
 	m_hitStopCnt = 0;
+	m_hitColorChangeTimeCnt = 0;
 	m_hitMoveSpd = 0.0f;
 	m_gardMoveSpd = 0.0f;
 
@@ -310,6 +311,11 @@ void Enemy::Update()
 		--m_invincibilityTimeCnt;
 	}
 
+	if (m_hitColorChangeTimeCnt > 0)
+	{
+		--m_hitColorChangeTimeCnt;
+	}
+
 	if (!(m_EnemyState & (eHit | eRise)))
 	{
 		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
@@ -521,9 +527,6 @@ void Enemy::Update()
 						break;
 					case WantToMoveState::run:
 						NormalMoveVecDecision();
-						break;
-					case WantToMoveState::disturbance:
-						GrassMoveVecDecision();
 						break;
 					case WantToMoveState::step:
 						if (!(m_EnemyState & eStep))
@@ -835,7 +838,7 @@ void Enemy::Update()
 
 	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::defense))
 	{
-		if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)) || !(m_wantToMoveState & (escape | dashAttack | disturbance | grassDash | avoidance)))
+		if (!(m_EnemyState & (eGrassHopperDash | eGrassHopperDashUp | eStep)) || !(m_wantToMoveState & (escape | dashAttack | grassDash | avoidance)))
 		{
 			sphereInfo.m_sphere.Radius = 0.3f;
 		}
@@ -1008,6 +1011,8 @@ void Enemy::Update()
 		rayInfo.m_dir = (m_target.lock()->GetPos() + Math::Vector3(0,1.2f,0)) - (m_pos + Math::Vector3(0, 1.2f, 0));
 		rayInfo.m_range = rayInfo.m_dir.Length();
 		rayInfo.m_dir.Normalize();
+		/*rayInfo.m_range = 0.5f;
+		rayInfo.m_dir = m_grassHopperDashDir;*/
 		rayInfo.m_type = KdCollider::Type::TypeGround;
 
 		retRayList.clear();
@@ -1030,7 +1035,7 @@ void Enemy::Update()
 			}
 		}
 
-		if (hit && rayInfo.m_range <= 30.0f)
+		if (hit /*&& rayInfo.m_range <= 30.0f*/)
 		{
 			m_bEnemyBetweenPlayer = true;
 			m_enemyBetweenPlayerHitPos = hitPos;
@@ -1038,6 +1043,17 @@ void Enemy::Update()
 		else
 		{
 			m_bEnemyBetweenPlayer = false;
+
+			if (m_EnemyState & (eGrassHopperDashL | eGrassHopperDashR))
+			{
+				m_wantToMoveState = Enemy::WantToMoveState::dashAttack;
+				m_dashSpd = 0.0f;
+				m_grassHopperDashDir = {};
+				m_gravity = 0;
+				m_rGrassHopperPauCnt = 0;
+				m_lGrassHopperPauCnt = 0;
+				GrassMoveVecDecision();
+			}
 		}
 		
 	}
@@ -1309,6 +1325,7 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 
 	m_hitMoveSpd = 0.05f;
+	m_hitColorChangeTimeCnt = 15;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 15.0f;
 	m_attackHit = true;
@@ -1347,7 +1364,7 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 {
 	m_EnemyState = eBlowingAwayHit;
 	m_hitStopCnt = 40;
-
+	m_hitColorChangeTimeCnt = 15;
 	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() >= 107)
 	{
 		m_hitMoveSpd = 0.65f;
@@ -1379,6 +1396,7 @@ void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 {
 	m_EnemyState = eIaiKiriHit;
 	m_hitStopCnt = 40;
+	m_hitColorChangeTimeCnt = 15;
 	m_hitMoveSpd = 0.0f;
 	m_invincibilityTimeCnt = 100;
 	m_knockBackVec = a_KnocBackvec;
@@ -1401,9 +1419,25 @@ void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 {
 	m_EnemyState = eCutRaiseHit;
 	m_hitStopCnt = 60;
+	m_hitColorChangeTimeCnt = 15;
 	m_hitMoveSpd = 0.0f;
-	m_gravity -= 0.1f;
+
+	if (m_gravity == 0)
+	{
+		m_gravity -= 0.1f;
+	}
+	else if(m_gravity <= 0.03f)
+	{
+		m_gravity -= 0.04f;
+	}
+	else
+	{
+		m_gravity = 0;
+		m_gravity = -0.05f;
+	}
+
 	m_endurance -= 15.0f;
+	m_knockBackVec = a_KnocBackvec;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
 	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
@@ -1487,15 +1521,17 @@ void Enemy::DrawLit_SkinMesh()
 		m_invincibilityTimeCnt <= 5 && m_invincibilityTimeCnt > 3 ||
 		m_invincibilityTimeCnt == 1
 		)return;
-	if (m_hitStopCnt <= 5)
+
+	KdShaderManager::Instance().m_HD2DShader.SetOutLineColor({ 1,0,0 });
+	if (m_hitColorChangeTimeCnt == 0)
 	{
 		Math::Color color = { 1,1,1,1 };
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld,false, color);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld,true, color);
 	}
-	else if (m_hitStopCnt > 5)
+	else
 	{
 		Math::Color color = { 1,0,0,1 };
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, false,color);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true,color);
 	}
 }
 
@@ -1838,33 +1874,6 @@ void Enemy::GrassMoveVecDecision()
 					randNum[4] = 0;
 				}
 				break;
-			case WantToMoveState::disturbance:
-				if (m_grassSuccessionDelayCnt != 0)return;
-				if (m_disturbanceCnt > 0)
-				{
-					--m_disturbanceCnt;
-				}
-
-				if (m_disturbanceCnt == 0)
-				{
-					Brain();
-
-					/*m_enemyAirborneTimetoBeCnt = 0;
-					if (!(m_EnemyState & eFall))
-					{
-						m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
-					}
-
-					m_EnemyState = eFall;
-					m_wantToMoveState = none;*/
-				}
-
-				randNum[0] = 200;
-				randNum[1] = 200;
-				randNum[2] = 200;
-				randNum[3] = 200;
-				randNum[4] = 200;
-				break;
 			case WantToMoveState::grassDash:
 				if (m_grassSuccessionDelayCnt != 0)return;
 				randNum[0] = 450;
@@ -2025,34 +2034,6 @@ void Enemy::GrassMoveVecDecision()
 						randNum[4] = 0;
 					}
 				}
-				break;
-			case WantToMoveState::disturbance:
-				if (m_grassSuccessionDelayCnt != 0)return;
-
-				if (m_disturbanceCnt > 0)
-				{
-					--m_disturbanceCnt;
-				}
-
-				if (m_disturbanceCnt == 0)
-				{
-					Brain();
-
-					/*m_enemyAirborneTimetoBeCnt = 0;
-					if (!(m_EnemyState & eFall))
-					{
-						m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
-					}
-
-					m_EnemyState = eFall;
-					m_wantToMoveState = none;*/
-				}
-
-				randNum[0] = 200;
-				randNum[1] = 200;
-				randNum[2] = 200;
-				randNum[3] = 200;
-				randNum[4] = 200;
 				break;
 			case WantToMoveState::grassDash:
 				if (m_grassSuccessionDelayCnt != 0)return;
@@ -2382,27 +2363,7 @@ void Enemy::GrassMove()
 		m_grassHopperDashDir = {};
 		m_gravity = 0;
 		m_EnemyState = eFall;
-
-		if (m_wantToMoveState & WantToMoveState::disturbance)
-		{
-			if (m_disturbanceCnt == 0)
-			{
-				//Brain();
-
-				/*m_enemyAirborneTimetoBeCnt = 0;
-				if (!(m_EnemyState & eFall))
-				{
-					m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
-				}
-
-				m_EnemyState = eFall;
-				m_wantToMoveState = none;*/
-			}
-		}
-		else
-		{
-			Brain();
-		}
+		Brain();
 	}
 
 
@@ -2414,7 +2375,10 @@ void Enemy::GrassMove()
 	}
 	else if (m_EnemyState & eGrassHopperDashUp)
 	{
-		UpdateRotate(Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(m_mWorldRot.y)));
+		Math::Matrix rotYMat = Math::Matrix::CreateRotationY(m_mWorldRot.y);
+		Math::Vector3 forwardVec = Math::Vector3(0, 0, 1);
+		Math::Vector3 toVec = Math::Vector3::TransformNormal(forwardVec, rotYMat);
+		UpdateRotate(toVec);
 	}
 }
 
@@ -2916,10 +2880,6 @@ void Enemy::StrikerBrain()
 		m_leftWeaponNumber = 1;
 		m_rightWeaponNumber = 1;
 		break;
-	case WantToMoveState::disturbance:
-		m_leftWeaponNumber = 1;
-		m_rightWeaponNumber = 1;
-		break;
 	case WantToMoveState::step:
 		m_leftWeaponNumber = 1;
 		m_rightWeaponNumber = 1;
@@ -3099,10 +3059,6 @@ void Enemy::DefenderBrain()
 	case WantToMoveState::run:
 		m_leftWeaponNumber = 1;
 		m_rightWeaponNumber = 1;
-		break;
-	case WantToMoveState::disturbance:
-		m_leftWeaponNumber = 2;
-		m_rightWeaponNumber = 2;
 		break;
 	case WantToMoveState::step:
 		m_leftWeaponNumber = 1;
@@ -3286,23 +3242,20 @@ void Enemy::SpeedSterBrain()
 		if (src.Length() >= 10.0f)
 		{
 			randNum[0] = 250;
-			randNum[1] = 800;
-			randNum[2] = 50;
+			randNum[1] = 850;
 		}
 		else if (src.Length() >= 5.0f)
 		{
-			randNum[0] = 250;
-			randNum[1] = 250;
-			randNum[2] = 500;
+			randNum[0] = 500;
+			randNum[1] = 500;
 		}
 		else if (src.Length() < 5.0f)
 		{
-			randNum[0] = 200;
-			randNum[1] = 600;
-			randNum[2] = 200;
+			randNum[0] = 300;
+			randNum[1] = 700;
 		}
 
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 2; i++)
 		{
 			rand -= randNum[i];
 			if (rand < 0)
@@ -3314,10 +3267,6 @@ void Enemy::SpeedSterBrain()
 					break;
 				case 1:
 					m_wantToMoveState = Enemy::WantToMoveState::dashAttack;
-					break;
-				case 2:
-					m_wantToMoveState = Enemy::WantToMoveState::disturbance;
-					m_disturbanceCnt = 5;
 					break;
 				}
 				break;
@@ -3347,10 +3296,6 @@ void Enemy::SpeedSterBrain()
 	case WantToMoveState::run:
 		m_leftWeaponNumber = 1;
 		m_rightWeaponNumber = 1;
-		break;
-	case WantToMoveState::disturbance:
-		m_leftWeaponNumber = 2;
-		m_rightWeaponNumber = 2;
 		break;
 	case WantToMoveState::step:
 		m_leftWeaponNumber = 1;
@@ -3572,17 +3517,15 @@ void Enemy::AllRounderBrain()
 		if (src.Length() >= 10.0f)
 		{
 			randNum[0] = 250;
-			randNum[1] = 800;
-			randNum[2] = 50;
+			randNum[1] = 850;
 		}
 		else
 		{
-			randNum[0] = 450;
-			randNum[1] = 450;
-			randNum[2] = 100;
+			randNum[0] = 500;
+			randNum[1] = 500;
 		}
 
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 2; i++)
 		{
 			rand -= randNum[i];
 			if (rand < 0)
@@ -3594,10 +3537,6 @@ void Enemy::AllRounderBrain()
 					break;
 				case 1:
 					m_wantToMoveState = Enemy::WantToMoveState::dashAttack;
-					break;
-				case 2:
-					m_wantToMoveState = Enemy::WantToMoveState::disturbance;
-					m_disturbanceCnt = 5;
 					break;
 				}
 				break;
@@ -3627,10 +3566,6 @@ void Enemy::AllRounderBrain()
 	case WantToMoveState::run:
 		m_leftWeaponNumber = 1;
 		m_rightWeaponNumber = 1;
-		break;
-	case WantToMoveState::disturbance:
-		m_leftWeaponNumber = 2;
-		m_rightWeaponNumber = 2;
 		break;
 	case WantToMoveState::step:
 		m_leftWeaponNumber = 1;
@@ -3758,12 +3693,13 @@ void Enemy::ScorpionAttackMove()
 						m_attackMoveSpd = 0.2f;
 						break;
 					case 49:
+					case 57:
+						m_attackMoveSpd = 0.25f;
+						break;
 					case 74:
 					case 89:
-						m_attackMoveSpd = 0.2f;
-						break;
 					case 107:
-						m_attackMoveSpd = 0.1f;
+						m_attackMoveSpd = 0.15f;
 						break;
 					}
 				}
@@ -3977,7 +3913,7 @@ void Enemy::ScorpionAttackDecision()
 					m_target.lock()->SetDefenseSuc(false);
 					if (m_EnemyState & eGrassHopperDashF | eStep)
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+						m_animator->SetAnimation(m_model->GetAnimation("GrassDashLAttack"), false);
 					}
 					else
 					{

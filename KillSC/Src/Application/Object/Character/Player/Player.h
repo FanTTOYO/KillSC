@@ -212,6 +212,7 @@ private:
 	bool m_bAttackAnimeCnt = false;
 
 	int   m_hitStopCnt = 0;
+	int   m_hitColorChangeTimeCnt = 0;
 	int   m_defenseKnockbackCnt = 0;
 	float m_hitMoveSpd = 0.0f;
 	float m_gardMoveSpd;           // 攻撃を防御した時のノックバック速度

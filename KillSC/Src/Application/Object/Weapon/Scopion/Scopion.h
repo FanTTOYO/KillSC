@@ -24,6 +24,8 @@ public:
 private:
 	void Init()override;
 	void PlayerHitAttackChaeck();
+	Math::Matrix PlayerHitEffectMat(Math::Vector3 a_hitPos,std::weak_ptr<Enemy> a_enemy);
+	Math::Matrix EnemyHitEffectMat(Math::Vector3 a_hitPos,std::weak_ptr<Player> a_player);
 	void PlayerManAttackChaeck();
 	void EnemyHitAttackChaeck();
 	void EnemyManAttackChaeck();

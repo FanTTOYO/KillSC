@@ -209,6 +209,8 @@ void KdHD2DShader::SetToDevice_Outline()
 
 		KdShaderManager::Instance().SetVSConstantBuffer(0, m_cb0_Obj.GetAddress());
 		KdShaderManager::Instance().SetVSConstantBuffer(1, m_cb1_Mesh.GetAddress());
+
+		// ボーン情報をセット(スキンメッシュ対応)
 	}
 
 	// ピクセルシェーダーのパイプライン変更
@@ -217,6 +219,8 @@ void KdHD2DShader::SetToDevice_Outline()
 		KdShaderManager::Instance().SetPSConstantBuffer(0, m_cb0_Obj.GetAddress());
 		KdShaderManager::Instance().SetPSConstantBuffer(2, m_cb2_Material.GetAddress());
 	}
+
+	KdShaderManager::Instance().SetVSConstantBuffer(3, m_cb3_Bone.GetAddress());
 }
 
 //================================================
@@ -376,8 +380,8 @@ void KdHD2DShader::DrawModel(KdModelWork& rModel,const Math::Matrix& mWorld, con
 	//------------------------
 	// 輪郭描画
 	//------------------------
-	//if (enableOutLine)
-	if (0)
+	if (enableOutLine)
+	//if (0)
 	{
 		// 表面をカリング(非表示)にするラスタライザステートをセット
 		KdShaderManager::Instance().ChangeRasterizerState(KdRasterizerState::CullFront);
@@ -674,6 +678,7 @@ bool KdHD2DShader::Init()
 			Release();
 			return false;
 		}
+
 		// １頂点の詳細な情報
 		std::vector<D3D11_INPUT_ELEMENT_DESC> layout = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,		0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -681,6 +686,8 @@ bool KdHD2DShader::Init()
 			{ "COLOR",    0, DXGI_FORMAT_R8G8B8A8_UNORM,		0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 			{ "TANGENT",  0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "SKININDEX",	0, DXGI_FORMAT_R16G16B16A16_UINT,	0, 48,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "SKINWEIGHT",	0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, 56,	D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
 
 		// 頂点入力レイアウト作成

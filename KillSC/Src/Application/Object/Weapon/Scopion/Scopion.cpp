@@ -73,7 +73,7 @@ void Scopion::Update()
 		{
 			PlayerManAttackChaeck();
 		}
-		else if(!(player->GetPlayerState() & Player::PlayerState::rlAttackRush && player->GetAnimationCnt() >= 107))
+		else if (!(player->GetPlayerState() & Player::PlayerState::rlAttackRush && player->GetAnimationCnt() >= 107))
 		{
 			PlayerHitAttackChaeck();
 		}
@@ -590,11 +590,11 @@ void Scopion::PlayerHitAttackChaeck()
 				}
 
 				KdEffekseerManager::GetInstance().
-					Play("Hit.efk", hitPos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+					Play("SwordHit3.efk", hitPos);
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
 				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
-				Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(player->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
+				Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
+				KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
 			}
 			else
 			{
@@ -666,11 +666,11 @@ void Scopion::PlayerHitAttackChaeck()
 					}
 
 					KdEffekseerManager::GetInstance().
-						Play("Hit.efk", hitPos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+						Play("SwordHit3.efk", hitPos);
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
 					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
-					Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(player->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-					KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
+					Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
+					KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
 				}
 				else
 				{
@@ -742,16 +742,220 @@ void Scopion::PlayerHitAttackChaeck()
 						}
 
 						KdEffekseerManager::GetInstance().
-							Play("Hit.efk", hitPos);
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+							Play("SwordHit3.efk", hitPos);
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
-						Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(player->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-						KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
+						Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
 					}
 				}
 			}
 		}
 	}
+}
+
+Math::Matrix Scopion::PlayerHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<Enemy> a_enemy)
+{
+	Math::Matrix mat;
+
+	const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
+	//if (!(player->GetWeaponType() & (scorpion | lScorpion)))return mat;
+	/*const KdModelWork::Node* node = nullptr;
+	node = a_enemy.lock()->GetModel()->FindNode("EffectPoint");
+	Math::Matrix effeMat = node->m_worldTransform * a_enemy.lock()->GetMatrix();
+	effeMat._42 += 0.7f;*/
+
+	Math::Matrix scaleMat = Math::Matrix::CreateScale(0.45f);
+	Math::Matrix RotYMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(player->GetAngleY()));
+
+	if (player->GetPlayerState() & Player::PlayerState::rAttackOne)
+	{
+		if (player->GetPlayerState() & Player::PlayerState::grassHopperDash)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) * 
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+	}
+	else if (player->GetPlayerState() & Player::PlayerState::rAttackTwo)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) * 
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (player->GetPlayerState() & Player::PlayerState::rAttackThree)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
+			  RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (player->GetPlayerState() & Player::PlayerState::lAttackOne)
+	{
+		if (player->GetPlayerState() & Player::PlayerState::grassHopperDash)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) * 
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) * 
+				RotYMat *Math::Matrix::CreateTranslation(a_hitPos);
+		}
+	}
+	else if (player->GetPlayerState() & Player::PlayerState::lAttackTwo)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180)) * 
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (player->GetPlayerState() & Player::PlayerState::lAttackThree)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) * 
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (player->GetPlayerState() & Player::PlayerState::rlAttackOne)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) * 
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (player->GetPlayerState() & Player::PlayerState::rlAttackTwo)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) * 
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) * 
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush)
+	{
+		if (player->GetAnimationCnt() < 21)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) * 
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else if (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180)) * 
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else if (player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(270)) * 
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else if (player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 107)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45)) *  
+				 RotYMat * Math::Matrix::CreateTranslation({a_hitPos.x,a_hitPos.y + 0.35f ,a_hitPos.z });
+		}
+	}
+
+	return mat;
+}
+
+Math::Matrix Scopion::EnemyHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<Player> a_player)
+{
+	Math::Matrix mat;
+
+	const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
+	//if (!(player->GetWeaponType() & (scorpion | lScorpion)))return mat;
+	/*const KdModelWork::Node* node = nullptr;
+	node = a_enemy.lock()->GetModel()->FindNode("EffectPoint");
+	Math::Matrix effeMat = node->m_worldTransform * a_enemy.lock()->GetMatrix();
+	effeMat._42 += 0.7f;*/
+
+	Math::Matrix scaleMat = Math::Matrix::CreateScale(0.45f);
+	Math::Matrix RotYMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY()));
+
+	if (enemy->GetEnemyState() & eRAttackOne)
+	{
+		if (enemy->GetEnemyState() & eGrassHopperDash)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+	}
+	else if (enemy->GetEnemyState() & eRAttackTwo)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) *
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (enemy->GetEnemyState() & eRAttackThree)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (enemy->GetEnemyState() & eLAttackOne)
+	{
+		if (enemy->GetEnemyState() & eGrassHopperDash)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+	}
+	else if (enemy->GetEnemyState() & eLAttackTwo)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180)) *
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (enemy->GetEnemyState() & eLAttackThree)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (enemy->GetEnemyState() & eRlAttackOne)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (enemy->GetEnemyState() & eRlAttackTwo)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) *
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (enemy->GetEnemyState() & eRlAttackThree)
+	{
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+	}
+	else if (enemy->GetEnemyState() & eRlAttackRush)
+	{
+		if (enemy->GetAnimationCnt() < 21)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else if (enemy->GetAnimationCnt() >= 21 && enemy->GetAnimationCnt() < 31)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180)) *
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else if (enemy->GetAnimationCnt() >= 31 && enemy->GetAnimationCnt() < 49)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(270)) *
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+		}
+		else if (enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 107)
+		{
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45)) *
+				RotYMat * Math::Matrix::CreateTranslation({ a_hitPos .x,a_hitPos.y + 0.35f,a_hitPos .z});
+		}
+	}
+
+	return mat;
 }
 
 void Scopion::PlayerManAttackChaeck()
@@ -1300,11 +1504,11 @@ void Scopion::EnemyHitAttackChaeck()
 			}
 
 			KdEffekseerManager::GetInstance().
-				Play("Hit.efk", hitPos);
-			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+				Play("SwordHit3.efk", hitPos);
+			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
 			//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 			Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-			KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
+			KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", EnemyHitEffectMat(hitPos,m_eTarget));
 		}
 		else
 		{
@@ -1376,11 +1580,11 @@ void Scopion::EnemyHitAttackChaeck()
 				}
 
 				KdEffekseerManager::GetInstance().
-					Play("Hit.efk", hitPos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+					Play("SwordHit3.efk", hitPos);
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
 				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 				Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
+				KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", EnemyHitEffectMat(hitPos, m_eTarget));
 			}
 			else
 			{
@@ -1452,11 +1656,11 @@ void Scopion::EnemyHitAttackChaeck()
 					}
 
 					KdEffekseerManager::GetInstance().
-						Play("Hit.efk", hitPos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit.efk"); // これでループしない
+						Play("SwordHit3.efk", hitPos);
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
 					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 					Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-					KdEffekseerManager::GetInstance().SetWorldMatrix("Hit.efk", efcMat);
+					KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", EnemyHitEffectMat(hitPos, m_eTarget));
 				}
 			}
 		}

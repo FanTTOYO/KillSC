@@ -7,5 +7,5 @@
 float4 main(VSOutput In) : SV_Target0
 {
     // ’PF‚Å•Ô‚·
-    return float4(1, 0, 0, 1);
+    return float4(g_outLineColor.r, g_outLineColor.g, g_outLineColor.b, 1);
 }

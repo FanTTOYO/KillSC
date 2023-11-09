@@ -68,10 +68,9 @@ public:
 		defense          = 1 << 3,
 		dashAttack       = 1 << 4,
 		run              = 1 << 5,
-		disturbance      = 1 << 6,
-		step             = 1 << 7,
-		grassDash        = 1 << 8,
-		avoidance        = 1 << 9,
+		step             = 1 << 6,
+		grassDash        = 1 << 7,
+		avoidance        = 1 << 8,
 	};
 
 	enum WantToMoveCategory
@@ -235,6 +234,7 @@ private:
 
 	int m_runAnimeCnt = 0;
 	int   m_hitStopCnt = 0;
+	int   m_hitColorChangeTimeCnt = 0;
 	int   m_defenseKnockbackCnt = 0;
 	float m_hitMoveSpd = 0.0f;
 	float m_gardMoveSpd;           // UŒ‚‚ğ–hŒä‚µ‚½‚ÌƒmƒbƒNƒoƒbƒN‘¬“x
