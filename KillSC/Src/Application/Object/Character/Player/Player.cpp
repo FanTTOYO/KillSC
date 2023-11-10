@@ -1861,6 +1861,13 @@ void Player::GrassMoveVecDecision()
 					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+
+					//KdEffekseerManager::GetInstance().
+					//	Play("GrassUp.efk", { mat._41,mat._42,mat._43 });
+					//KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassUp.efk"); // Ç±ÇÍÇ≈ÉãÅ[ÉvÇµÇ»Ç¢
+					////KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					//efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ mat._41,mat._42,mat._43 });
+					//KdEffekseerManager::GetInstance().SetWorldMatrix("GrassUp.efk", efcMat);
 				}
 			}
 		}

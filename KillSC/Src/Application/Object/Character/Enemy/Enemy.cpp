@@ -1932,11 +1932,11 @@ void Enemy::GrassMoveVecDecision()
 						m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z + 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
 
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					case 1:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, -1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -1955,11 +1955,11 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Forward();
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					case 2:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(1, 0, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -1978,11 +1978,11 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Right();
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					case 3:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(-1, 0, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -2001,11 +2001,11 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Left();
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					case 4:
 						m_grassHopperDashDir = { 0, 1, 0 };
@@ -2024,11 +2024,11 @@ void Enemy::GrassMoveVecDecision()
 						m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					}
 					break;
@@ -2190,11 +2190,11 @@ void Enemy::GrassMoveVecDecision()
 						m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					case 1:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, -1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -2213,11 +2213,11 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Forward();
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					case 2:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(1, 0, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -2236,11 +2236,11 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Right();
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					case 3:
 						m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(-1, 0, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -2259,11 +2259,11 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Left();
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					case 4:
 						m_grassHopperDashDir = { 0, 1, 0 };
@@ -2282,11 +2282,11 @@ void Enemy::GrassMoveVecDecision()
 						m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 
 						KdEffekseerManager::GetInstance().
-							Play("GrassDashBlur.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z });
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+							Play("GrassDashBlurEnemy.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z });
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurEnemy.efk"); // これでループしない
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 						break;
 					}
 					break;
@@ -2329,30 +2329,30 @@ void Enemy::GrassMove()
 		{
 			Math::Vector3 vec = m_mWorld.Backward();
 			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 		}
 		else if (m_EnemyState & eGrassHopperDashB)
 		{
 			Math::Vector3 vec = m_mWorld.Forward();
 			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 		}
 		else if (m_EnemyState & eGrassHopperDashR)
 		{
 			Math::Vector3 vec = m_mWorld.Right();
 			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 		}
 		else if (m_EnemyState & eGrassHopperDashL)
 		{
 			Math::Vector3 vec = m_mWorld.Left();
 			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
-			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 		}
 		else if (m_EnemyState & eGrassHopperDashUp)
 		{
 			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
-			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurEnemy.efk", efcMat);
 		}
 
 		m_bMove = true;
