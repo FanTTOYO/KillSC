@@ -100,9 +100,19 @@ void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_enemy)
 
 void Player::Update()
 {
-	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
-	{
-		if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < -1.0f)
+	/*if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
+	{*/
+		float lowestYPos;
+		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
+		{
+			lowestYPos = -10.0f;
+		}
+		else
+		{
+			lowestYPos = -1.0f;
+		}
+
+		if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < lowestYPos)
 		{
 			m_overStageTime++;
 			if (m_overStageTime >= 90)
@@ -167,7 +177,7 @@ void Player::Update()
 				++m_overStageTime;
 			}
 		}
-	}
+	//}
 
 	if (m_bFirstUpdate)
 	{
@@ -505,7 +515,7 @@ void Player::Update()
 			int cnt = 0;
 			for (auto& enemyList : m_enemyList)
 			{
-				if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107)
+				if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107 || enemyList.lock()->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemyList.lock()->GetEnemyState() & (eGrassHopperDashF))
 				{
 					m_hitMoveSpd *= 0.95f;
 					cnt++;
@@ -1353,24 +1363,27 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 			eRlAttackThree))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 		}
 		else if (enemyList.lock()->GetEnemyState() & (eRAttackTwo | eRlAttackTwo))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 		}
 
 		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() < 8 ||
 			(enemyList.lock()->GetAnimationCnt() >= 21 && enemyList.lock()->GetAnimationCnt() < 41))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+			SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
 		}
 		else if (enemyList.lock()->GetEnemyState() & eRlAttackRush && (enemyList.lock()->GetAnimationCnt() >= 8 && enemyList.lock()->GetAnimationCnt() < 21))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+			SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
 		}
 	}
 
-	SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 	if (m_endurance < 0)
 	{
 		m_endurance = 0;
@@ -1401,10 +1414,16 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	{
 		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107)
 		{
-			m_hitMoveSpd = 0.65f;
+			m_hitMoveSpd = 0.95f;
 			cnt++;
 			SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
 			break;
+		}
+		else if (enemyList.lock()->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemyList.lock()->GetEnemyState() & (eGrassHopperDashF))
+		{
+			m_hitMoveSpd = 0.35f;
+			cnt++;
+			SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
 		}
 		else
 		{
@@ -1666,6 +1685,7 @@ void Player::GrassMoveVecDecision()
 	{
 		if (m_weaponType & grassHopper)
 		{
+			Math::Vector3 vec = m_mWorld.Backward();
 			if (KdInputManager::Instance().GetButtonState("rAttack"))
 			{
 				m_playerState &= ~lAttack;
@@ -1690,6 +1710,13 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", {m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z});
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1)* Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y))* Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
 				{
@@ -1711,6 +1738,14 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					vec = m_mWorld.Left();
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 
 				else if (KdInputManager::Instance().GetButtonState("backward"))
@@ -1733,6 +1768,14 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					vec = m_mWorld.Forward();
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 				else if (KdInputManager::Instance().GetButtonState("right"))
 				{
@@ -1754,6 +1797,14 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					vec = m_mWorld.Right();
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 				else if (KdInputManager::Instance().GetButtonState("jump"))
 				{
@@ -1775,6 +1826,13 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z});
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 				else
 				{
@@ -1796,6 +1854,13 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 			}
 		}
@@ -1805,6 +1870,7 @@ void Player::GrassMoveVecDecision()
 	{
 		if (m_weaponType & lGrassHopper)
 		{
+			Math::Vector3 vec = m_mWorld.Backward();
 			if (KdInputManager::Instance().GetButtonState("lAttack"))
 			{
 				m_playerState &= ~lAttack;
@@ -1830,6 +1896,13 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
 				{
@@ -1851,6 +1924,14 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					vec = m_mWorld.Left();
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 
 				else if (KdInputManager::Instance().GetButtonState("backward"))
@@ -1873,6 +1954,14 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					vec = m_mWorld.Forward();
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 				else if (KdInputManager::Instance().GetButtonState("right"))
 				{
@@ -1894,6 +1983,14 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					vec = m_mWorld.Right();
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 				else if (KdInputManager::Instance().GetButtonState("jump"))
 				{
@@ -1915,6 +2012,13 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 				else
 				{
@@ -1936,6 +2040,13 @@ void Player::GrassMoveVecDecision()
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
+
+					KdEffekseerManager::GetInstance().
+						Play("GrassDashBlur.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlur.efk"); // これでループしない
+					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
 				}
 			}
 		}
@@ -1958,6 +2069,36 @@ void Player::GrassMove()
 
 	if (m_lGrassHopperTime != 0 || m_rGrassHopperTime != 0)
 	{
+		if (m_playerState & grassHopperDashF)
+		{
+			Math::Vector3 vec = m_mWorld.Backward();
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+		}
+		else if (m_playerState & grassHopperDashB)
+		{
+			Math::Vector3 vec = m_mWorld.Forward();
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+		}
+		else if (m_playerState & grassHopperDashR)
+		{
+			Math::Vector3 vec = m_mWorld.Right();
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+		}
+		else if (m_playerState & grassHopperDashL)
+		{
+			Math::Vector3 vec = m_mWorld.Left();
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+		}
+		else if (m_playerState & grassHopperDashUp)
+		{
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
+			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlur.efk", efcMat);
+		}
+		
 		m_bMove = true;
 		if (m_lGrassHopperTime <= 90 && m_lGrassHopperTime > 75 || m_rGrassHopperTime <= 90 && m_rGrassHopperTime > 75)
 		{
@@ -2433,16 +2574,48 @@ void Player::ScorpionAttackMove()
 	}
 	else
 	{
+		if (!(m_playerState & rlAttackRush))
+		{
+			if (m_attackAnimeCnt >= 15)
+			{
+				m_attackMoveSpd *= 0.25f;
+			}
+			else
+			{
+				if (!m_enemy.expired())
+				{
+					Math::Vector3 dis = m_enemy.lock()->GetPos() - m_pos;
+					if (dis.Length() <= 1.15f)
+					{
+						m_attackMoveSpd *= 0.25f;
+					}
+				}
+				else
+				{
+					for (auto& enemyList : m_enemyList)
+					{
+						if (enemyList.expired())continue;
+						Math::Vector3 dis = enemyList.lock()->GetPos() - m_pos;
+						if (dis.Length() <= 1.15f)
+						{
+							m_attackMoveSpd *= 0.25f;
+							break;
+						}
+					}
+				}
+			}
+		}
+
 		m_bMove = true;
 		if (!(m_playerState & (rlAttack | rlAttackRush)))
 		{
-			m_attackMoveSpd *= 0.90f;
+			m_attackMoveSpd *= 0.95f;
 		}
 		else
 		{
 			if (m_playerState & rlAttackOne)
 			{
-				m_attackMoveSpd *= 0.5f;
+				m_attackMoveSpd *= 0.95f;
 				if (m_attackAnimeCnt == 17)
 				{
 					for (auto& enemyList : m_enemyList)
@@ -2455,7 +2628,7 @@ void Player::ScorpionAttackMove()
 			}
 			else if (m_playerState & rlAttackTwo)
 			{
-				m_attackMoveSpd *= 0.5f;
+				m_attackMoveSpd *= 0.95f;
 				if (m_attackAnimeCnt == 16)
 				{
 					for (auto& enemyList : m_enemyList)
@@ -2468,7 +2641,7 @@ void Player::ScorpionAttackMove()
 			}
 			else if (m_playerState & rlAttackThree)
 			{
-				m_attackMoveSpd *= 0.5f;
+				m_attackMoveSpd *= 0.95f;
 				if (m_attackAnimeCnt == 23)
 				{
 					for (auto& enemyList : m_enemyList)
@@ -2481,7 +2654,7 @@ void Player::ScorpionAttackMove()
 			}
 			else if (m_playerState & rlAttackRush)
 			{
-				m_attackMoveSpd *= 0.5f;
+				m_attackMoveSpd *= 0.55f;
 				if (m_attackAnimeCnt == 21 ||
 					m_attackAnimeCnt == 31 ||
 					m_attackAnimeCnt == 49 ||
@@ -2510,8 +2683,9 @@ void Player::ScorpionAttackMove()
 						break;
 					case 74:
 					case 89:
+						m_attackMoveSpd = 0.125f;
 					case 107:
-						m_attackMoveSpd = 0.15f;
+						m_attackMoveSpd = 0.1f;
 						break;
 					}
 				}
@@ -2819,7 +2993,7 @@ void Player::ScorpionActionDecision()
 						m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 						m_attackMoveDir.y = 0;
 						m_attackMoveDir.Normalize();
-						m_attackMoveSpd = 0.05f;
+						m_attackMoveSpd = 0.5f;
 						if (m_playerState & grassHopperDash)
 						{
 							m_animator->SetAnimation(m_model->GetAnimation("GrassDashLAttack"), false);
@@ -2854,7 +3028,7 @@ void Player::ScorpionActionDecision()
 						m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 						m_attackMoveDir.y = 0;
 						m_attackMoveDir.Normalize();
-						m_attackMoveSpd = 0.05f;
+						m_attackMoveSpd = 0.5f;
 						if (m_playerState & (grassHopperDashF | step))
 						{
 							m_animator->SetAnimation(m_model->GetAnimation("GrassDashRAttack"), false);
@@ -2895,7 +3069,7 @@ void Player::ScorpionActionDecision()
 
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
-							m_attackMoveSpd = 0.5f;
+							m_attackMoveSpd = 0.8f;
 							m_animator->SetAnimation(m_model->GetAnimation("RLAttackTwo"), false);
 						}
 						else if (m_playerState & rlAttackTwo)
