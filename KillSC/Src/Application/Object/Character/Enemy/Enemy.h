@@ -142,6 +142,8 @@ public:
 
 	const bool GetBEnemyDeath() { return m_bEnemyDeath; }
 
+	void SetEnemyNumber(const int& a_enemyNumber) { m_enemyNumber = a_enemyNumber; }
+
 private:
 
 	void EnemyKickHitAttackChaeck();
@@ -288,4 +290,6 @@ private:
 
 	bool          m_bEnemyBetweenPlayer;
 	Math::Vector3 m_enemyBetweenPlayerHitPos;
+
+	int m_enemyNumber;
 };

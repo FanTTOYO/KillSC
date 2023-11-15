@@ -561,10 +561,14 @@ void Scopion::PlayerHitAttackChaeck()
 					pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
+				else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
+				{
+					pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+				}
 				else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
 					Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
-					Player::PlayerState::rlAttack) ||
-					(Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 42))
+					Player::PlayerState::rlAttack))
 				{
 					if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
 					{
@@ -572,21 +576,34 @@ void Scopion::PlayerHitAttackChaeck()
 					}
 
 					pTarget.lock()->OnHit(player->GetMatrix().Backward());
+
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
-				else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
+
+				if (!player->GetBRushRp())
 				{
-					pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
-					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 42)
+					{
+						pTarget.lock()->OnHit(player->GetMatrix().Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					}
+					else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush &&
+						(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 57) ||
+						(player->GetAnimationCnt() >= 58 && player->GetAnimationCnt() < 68) ||
+						(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89) ||
+						(player->GetAnimationCnt() >= 89 && player->GetAnimationCnt() < 107))
+					{
+						pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					}
 				}
-				else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush &&
-					(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 57) ||
-					(player->GetAnimationCnt() >= 58 && player->GetAnimationCnt() < 68) ||
-					(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89) ||
-					(player->GetAnimationCnt() >= 89 && player->GetAnimationCnt() < 107))
+				else
 				{
-					pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
-					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 115)
+					{
+						pTarget.lock()->OnHit(player->GetMatrix().Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					}
 				}
 
 				KdEffekseerManager::GetInstance().
@@ -595,7 +612,7 @@ void Scopion::PlayerHitAttackChaeck()
 				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 				Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
 				KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
-			}
+					}
 			else
 			{
 				node = m_model->FindNode("AttackPointTwo");
@@ -637,10 +654,14 @@ void Scopion::PlayerHitAttackChaeck()
 						pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
+					else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
+					{
+						pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					}
 					else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
 						Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
-						Player::PlayerState::rlAttack) ||
-						(Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 42))
+						Player::PlayerState::rlAttack))
 					{
 						if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
 						{
@@ -648,21 +669,34 @@ void Scopion::PlayerHitAttackChaeck()
 						}
 
 						pTarget.lock()->OnHit(player->GetMatrix().Backward());
+
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
-					else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
+
+					if (!player->GetBRushRp())
 					{
-						pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
-						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 42)
+						{
+							pTarget.lock()->OnHit(player->GetMatrix().Backward());
+							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						}
+						else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush &&
+							(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 57) ||
+							(player->GetAnimationCnt() >= 58 && player->GetAnimationCnt() < 68) ||
+							(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89) ||
+							(player->GetAnimationCnt() >= 89 && player->GetAnimationCnt() < 107))
+						{
+							pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
+							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						}
 					}
-					else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush &&
-						(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 57) ||
-						(player->GetAnimationCnt() >= 58 && player->GetAnimationCnt() < 68) ||
-						(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89) ||
-						(player->GetAnimationCnt() >= 89 && player->GetAnimationCnt() < 107))
+					else
 					{
-						pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
-						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 115)
+						{
+							pTarget.lock()->OnHit(player->GetMatrix().Backward());
+							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						}
 					}
 
 					KdEffekseerManager::GetInstance().
@@ -713,10 +747,14 @@ void Scopion::PlayerHitAttackChaeck()
 							pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
 							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 						}
+						else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
+						{
+							pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
+							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						}
 						else if (player->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rAttackTwo |
 							Player::PlayerState::lAttackOne | Player::PlayerState::lAttackTwo |
-							Player::PlayerState::rlAttack) ||
-							(Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 42))
+							Player::PlayerState::rlAttack))
 						{
 							if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
 							{
@@ -724,21 +762,34 @@ void Scopion::PlayerHitAttackChaeck()
 							}
 
 							pTarget.lock()->OnHit(player->GetMatrix().Backward());
+
 							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 						}
-						else if (player->GetPlayerState() & (Player::PlayerState::lAttackThree | Player::PlayerState::rAttackThree))
+
+						if (!player->GetBRushRp())
 						{
-							pTarget.lock()->BlowingAwayAttackOnHit(player->GetMatrix().Backward());
-							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+							if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 42)
+							{
+								pTarget.lock()->OnHit(player->GetMatrix().Backward());
+								KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+							}
+							else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush &&
+								(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 57) ||
+								(player->GetAnimationCnt() >= 58 && player->GetAnimationCnt() < 68) ||
+								(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89) ||
+								(player->GetAnimationCnt() >= 89 && player->GetAnimationCnt() < 107))
+							{
+								pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
+								KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+							}
 						}
-						else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush &&
-							(player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 57) ||
-							(player->GetAnimationCnt() >= 58 && player->GetAnimationCnt() < 68) ||
-							(player->GetAnimationCnt() >= 74 && player->GetAnimationCnt() < 89) ||
-							(player->GetAnimationCnt() >= 89 && player->GetAnimationCnt() < 107))
+						else
 						{
-							pTarget.lock()->CutRaiseOnHit(player->GetMatrix().Backward());
-							KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+							if (player->GetPlayerState() & Player::PlayerState::rlAttackRush && player->GetAnimationCnt() < 115)
+							{
+								pTarget.lock()->OnHit(player->GetMatrix().Backward());
+								KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+							}
 						}
 
 						KdEffekseerManager::GetInstance().
@@ -750,9 +801,9 @@ void Scopion::PlayerHitAttackChaeck()
 					}
 				}
 			}
+				}
+			}
 		}
-	}
-}
 
 Math::Matrix Scopion::PlayerHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<Enemy> a_enemy)
 {
@@ -777,79 +828,90 @@ Math::Matrix Scopion::PlayerHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<E
 		}
 		else
 		{
-			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) * 
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
 				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 		}
 	}
 	else if (player->GetPlayerState() & Player::PlayerState::rAttackTwo)
 	{
-		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) * 
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
 	else if (player->GetPlayerState() & Player::PlayerState::rAttackThree)
 	{
 		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
-			  RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
 	else if (player->GetPlayerState() & Player::PlayerState::lAttackOne)
 	{
 		if (player->GetPlayerState() & Player::PlayerState::grassHopperDash)
 		{
-			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) * 
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
 				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 		}
 		else
 		{
-			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) * 
-				RotYMat *Math::Matrix::CreateTranslation(a_hitPos);
+			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
+				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 		}
 	}
 	else if (player->GetPlayerState() & Player::PlayerState::lAttackTwo)
 	{
-		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180)) * 
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
 	else if (player->GetPlayerState() & Player::PlayerState::lAttackThree)
 	{
-		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) * 
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
 	else if (player->GetPlayerState() & Player::PlayerState::rlAttackOne)
 	{
-		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) * 
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
 	else if (player->GetPlayerState() & Player::PlayerState::rlAttackTwo)
 	{
-		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) * 
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
 	else if (player->GetPlayerState() & Player::PlayerState::rlAttackThree)
 	{
-		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) * 
+		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
 	else if (player->GetPlayerState() & Player::PlayerState::rlAttackRush)
 	{
-		if (player->GetAnimationCnt() < 21)
+		if (!player->GetBRushRp())
 		{
-			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) * 
-				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+			if (player->GetAnimationCnt() < 21)
+			{
+				mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
+					RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+			}
+			else if (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31)
+			{
+				mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180)) *
+					RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+			}
+			else if (player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49)
+			{
+				mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(270)) *
+					RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+			}
+			else if (player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 107)
+			{
+				mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45)) *
+					RotYMat * Math::Matrix::CreateTranslation({ a_hitPos.x,a_hitPos.y + 0.35f ,a_hitPos.z });
+			}
 		}
-		else if (player->GetAnimationCnt() >= 21 && player->GetAnimationCnt() < 31)
+		else
 		{
-			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180)) * 
-				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
-		}
-		else if (player->GetAnimationCnt() >= 31 && player->GetAnimationCnt() < 49)
-		{
-			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(270)) * 
-				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
-		}
-		else if (player->GetAnimationCnt() >= 49 && player->GetAnimationCnt() < 107)
-		{
-			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45)) *  
-				 RotYMat * Math::Matrix::CreateTranslation({a_hitPos.x,a_hitPos.y + 0.35f ,a_hitPos.z });
+			if (player->GetAnimationCnt() < 115)
+			{
+				mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(270)) *
+					RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
+			}
 		}
 	}
 
@@ -951,7 +1013,7 @@ Math::Matrix Scopion::EnemyHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<Pl
 		else if (enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 107)
 		{
 			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(45)) *
-				RotYMat * Math::Matrix::CreateTranslation({ a_hitPos .x,a_hitPos.y + 0.35f,a_hitPos .z});
+				RotYMat * Math::Matrix::CreateTranslation({ a_hitPos.x,a_hitPos.y + 0.35f,a_hitPos.z });
 		}
 	}
 
@@ -1006,7 +1068,7 @@ void Scopion::PlayerManAttackChaeck()
 			{
 				hit = true;
 				hitDir = ret.m_hitDir;
-			}
+		}
 
 			if (hit)
 			{
@@ -1083,7 +1145,7 @@ void Scopion::PlayerManAttackChaeck()
 					{
 						hit = true;
 						hitDir = ret.m_hitDir;
-					}
+				}
 
 					if (hit)
 					{
@@ -1121,7 +1183,7 @@ void Scopion::PlayerManAttackChaeck()
 						{
 							hit = true;
 							hitDir = ret.m_hitDir;
-						}
+					}
 
 						if (hit)
 						{
@@ -1159,7 +1221,7 @@ void Scopion::PlayerManAttackChaeck()
 							{
 								hit = true;
 								hitDir = ret.m_hitDir;
-							}
+						}
 
 							if (hit)
 							{
@@ -1197,7 +1259,7 @@ void Scopion::PlayerManAttackChaeck()
 								{
 									hit = true;
 									hitDir = ret.m_hitDir;
-								}
+							}
 
 								if (hit)
 								{
@@ -1243,10 +1305,10 @@ void Scopion::PlayerManAttackChaeck()
 										KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 									}
 								}
-							}
-						}
-					}
-				}
+			}
+	}
+	}
+}
 			}
 		}
 	}
@@ -1423,9 +1485,9 @@ void Scopion::EnemyHitAttackChaeck()
 						KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
 					}
 				}
-			}
-		}
-	}
+				}
+					}
+				}
 	//}
 
 	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack | eRlAttack | eRlAttackRush) && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0 && !m_eTarget.lock()->GetBPlayerDeath())
@@ -1475,6 +1537,11 @@ void Scopion::EnemyHitAttackChaeck()
 				m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
+			else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
+			{
+				m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
+				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+			}
 			else if (enemy->GetEnemyState() & (eRAttackOne | eRAttackTwo |
 				eLAttackOne | eLAttackTwo |
 				eRlAttack) ||
@@ -1488,11 +1555,7 @@ void Scopion::EnemyHitAttackChaeck()
 				m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
-			else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
-			{
-				m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
-				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-			}
+
 			else if (enemy->GetEnemyState() & eRlAttackRush &&
 				(enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 57) ||
 				(enemy->GetAnimationCnt() >= 58 && enemy->GetAnimationCnt() < 66) ||
@@ -1508,7 +1571,7 @@ void Scopion::EnemyHitAttackChaeck()
 			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
 			//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 			Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-			KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", EnemyHitEffectMat(hitPos,m_eTarget));
+			KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", EnemyHitEffectMat(hitPos, m_eTarget));
 		}
 		else
 		{
@@ -1551,6 +1614,11 @@ void Scopion::EnemyHitAttackChaeck()
 					m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
+				else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
+				{
+					m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
+					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+				}
 				else if (enemy->GetEnemyState() & (eRAttackOne | eRAttackTwo |
 					eLAttackOne | eLAttackTwo |
 					eRlAttack) ||
@@ -1564,11 +1632,7 @@ void Scopion::EnemyHitAttackChaeck()
 					m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
-				else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
-				{
-					m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
-					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-				}
+
 				else if (enemy->GetEnemyState() & eRlAttackRush &&
 					(enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 57) ||
 					(enemy->GetAnimationCnt() >= 58 && enemy->GetAnimationCnt() < 66) ||
@@ -1627,6 +1691,11 @@ void Scopion::EnemyHitAttackChaeck()
 						m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
+					else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
+					{
+						m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
+						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					}
 					else if (enemy->GetEnemyState() & (eRAttackOne | eRAttackTwo |
 						eLAttackOne | eLAttackTwo |
 						eRlAttack) ||
@@ -1640,11 +1709,7 @@ void Scopion::EnemyHitAttackChaeck()
 						m_eTarget.lock()->OnHit(enemy->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
-					else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
-					{
-						m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
-						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
-					}
+
 					else if (enemy->GetEnemyState() & eRlAttackRush &&
 						(enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 57) ||
 						(enemy->GetAnimationCnt() >= 58 && enemy->GetAnimationCnt() < 66) ||
@@ -1666,7 +1731,7 @@ void Scopion::EnemyHitAttackChaeck()
 		}
 		//}
 	}
-}
+			}
 
 void Scopion::EnemyManAttackChaeck()
 {
@@ -2088,7 +2153,7 @@ void Scopion::EnemyManAttackChaeck()
 		{
 			hit = true;
 			hitDir = ret.m_hitDir;
-		}
+	}
 
 		if (hit)
 		{
@@ -2126,7 +2191,7 @@ void Scopion::EnemyManAttackChaeck()
 			{
 				hit = true;
 				hitDir = ret.m_hitDir;
-			}
+		}
 
 			if (hit)
 			{
@@ -2164,7 +2229,7 @@ void Scopion::EnemyManAttackChaeck()
 				{
 					hit = true;
 					hitDir = ret.m_hitDir;
-				}
+			}
 
 				if (hit)
 				{
@@ -2202,7 +2267,7 @@ void Scopion::EnemyManAttackChaeck()
 					{
 						hit = true;
 						hitDir = ret.m_hitDir;
-					}
+				}
 
 					if (hit)
 					{
@@ -2240,7 +2305,7 @@ void Scopion::EnemyManAttackChaeck()
 						{
 							hit = true;
 							hitDir = ret.m_hitDir;
-						}
+					}
 
 						if (hit)
 						{
@@ -2278,7 +2343,7 @@ void Scopion::EnemyManAttackChaeck()
 							{
 								hit = true;
 								hitDir = ret.m_hitDir;
-							}
+						}
 
 							if (hit)
 							{
@@ -2324,11 +2389,11 @@ void Scopion::EnemyManAttackChaeck()
 									KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 								}
 							}
-						}
-					}
+}
 				}
 			}
 		}
-		//}
 	}
+		//}
+}
 }

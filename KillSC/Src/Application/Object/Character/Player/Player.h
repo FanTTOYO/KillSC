@@ -126,9 +126,12 @@ public:
 
 	const float GetAngleY() { return m_mWorldRot.y;}
 
+	const bool GetBRushRp() {return m_bRushRp;}
+
 private:
 
 	void PlayerKickHitAttackChaeck();
+	void PlayerPanchiHitAttackChaeck();
 	void UpdateRotate(Math::Vector3& a_srcMoveVec);
 	void GrassMoveVecDecision();
 	void ScorpionActionDecision();
@@ -238,8 +241,11 @@ private:
 	int m_overStageTime;
 
 	bool m_bPlayerDeath;
+	bool m_bPlayerLose;
 
 	std::shared_ptr<KdSquarePolygon> m_rocKOnPolygon;
 
 	Math::Matrix m_rockOnPolyMat;
+
+	bool m_bRushRp;
 };

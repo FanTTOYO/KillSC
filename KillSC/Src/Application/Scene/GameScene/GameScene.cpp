@@ -210,6 +210,7 @@ void GameScene::Init()
 		player->AddEnemy(enemy);
 		ui->AddEnemy(enemy);
 		enemy->Init();
+		enemy->SetEnemyNumber(i + 1);
 		switch (total)
 		{
 		case 1:
