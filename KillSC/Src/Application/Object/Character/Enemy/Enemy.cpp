@@ -1380,7 +1380,15 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	else
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-		m_hitMoveSpd = 0.395f;
+		if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() < 93)
+		{
+			m_hitMoveSpd = 0.395f;
+		}
+		else
+		{
+			m_hitMoveSpd = 0.275f;
+		}
+
 		SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
 	}
 
@@ -1403,6 +1411,8 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	{
 		m_hitMoveSpd = 0.95f;
 		SceneManager::Instance().SetUpdateStopCnt(25); // これでアップデートを一時止める
+		//SceneManager::Instance().SetUpdateStopCnt(10);   // 画面を揺らす時のHtiストップフレーム数
+		//SceneManager::Instance().SetScreenVibFrames(15); // 画面を揺らすフレーム数
 	}
 	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::lAttackOne) && m_target.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDashF))
 	{

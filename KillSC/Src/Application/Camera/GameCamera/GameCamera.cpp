@@ -1,6 +1,7 @@
 #include "GameCamera.h"
 #include "../../Object/Character/Player/Player.h"
 #include "../../Object/Character/Enemy/Enemy.h"
+#include "../../Scene/SceneManager.h"
 
 void GameCamera::Init()
 {
@@ -203,6 +204,64 @@ void GameCamera::Update()
 				m_LocalPos = Math::Matrix::CreateTranslation(0.0, CAMERAY - 0.1f, CAMERAZ - m_cameracChasePower);
 			}
 		}
+		else if (SceneManager::Instance().GetScreenVibFrames() > 0 && SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			int PMVal = 0;
+			if (SceneManager::Instance().GetScreenVibFrames() <= 30 && SceneManager::Instance().GetScreenVibFrames() > 28 || 
+				SceneManager::Instance().GetScreenVibFrames() <= 26 && SceneManager::Instance().GetScreenVibFrames() > 24 || 
+				SceneManager::Instance().GetScreenVibFrames() <= 22 && SceneManager::Instance().GetScreenVibFrames() > 20 || 
+				SceneManager::Instance().GetScreenVibFrames() <= 18 && SceneManager::Instance().GetScreenVibFrames() > 16)
+			{
+				if (SceneManager::Instance().GetScreenVibFrames() == 30 ||
+					SceneManager::Instance().GetScreenVibFrames() == 26 ||
+					SceneManager::Instance().GetScreenVibFrames() == 22 ||
+					SceneManager::Instance().GetScreenVibFrames() == 18 )
+				{
+					PMVal = (rand() % 2) * 2 - 1;
+				}
+				m_LocalPos = Math::Matrix::CreateTranslation(0.025f * PMVal, CAMERAY + 0.025f * PMVal, CAMERAZ - m_cameracChasePower);
+			}
+			else if (SceneManager::Instance().GetScreenVibFrames() <= 28 && SceneManager::Instance().GetScreenVibFrames() > 26 ||
+				     SceneManager::Instance().GetScreenVibFrames() <= 24 && SceneManager::Instance().GetScreenVibFrames() > 22 ||
+				     SceneManager::Instance().GetScreenVibFrames() <= 20 && SceneManager::Instance().GetScreenVibFrames() > 18 ||
+				     SceneManager::Instance().GetScreenVibFrames() <= 16 && SceneManager::Instance().GetScreenVibFrames() > 15)
+			{
+				if (SceneManager::Instance().GetScreenVibFrames() == 28 ||
+					SceneManager::Instance().GetScreenVibFrames() == 24 ||
+					SceneManager::Instance().GetScreenVibFrames() == 20 ||
+					SceneManager::Instance().GetScreenVibFrames() == 16)
+				{
+					PMVal = (rand() % 2) * 2 - 1;
+				}
+				m_LocalPos = Math::Matrix::CreateTranslation(0.025f * PMVal, CAMERAY + 0.025f * PMVal, CAMERAZ - m_cameracChasePower);
+			}
+			else if (SceneManager::Instance().GetScreenVibFrames() <= 15 && SceneManager::Instance().GetScreenVibFrames() > 12 ||
+				     SceneManager::Instance().GetScreenVibFrames() <=  9 && SceneManager::Instance().GetScreenVibFrames() >  6 ||
+				     SceneManager::Instance().GetScreenVibFrames() <=  3 && SceneManager::Instance().GetScreenVibFrames() >  0
+				    )
+			{
+				if (SceneManager::Instance().GetScreenVibFrames() == 15 ||
+					SceneManager::Instance().GetScreenVibFrames() ==  9 ||
+					SceneManager::Instance().GetScreenVibFrames() ==  3
+				   )
+				{
+					PMVal = (rand() % 2) * 2 - 1;
+				}
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0125f * PMVal, CAMERAY + 0.0125f * PMVal, CAMERAZ - m_cameracChasePower);
+			}
+			else if (SceneManager::Instance().GetScreenVibFrames() <= 12 && SceneManager::Instance().GetScreenVibFrames() > 9 ||
+				     SceneManager::Instance().GetScreenVibFrames() <=  6 && SceneManager::Instance().GetScreenVibFrames() > 3
+				    )
+			{
+				if (SceneManager::Instance().GetScreenVibFrames() == 12 ||
+					SceneManager::Instance().GetScreenVibFrames() ==  6
+				   )
+				{
+					PMVal = (rand() % 2) * 2 - 1;
+				}
+				m_LocalPos = Math::Matrix::CreateTranslation(0.0125f * PMVal, CAMERAY + 0.0125f * PMVal, CAMERAZ - m_cameracChasePower);
+			}
+		}
 		else
 		{
 			m_LocalPos = Math::Matrix::CreateTranslation(0, CAMERAY, CAMERAZ - m_cameracChasePower);
@@ -228,6 +287,10 @@ void GameCamera::Update()
 	else
 	{
 		if (m_wpEnemy.expired())
+		{
+			m_bRotateEnemy = false;
+		}
+		if (m_wpEnemy.lock()->GetBEnemyDeath())
 		{
 			m_bRotateEnemy = false;
 		}	

@@ -363,6 +363,11 @@ void Player::Update()
 							continue;
 						}
 
+						if (enemyList.lock()->GetBEnemyDeath())
+						{
+							continue;
+						}
+
 						Math::Vector3 nowVec = gCamera->GetMatrix().Backward();
 						nowVec.y = 0.0f;
 						nowVec.Normalize();
@@ -1545,6 +1550,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	m_playerState = nomalHit;
 	for (auto& enemyList : m_enemyList)
 	{
+		if (enemyList.expired())continue;
 		if (enemyList.lock()->GetEnemyState() & eRlAttackThree)
 		{
 			m_hitStopCnt = 60;
@@ -1563,6 +1569,8 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 
 	for (auto& enemyList : m_enemyList)
 	{
+		if (enemyList.expired())continue;
+
 		if (enemyList.lock()->GetEnemyState() & (eRAttackOne | eRlAttackOne |
 			eRlAttackThree))
 		{
@@ -1621,6 +1629,8 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	int cnt = 0;
 	for (auto& enemyList : m_enemyList)
 	{
+		if (enemyList.expired())continue;
+
 		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107)
 		{
 			m_hitMoveSpd = 0.95f;
@@ -1834,6 +1844,7 @@ void Player::DrawUnLit()
 {
 	if (m_bPlayerLose)return;
 	if (m_enemy.expired())return;
+	if (m_enemy.lock()->GetBEnemyDeath())return;
 	KdShaderManager::Instance().m_HD2DShader.DrawPolygon(*m_rocKOnPolygon, m_rockOnPolyMat);
 }
 
@@ -2952,7 +2963,15 @@ void Player::ScorpionAttackMove()
 				}
 				else
 				{
-					m_attackMoveSpd *= 0.95f;
+					if (m_attackAnimeCnt < 115)
+					{
+						m_attackMoveSpd *= 0.95f;
+					}
+					else
+					{
+						m_attackMoveSpd *= 0.75f;
+					}
+
 					if (m_attackAnimeCnt == 22 ||
 						m_attackAnimeCnt == 33 ||
 						m_attackAnimeCnt == 43 ||
@@ -2986,7 +3005,45 @@ void Player::ScorpionAttackMove()
 							m_attackMoveSpd = 0.35f;
 							break;
 						case 115:
-							m_attackMoveSpd = 0.25f;
+							if (!m_enemy.expired())
+							{
+								Math::Vector3 dis = m_enemy.lock()->GetPos() - m_pos;
+								if (dis.Length() <= 1.15f)
+								{
+									m_attackMoveSpd = 0.25f;
+								}
+								else if (dis.Length() <= 1.35f)
+								{
+									m_attackMoveSpd = 0.65f;
+								}
+								else if (dis.Length() <= 1.65f)
+								{
+									m_attackMoveSpd = 0.75f;
+								}
+							}
+							else
+							{
+								for (auto& enemyList : m_enemyList)
+								{
+									if (enemyList.expired())continue;
+									Math::Vector3 dis = enemyList.lock()->GetPos() - m_pos;
+									if (dis.Length() <= 1.15f)
+									{
+										m_attackMoveSpd = 0.25f;
+										break;
+									}
+									else if (dis.Length() <= 1.35f)
+									{
+										m_attackMoveSpd = 0.65f;
+										break;
+									}
+									else if (dis.Length() <= 1.65f)
+									{
+										m_attackMoveSpd = 0.75f;
+										break;
+									}
+								}
+							}
 							break;
 						}
 					}
@@ -3150,6 +3207,7 @@ void Player::ScorpionActionDecision()
 							{
 								for (auto& enemyList : m_enemyList)
 								{
+									if (enemyList.expired())continue;
 									enemyList.lock()->SetAttackHit(false);
 									enemyList.lock()->SetDefenseSuc(false);
 								}
@@ -3178,6 +3236,7 @@ void Player::ScorpionActionDecision()
 							m_bRushAttackPossible = false;
 							for (auto& enemyList : m_enemyList)
 							{
+								if (enemyList.expired())continue;
 								enemyList.lock()->SetAttackHit(false);
 								enemyList.lock()->SetDefenseSuc(false);
 							}
@@ -3216,6 +3275,7 @@ void Player::ScorpionActionDecision()
 							{
 								for (auto& enemyList : m_enemyList)
 								{
+									if (enemyList.expired())continue;
 									enemyList.lock()->SetAttackHit(false);
 									enemyList.lock()->SetDefenseSuc(false);
 								}
@@ -3243,6 +3303,7 @@ void Player::ScorpionActionDecision()
 							m_bRushAttackPossible = false;
 							for (auto& enemyList : m_enemyList)
 							{
+								if (enemyList.expired())continue;
 								enemyList.lock()->SetAttackHit(false);
 								enemyList.lock()->SetDefenseSuc(false);
 							}
@@ -3281,6 +3342,7 @@ void Player::ScorpionActionDecision()
 					{
 						for (auto& enemyList : m_enemyList)
 						{
+							if (enemyList.expired())continue;
 							enemyList.lock()->SetAttackHit(false);
 							enemyList.lock()->SetDefenseSuc(false);
 						}
@@ -3324,6 +3386,7 @@ void Player::ScorpionActionDecision()
 					{
 						for (auto& enemyList : m_enemyList)
 						{
+							if (enemyList.expired())continue;
 							enemyList.lock()->SetAttackHit(false);
 							enemyList.lock()->SetDefenseSuc(false);
 						}
@@ -3372,6 +3435,7 @@ void Player::ScorpionActionDecision()
 						{
 							for (auto& enemyList : m_enemyList)
 							{
+								if (enemyList.expired())continue;
 								enemyList.lock()->SetAttackHit(false);
 								enemyList.lock()->SetDefenseSuc(false);
 							}
@@ -3394,6 +3458,7 @@ void Player::ScorpionActionDecision()
 						{
 							for (auto& enemyList : m_enemyList)
 							{
+								if (enemyList.expired())continue;
 								enemyList.lock()->SetAttackHit(false);
 								enemyList.lock()->SetDefenseSuc(false);
 							}
@@ -3416,6 +3481,7 @@ void Player::ScorpionActionDecision()
 						{
 							for (auto& enemyList : m_enemyList)
 							{
+								if (enemyList.expired())continue;
 								enemyList.lock()->SetAttackHit(false);
 								enemyList.lock()->SetDefenseSuc(false);
 							}
@@ -3454,12 +3520,6 @@ void Player::ScorpionActionDecision()
 					{
 						if (m_playerState & lAttackOne)
 						{
-							/*for (auto& enemyList : m_enemyList)
-							{
-								enemyList.lock()->SetAttackHit(false);
-								enemyList.lock()->SetDefenseSuc(false);
-							}*/
-
 							m_playerState |= lAttackTwo;
 							m_playerState &= ~lAttackOne;
 							m_bAttackAnimeDelay = false;
@@ -3476,12 +3536,6 @@ void Player::ScorpionActionDecision()
 						}
 						else if (m_playerState & lAttackTwo)
 						{
-						/*	for (auto& enemyList : m_enemyList)
-							{
-								enemyList.lock()->SetAttackHit(false);
-								enemyList.lock()->SetDefenseSuc(false);
-							}*/
-
 							m_playerState |= lAttackThree;
 							m_playerState &= ~lAttackTwo;
 							m_bAttackAnimeDelay = false;
@@ -3508,12 +3562,6 @@ void Player::ScorpionActionDecision()
 					{
 						if (m_playerState & rAttackOne)
 						{
-							/*for (auto& enemyList : m_enemyList)
-							{
-								enemyList.lock()->SetAttackHit(false);
-								enemyList.lock()->SetDefenseSuc(false);
-							}*/
-
 							m_playerState |= rAttackTwo;
 							m_playerState &= ~rAttackOne;
 							m_bAttackAnimeDelay = false;

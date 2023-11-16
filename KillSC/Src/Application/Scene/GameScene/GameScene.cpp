@@ -89,6 +89,11 @@ void GameScene::Event()
 		}
 	}
 
+	if (SceneManager::Instance().GetScreenVibFrames() > 0)
+	{
+		SceneManager::Instance().SubScreenVibFrames();
+	}
+
 	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
 	{
 		if (SceneManager::Instance().GetEnemyIeftover() >= 5)
