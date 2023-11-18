@@ -292,4 +292,6 @@ private:
 	Math::Vector3 m_enemyBetweenPlayerHitPos;
 
 	int m_enemyNumber;
+
+	bool m_bBlowingAwayHitB; // Œã‚ë‚©‚ç‚«”ò‚Î‚³‚ê‚½
 };

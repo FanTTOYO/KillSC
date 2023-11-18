@@ -11,9 +11,9 @@ public:
 	void DrawBright()override;
 	void Init()override;
 	void Release(){};
-	std::shared_ptr<KdModelWork> GetModel() { return m_model; }
+	//std::shared_ptr<KdModelData> GetModel() { return m_model; }
 
 private:
 	
-	std::shared_ptr<KdModelWork> m_model;
+	std::shared_ptr<KdModelData> m_model;
 };

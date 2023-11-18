@@ -14,10 +14,8 @@ void InvisibleWall::Init()
 	// s—ñ‡¬
 	m_mWorld = scaleMat * transMat;
 
-	m_model = std::make_shared<KdModelWork>();
-	m_model->SetModelData
-	(KdAssets::Instance().m_modeldatas.GetData
-	("Asset/Models/Stage/Stage.gltf"));
+	m_model = std::make_shared<KdModelData>();
+	m_model->Load("Asset/Models/Stage/Stage.gltf");
 	// “–‚½‚è”»’è‰Šú‰»
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape

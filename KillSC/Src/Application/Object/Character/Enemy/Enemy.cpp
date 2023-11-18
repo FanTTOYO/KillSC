@@ -643,7 +643,15 @@ void Enemy::Update()
 			{
 				if (!(m_EnemyState & eIdle))
 				{
-					m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayRise"), false);
+					if (!m_bBlowingAwayHitB)
+					{
+						m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayRise"), false);
+					}
+					else
+					{
+						m_bBlowingAwayHitB = false;
+						m_animator->SetAnimation(m_model->GetAnimation("IaiKiriRise"), false);
+					}
 				}
 				m_EnemyState = eBlowingAwayRise;
 			}
@@ -1351,30 +1359,72 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 15.0f;
 	m_attackHit = true;
-	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rlAttackOne |
-		Player::PlayerState::rlAttackThree))
+	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rlAttackOne))
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-		SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+		}
 	}
 	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackTwo | Player::PlayerState::rlAttackTwo))
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
-		SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+		}
+	}
+	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::lAttackOne | Player::PlayerState::rlAttackThree))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("LHit1"), false);
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+		}
+	}
+	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::lAttackTwo))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("LHit2"), false);
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+		}
 	}
 
 	if (!m_target.lock()->GetBRushRp())
 	{
-		if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() < 8 ||
-			(m_target.lock()->GetAnimationCnt() >= 21 && m_target.lock()->GetAnimationCnt() < 41))
+		if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() < 8)
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("LHit1"), false);
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
+		}
+		else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 21 && m_target.lock()->GetAnimationCnt() < 31))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("LHit2"), false);
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
+		}
+		else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 31 && m_target.lock()->GetAnimationCnt() < 41))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-			SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
 		}
 		else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 8 && m_target.lock()->GetAnimationCnt() < 21))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
-			SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
 		}
 	}
 	else
@@ -1389,7 +1439,10 @@ void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 			m_hitMoveSpd = 0.275f;
 		}
 
-		SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+		}
 	}
 
 	if (m_graduallyTorionDecVal == 0)
@@ -1410,26 +1463,58 @@ void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() >= 107)
 	{
 		m_hitMoveSpd = 0.95f;
-		SceneManager::Instance().SetUpdateStopCnt(25); // これでアップデートを一時止める
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(25); // これでアップデートを一時止める
+		}
 		//SceneManager::Instance().SetUpdateStopCnt(10);   // 画面を揺らす時のHtiストップフレーム数
 		//SceneManager::Instance().SetScreenVibFrames(15); // 画面を揺らすフレーム数
 	}
 	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::lAttackOne) && m_target.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDashF))
 	{
 		m_hitMoveSpd = 0.35f;
-		SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
+		}
 	}
 	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackThree | Player::PlayerState::lAttackThree))
 	{
 		m_hitMoveSpd = 0.3f;
-		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+		}
 	}
 
 	m_invincibilityTimeCnt = 100;
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 30.0f;
 	m_attackHit = true;
-	m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
+
+	Math::Vector3 nowVec = m_mWorld.Backward();
+
+	Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, a_KnocBackvec);
+	if (dot.x > 1)
+	{
+		dot.x = 1;
+	}
+	if (dot.x < -1)
+	{
+		dot.x = -1;
+	}
+
+	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+	if (ang > 90)
+	{
+		m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
+	}
+	else
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayHitBB"), false);
+		m_bBlowingAwayHitB = true;
+	}
 
 	if (m_graduallyTorionDecVal == 0)
 	{
@@ -1452,7 +1537,10 @@ void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_endurance -= 50.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
-	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+	{
+		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	}
 
 	if (m_graduallyTorionDecVal == 0)
 	{
@@ -1489,7 +1577,11 @@ void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 	m_knockBackVec = a_KnocBackvec;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
-	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+
+	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+	{
+		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	}
 
 	if (m_graduallyTorionDecVal == 0)
 	{

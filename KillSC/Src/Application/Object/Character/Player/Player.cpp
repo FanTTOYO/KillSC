@@ -1575,24 +1575,38 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 			eRlAttackThree))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+			}
 		}
 		else if (enemyList.lock()->GetEnemyState() & (eRAttackTwo | eRlAttackTwo))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
-			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+			}
 		}
 
 		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() < 8 ||
 			(enemyList.lock()->GetAnimationCnt() >= 21 && enemyList.lock()->GetAnimationCnt() < 41))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-			SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
 		}
 		else if (enemyList.lock()->GetEnemyState() & eRlAttackRush && (enemyList.lock()->GetAnimationCnt() >= 8 && enemyList.lock()->GetAnimationCnt() < 21))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
-			SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
 		}
 	}
 
@@ -1635,18 +1649,27 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 		{
 			m_hitMoveSpd = 0.95f;
 			cnt++;
-			SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
+			}
 			break;
 		}
 		else if (enemyList.lock()->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemyList.lock()->GetEnemyState() & (eGrassHopperDashF))
 		{
 			m_hitMoveSpd = 0.35f;
 			cnt++;
-			SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
+			}
 		}
 		else
 		{
-			SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+			}
 		}
 	}
 
@@ -1702,7 +1725,11 @@ void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
 	m_invincibilityTimeCnt = 100;
-	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+	{
+		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	}
+
 	if (m_endurance < 0)
 	{
 		m_endurance = 0;
@@ -1741,7 +1768,11 @@ void Player::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 	m_endurance -= 15.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
-	SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+	{
+		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	}
+
 	if (m_endurance <= 0)
 	{
 		m_endurance = 0;
@@ -2993,6 +3024,9 @@ void Player::ScorpionAttackMove()
 						switch (m_attackAnimeCnt)
 						{
 						case 22:
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.395f;
 							break;
 						case 33:
@@ -3002,6 +3036,9 @@ void Player::ScorpionAttackMove()
 						case 73:
 						case 83:
 						case 93:
+							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+							m_attackMoveDir.y = 0;
+							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.35f;
 							break;
 						case 115:
@@ -3014,11 +3051,11 @@ void Player::ScorpionAttackMove()
 								}
 								else if (dis.Length() <= 1.35f)
 								{
-									m_attackMoveSpd = 0.65f;
+									m_attackMoveSpd = 0.45f;
 								}
 								else if (dis.Length() <= 1.65f)
 								{
-									m_attackMoveSpd = 0.75f;
+									m_attackMoveSpd = 0.65f;
 								}
 							}
 							else
@@ -3034,12 +3071,12 @@ void Player::ScorpionAttackMove()
 									}
 									else if (dis.Length() <= 1.35f)
 									{
-										m_attackMoveSpd = 0.65f;
+										m_attackMoveSpd = 0.45f;
 										break;
 									}
 									else if (dis.Length() <= 1.65f)
 									{
-										m_attackMoveSpd = 0.75f;
+										m_attackMoveSpd = 0.65f;
 										break;
 									}
 								}
