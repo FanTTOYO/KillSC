@@ -1,6 +1,7 @@
 #pragma once
 #define TORIONDOWNVALUE 1.0f
 #define  GRASSHOPPERPAUCNT 30
+#define INITIALPOSZ 10
 
 class CameraBase;
 class WeaponBase;

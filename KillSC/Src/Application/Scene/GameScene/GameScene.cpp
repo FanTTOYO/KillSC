@@ -220,18 +220,23 @@ void GameScene::Init()
 		{
 		case 1:
 			enemy->SetPos(Math::Vector3(0, 0.0f, 20.0f));
+			enemy->SetMatrix(Math::Vector3(0, 0.0f, 20.0f));
 			break;
 		case 2:
 			enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, 20.0f));
+			enemy->SetMatrix(Math::Vector3(-5.0f + 10.0f * i, 0.0f, 20.0f));
 			break;
 		case 3:
 			enemy->SetPos(Math::Vector3(-5.0f + 5.0f * i, 0.0f, 20.0f));
+			enemy->SetMatrix(Math::Vector3(-5.0f + 5.0f * i, 0.0f, 20.0f));
 			break;
 		case 4:
 			enemy->SetPos(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
+			enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
 			break;
 		case 5:
 			enemy->SetPos(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
+			enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
 			break;
 		}
 

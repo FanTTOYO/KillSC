@@ -2234,14 +2234,10 @@ void Ui::DrawSprite()
 				}
 
 				Math::Vector3 nowVec = m_wpCamera.lock()->GetMatrix().Backward();
-				nowVec.y = 0.0f;
-				nowVec.x = 0.0f;
 				nowVec.Normalize();
 
 				// Œü‚«‚½‚¢•ûŒü
 				Math::Vector3 toVec = list.lock()->GetPos() - m_wpCamera.lock()->GetPos();
-				toVec.y = 0.0f;
-				toVec.x = 0.0f;
 				toVec.Normalize();
 
 				Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, toVec);
@@ -2259,11 +2255,6 @@ void Ui::DrawSprite()
 
 				if (ang <= 85)
 				{
-					/*Math::Vector3 cameraPos = Math::Vector3(list.lock()->GetPos().x, list.lock()->GetPos().y + 1.8f, list.lock()->GetPos().z) - m_wpCamera.lock()->GetCamera()->GetCameraMatrix().Invert().Translation();
-
-					POINT dev;
-					KdDirect3D::Instance().WorldToClient(cameraPos, dev, m_wpCamera.lock()->GetCamera()->GetCameraMatrix(), m_wpCamera.lock()->GetCamera()->GetProjMatrix());
-					dev.y += 120;*/
 					mat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation(m_enemyScPosList[i].x, m_enemyScPosList[i].y, 0.0f);
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);

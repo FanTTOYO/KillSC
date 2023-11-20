@@ -10,7 +10,8 @@ void Player::Init()
 {
 	// À•Ws—ñ
 	Math::Matrix transMat;
-	transMat = Math::Matrix::CreateTranslation(0, 0, -10);
+	transMat = Math::Matrix::CreateTranslation(0, 0, -INITIALPOSZ);
+	m_pos = transMat.Translation();
 
 	// Šgks—ñ
 	Math::Matrix scaleMat;

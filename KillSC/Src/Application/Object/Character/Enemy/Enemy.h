@@ -1,5 +1,7 @@
 #pragma once
 #define ENEMYAIRBORNETIMETOBECNTVAL 180
+#define INITIALPOSZ 10
+#define INITIALROTATIONY 180
 
 class WeaponBase;
 class Player;
@@ -108,6 +110,7 @@ public:
 	void GenerateDepthMapFromLight()override;
 	void SetTarget(std::shared_ptr<Player> a_target) { m_target = a_target; }
 	void SetPos(Math::Vector3 a_pos) { m_pos = a_pos;}
+	void SetMatrix(Math::Vector3 a_pos) { m_mWorld = Math::Matrix::CreateTranslation(a_pos); }
 	//void Release() {};
 
 	const UINT& GetEnemyState() { return m_EnemyState; }

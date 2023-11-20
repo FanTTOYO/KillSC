@@ -9,16 +9,16 @@ void Enemy::Init()
 {
 	// 座標行列
 	Math::Matrix transMat;
-	transMat = Math::Matrix::CreateTranslation(0, 0, 10);
-	m_pos = { 0,0,10 };
+	transMat = Math::Matrix::CreateTranslation(0, 0, INITIALPOSZ);
+	m_pos = transMat.Translation();
 
 	// 拡縮行列
 	Math::Matrix scaleMat;
-	scaleMat = Math::Matrix::CreateScale(1.0f, 1.0f, 1.0f);
+	scaleMat = Math::Matrix::CreateScale(Math::Vector3::One);
 
 	// 回転行列
 	Math::Matrix rotMat;
-	rotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(180));
+	rotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(INITIALROTATIONY));
 	m_mWorldRot.y = 180;
 
 	// 行列合成
@@ -1985,6 +1985,7 @@ void Enemy::GrassMoveVecDecision()
 
 			int rand = intRand(mt);
 			Math::Vector3 src;
+			float y = m_target.lock()->GetPos().y - m_pos.y;
 
 			switch (m_wantToMoveState)
 			{
@@ -2017,11 +2018,66 @@ void Enemy::GrassMoveVecDecision()
 				break;
 			case WantToMoveState::grassDash:
 				if (m_grassSuccessionDelayCnt != 0)return;
-				randNum[0] = 450;
-				randNum[1] = 250;
-				randNum[2] = 150;
-				randNum[3] = 150;
-				randNum[4] = 0;
+				src = m_target.lock()->GetPos() - m_pos;
+				if (y >= 1.0f)
+				{
+					randNum[0] = 0;    // 前
+					randNum[1] = 0;    // 後
+					randNum[2] = 0;    // 右 
+					randNum[3] = 0;    // 左
+					randNum[4] = 1000;    // 上
+				}
+				else
+				{
+					if (m_bEnemyBetweenPlayer)
+					{
+						Math::Vector3 nowVec = m_mWorld.Backward();
+						nowVec.y = 0.0f;
+						nowVec.Normalize();
+
+						Math::Vector3 toVec = m_enemyBetweenPlayerHitPos - m_pos;
+						toVec.y = 0.0f;
+						toVec.Normalize();
+						Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, toVec);
+
+						if (dot.x > 1.0f)
+						{
+							dot.x = 1.0f;
+						}
+						else if (dot.x < -1.0f)
+						{
+							dot.x = -1.0f;
+						}
+
+						float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+						if (ang <= 30 || ang > 150 && ang <= 180)
+						{
+							randNum[0] = 0;
+							randNum[1] = 0;
+							randNum[2] = 1000;
+							randNum[3] = 0;
+							randNum[4] = 0;
+						}
+						else if (ang > 30 && ang <= 150)
+						{
+
+							randNum[0] = 1000;
+							randNum[1] = 0;
+							randNum[2] = 0;
+							randNum[3] = 0;
+							randNum[4] = 0;
+						}
+					}
+					else
+					{
+						randNum[0] = 350;
+						randNum[1] = 150;
+						randNum[2] = 200;
+						randNum[3] = 200;
+						randNum[4] = 100;
+					}
+				}
 				break;
 			case WantToMoveState::avoidance:
 				if (m_grassSuccessionDelayCnt != 0)return;
@@ -2265,22 +2321,22 @@ void Enemy::GrassMoveVecDecision()
 						{
 							dot.x = 1.0f;
 						}
-						else if(dot.x < -1.0f)
+						if(dot.x < -1.0f)
 						{
 							dot.x = -1.0f;
 						}
 
 						float ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
-						if (ang <= 30 || ang > 150 && ang <= 180)
+						if (ang < 0.1 || ang > 150 && ang <= 180)
 						{
-							randNum[0] =    0;
-							randNum[1] =    0;
-							randNum[2] =  500;
-							randNum[3] =  500;
-							randNum[4] =    0;
+							randNum[0] =     0;
+							randNum[1] =     0;
+							randNum[2] =  1000;
+							randNum[3] =     0;
+							randNum[4] =     0;
 						}
-						else if (ang > 30 && ang <= 150)
+						else if (ang >= 0.1 && ang <= 150)
 						{
 														
 							randNum[0] = 1000;
@@ -2545,6 +2601,21 @@ void Enemy::GrassMove()
 		if (m_lGrassHopperTime <= 90 && m_lGrassHopperTime > 80 || m_rGrassHopperTime <= 90 && m_rGrassHopperTime > 80)
 		{
 			m_dashSpd = 0.0f;
+
+			float y = m_target.lock()->GetPos().y - m_pos.y;
+			if (y >= -0.5f && y <= 0.5f)
+			{
+				if (m_EnemyState & eGrassHopperDashUp)
+				{
+					m_wantToMoveState = Enemy::WantToMoveState::dashAttack;
+					m_dashSpd = 0.0f;
+					m_grassHopperDashDir = {};
+					m_gravity = 0;
+					m_rGrassHopperPauCnt = 0;
+					m_lGrassHopperPauCnt = 0;
+					GrassMoveVecDecision();
+				}
+			}
 		}
 		else if (m_lGrassHopperTime <= 75 && m_lGrassHopperTime > 30 || m_rGrassHopperTime <= 75 && m_rGrassHopperTime > 30)
 		{
