@@ -29,7 +29,7 @@ void Ground::Init()
 	m_mWorld = scaleMat * transMat;
 
 	m_model = std::make_shared<KdModelData>();
-	m_model->Load("Asset/Models/Ground/ground.gltf");
+	m_model->Load("Asset/Models/Ground/Road.gltf");
 	// “–‚½‚è”»’è‰Šú‰»
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape

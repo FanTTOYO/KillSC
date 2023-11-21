@@ -2051,7 +2051,7 @@ void Enemy::GrassMoveVecDecision()
 
 						float ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
-						if (ang <= 30 || ang > 150 && ang <= 180)
+						if (ang <= 0.1 || ang > 150 && ang <= 180)
 						{
 							randNum[0] = 0;
 							randNum[1] = 0;
@@ -2059,7 +2059,7 @@ void Enemy::GrassMoveVecDecision()
 							randNum[3] = 0;
 							randNum[4] = 0;
 						}
-						else if (ang > 30 && ang <= 150)
+						else if (ang > 0.1 && ang <= 150)
 						{
 
 							randNum[0] = 1000;
@@ -3713,7 +3713,7 @@ void Enemy::AllRounderBrain()
 
 	int rand = intRand(mt);
 
-	if (src.Length() <= 1.2f)
+	if (src.Length() <= 8.0f)
 	{
 		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
 		{
@@ -3860,7 +3860,7 @@ void Enemy::AllRounderBrain()
 			rand -= randNum[i];
 			if (rand < 0)
 			{
-				if (src.Length() <= 5.0f)
+				if (src.Length() <= 25.0f)
 				{
 					switch (i)
 					{
@@ -4184,6 +4184,9 @@ void Enemy::ScorpionAttackDecision()
 				m_EnemyState &= ~eRAttackOne;
 				m_animator->SetAnimation(m_model->GetAnimation("RAttack2"), false);
 				m_bMove = true;
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
 				m_attackMoveSpd = 0.05f;
 				m_target.lock()->SetAttackHit(false);
 				m_target.lock()->SetDefenseSuc(false);
@@ -4205,6 +4208,9 @@ void Enemy::ScorpionAttackDecision()
 				m_EnemyState &= ~eLAttackOne;
 				m_animator->SetAnimation(m_model->GetAnimation("LAttack2"), false);
 				m_bMove = true;
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
 				m_attackMoveSpd = 0.05f;
 				m_target.lock()->SetAttackHit(false);
 				m_target.lock()->SetDefenseSuc(false);
@@ -4215,6 +4221,9 @@ void Enemy::ScorpionAttackDecision()
 				m_EnemyState &= ~eLAttackTwo;
 				m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
 				m_bMove = true;
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
 				m_attackMoveSpd = 0.05f;
 				m_target.lock()->SetAttackHit(false);
 				m_target.lock()->SetDefenseSuc(false);
@@ -4232,6 +4241,9 @@ void Enemy::ScorpionAttackDecision()
 				m_attackAnimeCnt = 0;
 				m_attackAnimeDelayCnt = 0;
 
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
 				m_attackMoveSpd = 0.8f;
 				m_animator->SetAnimation(m_model->GetAnimation("RLAttackTwo"), false);
 				m_bMove = true;
@@ -4250,6 +4262,9 @@ void Enemy::ScorpionAttackDecision()
 				m_attackAnimeCnt = 0;
 				m_attackAnimeDelayCnt = 0;
 
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
 				m_attackMoveSpd = 0.8f;
 				m_animator->SetAnimation(m_model->GetAnimation("RLAttackThree"), false);
 				m_bMove = true;
@@ -4306,6 +4321,9 @@ void Enemy::ScorpionAttackDecision()
 					m_attackAnimeCnt = 0;
 					m_attackAnimeDelayCnt = 0;
 					m_bMove = true;
+					m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+					m_attackMoveDir.y = 0;
+					m_attackMoveDir.Normalize();
 					m_target.lock()->SetAttackHit(false);
 					m_target.lock()->SetDefenseSuc(false);
 					if (m_EnemyState & eGrassHopperDashF | eStep)
@@ -4326,6 +4344,9 @@ void Enemy::ScorpionAttackDecision()
 					m_attackAnimeCnt = 0;
 					m_attackAnimeDelayCnt = 0;
 					m_bMove = true;
+					m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+					m_attackMoveDir.y = 0;
+					m_attackMoveDir.Normalize();
 					m_target.lock()->SetAttackHit(false);
 					m_target.lock()->SetDefenseSuc(false);
 					if (m_EnemyState & eGrassHopperDashF | eStep)
