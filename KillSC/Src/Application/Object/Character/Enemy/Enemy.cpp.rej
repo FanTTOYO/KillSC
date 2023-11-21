@@ -1,0 +1,47 @@
+diff a/KillSC/Src/Application/Object/Character/Enemy/Enemy.cpp b/KillSC/Src/Application/Object/Character/Enemy/Enemy.cpp	(rejected hunks)
+@@ -3737,29 +3737,28 @@
+ 				}
+ 			}
+ 		}
+-		else
++	}
++	else if (src.Length() <= 8.0f)
++	{
++		rand = intRand(mt);
++		randNum[0] = 750;
++		randNum[1] = 250;
++		for (int i = 0; i < 2; i++)
+ 		{
+-			rand = intRand(mt);
+-			randNum[0] = 750;
+-			randNum[1] = 250;
+-			for (int i = 0; i < 2; i++)
++			rand -= randNum[i];
++			if (rand < 0)
+ 			{
+-				rand -= randNum[i];
+-				if (rand < 0)
++				switch (i)
+ 				{
+-					switch (i)
+-					{
+-					case 0:
+-						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+-						break;
+-					case 1:
+-						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+-						break;
+-					}
++				case 0:
++					m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
++					break;
++				case 1:
++					m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+ 					break;
+ 				}
++				break;
+ 			}
+-
+ 		}
+ 
+ 	}

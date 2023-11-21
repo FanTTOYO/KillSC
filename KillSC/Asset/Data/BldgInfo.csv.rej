@@ -1,0 +1,41 @@
+diff a/KillSC/Asset/Data/BldgInfo.csv b/KillSC/Asset/Data/BldgInfo.csv	(rejected hunks)
+@@ -14,31 +14,11 @@
+ Bldg14,50,0,25,Asset/Models/Bldg/Bill2.gltf
+ Bldg15,25,0,50,Asset/Models/Bldg/Bill2.gltf
+ Bldg16,25,0,25,Asset/Models/Bldg/Bill2.gltf
+-Bldg17,-80,0,-50,Asset/Models/Bldg/Bill2.gltf
+-Bldg18,-80,0,-30,Asset/Models/Bldg/Bill2.gltf
+-Bldg19,-80,0,-10,Asset/Models/Bldg/Bill2.gltf
+-Bldg20,-80,0,10,Asset/Models/Bldg/Bill2.gltf
+-Bldg21,-80,0,30,Asset/Models/Bldg/Bill2.gltf
+-Bldg22,-80,0,50,Asset/Models/Bldg/Bill2.gltf
+-Bldg23,80,0,-50,Asset/Models/Bldg/Bill2.gltf
+-Bldg24,80,0,-30,Asset/Models/Bldg/Bill2.gltf
+-Bldg25,80,0,-10,Asset/Models/Bldg/Bill2.gltf
+-Bldg26,80,0,10,Asset/Models/Bldg/Bill2.gltf
+-Bldg27,80,0,30,Asset/Models/Bldg/Bill2.gltf
+-Bldg28,80,0,50,Asset/Models/Bldg/Bill2.gltf
+-Bldg29,-50,0,-80,Asset/Models/Bldg/Bill2.gltf
+-Bldg30,-30,0,-80,Asset/Models/Bldg/Bill2.gltf
+-Bldg31,-10,0,-80,Asset/Models/Bldg/Bill2.gltf
+-Bldg32,10,0,-80,Asset/Models/Bldg/Bill2.gltf
+-Bldg33,30,0,-80,Asset/Models/Bldg/Bill2.gltf
+-Bldg34,50,0,-80,Asset/Models/Bldg/Bill2.gltf
+-Bldg35,-50,0,80,Asset/Models/Bldg/Bill2.gltf
+-Bldg36,-30,0,80,Asset/Models/Bldg/Bill2.gltf
+-Bldg37,-10,0,80,Asset/Models/Bldg/Bill2.gltf
+-Bldg38,10,0,80,Asset/Models/Bldg/Bill2.gltf
+-Bldg39,30,0,80,Asset/Models/Bldg/Bill2.gltf
+-Bldg40,50,0,80,Asset/Models/Bldg/Bill2.gltf
+-Bldg41,-80,0,70,Asset/Models/Bldg/Bill2.gltf
+-Bldg42,-80,0,-70,Asset/Models/Bldg/Bill2.gltf
+-Bldg43,80,0,70,Asset/Models/Bldg/Bill2.gltf
+-Bldg44,80,0,-70,Asset/Models/Bldg/Bill2.gltf
++condominium1,-25,0,-75,Asset/Models/Bldg/condominium_Three_R.gltf
++condominium2,50,0,-75,Asset/Models/Bldg/condominium_Three_R.gltf
++condominium3,25,0,-75,Asset/Models/Bldg/condominium_Three_L.gltf
++condominium4,-50,0,-75,Asset/Models/Bldg/condominium_Three_L.gltf
++condominium5,-25,0,75,Asset/Models/Bldg/condominium_Three_R.gltf
++condominium6,50,0,75,Asset/Models/Bldg/condominium_Three_R.gltf
++condominium7,25,0,75,Asset/Models/Bldg/condominium_Three_L.gltf
++condominium8,-50,0,75,Asset/Models/Bldg/condominium_Three_L.gltf
