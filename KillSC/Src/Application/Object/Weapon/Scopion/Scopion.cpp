@@ -82,16 +82,16 @@ void Scopion::Update()
 	if (m_bEnemyWeapon)
 	{
 		const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-		if (!(enemy->GetWeaponType() & (scorpion | lScorpion)))return;
+		if (!(enemy->GetWeaponType() & (eScorpion | eLScorpion)))return;
 
 		const KdModelWork::Node* node = nullptr;
 
-		if (m_arrmType == rArrm && enemy->GetWeaponType() & scorpion)
+		if (m_arrmType == rArrm && enemy->GetWeaponType() & eScorpion)
 		{
 			node = enemy->GetModel()->FindNode("WeaponRPoint");
 		}
 
-		if (m_arrmType == lArrm && enemy->GetWeaponType() & lScorpion)
+		if (m_arrmType == lArrm && enemy->GetWeaponType() & eLScorpion)
 		{
 			node = enemy->GetModel()->FindNode("WeaponLPoint");
 		}
@@ -220,14 +220,14 @@ void Scopion::DrawLit()
 		if (!m_bMantis)
 		{
 			const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-			if (!(enemy->GetWeaponType() & (scorpion | lScorpion)))return;
+			if (!(enemy->GetWeaponType() & (eScorpion | eLScorpion)))return;
 
-			if (m_arrmType == rArrm && enemy->GetWeaponType() & scorpion)
+			if (m_arrmType == rArrm && enemy->GetWeaponType() & eScorpion)
 			{
 				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 			}
 
-			if (m_arrmType == lArrm && enemy->GetWeaponType() & lScorpion)
+			if (m_arrmType == lArrm && enemy->GetWeaponType() & eLScorpion)
 			{
 				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 			}
@@ -275,14 +275,14 @@ void Scopion::GenerateDepthMapFromLight()
 		if (!m_bMantis)
 		{
 			const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-			if (!(enemy->GetWeaponType() & (scorpion | lScorpion)))return;
+			if (!(enemy->GetWeaponType() & (eScorpion | eLScorpion)))return;
 
-			if (m_arrmType == rArrm && enemy->GetWeaponType() & scorpion)
+			if (m_arrmType == rArrm && enemy->GetWeaponType() & eScorpion)
 			{
 				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 			}
 
-			if (m_arrmType == lArrm && enemy->GetWeaponType() & lScorpion)
+			if (m_arrmType == lArrm && enemy->GetWeaponType() & eLScorpion)
 			{
 				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 			}
@@ -1317,7 +1317,7 @@ void Scopion::PlayerManAttackChaeck()
 void Scopion::EnemyHitAttackChaeck()
 {
 	const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-	if (!(enemy->GetWeaponType() & (scorpion | lScorpion)))return;
+	if (!(enemy->GetWeaponType() & (eScorpion | eLScorpion)))return;
 
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
@@ -1736,7 +1736,7 @@ void Scopion::EnemyHitAttackChaeck()
 void Scopion::EnemyManAttackChaeck()
 {
 	const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-	if (!(enemy->GetWeaponType() & (scorpion | lScorpion)))return;
+	if (!(enemy->GetWeaponType() & (eScorpion | eLScorpion)))return;
 
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;

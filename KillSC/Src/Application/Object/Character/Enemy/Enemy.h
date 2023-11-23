@@ -51,11 +51,13 @@ enum EnemyState
 
 enum eWeaponType
 {
-	eScorpion = 1 << 0,
-	eGrassHopper = 1 << 1,
+	eWeaponNone  = 1 << 0,
+	eScorpion    = 1 << 1,
+	eGrassHopper = 1 << 2,
 
-	eLScorpion = 1 << 4,
-	eLGrassHopper = 1 << 5,
+	eLWeaponNone   = 1 << 4,
+	eLScorpion    = 1 << 5,
+	eLGrassHopper = 1 << 6,
 };
 
 class Enemy : public KdGameObject
@@ -89,7 +91,8 @@ public:
 		striker,
 		defender,
 		speedSter,
-		allRounder
+		allRounder,
+		coarseFishEnemy,
 	};
 
 	Enemy() {}
@@ -147,8 +150,13 @@ public:
 
 	void SetEnemyNumber(const int& a_enemyNumber) { m_enemyNumber = a_enemyNumber; }
 
+	void SetBBoss(bool a_bBoss) { m_bBoss = a_bBoss; }
+
 private:
 
+	void BossUpdate();
+	void CoarseFishEnemyUpdate();
+	void TutorialUpdate();
 	void EnemyKickHitAttackChaeck();
 	void UpdateRotate(Math::Vector3& a_srcMoveVec);
 	void GrassMoveVecDecision();
@@ -168,6 +176,7 @@ private:
 	void DefenderBrain();
 	void SpeedSterBrain();
 	void AllRounderBrain();
+	void CoarseFishEnemyBrain();
 
 	std::shared_ptr<KdModelWork> m_model;
 
@@ -297,4 +306,6 @@ private:
 	int m_enemyNumber;
 
 	bool m_bBlowingAwayHitB; // Œã‚ë‚©‚ç‚«”ò‚Î‚³‚ê‚½
+
+	bool m_bBoss = false; // true ƒ{ƒX@false G‹›“G
 };

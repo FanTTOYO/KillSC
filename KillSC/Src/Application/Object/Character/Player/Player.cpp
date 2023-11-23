@@ -118,8 +118,8 @@ void Player::Update()
 			lowestYPos = -1.0f;
 		}
 
-		//if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < lowestYPos)
-		if(0)
+		if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < lowestYPos)
+		//if(0)
 		{
 			m_overStageTime++;
 			if (m_overStageTime >= 90)

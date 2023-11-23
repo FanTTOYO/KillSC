@@ -158,7 +158,7 @@ void GameScene::Init()
 	camera->SetHitObj(ground);
 
 	std::shared_ptr<Bldg> bldg;
-	std::ifstream ifs("Asset/Data/BldgInfo.csv");
+	std::ifstream ifs("Asset/Data/BldgInfoBackUp.csv");
 	std::string str, filed;
 	while (getline(ifs, str))
 	{
@@ -216,6 +216,7 @@ void GameScene::Init()
 		ui->AddEnemy(enemy);
 		enemy->Init();
 		enemy->SetEnemyNumber(i + 1);
+		enemy->SetBBoss(false);
 		switch (total)
 		{
 		case 1:

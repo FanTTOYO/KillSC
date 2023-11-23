@@ -2,6 +2,7 @@
 
 void Ground::DrawLit()
 {
+	KdShaderManager::Instance().m_HD2DShader.SetUVTiling({ 5,5 });
 	KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model,m_mWorld);
 }
 
@@ -29,7 +30,7 @@ void Ground::Init()
 	m_mWorld = scaleMat * transMat;
 
 	m_model = std::make_shared<KdModelData>();
-	m_model->Load("Asset/Models/Ground/Road.gltf");
+	m_model->Load("Asset/Models/Ground/ground.gltf");
 	// “–‚½‚è”»’è‰Šú‰»
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape

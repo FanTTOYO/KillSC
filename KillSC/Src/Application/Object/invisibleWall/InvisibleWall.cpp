@@ -9,7 +9,7 @@ void InvisibleWall::Init()
 
 	// ägèkçsóÒ
 	Math::Matrix scaleMat;
-	scaleMat = Math::Matrix::CreateScale(100.0f,25.0f,100.0f);
+	scaleMat = Math::Matrix::CreateScale(25.0f,25.0f,25.0f);
 
 	// çsóÒçáê¨
 	m_mWorld = scaleMat * transMat;

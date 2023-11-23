@@ -22,3 +22,5 @@ condominium5,-25,0,75,Asset/Models/Bldg/condominium_Three_R.gltf
 condominium6,50,0,75,Asset/Models/Bldg/condominium_Three_R.gltf
 condominium7,25,0,75,Asset/Models/Bldg/condominium_Three_L.gltf
 condominium8,-50,0,75,Asset/Models/Bldg/condominium_Three_L.gltf
+house1,125,0,25,Asset/Models/Bldg/HouseMD.gltf
+house2,125,0,50,Asset/Models/Bldg/HouseMD.gltf
