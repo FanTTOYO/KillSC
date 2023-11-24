@@ -58,7 +58,7 @@ void Ui::PostUpdate()
 			float z = m_wpCamera.lock()->GetPos().z - list.lock()->GetPos().z;
 			dev.y += (long)(180 - (std::fabs(z) * 1.5f));
 			dev.x -= 50;
-			m_enemyScPosList[i] = Math::Vector2((float)dev.x,(float)dev.y);
+			m_enemyScPosList[i] = Math::Vector2((float)dev.x, (float)dev.y);
 			++i;
 		}
 	}
@@ -1459,12 +1459,12 @@ void Ui::SelectUpdate()
 		float MouseTop = mouseY + 2.0f;
 		float MouseBottom = mouseY - 2.0f;
 
-		float BackLeft   = BackPos.x - 91;
-		float BackRight  = BackPos.x + 91;
-		float BackTop    = BackPos.y + 40;
+		float BackLeft = BackPos.x - 91;
+		float BackRight = BackPos.x + 91;
+		float BackTop = BackPos.y + 40;
 		float BackBottom = BackPos.y - 40;
-		
-		if(MouseRight > BackLeft && BackRight > MouseLeft &&
+
+		if (MouseRight > BackLeft && BackRight > MouseLeft &&
 			MouseTop > BackBottom && BackTop > MouseBottom)
 		{
 			m_backScale = 1.0f;
@@ -2281,6 +2281,49 @@ void Ui::DrawSprite()
 					color = { 1, 1, 1, 1 };
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
 				}
+
+				if (ang >= 45)
+				{
+					float m_heightDifference = list.lock()->GetPos().y - m_wpPlayer.lock()->GetPos().y;
+
+					if (m_heightDifference >= 2.0f)
+					{
+						mat = Math::Matrix::CreateTranslation(0, 225.0f, 0.0f);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+						rc = { 0,0,100,125 };
+						color = { 1, 1, 1, 1 };
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowUTex, 0, 0, 100, 125, &rc, &color, Math::Vector2(0, 0.5f));
+					}
+					else if (m_heightDifference <= -2.0f)
+					{
+						mat = Math::Matrix::CreateTranslation(0, -225.0f, 0.0f);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+						rc = { 0,0,100,125 };
+						color = { 1, 1, 1, 1 };
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowBTex, 0, 0, 100, 125, &rc, &color, Math::Vector2(0, 0.5f));
+					}
+					else
+					{
+						Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
+
+						if (cross.y < 0)
+						{
+							mat = Math::Matrix::CreateTranslation(-500, 0.0f, 0.0f);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+							rc = { 0,0,125,100 };
+							color = { 1, 1, 1, 1 };
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowLTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
+						}
+						else if (cross.y >= 0)
+						{
+							mat = Math::Matrix::CreateTranslation(500, 0.0f, 0.0f);
+							KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+							rc = { 0,0,125,100 };
+							color = { 1, 1, 1, 1 };
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowRTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
+						}
+					}
+				}
 				++i;
 			}
 
@@ -2357,7 +2400,7 @@ void Ui::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_backTex, 0, 0, 182, 80);
 		}
 
-		mat = Math::Matrix::CreateTranslation(-50,325,0);
+		mat = Math::Matrix::CreateTranslation(-50, 325, 0);
 		switch (m_gameTimeM10)
 		{
 		case 1:
@@ -2751,7 +2794,7 @@ void Ui::DrawSprite()
 			switch (m_tutorialType)
 			{
 			case kihonTu:
-				mat = Math::Matrix::CreateScale(m_backScale) * Math::Matrix::CreateTranslation(0,0,0);
+				mat = Math::Matrix::CreateScale(m_backScale) * Math::Matrix::CreateTranslation(0, 0, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_tyuKihonTex, 0, 0, 1000, 500);
 				break;
@@ -2896,14 +2939,14 @@ void Ui::DrawSprite()
 					}
 					break;
 				case 50:
-					ieftover       = (50 - SceneManager::Instance().GetEnemyIeftover()) / 5;
+					ieftover = (50 - SceneManager::Instance().GetEnemyIeftover()) / 5;
 					ieftoverExcess = (50 - SceneManager::Instance().GetEnemyIeftover()) % 5;
 
 					for (int i = 0; i < ieftover; i++)
 					{
 						for (int j = 0; j < 5; j++)
 						{
-							transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation((float)( -600 + 80 * j), (float)(320 - 70 * i), 0);
+							transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation((float)(-600 + 80 * j), (float)(320 - 70 * i), 0);
 							KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, 313, 165);
 						}
@@ -2966,7 +3009,7 @@ void Ui::DrawSprite()
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, 246, 461);
 					}
-						
+
 					if (m_time >= 100)
 					{
 						transMat = Math::Matrix::CreateTranslation(-485, 30, 0);
@@ -3733,6 +3776,12 @@ void Ui::Init()
 	m_chalenge50Tex.Load("Asset/Textures/Ui/Select/Challenge50.png");
 	m_chalenge100Tex.Load("Asset/Textures/Ui/Select/Challenge100.png");
 
+	m_EnemyDirectionArrowLTex.Load("Asset/Textures/Ui/Game/enemyDirectionArrowL.png");
+	m_EnemyDirectionArrowRTex.Load("Asset/Textures/Ui/Game/enemyDirectionArrowR.png");
+	m_EnemyDirectionArrowUTex.Load("Asset/Textures/Ui/Game/enemyDirectionArrowU.png");
+	m_EnemyDirectionArrowBTex.Load("Asset/Textures/Ui/Game/enemyDirectionArrowB.png");
+
+
 	m_bBattleSelect = false;
 	m_bChallengeSelect = false;
 
@@ -3748,29 +3797,29 @@ void Ui::Init()
 	m_challengeScale = 0;
 	m_trainingScale = 0;
 
-	m_titleScale  = 1.0f;
+	m_titleScale = 1.0f;
 	m_optionScale = 1.0f;
-	m_exitScale   = 1.0f;
+	m_exitScale = 1.0f;
 
 	m_optionPos = { 550,-125,0 };
-	m_titlePos =  { -555,-310,0 };
-	m_exitPos =   { -420,-310,0 };
+	m_titlePos = { -555,-310,0 };
+	m_exitPos = { -420,-310,0 };
 
-	m_gamePos                   = {  265,    0, 0 };
-	m_battleCharaPos            = { -350,  225, 0 };
-	m_oneEnemyTotalPos          = {  265,  -80, 0 };
-	m_twoEnemyTotalPos          = {  265, -170, 0 };
-	m_threeEnemyTotalPos        = {  265, -260, 0 };
-	m_BattlehelpMkPos           = {  485,  325, 0 };
-						        
-	m_challengePos              = {  265,    0, 0 };
-	m_challengeCharaPos         = { -350,   75, 0 };
-	m_chalenge50Pos             = {  265, -180, 0 };
-	m_chalenge100Pos            = {  265, -270, 0 };
-	m_chalengehelpMkPos         = {  485,  325, 0 };
-	m_tutorialPos				= { -488, -138, 0 };
-	m_trainingPos               = { -205, -138, 0 };
-	m_selectBackPos             = {    0,    0, 0 };
+	m_gamePos = { 265,    0, 0 };
+	m_battleCharaPos = { -350,  225, 0 };
+	m_oneEnemyTotalPos = { 265,  -80, 0 };
+	m_twoEnemyTotalPos = { 265, -170, 0 };
+	m_threeEnemyTotalPos = { 265, -260, 0 };
+	m_BattlehelpMkPos = { 485,  325, 0 };
+
+	m_challengePos = { 265,    0, 0 };
+	m_challengeCharaPos = { -350,   75, 0 };
+	m_chalenge50Pos = { 265, -180, 0 };
+	m_chalenge100Pos = { 265, -270, 0 };
+	m_chalengehelpMkPos = { 485,  325, 0 };
+	m_tutorialPos = { -488, -138, 0 };
+	m_trainingPos = { -205, -138, 0 };
+	m_selectBackPos = { 0,    0, 0 };
 
 	m_battleCharaScale = 1.0f;
 	m_challengeCharaScale = 1.0f;

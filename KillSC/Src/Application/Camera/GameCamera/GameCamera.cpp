@@ -278,7 +278,7 @@ void GameCamera::Update()
 		m_bRotateEnemy = false;
 	}*/
 
-	Math::Matrix rotMatX;
+	Math::Matrix rotMatX = Math::Matrix::Identity;
 	if (!m_bRotateEnemy)
 	{
 		// ƒJƒƒ‰‚Ì‰ñ“]
@@ -410,6 +410,7 @@ void GameCamera::UpdateRotateByEnemy()
 		dot.x = -1;
 	}
 
+
 	// Šp“x‚ðŽæ“¾
 	ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
@@ -466,7 +467,7 @@ void GameCamera::UpdateRotateByEnemy()
 	}
 
 	float y = m_wpEnemy.lock()->GetPos().y - m_wpPlayer.lock()->GetPos().y;
-	if (y <= 0)
+	if (y <= 0.5f)
 	{
 		if (m_wpPlayer.lock()->GetPos().y <= m_stepOnPlayerPos.y)
 		{

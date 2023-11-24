@@ -281,4 +281,9 @@ private:
 
 	bool m_bBattleSelect = false;
 	bool m_bChallengeSelect = false;
+
+	KdTexture m_EnemyDirectionArrowLTex;
+	KdTexture m_EnemyDirectionArrowRTex;
+	KdTexture m_EnemyDirectionArrowUTex;
+	KdTexture m_EnemyDirectionArrowBTex;
 };
