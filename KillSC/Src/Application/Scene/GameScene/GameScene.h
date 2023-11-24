@@ -16,4 +16,9 @@ private:
 
 	std::weak_ptr<Player> m_wpPlayer;
 	std::weak_ptr<Ui> m_wpUi;
+
+	int m_waveCnt = 0;
+	int m_bossAppearanceCnt = 0;
+	int m_appearanceEffectCnt = 0;
+	bool m_bAppearanceEffect;
 };

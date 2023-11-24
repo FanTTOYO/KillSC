@@ -74,6 +74,13 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 		break;
 	case SceneType::battle:
 	case SceneType::challenge:
+		m_bPlayerWin = false;
+		m_pointAddOrSubVal = 0;
+		m_bAddOrSubVal = true;
+		m_bWinEnd = false;
+		m_updateStopCnt = 0;
+		m_enemyDrawTotal = 0;
+		m_screenVibFrames = 0;
 		m_currentScene = std::make_shared<GameScene>();
 		break;
 	case SceneType::result:

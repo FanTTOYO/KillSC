@@ -110,6 +110,7 @@ void Enemy::Init()
 	m_bEnemyBetweenPlayer = false;
 
 	m_enemyNumber = 0;
+	m_coarseFishEnemyAttackDelayCnt = 0;
 }
 
 void Enemy::Update()
@@ -1206,7 +1207,10 @@ void Enemy::CoarseFishEnemyUpdate()
 		return;
 	}
 
-
+	if (m_coarseFishEnemyAttackDelayCnt > 0)
+	{
+		--m_coarseFishEnemyAttackDelayCnt;
+	}
 
 	if (!(m_EnemyState & (eHit | eRise)))
 	{
@@ -1472,9 +1476,18 @@ void Enemy::PostUpdate()
 			{
 				m_isExpired = true;
 
-				SceneManager::Instance().SubEnemyIeftover();
 				if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
 				{
+					SceneManager::Instance().SubEnemyIeftover();
+					SceneManager::Instance().SubEnemyDrawTotal();
+				}
+				else if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
+				{
+					if (m_bBoss)
+					{
+						SceneManager::Instance().SubEnemyIeftover();
+					}
+
 					SceneManager::Instance().SubEnemyDrawTotal();
 				}
 			}
@@ -1494,6 +1507,12 @@ void Enemy::PostUpdate()
 				KdEffekseerManager::GetInstance().
 					Play("BailOutEnemy.efk", { m_pos.x,m_pos.y + 0.3f,m_pos.z });
 				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutEnemy.efk"); // Ç±ÇÍÇ≈ÉãÅ[ÉvÇµÇ»Ç¢
+
+				if (!m_bBoss)
+				{
+					Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 0.3f,m_pos.z });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("BailOutEnemy.efk", efcMat);
+				}
 				//m_isExpired = true;
 			}
 		}
@@ -4144,28 +4163,35 @@ void Enemy::CoarseFishEnemyBrain()
 
 	int rand = intRand(mt);
 
-	if (src.Length() <= 2.0f)
+	if (m_coarseFishEnemyAttackDelayCnt == 0)
 	{
-		randNum[0] = 990;
-		randNum[1] =  10;
-
-		for (int i = 0; i < 2; i++)
+		if (src.Length() <= 2.0f)
 		{
-			rand -= randNum[i];
-			if (rand < 0)
-			{
+			randNum[0] = 999;
+			randNum[1] =   1;
 
-				switch (i)
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
 				{
-				case 0:
-					m_wantToMoveState = Enemy::WantToMoveState::none;
-					break;
-				case 1:
-					m_wantToMoveState = Enemy::WantToMoveState::attack;
+
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveState = Enemy::WantToMoveState::none;
+						break;
+					case 1:
+						m_wantToMoveState = Enemy::WantToMoveState::attack;
+						break;
+					}
 					break;
 				}
-				break;
 			}
+		}
+		else
+		{
+			m_wantToMoveState = Enemy::WantToMoveState::run;
 		}
 	}
 	else
@@ -4181,12 +4207,17 @@ void Enemy::ScorpionAttackMove()
 		if (m_EnemyState & eLAttack)
 		{
 			m_EnemyState &= ~eLAttack;
-			if (m_EnemyState & eGrassHopperDashF | eStep)
+			if (m_EnemyState & eGrassHopperDashF | eStep && m_bBoss)
 			{
 				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
 			}
 			else
 			{
+				if (!m_bBoss)
+				{
+					m_coarseFishEnemyAttackDelayCnt = 120;
+				}
+
 				Brain();
 			}
 		}
@@ -4194,12 +4225,16 @@ void Enemy::ScorpionAttackMove()
 		if (m_EnemyState & eRAttack)
 		{
 			m_EnemyState &= ~eRAttack;
-			if (m_EnemyState & eGrassHopperDashF | eStep)
+			if (m_EnemyState & eGrassHopperDashF | eStep && m_bBoss)
 			{
 				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
 			}
 			else
 			{
+				if (!m_bBoss)
+				{
+					m_coarseFishEnemyAttackDelayCnt = 120;
+				}
 				Brain();
 			}
 		}
@@ -4434,9 +4469,12 @@ void Enemy::ScorpionAttackDecision()
 				m_EnemyState |= eRAttackThree;
 				m_EnemyState &= ~eRAttackTwo;
 				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = true;
+				m_bAttackAnimeCnt = false;
 				m_animator->SetAnimation(m_model->GetAnimation("RAttack3"), false);
 				m_bMove = true;
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
 				m_attackMoveSpd = 0.8f;
 			}
 
@@ -4458,7 +4496,7 @@ void Enemy::ScorpionAttackDecision()
 				m_EnemyState |= eLAttackThree;
 				m_EnemyState &= ~eLAttackTwo;
 				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = true;
+				m_bAttackAnimeCnt = false;
 				m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
 				m_bMove = true;
 				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
@@ -4552,7 +4590,15 @@ void Enemy::ScorpionAttackDecision()
 			m_target.lock()->SetDefenseSuc(false);
 			
 			m_attackMoveSpd = 0.8f;
-			m_animator->SetAnimation(m_model->GetAnimation("RAttack1"), false);
+
+			if (m_EnemyState & eGrassHopperDash && m_bBoss)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRAttack"), false);
+			}
+			else
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("RAttack1"), false);
+			}
 		}
 		else if (m_weaponType & eLScorpion)
 		{
@@ -4570,7 +4616,14 @@ void Enemy::ScorpionAttackDecision()
 			m_target.lock()->SetDefenseSuc(false);
 			
 			m_attackMoveSpd = 0.8f;
-			m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+			if (m_EnemyState & eGrassHopperDash && m_bBoss)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLAttack"), false);
+			}
+			else
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+			}
 		}
 	}
 }

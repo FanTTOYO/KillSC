@@ -2227,6 +2227,7 @@ void Ui::DrawSprite()
 			int i = 0;
 			for (auto& list : m_wpEnemyList)
 			{
+				if (list.expired())continue;
 				if (list.lock()->GetBEnemyDeath())
 				{
 					++i;
@@ -2266,7 +2267,14 @@ void Ui::DrawSprite()
 					}
 					else
 					{
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+						if (list.lock()->GetBBoss())
+						{
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+						}
+						else
+						{
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 4.0f), 50, &rc, &color, Math::Vector2(0, 0.5f));
+						}
 					}
 
 					rc = { 0,0,400,50 };

@@ -89,14 +89,14 @@ private:
 	SceneType m_nextSceneType = m_currentSceneType;
 
 	bool m_bPlayerWin;          // playerが勝ってる
-	int m_pointAddOrSubVal;     // 加算値か減算値
+	int  m_pointAddOrSubVal;     // 加算値か減算値
 	bool m_bAddOrSubVal = true; // true 加算値  false 減算値
 	bool m_bWinEnd;             // gameが終了してwindowが閉じるとき
-	int m_updateStopCnt;        // HitStop時に使用する
-	int m_enemyTotal;           // 敵の総数
-	int m_enemyIeftover;        // 敵の現在の数
-	int m_enemyDrawTotal;       // 敵の描画している総数
-	int m_screenVibFrames;       // 画面の振動フレーム数
+	int  m_updateStopCnt;        // HitStop時に使用する
+	int  m_enemyTotal;           // 敵の総数
+	int  m_enemyIeftover;        // 敵の現在の数
+	int  m_enemyDrawTotal;       // 敵の描画している総数
+	int  m_screenVibFrames;       // 画面の振動フレーム数
 
 // シングルトンパターン
 	// 生成するインスタンスの数を1つに制限する

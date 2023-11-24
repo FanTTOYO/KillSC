@@ -114,6 +114,7 @@ public:
 	void SetTarget(std::shared_ptr<Player> a_target) { m_target = a_target; }
 	void SetPos(Math::Vector3 a_pos) { m_pos = a_pos;}
 	void SetMatrix(Math::Vector3 a_pos) { m_mWorld = Math::Matrix::CreateTranslation(a_pos); }
+	void SetWorldRotationY(float a_mWorldRotY) { m_mWorldRot.y = a_mWorldRotY; }
 	//void Release() {};
 
 	const UINT& GetEnemyState() { return m_EnemyState; }
@@ -151,6 +152,7 @@ public:
 	void SetEnemyNumber(const int& a_enemyNumber) { m_enemyNumber = a_enemyNumber; }
 
 	void SetBBoss(bool a_bBoss) { m_bBoss = a_bBoss; }
+	const bool GetBBoss() { return m_bBoss; }
 
 private:
 
@@ -308,4 +310,6 @@ private:
 	bool m_bBlowingAwayHitB; // å„ÇÎÇ©ÇÁêÅÇ´îÚÇŒÇ≥ÇÍÇΩ
 
 	bool m_bBoss = false; // true É{ÉXÅ@false éGãõìG
+
+	int m_coarseFishEnemyAttackDelayCnt;
 };

@@ -69,15 +69,15 @@ void Hopper::Update()
 	if (m_bEnemyWeapon)
 	{
 		const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-		if (!(enemy->GetWeaponType() & (grassHopper | lGrassHopper)))return;
+		if (!(enemy->GetWeaponType() & (eGrassHopper | eLGrassHopper)))return;
 
 		const KdModelWork::Node* node = nullptr;
-		if (m_arrmType == rArrm && enemy->GetWeaponType() & grassHopper)
+		if (m_arrmType == rArrm && enemy->GetWeaponType() & eGrassHopper)
 		{
 			node = enemy->GetModel()->FindNode("WeaponRPoint");
 		}
 
-		if (m_arrmType == lArrm && enemy->GetWeaponType() & lGrassHopper)
+		if (m_arrmType == lArrm && enemy->GetWeaponType() & eLGrassHopper)
 		{
 			node = enemy->GetModel()->FindNode("WeaponLPoint");
 		}

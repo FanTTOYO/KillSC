@@ -34,9 +34,9 @@ void GameScene::Event()
 	}
 
 	if (m_wpUi.lock()->GetGameTimeM10() == 0 &&
-		m_wpUi.lock()->GetGameTimeM1()  == 0 &&
+		m_wpUi.lock()->GetGameTimeM1() == 0 &&
 		m_wpUi.lock()->GetGameTimeS10() == 0 &&
-		m_wpUi.lock()->GetGameTimeS1()  == 0)
+		m_wpUi.lock()->GetGameTimeS1() == 0)
 	{
 		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
 		{
@@ -66,7 +66,7 @@ void GameScene::Event()
 		SceneManager::Instance().SetBPlayerWin();
 		SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
 
-		
+
 		if (SceneManager::Instance().GetEnemyTotal() == 100)
 		{
 			SceneManager::Instance().SetPointAddOrSubVal(6000);
@@ -112,10 +112,202 @@ void GameScene::Event()
 			}
 		}
 	}
+	else if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle && !m_bCountDown)
+	{
+		if (!KdEffekseerManager::GetInstance().IsPlaying("EnemyAppearance.efk"))
+		{
+			m_appearanceEffectCnt = 0;
+			m_bAppearanceEffect = false;
+		}
+
+		if (SceneManager::Instance().GetEnemyDrawTotal() == 0 && m_waveCnt < 2)
+		{
+
+			if (!m_bAppearanceEffect)
+			{
+				m_appearanceEffectCnt = 0;
+				m_bAppearanceEffect = true;
+
+				KdEffekseerManager::GetInstance().
+					Play("EnemyAppearance.efk", { 0,1,20.0f });
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
+
+
+				KdEffekseerManager::GetInstance().
+					Play("EnemyAppearance.efk", { 0,1,-30.0f });
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
+
+
+				KdEffekseerManager::GetInstance().
+					Play("EnemyAppearance.efk", { 20,1,0.0f });
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
+
+
+				KdEffekseerManager::GetInstance().
+					Play("EnemyAppearance.efk", { -20,1,0.0f });
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
+
+			}
+
+			if (m_bAppearanceEffect)
+			{
+				++m_appearanceEffectCnt;
+			}
+
+			if (m_appearanceEffectCnt >= 25)
+			{
+				std::shared_ptr<Enemy> enemy;
+				int total = 2;
+				m_waveCnt++;
+				// 前方向
+				for (int i = 0; i < total; ++i)
+				{
+					SceneManager::Instance().AddEnemyDrawTotal();
+					enemy = std::make_shared<Enemy>();
+					enemy->SetTarget(m_wpPlayer.lock());
+					m_wpPlayer.lock()->AddEnemy(enemy);
+					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+					m_wpUi.lock()->AddEnemy(enemy);
+					enemy->Init();
+					enemy->SetEnemyNumber(i + 1);
+					enemy->SetBBoss(false);
+
+					enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
+					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
+
+					m_objList.push_back(enemy);
+				}
+
+				// 後ろ方向
+				for (int i = 0; i < total; ++i)
+				{
+					SceneManager::Instance().AddEnemyDrawTotal();
+					enemy = std::make_shared<Enemy>();
+					enemy->SetTarget(m_wpPlayer.lock());
+					m_wpPlayer.lock()->AddEnemy(enemy);
+					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+					m_wpUi.lock()->AddEnemy(enemy);
+					enemy->Init();
+					enemy->SetEnemyNumber(i + 1);
+					enemy->SetBBoss(false);
+
+					enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
+					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+
+					m_objList.push_back(enemy);
+				}
+
+				// 右方向
+				for (int i = 0; i < total; ++i)
+				{
+					SceneManager::Instance().AddEnemyDrawTotal();
+					enemy = std::make_shared<Enemy>();
+					enemy->SetTarget(m_wpPlayer.lock());
+					m_wpPlayer.lock()->AddEnemy(enemy);
+					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+					m_wpUi.lock()->AddEnemy(enemy);
+					enemy->Init();
+					enemy->SetEnemyNumber(i + 1);
+					enemy->SetBBoss(false);
+
+					enemy->SetPos(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
+					enemy->SetMatrix(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
+
+					m_objList.push_back(enemy);
+				}
+
+				// 左方向
+				for (int i = 0; i < total; ++i)
+				{
+					SceneManager::Instance().AddEnemyDrawTotal();
+					enemy = std::make_shared<Enemy>();
+					enemy->SetTarget(m_wpPlayer.lock());
+					m_wpPlayer.lock()->AddEnemy(enemy);
+					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+					m_wpUi.lock()->AddEnemy(enemy);
+					enemy->Init();
+					enemy->SetEnemyNumber(i + 1);
+					enemy->SetBBoss(false);
+
+					enemy->SetPos(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
+					enemy->SetMatrix(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
+
+					m_objList.push_back(enemy);
+				}
+			}
+		}
+		else if (SceneManager::Instance().GetEnemyDrawTotal() == 0 && m_waveCnt >= 2 && m_bossAppearanceCnt < SceneManager::Instance().GetEnemyTotal())
+		{
+			if (!m_bAppearanceEffect)
+			{
+				m_appearanceEffectCnt = 0;
+				m_bAppearanceEffect = true;
+
+				KdEffekseerManager::GetInstance().
+					Play("EnemyAppearance.efk", { 0, 10.0f, 30.0f });
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
+
+				Math::Matrix efcMat = Math::Matrix::CreateScale(1.5f) * Math::Matrix::CreateTranslation({ 0, 10.0f, 30.0f });
+				KdEffekseerManager::GetInstance().SetWorldMatrix("EnemyAppearance.efk", efcMat);
+
+			}
+
+			if (m_bAppearanceEffect)
+			{
+				++m_appearanceEffectCnt;
+			}
+
+			if (m_appearanceEffectCnt >= 25)
+			{
+				int total = SceneManager::Instance().GetEnemyTotal();
+				std::shared_ptr<Enemy> enemy;
+				// 前方向
+				for (int i = 0; i < total; ++i)
+				{
+					m_bossAppearanceCnt++;
+					SceneManager::Instance().AddEnemyDrawTotal();
+					enemy = std::make_shared<Enemy>();
+					enemy->SetTarget(m_wpPlayer.lock());
+					m_wpPlayer.lock()->AddEnemy(enemy);
+					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+					m_wpUi.lock()->AddEnemy(enemy);
+					enemy->Init();
+					enemy->SetEnemyNumber(1);
+					enemy->SetBBoss(true);
+					switch (total)
+					{
+					case 1:
+						enemy->SetPos(Math::Vector3(0, 10.0f, 30.0f));
+						enemy->SetMatrix(Math::Vector3(0, 10.0f, 30.0f));
+						break;
+					case 2:
+						enemy->SetPos(Math::Vector3(-3.0f + 6.0f * i, 10.0f, 30.0f));
+						enemy->SetMatrix(Math::Vector3(0, 10.0f, 30.0f));
+						break;
+					case 3:
+						enemy->SetPos(Math::Vector3(-3.0f + 3.0f * i, 10.0f, 30.0f));
+						enemy->SetMatrix(Math::Vector3(0, 10.0f, 30.0f));
+						break;
+					}
+					m_objList.push_back(enemy);
+
+				}
+			}
+		}
+	}
 }
 
 void GameScene::Init()
 {
+	m_waveCnt = 0;
+	m_bossAppearanceCnt = 0;
+	m_appearanceEffectCnt = 0;
+	m_bAppearanceEffect = false;
+
 	KdAudioManager::Instance().StopAllSound();
 
 	KdInputCollector* gamepadCollector = new KdInputCollector();
@@ -195,54 +387,8 @@ void GameScene::Init()
 	m_objList.push_back(player);
 	m_wpPlayer = player;
 
-
-	std::shared_ptr<Enemy> enemy;
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
 	ui->SetPlayer(player);
-	
-	int total = SceneManager::Instance().GetEnemyTotal();
-	if (total >= 5)
-	{
-		total = 5;
-	}
-
-	SceneManager::Instance().SetEnemyDrawTotal(total);
-
-	for (int i = 0; i < total; ++i)
-	{
-		enemy = std::make_shared<Enemy>();
-		enemy->SetTarget(player);
-		player->AddEnemy(enemy);
-		ui->AddEnemy(enemy);
-		enemy->Init();
-		enemy->SetEnemyNumber(i + 1);
-		enemy->SetBBoss(false);
-		switch (total)
-		{
-		case 1:
-			enemy->SetPos(Math::Vector3(0, 0.0f, 20.0f));
-			enemy->SetMatrix(Math::Vector3(0, 0.0f, 20.0f));
-			break;
-		case 2:
-			enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, 20.0f));
-			enemy->SetMatrix(Math::Vector3(-5.0f + 10.0f * i, 0.0f, 20.0f));
-			break;
-		case 3:
-			enemy->SetPos(Math::Vector3(-5.0f + 5.0f * i, 0.0f, 20.0f));
-			enemy->SetMatrix(Math::Vector3(-5.0f + 5.0f * i, 0.0f, 20.0f));
-			break;
-		case 4:
-			enemy->SetPos(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
-			enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
-			break;
-		case 5:
-			enemy->SetPos(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
-			enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
-			break;
-		}
-
-		m_objList.push_back(enemy);
-	}
 
 	ui->SetPlayer(player);
 	ui->SetUiType(Ui::UiType::game);
@@ -251,7 +397,7 @@ void GameScene::Init()
 
 	player->Init();
 
-	
+
 	camera->SetTarget(player);
 	camera->SetPlayer(player);
 	player->SetCamera(camera);
