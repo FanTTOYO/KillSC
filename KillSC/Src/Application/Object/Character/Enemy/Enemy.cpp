@@ -621,33 +621,40 @@ void Enemy::Update()
 
 	// 球と当たり判定 
 
-	m_target.lock()->Intersects
-	(
-		sphereInfo,
-		&retSphereList
-	);
-
-	// 球に当たったリスト情報から一番近いオブジェクトを検出
-	maxOverLap = 0;
-	hit = false;
-	hitDir = {}; // 当たった方向
-	for (auto& ret : retSphereList)
+	if (!m_target.expired())
 	{
-		// 一番近くで当たったものを探す
-		if (maxOverLap < ret.m_overlapDistance)
+		if (!m_target.lock()->GetBPlayerLose())
 		{
-			maxOverLap = ret.m_overlapDistance;
-			hit = true;
-			hitDir = ret.m_hitDir;
+			m_target.lock()->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
 		}
-	}
 
-	if (hit)
-	{
-		hitDir.y = 0.0f;
-		hitDir.Normalize();
-		// 球とモデルが当たっている
-		m_pos += (hitDir * maxOverLap);
+
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		maxOverLap = 0;
+		hit = false;
+		hitDir = {}; // 当たった方向
+		for (auto& ret : retSphereList)
+		{
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+				hitDir = ret.m_hitDir;
+			}
+		}
+
+		if (hit)
+		{
+			hitDir.y = 0.0f;
+			hitDir.Normalize();
+			// 球とモデルが当たっている
+			m_pos += (hitDir * maxOverLap);
+		}
 	}
 
 	if (m_EnemyState & (eRlAttack | eRlAttackRush | EnemyState::eHit))

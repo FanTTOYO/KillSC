@@ -124,6 +124,7 @@ public:
 	void HasDefense()override;
 
 	const bool GetBPlayerDeath() { return m_bPlayerDeath; }
+	const bool GetBPlayerLose() { return m_bPlayerLose; }
 
 	const float GetAngleY() { return m_mWorldRot.y;}
 

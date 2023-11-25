@@ -36,6 +36,7 @@ public:
 	void SelectUpdate();
 	void DrawSprite()override;
 	void DrawUnLit()override;
+	//void PreDraw()override;
 	void SetUiType(UiType a_uiType) { m_uiType = a_uiType; }
 	void SetAddFadeAlpha() { m_addFadeAlpha = true; }
 	int GetTime() {return m_time;}
@@ -55,6 +56,9 @@ public:
 	const int GetGameTimeM10() { return m_gameTimeM10; }
 	const bool GetBEnterKey() { return m_bEnterKey; }
 
+	void SetWaveCnt(int a_waveCnt) { m_waveCnt = a_waveCnt; }
+	void SetBWaveChange() { m_bWaveChange = true; }
+
 private:
 	void Init()override;
 
@@ -71,6 +75,16 @@ private:
 	KdTexture m_enduranceTex;
 	KdTexture m_enduranceBarTex;
 	KdTexture m_pushToEnterTex;
+
+	KdPolygon m_torionPolygon;
+	KdPolygon m_torionBarPolygon;
+	KdPolygon m_endurancePolygon;
+	KdPolygon m_enduranceBarPolygon;
+
+	Math::Matrix m_torionMat;
+	Math::Matrix m_torionBarMat;
+	Math::Matrix m_enduranceMat;
+	Math::Matrix m_enduranceBarMat;
 
 	KdTexture m_winTex;
 	KdTexture m_lossTex;
@@ -286,4 +300,11 @@ private:
 	KdTexture m_EnemyDirectionArrowRTex;
 	KdTexture m_EnemyDirectionArrowUTex;
 	KdTexture m_EnemyDirectionArrowBTex;
+
+	float m_waveScale;
+	float m_waveAlpha;
+	KdTexture m_waveTex;
+	int m_waveCnt;
+	int m_waveTimeCnt; // 2ウェーブからはこのカウントを使ってフェードイン・フェードアウトする
+	bool m_bWaveChange; // ウェーブ数が変化した時　true
 };

@@ -159,6 +159,13 @@ void GameScene::Event()
 				std::shared_ptr<Enemy> enemy;
 				int total = 2;
 				m_waveCnt++;
+				m_wpUi.lock()->SetWaveCnt(m_waveCnt);
+
+				if (m_waveCnt >= 2)
+				{
+					m_wpUi.lock()->SetBWaveChange();
+				}
+
 				// ‘O•ûŒü
 				for (int i = 0; i < total; ++i)
 				{
@@ -392,6 +399,7 @@ void GameScene::Init()
 
 	ui->SetPlayer(player);
 	ui->SetUiType(Ui::UiType::game);
+	ui->SetWaveCnt(m_waveCnt);
 	m_objList.push_back(ui);
 	m_wpUi = ui;
 

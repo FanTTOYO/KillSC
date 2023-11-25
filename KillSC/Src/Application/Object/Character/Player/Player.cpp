@@ -856,6 +856,7 @@ void Player::Update()
 	for (auto& enemyList : m_enemyList)
 	{
 		if (enemyList.expired())continue;
+		if (enemyList.lock()->GetBEnemyLose())continue;
 
 		enemyList.lock()->Intersects
 		(

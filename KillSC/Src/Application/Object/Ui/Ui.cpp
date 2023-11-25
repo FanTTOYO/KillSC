@@ -178,122 +178,206 @@ void Ui::GameUpdate()
 		m_time++;
 	}
 
-	if (m_time >= 0 && m_time < 30)
+	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
 	{
-		m_countThreeScale += (1.0f / 10.0f);
-		if (m_countThreeScale > 1.0f)
+		if (m_time >= 0 && m_time < 90)
 		{
-			m_countThreeScale = 1.0f;
-		}
+			m_waveScale += (1.0f / 10.0f);
+			if (m_waveScale > 1.0f)
+			{
+				m_waveScale = 1.0f;
+			}
 
-		m_countThreeAlpha += (1.0f / 30.0f);
-		if (m_countThreeAlpha > 1.0f)
+			m_waveAlpha += (1.0f / 30.0f);
+			if (m_waveAlpha > 1.0f)
+			{
+				m_waveAlpha = 1.0f;
+			}
+		}
+		else if (m_time >= 90 && m_time < 180)
 		{
-			m_countThreeAlpha = 1.0f;
+			m_waveAlpha -= (1.0f / 60.0f);
+			if (m_waveAlpha < 0.0f)
+			{
+				m_waveAlpha = 0.0f;
+			}
+		}
+		else if (m_time >= 180 && m_time < 210)
+		{
+			m_countGoScale += (1.0f / 10.0f);
+			if (m_countGoScale > 1.0f)
+			{
+				m_countGoScale = 1.0f;
+			}
+
+			m_countGoAlpha += (1.0f / 30.0f);
+			if (m_countGoAlpha > 1.0f)
+			{
+				m_countGoAlpha = 1.0f;
+			}
+		}
+		else if (m_time >= 210 && m_time < 240)
+		{
+			m_countGoAlpha -= (1.0f / 30.0f);
+			if (m_countGoAlpha < 0.0f)
+			{
+				m_countGoAlpha = 0.0f;
+				SetCursorPos(640, 360);
+				m_waveAlpha = 0.0f;
+				m_waveScale = 0.1f;
+			}
 		}
 	}
-	else if (m_time >= 30 && m_time < 60)
+	else
 	{
-		/*m_countThreeScale += (1.0f / 10.0f);
-		if (m_countThreeScale > 1.0f)
+		if (m_time >= 0 && m_time < 30)
 		{
-			m_countThreeScale = 1.0f;
-		}*/
+			m_countThreeScale += (1.0f / 10.0f);
+			if (m_countThreeScale > 1.0f)
+			{
+				m_countThreeScale = 1.0f;
+			}
 
-		m_countThreeAlpha -= (1.0f / 30.0f);
-		if (m_countThreeAlpha < 0.0f)
-		{
-			m_countThreeAlpha = 0.0f;
+			m_countThreeAlpha += (1.0f / 30.0f);
+			if (m_countThreeAlpha > 1.0f)
+			{
+				m_countThreeAlpha = 1.0f;
+			}
 		}
-	}
-	else if (m_time >= 60 && m_time < 90)
-	{
-		m_countTwoScale += (1.0f / 10.0f);
-		if (m_countTwoScale > 1.0f)
+		else if (m_time >= 30 && m_time < 60)
 		{
-			m_countTwoScale = 1.0f;
-		}
 
-		m_countTwoAlpha += (1.0f / 30.0f);
-		if (m_countTwoAlpha > 1.0f)
-		{
-			m_countTwoAlpha = 1.0f;
+			m_countThreeAlpha -= (1.0f / 30.0f);
+			if (m_countThreeAlpha < 0.0f)
+			{
+				m_countThreeAlpha = 0.0f;
+			}
 		}
-	}
-	else if (m_time >= 90 && m_time < 120)
-	{
-		/*m_countThreeScale += (1.0f / 10.0f);
-		if (m_countThreeScale > 1.0f)
+		else if (m_time >= 60 && m_time < 90)
 		{
-			m_countThreeScale = 1.0f;
-		}*/
+			m_countTwoScale += (1.0f / 10.0f);
+			if (m_countTwoScale > 1.0f)
+			{
+				m_countTwoScale = 1.0f;
+			}
 
-		m_countTwoAlpha -= (1.0f / 30.0f);
-		if (m_countThreeAlpha < 0.0f)
-		{
-			m_countThreeAlpha = 0.0f;
+			m_countTwoAlpha += (1.0f / 30.0f);
+			if (m_countTwoAlpha > 1.0f)
+			{
+				m_countTwoAlpha = 1.0f;
+			}
 		}
-	}
-	else if (m_time >= 120 && m_time < 150)
-	{
-		m_countOneScale += (1.0f / 10.0f);
-		if (m_countOneScale > 1.0f)
+		else if (m_time >= 90 && m_time < 120)
 		{
-			m_countOneScale = 1.0f;
-		}
+			/*m_countThreeScale += (1.0f / 10.0f);
+			if (m_countThreeScale > 1.0f)
+			{
+				m_countThreeScale = 1.0f;
+			}*/
 
-		m_countOneAlpha += (1.0f / 30.0f);
-		if (m_countOneAlpha > 1.0f)
-		{
-			m_countOneAlpha = 1.0f;
+			m_countTwoAlpha -= (1.0f / 30.0f);
+			if (m_countThreeAlpha < 0.0f)
+			{
+				m_countThreeAlpha = 0.0f;
+			}
 		}
-	}
-	else if (m_time >= 150 && m_time < 180)
-	{
-		/*m_countThreeScale += (1.0f / 10.0f);
-		if (m_countThreeScale > 1.0f)
+		else if (m_time >= 120 && m_time < 150)
 		{
-			m_countThreeScale = 1.0f;
-		}*/
+			m_countOneScale += (1.0f / 10.0f);
+			if (m_countOneScale > 1.0f)
+			{
+				m_countOneScale = 1.0f;
+			}
 
-		m_countOneAlpha -= (1.0f / 30.0f);
-		if (m_countOneAlpha < 0.0f)
-		{
-			m_countOneAlpha = 0.0f;
+			m_countOneAlpha += (1.0f / 30.0f);
+			if (m_countOneAlpha > 1.0f)
+			{
+				m_countOneAlpha = 1.0f;
+			}
 		}
-	}
-	else if (m_time >= 180 && m_time < 210)
-	{
-		m_countGoScale += (1.0f / 10.0f);
-		if (m_countGoScale > 1.0f)
+		else if (m_time >= 150 && m_time < 180)
 		{
-			m_countGoScale = 1.0f;
-		}
+			/*m_countThreeScale += (1.0f / 10.0f);
+			if (m_countThreeScale > 1.0f)
+			{
+				m_countThreeScale = 1.0f;
+			}*/
 
-		m_countGoAlpha += (1.0f / 30.0f);
-		if (m_countGoAlpha > 1.0f)
-		{
-			m_countGoAlpha = 1.0f;
+			m_countOneAlpha -= (1.0f / 30.0f);
+			if (m_countOneAlpha < 0.0f)
+			{
+				m_countOneAlpha = 0.0f;
+			}
 		}
-	}
-	else if (m_time >= 210 && m_time < 240)
-	{
-		/*m_countThreeScale += (1.0f / 10.0f);
-		if (m_countThreeScale > 1.0f)
+		else if (m_time >= 180 && m_time < 210)
 		{
-			m_countThreeScale = 1.0f;
-		}*/
+			m_countGoScale += (1.0f / 10.0f);
+			if (m_countGoScale > 1.0f)
+			{
+				m_countGoScale = 1.0f;
+			}
 
-		m_countGoAlpha -= (1.0f / 30.0f);
-		if (m_countGoAlpha < 0.0f)
+			m_countGoAlpha += (1.0f / 30.0f);
+			if (m_countGoAlpha > 1.0f)
+			{
+				m_countGoAlpha = 1.0f;
+			}
+		}
+		else if (m_time >= 210 && m_time < 240)
 		{
-			m_countGoAlpha = 0.0f;
-			SetCursorPos(640, 360);
+			/*m_countThreeScale += (1.0f / 10.0f);
+			if (m_countThreeScale > 1.0f)
+			{
+				m_countThreeScale = 1.0f;
+			}*/
+
+			m_countGoAlpha -= (1.0f / 30.0f);
+			if (m_countGoAlpha < 0.0f)
+			{
+				m_countGoAlpha = 0.0f;
+				SetCursorPos(640, 360);
+			}
 		}
 	}
 
 	if (m_time > 240)
 	{
+
+		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
+		{
+			if (m_bWaveChange)
+			{
+				++m_waveTimeCnt;
+				if (m_waveTimeCnt >= 0 && m_waveTimeCnt < 90)
+				{
+					m_waveScale += (1.0f / 10.0f);
+					if (m_waveScale > 1.0f)
+					{
+						m_waveScale = 1.0f;
+					}
+
+					m_waveAlpha += (1.0f / 30.0f);
+					if (m_waveAlpha > 1.0f)
+					{
+						m_waveAlpha = 1.0f;
+					}
+				}
+				else if (m_waveTimeCnt >= 90 && m_waveTimeCnt < 180)
+				{
+					m_waveAlpha -= (1.0f / 60.0f);
+					if (m_waveAlpha < 0.0f)
+					{
+						m_waveAlpha = 0.0f;
+					}
+				}
+				else if (m_waveTimeCnt >= 180)
+				{
+					m_bWaveChange = false;
+					m_waveTimeCnt = 0;
+				}
+			}
+		}
+
 		PWINDOWINFO pwi = new WINDOWINFO;
 		pwi->cbSize = sizeof(WINDOWINFO);
 		GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
@@ -2105,37 +2189,89 @@ void Ui::DrawSprite()
 	case UiType::game:
 
 		transMat = Math::Matrix::Identity;
-		if (m_time >= 0 && m_time < 60)
+
+		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
 		{
-			mat = Math::Matrix::CreateScale(m_countThreeScale) * transMat;
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			Math::Rectangle rc = { 0,0,121, 136 };
-			color = { 1,1,1,m_countThreeAlpha };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countThreeTex, 0, 0, 121, 136, &rc, &color);
+			if (m_time >= 0 && m_time < 180)
+			{
+				transMat = Math::Matrix::CreateTranslation(-75, 0, 0);
+				mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				Math::Rectangle rc = { 0,0,354, 114 };
+				color = { 1,1,1,m_waveAlpha };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_waveTex, 0, 0, 354, 114, &rc, &color);
+
+				transMat = Math::Matrix::CreateTranslation(175, -10, 0);
+				mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				rc = { 0,0,121, 136 };
+				color = { 1,1,1,m_waveAlpha };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point1Tex, 0, 0, 121, 136, &rc, &color);
+
+			}
+			else if (m_time >= 180 && m_time < 240)
+			{
+				mat = Math::Matrix::CreateScale(m_countGoScale) * transMat;
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				Math::Rectangle rc = { 0,0,211, 136 };
+				color = { 1,1,1,m_countGoAlpha };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countGoTex, 0, 0, 211, 136, &rc, &color);
+			}
+
+			if (m_waveCnt >= 2)
+			{
+				if (m_waveTimeCnt >= 0 && m_waveTimeCnt < 180)
+				{
+					transMat = Math::Matrix::CreateTranslation(-75, 0, 0);
+					mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+					Math::Rectangle rc = { 0,0,354, 114 };
+					color = { 1,1,1,m_waveAlpha };
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_waveTex, 0, 0, 354, 114, &rc, &color);
+
+					transMat = Math::Matrix::CreateTranslation(175, -10, 0);
+					mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+					rc = { 0,0,121, 136 };
+					color = { 1,1,1,m_waveAlpha };
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_Point2Tex, 0, 0, 121, 136, &rc, &color);
+				}
+			}
 		}
-		else if (m_time >= 60 && m_time < 120)
+		else
 		{
-			mat = Math::Matrix::CreateScale(m_countTwoScale) * transMat;
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			Math::Rectangle rc = { 0,0,121, 136 };
-			color = { 1,1,1,m_countTwoAlpha };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countTwoTex, 0, 0, 121, 136, &rc, &color);
-		}
-		else if (m_time >= 120 && m_time < 180)
-		{
-			mat = Math::Matrix::CreateScale(m_countOneScale) * transMat;
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			Math::Rectangle rc = { 0,0,121, 136 };
-			color = { 1,1,1,m_countOneAlpha };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countOneTex, 0, 0, 121, 136, &rc, &color);
-		}
-		else if (m_time >= 180 && m_time < 240)
-		{
-			mat = Math::Matrix::CreateScale(m_countGoScale) * transMat;
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			Math::Rectangle rc = { 0,0,211, 136 };
-			color = { 1,1,1,m_countGoAlpha };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countGoTex, 0, 0, 211, 136, &rc, &color);
+			if (m_time >= 0 && m_time < 60)
+			{
+				mat = Math::Matrix::CreateScale(m_countThreeScale) * transMat;
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				Math::Rectangle rc = { 0,0,121, 136 };
+				color = { 1,1,1,m_countThreeAlpha };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countThreeTex, 0, 0, 121, 136, &rc, &color);
+			}
+			else if (m_time >= 60 && m_time < 120)
+			{
+				mat = Math::Matrix::CreateScale(m_countTwoScale) * transMat;
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				Math::Rectangle rc = { 0,0,121, 136 };
+				color = { 1,1,1,m_countTwoAlpha };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countTwoTex, 0, 0, 121, 136, &rc, &color);
+			}
+			else if (m_time >= 120 && m_time < 180)
+			{
+				mat = Math::Matrix::CreateScale(m_countOneScale) * transMat;
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				Math::Rectangle rc = { 0,0,121, 136 };
+				color = { 1,1,1,m_countOneAlpha };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countOneTex, 0, 0, 121, 136, &rc, &color);
+			}
+			else if (m_time >= 180 && m_time < 240)
+			{
+				mat = Math::Matrix::CreateScale(m_countGoScale) * transMat;
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				Math::Rectangle rc = { 0,0,211, 136 };
+				color = { 1,1,1,m_countGoAlpha };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countGoTex, 0, 0, 211, 136, &rc, &color);
+			}
 		}
 
 		if (m_spPlayer)
@@ -2288,7 +2424,7 @@ void Ui::DrawSprite()
 
 					if (m_heightDifference >= 2.0f)
 					{
-						mat = Math::Matrix::CreateTranslation(0, 225.0f, 0.0f);
+						mat = Math::Matrix::CreateTranslation(-25, 225.0f, 0.0f);
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 						rc = { 0,0,100,125 };
 						color = { 1, 1, 1, 1 };
@@ -2296,33 +2432,33 @@ void Ui::DrawSprite()
 					}
 					else if (m_heightDifference <= -2.0f)
 					{
-						mat = Math::Matrix::CreateTranslation(0, -225.0f, 0.0f);
+						mat = Math::Matrix::CreateTranslation(-25, -225.0f, 0.0f);
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 						rc = { 0,0,100,125 };
 						color = { 1, 1, 1, 1 };
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowBTex, 0, 0, 100, 125, &rc, &color, Math::Vector2(0, 0.5f));
 					}
-					else
-					{
-						Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
 
-						if (cross.y < 0)
-						{
-							mat = Math::Matrix::CreateTranslation(-500, 0.0f, 0.0f);
-							KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-							rc = { 0,0,125,100 };
-							color = { 1, 1, 1, 1 };
-							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowLTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
-						}
-						else if (cross.y >= 0)
-						{
-							mat = Math::Matrix::CreateTranslation(500, 0.0f, 0.0f);
-							KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-							rc = { 0,0,125,100 };
-							color = { 1, 1, 1, 1 };
-							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowRTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
-						}
+					
+					Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
+
+					if (cross.y < 0)
+					{
+						mat = Math::Matrix::CreateTranslation(-500, 0.0f, 0.0f);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+						rc = { 0,0,125,100 };
+						color = { 1, 1, 1, 1 };
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowLTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
 					}
+					else if (cross.y >= 0)
+					{
+						mat = Math::Matrix::CreateTranslation(500, 0.0f, 0.0f);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+						rc = { 0,0,125,100 };
+						color = { 1, 1, 1, 1 };
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowRTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
+					}
+					
 				}
 				++i;
 			}
@@ -3649,26 +3785,32 @@ void Ui::DrawSprite()
 
 void Ui::DrawUnLit()
 {
-	//for (auto& list : m_wpEnemyList)
-	//{
-	//	Math::Vector3 pos = list.lock()->GetPos();
-	//	Math::Matrix scaleMat = Math::Matrix::CreateScale(0.001 * pos.z);
-	//	pos.z = 0.0f;
-	//	Math::Matrix mat = scaleMat * Math::Matrix::CreateTranslation(pos);
-	//	/*mat.Backward(m_wpCamera.lock()->GetCamera()->GetCameraMatrix().Backward());
-	//	mat.Up(m_wpCamera.lock()->GetCamera()->GetCameraMatrix().Up());
-	//	mat.Right(m_wpCamera.lock()->GetCamera()->GetCameraMatrix().Right());*/
+	/*for (auto& list : m_wpEnemyList)
+	{
+		if (list.expired())continue;
+		if (list.lock()->GetBEnemyLose())continue;
 
-	//	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-	//	Math::Rectangle rc = { 0,0,(int)(list.lock()->GetEndurance()),50 };
-	//	Math::Color color = { 1, 1, 1, 1 };
-	//	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+		Math::Vector3 pos = list.lock()->GetPos();
+		pos.y += 1.8f;
+		Math::Matrix scaleMat = Math::Matrix::CreateScale(1.0f);
+		Math::Matrix mat = scaleMat * Math::Matrix::CreateTranslation(pos);
+		mat.Backward(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Backward());
+		mat.Up(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Up());
+		mat.Right(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Right());
+		
+		Math::Color color = { 1, 1, 1, 1 };
+		KdShaderManager::Instance().m_HD2DShader.DrawPolygon(m_torionPolygon, mat,color,Math::Vector3(0,0.5,0));
+		KdShaderManager::Instance().m_HD2DShader.DrawPolygon(m_torionBarPolygon, mat,color,Math::Vector3(0,0.5,0));
 
-	//	rc = { 0,0,400,50 };
-	//	color = { 1, 1, 1, 1 };
-	//	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
-	//}
+		KdShaderManager::Instance().m_HD2DShader.DrawPolygon(m_endurancePolygon, mat, color, Math::Vector3(0, 0.5, 0));
+		KdShaderManager::Instance().m_HD2DShader.DrawPolygon(m_enduranceBarPolygon, mat, color, Math::Vector3(0, 0.5, 0));
+	}*/
 }
+
+//void Ui::PreDraw()
+//{
+//
+//}
 
 void Ui::AddEnemy(std::shared_ptr<Enemy> a_spEnemy)
 {
@@ -3698,6 +3840,11 @@ void Ui::Init()
 
 	m_enduranceBarTex.Load("Asset/Textures/Ui/Game/enduranceBar.png");
 	m_enduranceTex.Load("Asset/Textures/Ui/Game/endurance.png");
+
+	//m_endurancePolygon.SetMaterial("Asset/Textures/Ui/Game/endurance.png");
+	//m_enduranceBarPolygon.SetMaterial("Asset/Textures/Ui/Game/enduranceBar.png");
+	//m_torionPolygon.SetMaterial("Asset/Textures/Ui/Game/Torion.png");
+	//m_torionBarPolygon.SetMaterial("Asset/Textures/Ui/Game/TorionBar.png");
 
 	m_winTex.Load("Asset/Textures/Ui/Result/WIN.png");
 	m_lossTex.Load("Asset/Textures/Ui/Result/LOSS.png");
@@ -3780,6 +3927,7 @@ void Ui::Init()
 	m_EnemyDirectionArrowRTex.Load("Asset/Textures/Ui/Game/enemyDirectionArrowR.png");
 	m_EnemyDirectionArrowUTex.Load("Asset/Textures/Ui/Game/enemyDirectionArrowU.png");
 	m_EnemyDirectionArrowBTex.Load("Asset/Textures/Ui/Game/enemyDirectionArrowB.png");
+	m_waveTex.Load("Asset/Textures/Ui/Game/wave.png");
 
 
 	m_bBattleSelect = false;
@@ -3894,4 +4042,9 @@ void Ui::Init()
 	m_bChalengehelp = false;
 	m_gameTimeCntDeray = 0;
 
+	m_waveScale = 0.1f;
+	m_waveAlpha = 0.0f;
+	m_waveTimeCnt = 0;
+	m_waveTimeCnt = 0;
+	m_waveCnt = 0;
 }
