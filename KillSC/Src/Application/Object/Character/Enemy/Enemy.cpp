@@ -1517,7 +1517,7 @@ void Enemy::PostUpdate()
 
 				if (!m_bBoss)
 				{
-					Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 0.3f,m_pos.z });
+					Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 0.3f,m_pos.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("BailOutEnemy.efk", efcMat);
 				}
 				//m_isExpired = true;
@@ -2803,6 +2803,11 @@ void Enemy::GrassMove()
 		}
 		else if (m_lGrassHopperTime <= 75 && m_lGrassHopperTime > 30 || m_rGrassHopperTime <= 75 && m_rGrassHopperTime > 30)
 		{
+			if (m_lGrassHopperTime == 75 || m_rGrassHopperTime == 75)
+			{
+				KdAudioManager::Instance().Play3D("Asset/Audio/SE/GrassHopeer.wav", { m_pos.x, m_pos.y + 0.3f,m_pos.z });
+			}
+
 			if (m_enemyType & EnemyType::speedSter)
 			{
 				if (m_lGrassHopperTime <= 75 && m_lGrassHopperTime > 60 || m_rGrassHopperTime <= 75 && m_rGrassHopperTime > 60)
@@ -3070,7 +3075,7 @@ void Enemy::StepVecDecision()
 
 void Enemy::NormalMoveVecDecision()
 {
-	std::random_device rnd;
+	/*std::random_device rnd;
 	std::mt19937 mt(rnd());
 	std::uniform_int_distribution<int> intRand(0, 999);
 	int randNum[2] = {};
@@ -3099,13 +3104,29 @@ void Enemy::NormalMoveVecDecision()
 			}
 			break;
 		}
+	}*/
+
+	if (!(m_EnemyState & eRun))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 	}
+	m_EnemyState = eRun;
 }
 
 void Enemy::NormalMove()
 {
 	Math::Vector3 moveVec = {};
-	float moveSpd = 0.25f;
+
+	float moveSpd;
+	if (m_bBoss)
+	{
+		moveSpd = 0.25f;
+	}
+	else
+	{
+		moveSpd = 0.15f;
+	}
+
 
 	if (m_EnemyState & eRun)
 	{

@@ -106,6 +106,7 @@ void GameScene::Event()
 				m_wpPlayer.lock()->AddEnemy(enemy);
 				m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
 				enemy->Init();
+				enemy->SetBBoss(true);
 				m_objList.push_back(enemy);
 				m_wpUi.lock()->AddEnemy(enemy);
 				SceneManager::Instance().AddEnemyDrawTotal();

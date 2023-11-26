@@ -856,7 +856,7 @@ void Player::Update()
 	for (auto& enemyList : m_enemyList)
 	{
 		if (enemyList.expired())continue;
-		if (enemyList.lock()->GetBEnemyLose())continue;
+		if (enemyList.lock()->GetBEnemyDeath())continue;
 
 		enemyList.lock()->Intersects
 		(
@@ -2139,6 +2139,7 @@ void Player::GrassMoveVecDecision()
 					//efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ mat._41,mat._42,mat._43 });
 					//KdEffekseerManager::GetInstance().SetWorldMatrix("GrassUp.efk", efcMat);
 				}
+				// KdAudioManager::Instance().Play("Asset/Audio/SE/GrassHopeer.wav");
 			}
 		}
 	}
@@ -2325,6 +2326,7 @@ void Player::GrassMoveVecDecision()
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
+				// KdAudioManager::Instance().Play("Asset/Audio/SE/GrassHopeer.wav");
 			}
 		}
 	}
@@ -2383,6 +2385,12 @@ void Player::GrassMove()
 		}
 		else if (m_lGrassHopperTime <= 75 && m_lGrassHopperTime > 30 || m_rGrassHopperTime <= 75 && m_rGrassHopperTime > 30)
 		{
+			if (m_lGrassHopperTime == 75 || m_rGrassHopperTime == 75)
+			{
+				KdAudioManager::Instance().Play("Asset/Audio/SE/GrassHopeer.wav");
+				//KdAudioManager::Instance().Play("Asset/Audio/SE/Dash.wav");
+			}
+
 			m_dashSpd = 0.8f;
 		}
 		else if (m_lGrassHopperTime <= 30 && m_lGrassHopperTime > 25 || m_rGrassHopperTime <= 30 && m_rGrassHopperTime > 25)
