@@ -544,6 +544,12 @@ void Scopion::PlayerHitAttackChaeck()
 
 			std::list<KdCollider::CollisionResult> retSphereList;
 
+			pTarget.lock()->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
+
 			Math::Vector3 hitDir = {};
 			bool hit = false;
 			Math::Vector3 hitPos;

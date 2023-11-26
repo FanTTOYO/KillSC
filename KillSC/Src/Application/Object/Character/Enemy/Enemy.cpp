@@ -63,30 +63,6 @@ void Enemy::Init()
 	m_animator = std::make_shared<KdAnimator>();
 	m_animator->SetAnimation(m_model->GetAnimation("Idle"));
 
-	std::shared_ptr<Scopion> sco;
-	sco = std::make_shared<Scopion>();
-	sco->SetArrmType(rArrm);
-	sco->SetbEnemyWeapon();
-	sco->SetTarget(m_target.lock());
-	m_weaponList.push_back(sco);
-
-	sco = std::make_shared<Scopion>();
-	sco->SetArrmType(lArrm);
-	sco->SetbEnemyWeapon();
-	sco->SetTarget(m_target.lock());
-	m_weaponList.push_back(sco);
-
-	std::shared_ptr<Hopper> hopper;
-	hopper = std::make_shared<Hopper>();
-	hopper->SetArrmType(rArrm);
-	hopper->SetbEnemyWeapon();
-	m_weaponList.push_back(hopper);
-
-	hopper = std::make_shared<Hopper>();
-	hopper->SetArrmType(lArrm);
-	hopper->SetbEnemyWeapon();
-	m_weaponList.push_back(hopper);
-
 	//m_thinkActionDelayTimeVal = 5;
 	m_thinkActionDelayTimeVal = 1;
 	//m_actionDelayTimeVal = 10;
@@ -179,9 +155,13 @@ void Enemy::Update()
 		{
 			BossUpdate();
 		}
-		else
+		else if(m_enemyType & EnemyType::coarseFishEnemy)
 		{
 			CoarseFishEnemyUpdate();
+		}
+		else if (m_enemyType & EnemyType::wimpEnemyTypeOne)
+		{
+			WimpEnemyTypeOneUpdate();
 		}
 
 		for (auto& WeaList : m_weaponList)
@@ -819,6 +799,30 @@ void Enemy::BossUpdate()
 {
 	if (m_bFirstUpdate)
 	{
+		std::shared_ptr<Scopion> sco;
+		sco = std::make_shared<Scopion>();
+		sco->SetArrmType(rArrm);
+		sco->SetbEnemyWeapon();
+		sco->SetTarget(m_target.lock());
+		m_weaponList.push_back(sco);
+
+		sco = std::make_shared<Scopion>();
+		sco->SetArrmType(lArrm);
+		sco->SetbEnemyWeapon();
+		sco->SetTarget(m_target.lock());
+		m_weaponList.push_back(sco);
+
+		std::shared_ptr<Hopper> hopper;
+		hopper = std::make_shared<Hopper>();
+		hopper->SetArrmType(rArrm);
+		hopper->SetbEnemyWeapon();
+		m_weaponList.push_back(hopper);
+
+		hopper = std::make_shared<Hopper>();
+		hopper->SetArrmType(lArrm);
+		hopper->SetbEnemyWeapon();
+		m_weaponList.push_back(hopper);
+
 		for (auto& WeaList : m_weaponList)
 		{
 			WeaList->SetOwner(shared_from_this());
@@ -1286,6 +1290,43 @@ void Enemy::CoarseFishEnemyUpdate()
 			}
 		}
 	}
+}
+
+void Enemy::WimpEnemyTypeOneUpdate()
+{
+	if (m_bFirstUpdate)
+	{
+		m_weaponList.clear();
+		m_weaponType |= eLWeaponNone | eWeaponNone;
+		m_weaponType &= eLWeaponNone | eWeaponNone;
+
+		m_leftWeaponNumber = 0;
+		m_rightWeaponNumber = 0;
+
+		m_torion    = 300.0f;
+		m_endurance = 200.0f;
+
+		if (!(m_EnemyState & eRun))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+		}
+		m_EnemyState = eRun;
+
+		return;
+	}
+
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
+	{
+		std::shared_ptr<Player> spTarget = m_target.lock();
+		if (spTarget)
+		{
+			Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+			UpdateRotate(vTarget);
+		}
+
+	}
+
+	NormalMove();
 }
 
 void Enemy::TutorialUpdate()
@@ -1926,6 +1967,35 @@ void Enemy::GenerateDepthMapFromLight()
 	}
 }
 
+void Enemy::SetModelAndType(EnemyType a_enemyType)
+{
+	m_enemyType = a_enemyType;
+
+	switch (m_enemyType)
+	{
+	case coarseFishEnemy:
+		m_model = std::make_shared<KdModelWork>();
+		m_model->SetModelData
+		(KdAssets::Instance().m_modeldatas.GetData
+		("Asset/Models/Player/Player.gltf"));
+		/// ìñÇΩÇËîªíËèâä˙âª
+		m_pCollider = std::make_unique<KdCollider>();
+		m_pCollider->RegisterCollisionShape
+		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage);
+		break;
+	case wimpEnemyTypeOne:
+		m_model = std::make_shared<KdModelWork>();
+		m_model->SetModelData
+		(KdAssets::Instance().m_modeldatas.GetData
+		("Asset/Models/Enemy/WimpEnemyTypeOne.gltf"));
+		/// ìñÇΩÇËîªíËèâä˙âª
+		m_pCollider = std::make_unique<KdCollider>();
+		m_pCollider->RegisterCollisionShape
+		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage);
+		break;
+	}
+}
+
 void Enemy::EnemyKickHitAttackChaeck()
 {
 	const KdModelWork::Node* node = nullptr;
@@ -2112,8 +2182,6 @@ void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
 
 	float targetAng = atan2(targetDir.x, targetDir.z);
 	targetAng = DirectX::XMConvertToDegrees(targetAng);
-
-	float betweenAng = targetAng - nowAng;
 
 	Math::Vector3 dot = DirectX::XMVector3Dot(nowDir, targetDir);
 	if (dot.x > 1)

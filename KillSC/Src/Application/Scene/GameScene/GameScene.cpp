@@ -179,6 +179,7 @@ void GameScene::Event()
 					enemy->Init();
 					enemy->SetEnemyNumber(i + 1);
 					enemy->SetBBoss(false);
+					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 					enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
 					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
@@ -199,6 +200,8 @@ void GameScene::Event()
 					enemy->Init();
 					enemy->SetEnemyNumber(i + 1);
 					enemy->SetBBoss(false);
+					//enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 					enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
 					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
@@ -219,6 +222,7 @@ void GameScene::Event()
 					enemy->Init();
 					enemy->SetEnemyNumber(i + 1);
 					enemy->SetBBoss(false);
+					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 					enemy->SetPos(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
 					enemy->SetMatrix(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
@@ -239,6 +243,7 @@ void GameScene::Event()
 					enemy->Init();
 					enemy->SetEnemyNumber(i + 1);
 					enemy->SetBBoss(false);
+					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 					enemy->SetPos(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
 					enemy->SetMatrix(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));

@@ -88,11 +88,12 @@ public:
 
 	enum EnemyType
 	{
-		striker,
-		defender,
-		speedSter,
-		allRounder,
-		coarseFishEnemy,
+		striker = 1 << 0,
+		defender = 1 << 1,
+		speedSter = 1 << 2,
+		allRounder = 1 << 3,
+		coarseFishEnemy = 1 << 4,
+		wimpEnemyTypeOne = 1 << 5,
 	};
 
 	Enemy() {}
@@ -115,6 +116,7 @@ public:
 	void SetPos(Math::Vector3 a_pos) { m_pos = a_pos;}
 	void SetMatrix(Math::Vector3 a_pos) { m_mWorld = Math::Matrix::CreateTranslation(a_pos); }
 	void SetWorldRotationY(float a_mWorldRotY) { m_mWorldRot.y = a_mWorldRotY; }
+	void SetModelAndType(EnemyType a_enemyType); // ‚±‚Ì“G‚ªG‹›“GilŒ^j‚©G‹›“Giƒ‚ƒ“ƒXƒ^[j‚©‚ğ‚¢‚ê‚é@ƒ{ƒX‚Ìê‡‚Í‚Â‚©‚í‚È‚¢
 	//void Release() {};
 
 	const UINT& GetEnemyState() { return m_EnemyState; }
@@ -154,10 +156,13 @@ public:
 	void SetBBoss(bool a_bBoss) { m_bBoss = a_bBoss; }
 	const bool GetBBoss() { return m_bBoss; }
 
+	const UINT& GetEnemyType() { return m_enemyType; }
+
 private:
 
 	void BossUpdate();
 	void CoarseFishEnemyUpdate();
+	void WimpEnemyTypeOneUpdate();
 	void TutorialUpdate();
 	void EnemyKickHitAttackChaeck();
 	void UpdateRotate(Math::Vector3& a_srcMoveVec);
