@@ -111,6 +111,7 @@ void Enemy::Init()
 
 	m_enemyNumber = 0;
 	m_coarseFishEnemyAttackDelayCnt = 0;
+	m_delayTurnAroundTime = 0;
 }
 
 void Enemy::Update()
@@ -2114,19 +2115,19 @@ void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
 
 	float betweenAng = targetAng - nowAng;
 
-	if (betweenAng > 180)
+	Math::Vector3 dot = DirectX::XMVector3Dot(nowDir, targetDir);
+	if (dot.x > 1)
 	{
-		betweenAng -= 360;
+		dot.x = 1;
+	}
+	if (dot.x < -1)
+	{
+		dot.x = -1;
 	}
 
-	if (betweenAng < -180)
-	{
-		betweenAng += 360;
-	}
+	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
-	float rotateAng = std::clamp(betweenAng, -8.0f, 8.0f);
-
-	if (rotateAng > 1.0f || rotateAng < -1.0f)
+	if (ang > 5)
 	{
 		if (m_delayTurnAroundTime > 0)
 		{
@@ -2138,7 +2139,7 @@ void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
 		m_delayTurnAroundTime = 10;
 	}
 
-	if (rotateAng <= 2.0f && rotateAng >= -2.0f)
+	if (ang < 5)
 	{
 		m_bMantisPossAng = true;
 	}
@@ -2147,9 +2148,23 @@ void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
 		m_bMantisPossAng = false;
 	}
 
+	if (ang >= 8.0f)
+	{
+		ang = 8.0f;
+	}
+
+	Math::Vector3 croos = DirectX::XMVector3Cross(nowDir, targetDir);
+
 	if (m_delayTurnAroundTime == 0)
 	{
-		m_mWorldRot.y += rotateAng;
+		if (croos.y >= 0)
+		{
+			m_mWorldRot.y += ang;
+		}
+		if (croos.y < 0)
+		{
+			m_mWorldRot.y -= ang;
+		}
 	}
 }
 
@@ -3132,7 +3147,6 @@ void Enemy::NormalMove()
 	{
 		moveVec += Math::Vector3::TransformNormal({ 0, 0, 1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 		m_bMove = true;
-		m_runAnimeCnt = 0;
 	}
 
 	if (m_EnemyState & eJump)

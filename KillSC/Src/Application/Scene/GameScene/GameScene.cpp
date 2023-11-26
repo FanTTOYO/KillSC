@@ -182,7 +182,7 @@ void GameScene::Event()
 
 					enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
 					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 
 					m_objList.push_back(enemy);
 				}
@@ -202,7 +202,7 @@ void GameScene::Event()
 
 					enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
 					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 
 					m_objList.push_back(enemy);
 				}
@@ -222,7 +222,7 @@ void GameScene::Event()
 
 					enemy->SetPos(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
 					enemy->SetMatrix(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
 
 					m_objList.push_back(enemy);
 				}
@@ -242,7 +242,7 @@ void GameScene::Event()
 
 					enemy->SetPos(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
 					enemy->SetMatrix(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
 
 					m_objList.push_back(enemy);
 				}
