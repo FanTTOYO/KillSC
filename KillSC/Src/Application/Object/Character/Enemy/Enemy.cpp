@@ -737,6 +737,64 @@ void Enemy::CollisionUpdate()
 				m_enemyBetweenPlayerHitPos = hitPos;
 			}
 		}
+
+
+		if (!(m_EnemyState & eCutRaiseHit))
+		{
+			// 仲間のリストをつくって仲間に重ならないようにする
+			sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 2.5f, 0);
+			sphereInfo.m_sphere.Radius = 0.65f;
+			// 当たり判定をしたいタイプを設定
+			sphereInfo.m_type = KdCollider::TypeBump;
+
+#ifdef _DEBUG
+			// デバック用
+			m_pDebugWire->AddDebugSphere
+			(
+				sphereInfo.m_sphere.Center,
+				sphereInfo.m_sphere.Radius
+			);
+#endif
+
+			// 球の当たったオブジェクト情報
+			retSphereList.clear();
+
+			// 球と当たり判定 	
+			for (auto& obj : SceneManager::Instance().GetObjList())
+			{
+				obj->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+			}
+
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
+			maxOverLap = 0;
+			hit = false;
+			hitDir = {}; // 当たった方向
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					if (maxOverLap <= 0.1f)
+					{
+						hit = true;
+						hitDir = ret.m_hitDir;
+					}
+				}
+			}
+
+			if (hit)
+			{
+				hitDir.y = 0.0f;
+				hitDir.Normalize();
+				// 球とモデルが当たっている
+				m_pos += (hitDir * maxOverLap);
+			}
+		}
 	}
 	else
 	{
@@ -1010,58 +1068,61 @@ void Enemy::CollisionUpdate()
 			}
 		}
 
-		// 仲間のリストをつくって仲間に重ならないようにする
-		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.2f, 0);
-		sphereInfo.m_sphere.Radius = 0.15f;
-		// 当たり判定をしたいタイプを設定
-		sphereInfo.m_type = KdCollider::TypeBump;
+		if (!(m_EnemyState & eCutRaiseHit))
+		{
+			// 仲間のリストをつくって仲間に重ならないようにする
+			sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.2f, 0);
+			sphereInfo.m_sphere.Radius = 0.15f;
+			// 当たり判定をしたいタイプを設定
+			sphereInfo.m_type = KdCollider::TypeBump;
 
 #ifdef _DEBUG
-		// デバック用
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius
-		);
+			// デバック用
+			m_pDebugWire->AddDebugSphere
+			(
+				sphereInfo.m_sphere.Center,
+				sphereInfo.m_sphere.Radius
+			);
 #endif
 
-		// 球の当たったオブジェクト情報
-		retSphereList.clear();
+			// 球の当たったオブジェクト情報
+			retSphereList.clear();
 
-		// 球と当たり判定 	
-		for (auto& obj : SceneManager::Instance().GetObjList())
-		{
-			obj->Intersects
-			(
-				sphereInfo,
-				&retSphereList
-			);
-		}
-
-		// 球に当たったリスト情報から一番近いオブジェクトを検出
-		maxOverLap = 0;
-		hit = false;
-		hitDir = {}; // 当たった方向
-		for (auto& ret : retSphereList)
-		{
-			// 一番近くで当たったものを探す
-			if (maxOverLap < ret.m_overlapDistance)
+			// 球と当たり判定 	
+			for (auto& obj : SceneManager::Instance().GetObjList())
 			{
-				maxOverLap = ret.m_overlapDistance;
-				if (maxOverLap <= 0.1f)
+				obj->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+			}
+
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
+			maxOverLap = 0;
+			hit = false;
+			hitDir = {}; // 当たった方向
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
 				{
-					hit = true;
-					hitDir = ret.m_hitDir;
+					maxOverLap = ret.m_overlapDistance;
+					if (maxOverLap <= 0.1f)
+					{
+						hit = true;
+						hitDir = ret.m_hitDir;
+					}
 				}
 			}
-		}
 
-		if (hit)
-		{
-			hitDir.y = 0.0f;
-			hitDir.Normalize();
-			// 球とモデルが当たっている
-			m_pos += (hitDir * maxOverLap);
+			if (hit)
+			{
+				hitDir.y = 0.0f;
+				hitDir.Normalize();
+				// 球とモデルが当たっている
+				m_pos += (hitDir * maxOverLap);
+			}
 		}
 
 		if (m_EnemyState & (eRlAttack | eRlAttackRush | EnemyState::eHit))
@@ -2227,7 +2288,6 @@ void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 	}
 
 	m_endurance -= 15.0f;
-	m_knockBackVec = a_KnocBackvec;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
 
@@ -2432,7 +2492,7 @@ void Enemy::SetModelAndType(EnemyType a_enemyType)
 		/// 当たり判定初期化
 		m_pCollider = std::make_unique<KdCollider>();
 		m_pCollider->RegisterCollisionShape
-		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage);
+		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage | KdCollider::TypeRideEnemy);
 
 		const KdModelWork::Node* node = nullptr;
 		Math::Matrix mat = Math::Matrix::Identity;

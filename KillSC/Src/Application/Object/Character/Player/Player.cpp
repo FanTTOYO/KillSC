@@ -590,7 +590,7 @@ void Player::Update()
 		//rayInfo.m_range = 0.25f;
 	}
 
-	rayInfo.m_type = KdCollider::TypeGround;
+	rayInfo.m_type = KdCollider::TypeGround | KdCollider::TypeRideEnemy;
 
 #ifdef _DEBUG
 	m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range, { 1,1,1,1 });
