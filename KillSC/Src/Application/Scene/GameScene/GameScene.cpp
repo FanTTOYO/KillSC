@@ -221,9 +221,9 @@ void GameScene::Event()
 					enemy->Init();
 					enemy->SetEnemyNumber(i + 1);
 					enemy->SetBBoss(false);
-					//enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
-					///enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
-					//enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
+					/*enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
+					enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
+					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);*/
 
 					enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 					enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, -30.0f));

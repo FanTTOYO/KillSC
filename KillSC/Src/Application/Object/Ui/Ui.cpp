@@ -2532,188 +2532,26 @@ void Ui::DrawSprite()
 		}
 
 		mat = Math::Matrix::CreateTranslation(-50, 325, 0);
-		switch (m_gameTimeM10)
-		{
-		case 1:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time1Tex, 0, 0, 28, 40);
-			break;
-		case 2:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time2Tex, 0, 0, 28, 40);
-			break;
-		case 3:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time3Tex, 0, 0, 28, 40);
-			break;
-		case 4:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time4Tex, 0, 0, 28, 40);
-			break;
-		case 5:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time5Tex, 0, 0, 28, 40);
-			break;
-		case 6:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time6Tex, 0, 0, 28, 40);
-			break;
-		case 7:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time7Tex, 0, 0, 28, 40);
-			break;
-		case 8:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time8Tex, 0, 0, 28, 40);
-			break;
-		case 9:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time9Tex, 0, 0, 28, 40);
-			break;
-		case 0:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time0Tex, 0, 0, 28, 40);
-			break;
-		}
+		
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeM10], 0, 0, 28, 40);
 
 		mat = Math::Matrix::CreateTranslation(-20, 325, 0);
-		switch (m_gameTimeM1)
-		{
-		case 1:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time1Tex, 0, 0, 28, 40);
-			break;
-		case 2:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time2Tex, 0, 0, 28, 40);
-			break;
-		case 3:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time3Tex, 0, 0, 28, 40);
-			break;
-		case 4:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time4Tex, 0, 0, 28, 40);
-			break;
-		case 5:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time5Tex, 0, 0, 28, 40);
-			break;
-		case 6:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time6Tex, 0, 0, 28, 40);
-			break;
-		case 7:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time7Tex, 0, 0, 28, 40);
-			break;
-		case 8:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time8Tex, 0, 0, 28, 40);
-			break;
-		case 9:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time9Tex, 0, 0, 28, 40);
-			break;
-		case 0:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time0Tex, 0, 0, 28, 40);
-			break;
-		}
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeM1], 0, 0, 28, 40);
 
 		mat = Math::Matrix::CreateTranslation(0, 325, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_conmaTex, 0, 0, 28, 40);
 
 		mat = Math::Matrix::CreateTranslation(20, 325, 0);
-		switch (m_gameTimeS10)
-		{
-		case 1:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time1Tex, 0, 0, 28, 40);
-			break;
-		case 2:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time2Tex, 0, 0, 28, 40);
-			break;
-		case 3:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time3Tex, 0, 0, 28, 40);
-			break;
-		case 4:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time4Tex, 0, 0, 28, 40);
-			break;
-		case 5:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time5Tex, 0, 0, 28, 40);
-			break;
-		case 6:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time6Tex, 0, 0, 28, 40);
-			break;
-		case 7:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time7Tex, 0, 0, 28, 40);
-			break;
-		case 8:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time8Tex, 0, 0, 28, 40);
-			break;
-		case 9:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time9Tex, 0, 0, 28, 40);
-			break;
-		case 0:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time0Tex, 0, 0, 28, 40);
-			break;
-		}
+	
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeS10], 0, 0, 28, 40);
 
 		mat = Math::Matrix::CreateTranslation(50, 325, 0);
-		switch (m_gameTimeS1)
-		{
-		case 1:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time1Tex, 0, 0, 28, 40);
-			break;
-		case 2:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time2Tex, 0, 0, 28, 40);
-			break;
-		case 3:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time3Tex, 0, 0, 28, 40);
-			break;
-		case 4:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time4Tex, 0, 0, 28, 40);
-			break;
-		case 5:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time5Tex, 0, 0, 28, 40);
-			break;
-		case 6:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time6Tex, 0, 0, 28, 40);
-			break;
-		case 7:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time7Tex, 0, 0, 28, 40);
-			break;
-		case 8:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time8Tex, 0, 0, 28, 40);
-			break;
-		case 9:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time9Tex, 0, 0, 28, 40);
-			break;
-		case 0:
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_time0Tex, 0, 0, 28, 40);
-			break;
-		}
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeS1], 0, 0, 28, 40);
 
 		transMat = Math::Matrix::Identity;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -3467,16 +3305,16 @@ void Ui::Init()
 	m_battlehelpTex.Load("Asset/Textures/Ui/Select/BattleHelp.png");
 	//m_chalengebattlehelpTex.Load("Asset/Textures/Ui/Select/threeEnemy.png");
 
-	m_time0Tex.Load("Asset/Textures/Ui/shared/Zero.png");
-	m_time1Tex.Load("Asset/Textures/Ui/shared/One.png");
-	m_time2Tex.Load("Asset/Textures/Ui/shared/Two.png");
-	m_time3Tex.Load("Asset/Textures/Ui/shared/Three.png");
-	m_time4Tex.Load("Asset/Textures/Ui/shared/Four.png");
-	m_time5Tex.Load("Asset/Textures/Ui/shared/Five.png");
-	m_time6Tex.Load("Asset/Textures/Ui/shared/Six.png");
-	m_time7Tex.Load("Asset/Textures/Ui/shared/Seven.png");
-	m_time8Tex.Load("Asset/Textures/Ui/shared/Eight.png");
-	m_time9Tex.Load("Asset/Textures/Ui/shared/Nine.png");
+	m_timeTex[0].Load("Asset/Textures/Ui/shared/Zero.png");
+	m_timeTex[1].Load("Asset/Textures/Ui/shared/One.png");
+	m_timeTex[2].Load("Asset/Textures/Ui/shared/Two.png");
+	m_timeTex[3].Load("Asset/Textures/Ui/shared/Three.png");
+	m_timeTex[4].Load("Asset/Textures/Ui/shared/Four.png");
+	m_timeTex[5].Load("Asset/Textures/Ui/shared/Five.png");
+	m_timeTex[6].Load("Asset/Textures/Ui/shared/Six.png");
+	m_timeTex[7].Load("Asset/Textures/Ui/shared/Seven.png");
+	m_timeTex[8].Load("Asset/Textures/Ui/shared/Eight.png");
+	m_timeTex[9].Load("Asset/Textures/Ui/shared/Nine.png");
 	m_conmaTex.Load("Asset/Textures/Ui/shared/Conma.png");
 
 	m_winCharaTex.Load("Asset/Textures/Ui/Result/winChara.png");

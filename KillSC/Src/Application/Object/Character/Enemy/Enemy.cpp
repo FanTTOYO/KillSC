@@ -384,38 +384,43 @@ void Enemy::Update()
 	}
 
 #ifdef _DEBUG
-	const KdModelWork::Node* node = nullptr;
-	Math::Matrix mat = Math::Matrix::Identity;
 
-	node = m_model->FindNode("LegAttackPoint");
-	mat = node->m_worldTransform * m_mWorld;
-	mat._42 += 0.7f;
-	m_pDebugWire->AddDebugSphere
-	(
-		mat.Translation(),
-		0.3f,
-		{ 0,0,1,1 }
-	);
+	if (m_bBoss)
+	{
+		const KdModelWork::Node* node = nullptr;
+		Math::Matrix mat = Math::Matrix::Identity;
 
-	node = m_model->FindNode("LegAttackHitPoint");
-	mat = node->m_worldTransform * m_mWorld;
-	mat._42 += 0.7f;
-	m_pDebugWire->AddDebugSphere
-	(
-		mat.Translation(),
-		0.3f,
-		{ 0,0,1,1 }
-	);
+		node = m_model->FindNode("LegAttackPoint");
+		mat = node->m_worldTransform * m_mWorld;
+		mat._42 += 0.7f;
+		m_pDebugWire->AddDebugSphere
+		(
+			mat.Translation(),
+			0.3f,
+			{ 0,0,1,1 }
+		);
 
-	node = m_model->FindNode("LegAttackHitPointTwo");
-	mat = node->m_worldTransform * m_mWorld;
-	mat._42 += 0.7f;
-	m_pDebugWire->AddDebugSphere
-	(
-		mat.Translation(),
-		0.3f,
-		{ 0,0,1,1 }
-	);
+		node = m_model->FindNode("LegAttackHitPoint");
+		mat = node->m_worldTransform * m_mWorld;
+		mat._42 += 0.7f;
+		m_pDebugWire->AddDebugSphere
+		(
+			mat.Translation(),
+			0.3f,
+			{ 0,0,1,1 }
+		);
+
+		node = m_model->FindNode("LegAttackHitPointTwo");
+		mat = node->m_worldTransform * m_mWorld;
+		mat._42 += 0.7f;
+		m_pDebugWire->AddDebugSphere
+		(
+			mat.Translation(),
+			0.3f,
+			{ 0,0,1,1 }
+		);
+	}
+
 #endif
 
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
@@ -480,8 +485,8 @@ void Enemy::CollisionUpdate()
 
 		KdCollider::SphereInfo sphereInfo;
 		// 球の中心位置を設定
-		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 0.5f, 0);
-		sphereInfo.m_sphere.Radius = 1.2f;
+		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 3, 0);
+		sphereInfo.m_sphere.Radius = 2.0f;
 
 		// 当たり判定をしたいタイプを設定
 		sphereInfo.m_type = KdCollider::TypeGround /*| KdCollider::TypeBump*/;
@@ -582,8 +587,8 @@ void Enemy::CollisionUpdate()
 			}
 		}
 
-
-		sphereInfo.m_sphere.Radius = 0.3f;
+		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 2.5f, 0);
+		sphereInfo.m_sphere.Radius = 2.0f;
 		// 当たり判定をしたいタイプを設定
 		sphereInfo.m_type = KdCollider::TypeBump;
 
@@ -1704,6 +1709,21 @@ void Enemy::WimpEnemyTypeOneUpdate()
 		return;
 	}
 
+#ifdef _DEBUG
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+	
+	node = m_model->FindNode("HitPoint");
+	mat = node->m_worldTransform * m_mWorld;
+	m_pDebugWire->AddDebugSphere
+	(
+		{ mat._41, mat._42 , mat._43},
+		0.65f,
+		{ 0,0,0,1 }
+	);
+#endif
+	//m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+
 	if (m_wantToMoveState & none && !m_bEnemyDeath)
 	{
 		Brain();
@@ -2419,7 +2439,7 @@ void Enemy::SetModelAndType(EnemyType a_enemyType)
 		node = m_model->FindNode("HitPoint");
 		mat = node->m_worldTransform * m_mWorld;
 		m_pCollider->RegisterCollisionShape
-		("EnemyModelWeakness", mat.Translation(), 0.45f, KdCollider::TypeWeakness);
+		("EnemyModelWeakness", { mat._41,mat._42,mat._43 - 5 }, 0.45f, KdCollider::TypeWeakness);
 		break;
 	}
 }
@@ -3645,7 +3665,7 @@ void Enemy::NormalMove()
 {
 	Math::Vector3 moveVec = {};
 
-	float moveSpd;
+	float moveSpd = 0.0f;
 	if (m_bBoss)
 	{
 		moveSpd = 0.25f;
@@ -3658,7 +3678,7 @@ void Enemy::NormalMove()
 			moveSpd = 0.15f;
 			break;
 		case wimpEnemyTypeOne:
-			moveSpd = 0.25f;
+			moveSpd = 0.1f;
 			break;
 		}
 	}

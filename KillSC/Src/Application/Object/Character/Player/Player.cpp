@@ -259,7 +259,7 @@ void Player::Update()
 		m_bMove = false;
 	}
 
-	if (!(m_playerState & (mantis | hasDefense | rlAttackRush | rlAttackOne | lAttack | rAttack)))
+	if (!(m_playerState & (mantis | hasDefense | rlAttackRush)))
 	{
 		if (GetAsyncKeyState('Q') & 0x8000)
 		{

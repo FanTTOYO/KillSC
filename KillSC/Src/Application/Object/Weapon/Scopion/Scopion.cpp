@@ -362,8 +362,8 @@ void Scopion::PlayerHitAttackChaeck()
 			// •Ší‚Æ‚Ì“–‚½‚è”»’è
 			if (pTarget.lock()->GetEnemyState() & eDefense && !pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetBEnemyDeath() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
 			{
-				if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm)break;
-				if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm)break;
+				if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm  && !(player->GetWeaponType() & scorpion))break;
+				if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm  && !(player->GetWeaponType() & lScorpion))break;
 
 				node = m_model->FindNode("AttackPointOne");
 				KdCollider::SphereInfo sphereInfo;
@@ -666,7 +666,7 @@ void Scopion::PlayerHitAttackChaeck()
 					else
 					{
 						node = m_model->FindNode("AttackPointOne");
-						KdCollider::SphereInfo sphereInfo;
+						sphereInfo;
 						mat = node->m_worldTransform * m_mWorld;
 						sphereInfo.m_sphere.Center = mat.Translation();
 						sphereInfo.m_sphere.Radius = 0.20f;
@@ -681,7 +681,7 @@ void Scopion::PlayerHitAttackChaeck()
 						);
 #endif
 
-						std::list<KdCollider::CollisionResult> retSphereList;
+						retSphereList;
 
 						pTarget.lock()->Intersects
 						(
@@ -689,9 +689,9 @@ void Scopion::PlayerHitAttackChaeck()
 							&retSphereList
 						);
 
-						Math::Vector3 hitDir = {};
-						bool hit = false;
-						Math::Vector3 hitPos;
+						hitDir = {};
+						hit = false;
+						hitPos;
 						for (auto& ret : retSphereList)
 						{
 							hit = true;

@@ -284,6 +284,7 @@ private:
 	KdTexture m_time8Tex;
 	KdTexture m_time9Tex;
 	KdTexture m_conmaTex;
+	KdTexture m_timeTex[10];
 
 	KdTexture m_winCharaTex;
 	KdTexture m_loseCharaTex;
