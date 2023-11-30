@@ -143,6 +143,7 @@ public:
 	void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)override;
 	void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)override;
 	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec)override;
+	void WeaknessOnHit();
 	void HasDefense()override;
 
 	const float GetAngleY() { return m_mWorldRot.y; }
@@ -160,6 +161,7 @@ public:
 
 private:
 
+	void CollisionUpdate();
 	void BossUpdate();
 	void CoarseFishEnemyUpdate();
 	void WimpEnemyTypeOneUpdate();
@@ -184,6 +186,7 @@ private:
 	void SpeedSterBrain();
 	void AllRounderBrain();
 	void CoarseFishEnemyBrain();
+	void WimpEnemyBrain();
 
 	std::shared_ptr<KdModelWork> m_model;
 
@@ -317,4 +320,6 @@ private:
 	bool m_bBoss = false; // true ボス　false 雑魚敵
 
 	int m_coarseFishEnemyAttackDelayCnt;
+
+	int m_idleCnt; // なにもしてな時間を計る
 };

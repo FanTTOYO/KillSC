@@ -259,7 +259,7 @@ void Player::Update()
 		m_bMove = false;
 	}
 
-	if (!(m_playerState & (mantis | hasDefense)))
+	if (!(m_playerState & (mantis | hasDefense | rlAttackRush | rlAttackOne | lAttack | rAttack)))
 	{
 		if (GetAsyncKeyState('Q') & 0x8000)
 		{
@@ -491,7 +491,7 @@ void Player::Update()
 		{
 			m_hitStopCnt = 0;
 
-			if (m_playerState & nomalHit)
+			if (m_playerState & nomalHit | cutRaiseHit)
 			{
 				if (!(m_playerState & idle))
 				{
@@ -904,9 +904,10 @@ void Player::Update()
 	}
 	
 
+	Math::Matrix mat;
 #ifdef _DEBUG
 	const KdModelWork::Node* node = nullptr;
-	Math::Matrix mat = Math::Matrix::Identity;
+	mat = Math::Matrix::Identity;
 
 	node = m_model->FindNode("LegAttackPoint");
 	mat = node->m_worldTransform * m_mWorld;
@@ -950,7 +951,7 @@ void Player::Update()
 
 	if (m_enemy.expired())return;
 
-	Math::Matrix mat = Math::Matrix::CreateTranslation(m_enemy.lock()->GetMatrix().Translation());
+	mat = Math::Matrix::CreateTranslation(m_enemy.lock()->GetMatrix().Translation());
 	m_rockOnPolyMat = mat;
 	m_rockOnPolyMat._42 += 1.75f;
 	m_rockOnPolyMat._41 += 0.5f * m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Forward().x;
@@ -1750,6 +1751,14 @@ void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 void Player::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 {
+	if (m_playerState & mantis)
+	{
+		const std::shared_ptr<Scopion> scopion = std::dynamic_pointer_cast<Scopion>(m_weaponList[1]);
+		scopion->SetBMantis(false);
+		const std::shared_ptr<Scopion> scopion2 = std::dynamic_pointer_cast<Scopion>(m_weaponList[0]);
+		scopion2->SetBMantis(false);
+	}
+
 	m_playerState = cutRaiseHit;
 	m_hitStopCnt = 60;
 	m_hitColorChangeTimeCnt = 15;
@@ -3062,9 +3071,9 @@ void Player::ScorpionAttackMove()
 								}
 								else if (dis.Length() <= 1.35f)
 								{
-									m_attackMoveSpd = 0.45f;
+									m_attackMoveSpd = 0.5f;
 								}
-								else if (dis.Length() <= 1.65f)
+								else
 								{
 									m_attackMoveSpd = 0.65f;
 								}
@@ -3082,10 +3091,10 @@ void Player::ScorpionAttackMove()
 									}
 									else if (dis.Length() <= 1.35f)
 									{
-										m_attackMoveSpd = 0.45f;
+										m_attackMoveSpd = 0.5f;
 										break;
 									}
-									else if (dis.Length() <= 1.65f)
+									else
 									{
 										m_attackMoveSpd = 0.65f;
 										break;

@@ -98,6 +98,27 @@ void GameScene::Event()
 	{
 		if (SceneManager::Instance().GetEnemyIeftover() >= 5)
 		{
+			if (SceneManager::Instance().GetEnemyDrawTotal() == 0)
+			{
+				for (int i = 0; i < 5; ++i)
+				{
+					std::shared_ptr<Enemy> enemy;
+					SceneManager::Instance().AddEnemyDrawTotal();
+					enemy = std::make_shared<Enemy>();
+					enemy->SetTarget(m_wpPlayer.lock());
+					m_wpPlayer.lock()->AddEnemy(enemy);
+					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+					m_wpUi.lock()->AddEnemy(enemy);
+					enemy->Init();
+					enemy->SetEnemyNumber(i + 1);
+					enemy->SetBBoss(true);
+					enemy->SetPos(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
+					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+
+					m_objList.push_back(enemy);
+				}
+			}
 			if (SceneManager::Instance().GetEnemyDrawTotal() < 5)
 			{
 				std::shared_ptr<Enemy> enemy;
@@ -182,7 +203,7 @@ void GameScene::Event()
 					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 					enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
-					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
+					enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
 					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 
 					m_objList.push_back(enemy);
@@ -200,11 +221,14 @@ void GameScene::Event()
 					enemy->Init();
 					enemy->SetEnemyNumber(i + 1);
 					enemy->SetBBoss(false);
-					//enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
-					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
+					//enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
+					///enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
+					//enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
-					enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
-					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
+					enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+					enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, -30.0f));
+					enemy->SetMatrix(Math::Vector3(-5.0f + 10.0f * i, 0.0f, -30.0f));
+
 					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 
 					m_objList.push_back(enemy);
@@ -423,6 +447,4 @@ void GameScene::Init()
 
 	SetCursorPos(640, 360);
 	KdAudioManager::Instance().Play("Asset/Audio/SE/CntDwon1.wav");
-
-	ShowCursor(false); // マウスカーソルを消す
 }

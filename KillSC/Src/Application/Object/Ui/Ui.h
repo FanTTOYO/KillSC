@@ -88,19 +88,11 @@ private:
 
 	KdTexture m_winTex;
 	KdTexture m_lossTex;
-	KdTexture m_Point0Tex;
-	KdTexture m_Point1Tex;
-	KdTexture m_Point2Tex;
-	KdTexture m_Point3Tex;
-	KdTexture m_Point4Tex;
-	KdTexture m_Point5Tex;
-	KdTexture m_Point6Tex;
-	KdTexture m_Point7Tex;
-	KdTexture m_Point8Tex;
-	KdTexture m_Point9Tex;
+
+	KdTexture m_PointTex[10];
 
 	KdTexture m_exitTex;
-	KdTexture m_titleTex;
+	KdTexture m_selectTex;
 
 	KdTexture m_selectTitleTex;
 	KdTexture m_selectExitTex;
@@ -115,6 +107,7 @@ private:
 
 	float m_optionScale = 0;
 	float m_titleScale = 0;
+	float m_selectScale = 0;
 	float m_exitScale = 0;
 
 	float m_gameScale = 0;
@@ -125,6 +118,7 @@ private:
 	Math::Vector3 m_exitPos = {};
 	Math::Vector3 m_optionPos = {};
 	Math::Vector3 m_titlePos = {};
+	Math::Vector3 m_selectPos = {};
 
 	Math::Vector3 m_tutorialPos   = {};
 	Math::Vector3 m_gamePos       = {};
@@ -140,6 +134,7 @@ private:
 	bool m_bTutorial = false;
 	bool m_bGame = false;
 	bool m_bTitle = false;
+	bool m_bSelect = false;
 	bool m_bChallenge = false;
 	bool m_bTraining = false;
 

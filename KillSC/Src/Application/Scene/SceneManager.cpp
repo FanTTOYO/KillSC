@@ -69,11 +69,13 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	switch (_sceneType)
 	{
 	case SceneType::title:
+		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_bPlayerWin = false;
 		m_currentScene = std::make_shared<TitleScene>();
 		break;
 	case SceneType::battle:
 	case SceneType::challenge:
+		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_bPlayerWin = false;
 		m_pointAddOrSubVal = 0;
 		m_bAddOrSubVal = true;
@@ -84,15 +86,18 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 		m_currentScene = std::make_shared<GameScene>();
 		break;
 	case SceneType::result:
+		ShowCursor(true); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_currentScene = std::make_shared<ResultScene>();
 		break;
 	case SceneType::select:
+		ShowCursor(true); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_currentScene = std::make_shared<SelectScene>();
 		break;
 	case SceneType::art:
 		m_currentScene = std::make_shared<ArtScene>();
 		break;
 	case SceneType::tutorial:
+		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_currentScene = std::make_shared<TutorialScene>();
 		break;
 	}

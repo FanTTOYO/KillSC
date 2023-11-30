@@ -90,6 +90,4 @@ void TutorialScene::Init()
 	player->SetUi(ui);
 
 	SetCursorPos(640, 360);
-
-	ShowCursor(false); // マウスカーソルを消す
 }
