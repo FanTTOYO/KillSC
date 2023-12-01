@@ -610,7 +610,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 			if (hit)
 			{
-				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+				KdAudioManager::Instance().Play("Asset/Audio/SE/WeaknessHit2.wav");
 
 				pTarget.lock()->WeaknessOnHit();
 
@@ -657,7 +657,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 				if (hit)
 				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/WeaknessHit2.wav");
 
 					pTarget.lock()->WeaknessOnHit();
 
@@ -704,7 +704,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 					if (hit)
 					{
-						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
+						KdAudioManager::Instance().Play("Asset/Audio/SE/WeaknessHit2.wav");
 
 						pTarget.lock()->WeaknessOnHit();
 
