@@ -76,6 +76,9 @@ public:
 	const int GetScreenVibFrames() { return m_screenVibFrames; }
 	void SubScreenVibFrames() { --m_screenVibFrames; }
 
+	void SetBHumanoidEnemy(bool a_bHumanoidEnemy) { m_bHumanoidEnemy = a_bHumanoidEnemy; }
+	const bool GetBHumanoidEnemy() { return m_bHumanoidEnemy; }
+
 private:
 
 	void ChangeScene(SceneType _sceneType);
@@ -88,15 +91,16 @@ private:
 	// 次のシーンを管理しているデータ（変数）
 	SceneType m_nextSceneType = m_currentSceneType;
 
-	bool m_bPlayerWin;          // playerが勝ってる
+	bool m_bPlayerWin;           // playerが勝ってる
 	int  m_pointAddOrSubVal;     // 加算値か減算値
-	bool m_bAddOrSubVal = true; // true 加算値  false 減算値
-	bool m_bWinEnd;             // gameが終了してwindowが閉じるとき
+	bool m_bAddOrSubVal = true;  // true 加算値  false 減算値
+	bool m_bWinEnd;				 // gameが終了してwindowが閉じるとき
 	int  m_updateStopCnt;        // HitStop時に使用する
 	int  m_enemyTotal;           // 敵の総数
 	int  m_enemyIeftover;        // 敵の現在の数
 	int  m_enemyDrawTotal;       // 敵の描画している総数
-	int  m_screenVibFrames;       // 画面の振動フレーム数
+	int  m_screenVibFrames;      // 画面の振動フレーム数
+	bool m_bHumanoidEnemy;       // 敵が人型かどうかを判断している 人型:true 人型ではない : faslse 両方いる : true
 
 // シングルトンパターン
 	// 生成するインスタンスの数を1つに制限する

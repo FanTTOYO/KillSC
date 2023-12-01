@@ -188,92 +188,239 @@ void GameScene::Event()
 					m_wpUi.lock()->SetBWaveChange();
 				}
 
-				// 前方向
-				for (int i = 0; i < total; ++i)
+
+				if (SceneManager::Instance().GetBHumanoidEnemy())
 				{
-					SceneManager::Instance().AddEnemyDrawTotal();
-					enemy = std::make_shared<Enemy>();
-					enemy->SetTarget(m_wpPlayer.lock());
-					m_wpPlayer.lock()->AddEnemy(enemy);
-					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
-					enemy->Init();
-					enemy->SetEnemyNumber(i + 1);
-					enemy->SetBBoss(false);
-					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
+					if (SceneManager::Instance().GetEnemyTotal() == 2)
+					{
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(0);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+						enemy->SetPos(Math::Vector3(0.0f, 0.0f, 40.0f));
+						enemy->SetMatrix(Math::Vector3(0.0f, 0.0f, 40.0f));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+						m_objList.push_back(enemy);
 
-					enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
-					enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(0);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+						enemy->SetPos(Math::Vector3(0.0f, 0.0f, -40.0f));
+						enemy->SetMatrix(Math::Vector3(0.0f, 0.0f, -40.0f));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
+						m_objList.push_back(enemy);
 
-					m_objList.push_back(enemy);
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(0);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+						enemy->SetPos(Math::Vector3(40.0f, 0.0f, 0.0f));
+						enemy->SetMatrix(Math::Vector3(40.0f, 0.0f, 0.0f));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
+						m_objList.push_back(enemy);
+
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(0);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+						enemy->SetPos(Math::Vector3(-40.0f, 0.0f, 0.0f));
+						enemy->SetMatrix(Math::Vector3(-40.0f, 0.0f, 0.0f));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
+						m_objList.push_back(enemy);
+					}
+
+					// 前方向
+					for (int i = 0; i < total; ++i)
+					{
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(i + 1);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
+
+						enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
+						enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+
+						m_objList.push_back(enemy);
+					}
+
+					// 後ろ方向
+					for (int i = 0; i < total; ++i)
+					{
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(i + 1);
+						enemy->SetBBoss(false);
+						enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
+						enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
+						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
+
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
+
+						m_objList.push_back(enemy);
+					}
+
+					// 右方向
+					for (int i = 0; i < total; ++i)
+					{
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(i + 1);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
+
+						enemy->SetPos(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
+						enemy->SetMatrix(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
+
+						m_objList.push_back(enemy);
+					}
+
+					// 左方向
+					for (int i = 0; i < total; ++i)
+					{
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(i + 1);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
+
+						enemy->SetPos(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
+						enemy->SetMatrix(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
+
+						m_objList.push_back(enemy);
+					}
 				}
-
-				// 後ろ方向
-				for (int i = 0; i < total; ++i)
+				else
 				{
-					SceneManager::Instance().AddEnemyDrawTotal();
-					enemy = std::make_shared<Enemy>();
-					enemy->SetTarget(m_wpPlayer.lock());
-					m_wpPlayer.lock()->AddEnemy(enemy);
-					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
-					enemy->Init();
-					enemy->SetEnemyNumber(i + 1);
-					enemy->SetBBoss(false);
-					/*enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
-					enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
-					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);*/
+					// 前方向
+					for (int i = 0; i < total; ++i)
+					{
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(i + 1);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+						enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, 30.0f));
+						enemy->SetMatrix(Math::Vector3(-5.0f + 10.0f * i, 0.0f, 30.0f));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 
-					enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
-					enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, -30.0f));
-					enemy->SetMatrix(Math::Vector3(-5.0f + 10.0f * i, 0.0f, -30.0f));
+						m_objList.push_back(enemy);
+					}
 
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
+					// 後ろ方向
+					for (int i = 0; i < total; ++i)
+					{
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(i + 1);
+						enemy->SetBBoss(false);
 
-					m_objList.push_back(enemy);
-				}
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+						enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, -30.0f));
+						enemy->SetMatrix(Math::Vector3(-5.0f + 10.0f * i, 0.0f, -30.0f));
 
-				// 右方向
-				for (int i = 0; i < total; ++i)
-				{
-					SceneManager::Instance().AddEnemyDrawTotal();
-					enemy = std::make_shared<Enemy>();
-					enemy->SetTarget(m_wpPlayer.lock());
-					m_wpPlayer.lock()->AddEnemy(enemy);
-					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
-					enemy->Init();
-					enemy->SetEnemyNumber(i + 1);
-					enemy->SetBBoss(false);
-					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 
-					enemy->SetPos(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
-					enemy->SetMatrix(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
+						m_objList.push_back(enemy);
+					}
 
-					m_objList.push_back(enemy);
-				}
+					// 右方向
+					for (int i = 0; i < total; ++i)
+					{
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(i + 1);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+						enemy->SetPos(Math::Vector3(30.0f, 0.0f, -5.0f + 10.0f * i));
+						enemy->SetMatrix(Math::Vector3(30.0f, 0.0f, -5.0f + 10.0f * i));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
 
-				// 左方向
-				for (int i = 0; i < total; ++i)
-				{
-					SceneManager::Instance().AddEnemyDrawTotal();
-					enemy = std::make_shared<Enemy>();
-					enemy->SetTarget(m_wpPlayer.lock());
-					m_wpPlayer.lock()->AddEnemy(enemy);
-					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
-					enemy->Init();
-					enemy->SetEnemyNumber(i + 1);
-					enemy->SetBBoss(false);
-					enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
+						m_objList.push_back(enemy);
+					}
 
-					enemy->SetPos(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
-					enemy->SetMatrix(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
+					// 左方向
+					for (int i = 0; i < total; ++i)
+					{
+						SceneManager::Instance().AddEnemyDrawTotal();
+						enemy = std::make_shared<Enemy>();
+						enemy->SetTarget(m_wpPlayer.lock());
+						m_wpPlayer.lock()->AddEnemy(enemy);
+						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+						m_wpUi.lock()->AddEnemy(enemy);
+						enemy->Init();
+						enemy->SetEnemyNumber(i + 1);
+						enemy->SetBBoss(false);
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+						enemy->SetPos(Math::Vector3(-30.0f, 0.0f, -5.0f + 10.0f * i));
+						enemy->SetMatrix(Math::Vector3(-30.0f, 0.0f, -5.0f + 10.0f * i));
+						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
 
-					m_objList.push_back(enemy);
+						m_objList.push_back(enemy);
+					}
 				}
 			}
 		}

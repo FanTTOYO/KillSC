@@ -1783,7 +1783,6 @@ void Enemy::WimpEnemyTypeOneUpdate()
 		{ 0,0,0,1 }
 	);
 #endif
-	//m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 
 	if (m_wantToMoveState & none && !m_bEnemyDeath)
 	{
@@ -2308,7 +2307,10 @@ void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 
 void Enemy::WeaknessOnHit()
 {
+	SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
+
 	m_endurance = 0.0f;
+	m_attackHit = true;
 
 	if (m_graduallyTorionDecVal == 0)
 	{

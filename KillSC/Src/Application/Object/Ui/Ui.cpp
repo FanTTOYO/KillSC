@@ -1737,9 +1737,9 @@ void Ui::SelectUpdate()
 
 		if (m_bBattleChara)
 		{
-			GamePos.x = m_oneEnemyTotalPos.x + (float)(pwi->rcWindow.left);
-			GamePos.y = m_oneEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			GamePos.z = m_oneEnemyTotalPos.z;
+			GamePos.x = m_enemyBossTypeOnePos.x + (float)(pwi->rcWindow.left);
+			GamePos.y = m_enemyBossTypeOnePos.y /*+ (float)(pwi->rcWindow.top)*/;
+			GamePos.z = m_enemyBossTypeOnePos.z;
 
 			GameLeft = GamePos.x - 105;
 			GameRight = GamePos.x + 105;
@@ -1749,13 +1749,13 @@ void Ui::SelectUpdate()
 			if (MouseRight > GameLeft && GameRight > MouseLeft &&
 				MouseTop > GameBottom && GameTop > MouseBottom)
 			{
-				m_oneEnemyScale = 1.1f;
+				m_enemyBossTypeOneScale = 1.1f;
 
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
 					if (!m_addFadeAlpha)
 					{
-						m_bOneEnemyTotal = true;
+						m_bEnemyBossTypeOneTotal = true;
 						m_bGame = true;
 						m_addFadeAlpha = true;
 						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
@@ -1765,12 +1765,12 @@ void Ui::SelectUpdate()
 			}
 			else
 			{
-				m_oneEnemyScale = 1.0f;
+				m_enemyBossTypeOneScale = 1.0f;
 			}
 
-			GamePos.x = m_twoEnemyTotalPos.x + (float)(pwi->rcWindow.left);
-			GamePos.y = m_twoEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			GamePos.z = m_twoEnemyTotalPos.z;
+			GamePos.x = m_enemyBossTypeTwoPos.x + (float)(pwi->rcWindow.left);
+			GamePos.y = m_enemyBossTypeTwoPos.y /*+ (float)(pwi->rcWindow.top)*/;
+			GamePos.z = m_enemyBossTypeTwoPos.z;
 
 			GameLeft = GamePos.x - 105;
 			GameRight = GamePos.x + 105;
@@ -1780,13 +1780,13 @@ void Ui::SelectUpdate()
 			if (MouseRight > GameLeft && GameRight > MouseLeft &&
 				MouseTop > GameBottom && GameTop > MouseBottom)
 			{
-				m_twoEnemyScale = 1.1f;
+				m_enemyBossTypeTwoScale = 1.1f;
 
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
 					if (!m_addFadeAlpha)
 					{
-						m_bTwoEnemyTotal = true;
+						m_bEnemyBossTypeTwoTotal = true;
 						m_bGame = true;
 						m_addFadeAlpha = true;
 						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
@@ -1796,12 +1796,12 @@ void Ui::SelectUpdate()
 			}
 			else
 			{
-				m_twoEnemyScale = 1.0f;
+				m_enemyBossTypeTwoScale = 1.0f;
 			}
 
-			GamePos.x = m_threeEnemyTotalPos.x + (float)(pwi->rcWindow.left);
-			GamePos.y = m_threeEnemyTotalPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			GamePos.z = m_threeEnemyTotalPos.z;
+			GamePos.x = m_twoEnemyBossTypeOnePos.x + (float)(pwi->rcWindow.left);
+			GamePos.y = m_twoEnemyBossTypeOnePos.y /*+ (float)(pwi->rcWindow.top)*/;
+			GamePos.z = m_twoEnemyBossTypeOnePos.z;
 
 			GameLeft = GamePos.x - 105;
 			GameRight = GamePos.x + 105;
@@ -1811,13 +1811,13 @@ void Ui::SelectUpdate()
 			if (MouseRight > GameLeft && GameRight > MouseLeft &&
 				MouseTop > GameBottom && GameTop > MouseBottom)
 			{
-				m_threeEnemyScale = 1.1f;
+				m_twoEnemyBossTypeOneScale = 1.1f;
 
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
 					if (!m_addFadeAlpha)
 					{
-						m_bThreeEnemyTotal = true;
+						m_bTwoEnemyBossTypeOneTotal = true;
 						m_bGame = true;
 						m_addFadeAlpha = true;
 						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
@@ -1827,7 +1827,7 @@ void Ui::SelectUpdate()
 			}
 			else
 			{
-				m_threeEnemyScale = 1.0f;
+				m_twoEnemyBossTypeOneScale = 1.0f;
 			}
 		}
 
@@ -2070,20 +2070,23 @@ void Ui::SelectUpdate()
 
 			if (m_bGame)
 			{
-				if (m_bOneEnemyTotal)
+				if (m_bEnemyBossTypeOneTotal)
 				{
 					SceneManager::Instance().SetEnemyTotal(1);
 					SceneManager::Instance().SetEnemyIeftover(1);
+					SceneManager::Instance().SetBHumanoidEnemy(true);
 				}
-				else if (m_bTwoEnemyTotal)
+				else if (m_bEnemyBossTypeTwoTotal)
+				{
+					SceneManager::Instance().SetEnemyTotal(1);
+					SceneManager::Instance().SetEnemyIeftover(1);
+					SceneManager::Instance().SetBHumanoidEnemy(false);
+				}
+				else if (m_bTwoEnemyBossTypeOneTotal)
 				{
 					SceneManager::Instance().SetEnemyTotal(2);
 					SceneManager::Instance().SetEnemyIeftover(2);
-				}
-				else if (m_bThreeEnemyTotal)
-				{
-					SceneManager::Instance().SetEnemyTotal(3);
-					SceneManager::Instance().SetEnemyIeftover(3);
+					SceneManager::Instance().SetBHumanoidEnemy(true);
 				}
 
 				SceneManager::Instance().SetNextScene
@@ -3084,17 +3087,17 @@ void Ui::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_gameTex, 0, 0, 507, 700);
 
 
-			mat = Math::Matrix::CreateScale(m_oneEnemyScale) * Math::Matrix::CreateTranslation(m_oneEnemyTotalPos);
+			mat = Math::Matrix::CreateScale(m_enemyBossTypeOneScale) * Math::Matrix::CreateTranslation(m_enemyBossTypeOnePos);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_oneEnemyTotalTex, 0, 0, 210, 80);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enemyBossTypeOneTex, 0, 0, 210, 80);
 
-			mat = Math::Matrix::CreateScale(m_twoEnemyScale) * Math::Matrix::CreateTranslation(m_twoEnemyTotalPos);
+			mat = Math::Matrix::CreateScale(m_enemyBossTypeTwoScale) * Math::Matrix::CreateTranslation(m_enemyBossTypeTwoPos);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_twoEnemyTotalTex, 0, 0, 210, 80);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enemyBossTypeTwoTotalTex, 0, 0, 210, 80);
 
-			mat = Math::Matrix::CreateScale(m_threeEnemyScale) * Math::Matrix::CreateTranslation(m_threeEnemyTotalPos);
+			mat = Math::Matrix::CreateScale(m_twoEnemyBossTypeOneScale) * Math::Matrix::CreateTranslation(m_twoEnemyBossTypeOnePos);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_threeEnemyTotalTex, 0, 0, 210, 80);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_twoEnemyBossTypeOneTex, 0, 0, 210, 80);
 
 			mat = Math::Matrix::CreateScale(m_BattlehelpMkScale) * Math::Matrix::CreateTranslation(m_BattlehelpMkPos);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -3297,9 +3300,9 @@ void Ui::Init()
 	m_tutorialTex.Load("Asset/Textures/Ui/Select/Tutorial2.png");
 
 
-	m_oneEnemyTotalTex.Load("Asset/Textures/Ui/Select/oneEnemy.png");
-	m_twoEnemyTotalTex.Load("Asset/Textures/Ui/Select/TwoEnemy.png");
-	m_threeEnemyTotalTex.Load("Asset/Textures/Ui/Select/threeEnemy.png");
+	m_enemyBossTypeOneTex.Load("Asset/Textures/Ui/Select/EnemyBossTypeOne.png");
+	m_enemyBossTypeTwoTotalTex.Load("Asset/Textures/Ui/Select/EnemyBossTypeTwo.png");
+	m_twoEnemyBossTypeOneTex.Load("Asset/Textures/Ui/Select/twoEnemyBossTypeOne.png");
 
 	m_helpMkTex.Load("Asset/Textures/Ui/Select/help.png");
 	m_battlehelpTex.Load("Asset/Textures/Ui/Select/BattleHelp.png");
@@ -3355,9 +3358,9 @@ void Ui::Init()
 
 	m_gamePos = { 265,    0, 0 };
 	m_battleCharaPos = { -350,  225, 0 };
-	m_oneEnemyTotalPos = { 265,  -80, 0 };
-	m_twoEnemyTotalPos = { 265, -170, 0 };
-	m_threeEnemyTotalPos = { 265, -260, 0 };
+	m_enemyBossTypeOnePos = { 265,  -80, 0 };
+	m_enemyBossTypeTwoPos = { 265, -170, 0 };
+	m_twoEnemyBossTypeOnePos = { 265, -260, 0 };
 	m_BattlehelpMkPos = { 485,  325, 0 };
 
 	m_challengePos = { 265,    0, 0 };
@@ -3382,9 +3385,9 @@ void Ui::Init()
 	m_bGame = false;
 	m_bOption = false;
 	m_bTitle = false;
-	m_bOneEnemyTotal = false;
-	m_bTwoEnemyTotal = false;
-	m_bThreeEnemyTotal = false;
+	m_bEnemyBossTypeOneTotal = false;
+	m_bEnemyBossTypeTwoTotal = false;
+	m_bTwoEnemyBossTypeOneTotal = false;
 	m_bBattleSelect = false;
 	m_bChallengeSelect = false;
 	m_bBattleChara = false;

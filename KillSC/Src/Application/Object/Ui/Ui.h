@@ -219,7 +219,7 @@ private:
 
 	std::vector<Math::Vector2> m_enemyScPosList;
 
-	KdTexture      m_oneEnemyTotalTex;
+	/*KdTexture      m_oneEnemyTotalTex;
 	Math::Vector3  m_oneEnemyTotalPos;
 	float          m_oneEnemyScale;
 	bool           m_bOneEnemyTotal;
@@ -232,7 +232,22 @@ private:
 	KdTexture      m_threeEnemyTotalTex;
 	Math::Vector3  m_threeEnemyTotalPos;
 	float          m_threeEnemyScale;
-	bool           m_bThreeEnemyTotal;
+	bool           m_bThreeEnemyTotal;*/
+
+	KdTexture      m_enemyBossTypeOneTex;
+	Math::Vector3  m_enemyBossTypeOnePos;
+	float          m_enemyBossTypeOneScale;
+	bool           m_bEnemyBossTypeOneTotal;
+
+	KdTexture      m_enemyBossTypeTwoTotalTex;
+	Math::Vector3  m_enemyBossTypeTwoPos;
+	float          m_enemyBossTypeTwoScale;
+	bool           m_bEnemyBossTypeTwoTotal;
+
+	KdTexture      m_twoEnemyBossTypeOneTex;
+	Math::Vector3  m_twoEnemyBossTypeOnePos;
+	float          m_twoEnemyBossTypeOneScale;
+	bool           m_bTwoEnemyBossTypeOneTotal;
 
 	KdTexture m_helpMkTex;
 
@@ -273,16 +288,6 @@ private:
 	int           m_gameTimeM1 = 0;
 	int           m_gameTimeCntDeray = 0;
 
-	KdTexture m_time0Tex;
-	KdTexture m_time1Tex;
-	KdTexture m_time2Tex;
-	KdTexture m_time3Tex;
-	KdTexture m_time4Tex;
-	KdTexture m_time5Tex;
-	KdTexture m_time6Tex;
-	KdTexture m_time7Tex;
-	KdTexture m_time8Tex;
-	KdTexture m_time9Tex;
 	KdTexture m_conmaTex;
 	KdTexture m_timeTex[10];
 
