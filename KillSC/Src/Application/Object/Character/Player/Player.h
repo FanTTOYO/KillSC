@@ -61,16 +61,7 @@ public:
 		rlAttackTwo      = 1 << 29,
 		rlAttackThree    = 1 << 30,
 		rlAttack         = rlAttackOne | rlAttackTwo | rlAttackThree,
-		/*rlAttackRushOne     = 10000000 << 0,
-		rlAttackRushTwo     = 10000000 << 1,
-		rlAttackRushThree   = 10000000 << 2,
-		rlAttackRushFour    = 10000000 << 3,
-		rlAttackRushFive    = 10000000 << 4,
-		rlAttackRushSix     = 10000000 << 5,
-		rlAttackRushSeven   = 10000000 << 6,
-		rlAttackRusEight    = 10000000 << 7,*/
-		rlAttackRush        = 1 << 31  ,
-
+		rlAttackRush     = 1 << 31,
 	};
 
 	Player() {}
@@ -250,4 +241,5 @@ private:
 	Math::Matrix m_rockOnPolyMat;
 
 	bool m_bRushRp;
+	bool m_bBlowingAwayHitB;
 };

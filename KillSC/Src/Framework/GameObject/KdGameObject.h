@@ -76,7 +76,7 @@ public:
 	virtual void HasDefense() {}
 
 	void SetAttackHit(bool a_attackHit) { m_attackHit = a_attackHit; }
-	bool GetAttackHit() { return m_attackHit; }
+	const bool GetAttackHit() { return m_attackHit; }
 
 	void SetDefenseSuc(bool a_defenseSuc) { m_bDefenseSuc = a_defenseSuc; }
 	bool GetDefenseSuc() { return m_bDefenseSuc; }

@@ -90,6 +90,12 @@ void Enemy::Init()
 	m_delayTurnAroundTime = 0;
 
 	m_idleCnt = 0;
+
+	m_bShotBeam = false;
+	m_bShotEnergyBullet = false;
+	m_bBeamHitStart = false;
+	m_bEnergyBulletHitStart = false;
+
 }
 
 void Enemy::Update()
@@ -382,6 +388,25 @@ void Enemy::Update()
 	{
 		EnemyKickHitAttackChaeck();
 	}
+
+	if (!SceneManager::Instance().GetBHumanoidEnemy() && (m_bShotBeam || m_bShotEnergyBullet))
+	{
+		if (m_bBeamHitStart)
+		{
+			m_beamRange += 0.25;
+			EnemyBeamHitChaeck();
+		}
+		else if (m_bEnergyBulletHitStart)
+		{
+			/*Math::Vector3 energyBulletDir = m_rangedAttackTargetPos - m_rangedAttackShotPos;
+			energyBulletDir.Normalize();
+			energyBulletDir = Math::Vector3::Transform(energyBulletDir, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180)));
+			energyBulletDir.Normalize();*/
+			m_beamCollisionPos += m_energyBulletDir * 1.15f;
+			EnemyEnergyBulletHitChaeck();
+		}
+	}
+
 
 #ifdef _DEBUG
 
@@ -1784,12 +1809,33 @@ void Enemy::WimpEnemyTypeOneUpdate()
 	);
 #endif
 
-	if (m_wantToMoveState & none && !m_bEnemyDeath)
+	if (m_bShotBeam || m_bShotEnergyBullet)
+	{
+		m_bMove = true;
+
+		if (m_bShotBeam)
+		{
+			if (m_rangedAttackAnimeCnt >= 13 && !m_bBeamHitStart)
+			{
+				m_bBeamHitStart = true;
+			}
+		}
+
+		if (m_bShotEnergyBullet)
+		{
+			if (m_rangedAttackAnimeCnt >= 30 && !m_bEnergyBulletHitStart)
+			{
+				m_bEnergyBulletHitStart = true;
+			}
+		}
+	}
+
+	if (m_wantToMoveState & none && !m_bEnemyDeath && !m_bShotEnergyBullet && !m_bShotBeam)
 	{
 		Brain();
 	}
 
-	if (!(m_wantToMoveState & WantToMoveState::none))
+	if (!(m_wantToMoveState & WantToMoveState::none) && !m_bShotEnergyBullet && !m_bShotBeam)
 	{
 		switch (m_wantToMoveState)
 		{
@@ -1804,7 +1850,7 @@ void Enemy::WimpEnemyTypeOneUpdate()
 		}
 	}
 
-	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial && !m_bShotEnergyBullet && !m_bShotBeam)
 	{
 		std::shared_ptr<Player> spTarget = m_target.lock();
 		if (spTarget)
@@ -1837,6 +1883,20 @@ void Enemy::PostUpdate()
 				}
 				m_EnemyState = eFall;
 			}
+		}
+
+		if (KdEffekseerManager::GetInstance().IsPlaying("EnergyBullet.efk") || KdEffekseerManager::GetInstance().IsPlaying("Beem.efk"))
+		{
+			m_rangedAttackAnimeCnt++;
+		}
+		else
+		{
+			m_rangedAttackAnimeCnt = 0;
+			m_bShotEnergyBullet = false;
+			m_bShotBeam = false;
+			m_bBeamHitStart = false;
+			m_bEnergyBulletHitStart = false;
+			m_bMove = false;
 		}
 
 		if (m_rGrassHopperPauCnt > 0)
@@ -2673,6 +2733,109 @@ void Enemy::EnemyKickHitAttackChaeck()
 			}
 		}
 	}	//}
+}
+
+void Enemy::EnemyBeamHitChaeck()
+{
+	if (m_target.expired())return;
+	if (!m_target.lock()->GetDefenseSuc() && m_target.lock()->GetInvincibilityTimeCnt() == 0 && !m_target.lock()->GetBPlayerDeath()) // ここになくていいかも
+	{
+		KdCollider::RayInfo rayInfo;
+		rayInfo.m_pos = m_rangedAttackShotPos;
+
+		rayInfo.m_dir = m_rangedAttackTargetPos - m_rangedAttackShotPos;
+		rayInfo.m_dir.Normalize();
+		rayInfo.m_range = m_beamRange;
+
+		rayInfo.m_type = KdCollider::TypeDamage;
+#ifdef _DEBUG
+		m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range, { 1,1,1,1 });
+#endif
+		std::list<KdCollider::CollisionResult> retRayList;
+
+		m_target.lock()->Intersects
+		(
+			rayInfo,
+			&retRayList
+		);
+
+
+		// レイに当たったリストから一番近いオブジェクトを検出
+		float maxOverLap = 0;
+		Math::Vector3 hitPos = {};
+		bool hit = false;
+		for (auto& ret : retRayList)
+		{
+			maxOverLap = ret.m_overlapDistance;
+			hitPos = ret.m_hitPos;
+			hit = true;
+		}
+
+		if (hit)
+		{
+			m_target.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
+			KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+
+			hitPos.y += 0.35f;
+			KdEffekseerManager::GetInstance().
+				Play("Hit3.efk", hitPos);
+			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
+			//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+			Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+			KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
+		}
+	}
+}
+
+void Enemy::EnemyEnergyBulletHitChaeck()
+{
+	if (m_target.expired())return;
+	if (!m_target.lock()->GetAttackHit() && m_target.lock()->GetInvincibilityTimeCnt() == 0 && !m_target.lock()->GetBPlayerDeath())
+	{
+		KdCollider::SphereInfo sphereInfo;
+		sphereInfo.m_sphere.Center = m_beamCollisionPos;
+		sphereInfo.m_sphere.Radius = 0.8f;
+		sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius,
+			{ 1,0,0,1 }
+		);
+#endif
+		std::list<KdCollider::CollisionResult> retSphereList;
+
+		m_target.lock()->Intersects
+		(
+			sphereInfo,
+			&retSphereList
+		);
+
+		Math::Vector3 hitPos = {};
+		Math::Vector3 hitDir = {};
+		bool hit = false;
+		for (auto& ret : retSphereList)
+		{
+			hit = true;
+			hitDir = ret.m_hitDir;
+			hitPos = ret.m_hitPos;
+		}
+
+		if (hit)
+		{
+			m_target.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
+			KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+
+			KdEffekseerManager::GetInstance().
+				Play("Hit3.efk", hitPos);
+			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
+			//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+			Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+			KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
+		}
+	}
 }
 
 void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
@@ -3685,37 +3848,6 @@ void Enemy::StepVecDecision()
 
 void Enemy::NormalMoveVecDecision()
 {
-	/*std::random_device rnd;
-	std::mt19937 mt(rnd());
-	std::uniform_int_distribution<int> intRand(0, 999);
-	int randNum[2] = {};
-
-	int rand = intRand(mt);
-	randNum[0] = 900;
-	randNum[1] = 100;
-
-	for (int i = 0; i < 2; i++)
-	{
-		rand -= randNum[i];
-		if (rand < 0)
-		{
-			switch (i)
-			{
-			case 0:
-				if (!(m_EnemyState & eRun))
-				{
-					m_animator->SetAnimation(m_model->GetAnimation("RUN"));
-				}
-				m_EnemyState = eRun;
-				break;
-			case 1:
-				m_EnemyState = eJump;
-				break;
-			}
-			break;
-		}
-	}*/
-
 	if (!(m_EnemyState & eRun))
 	{
 		m_animator->SetAnimation(m_model->GetAnimation("RUN"));
@@ -3740,7 +3872,7 @@ void Enemy::NormalMove()
 			moveSpd = 0.15f;
 			break;
 		case wimpEnemyTypeOne:
-			moveSpd = 0.1f;
+			moveSpd = 0.15f;
 			break;
 		}
 	}
@@ -3748,7 +3880,28 @@ void Enemy::NormalMove()
 
 	if (m_EnemyState & eRun)
 	{
-		moveVec += Math::Vector3::TransformNormal({ 0, 0, 1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+		if (m_enemyType & wimpEnemyTypeOne)
+		{
+			Math::Vector3 src;
+			std::shared_ptr<Player> spTarget = m_target.lock();
+			if (spTarget)
+			{
+				src = spTarget->GetPos() - m_pos;
+			}
+
+			if (src.Length() <= 20.0f)
+			{
+				moveVec += Math::Vector3::TransformNormal({ 0, 0, -1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+			}
+			else
+			{
+				moveVec += Math::Vector3::TransformNormal({ 0, 0, 1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+			}
+		}
+		else
+		{
+			moveVec += Math::Vector3::TransformNormal({ 0, 0, 1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+		}
 		m_bMove = true;
 	}
 
@@ -4853,7 +5006,121 @@ void Enemy::CoarseFishEnemyBrain()
 
 void Enemy::WimpEnemyBrain()
 {
-	m_wantToMoveState = Enemy::WantToMoveState::run;
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<int> intRand(0, 999);
+	int randNum[9] = {};
+	Math::Vector3 src;
+
+	std::shared_ptr<Player> spTarget = m_target.lock();
+	if (spTarget)
+	{
+		src = spTarget->GetPos() - m_pos;
+	}
+
+	int rand = intRand(mt);
+
+	if (src.Length() <= 110.0f && src.Length() > 20.0f)
+	{
+
+		randNum[0] = 950;
+		randNum[1] =  50;
+
+		for (int i = 0; i < 2; i++)
+		{
+			rand -= randNum[i];
+			if (rand < 0)
+			{
+				switch (i)
+				{
+				case 0:
+					m_wantToMoveState = Enemy::WantToMoveState::run;
+					break;
+				case 1:
+					EnergyCharge(false);
+					break;
+				}
+				break;
+			}
+
+		}
+	}
+	else
+	{
+		m_wantToMoveState = Enemy::WantToMoveState::run;
+	}
+}
+
+void Enemy::EnergyCharge(bool a_bBeem)
+{
+	if (m_target.expired())return;
+	m_target.lock()->SetAttackHit(false);
+	m_target.lock()->SetDefenseSuc(false);
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+	node = m_model->FindNode("HitPoint");
+	mat = node->m_worldTransform * m_mWorld;
+	m_rangedAttackShotPos = mat.Translation();
+	m_rangedAttackTargetPos = { m_target.lock()->GetPos().x, m_target.lock()->GetPos().y + 1.2f, m_target.lock()->GetPos().z };
+
+	Math::Vector3 nowVec = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+	nowVec.x = 0;
+
+	nowVec.Normalize();
+	Math::Vector3 targetVec = m_rangedAttackTargetPos - m_rangedAttackShotPos;
+	targetVec.x = 0;
+
+	targetVec.Normalize();
+	Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, targetVec);
+
+	if (dot.x > 1)
+	{
+		dot.x = 1;
+	}
+
+	if (dot.x < -1)
+	{
+		dot.x = -1;
+	}
+
+	float Xang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+	if (Xang >= 45)
+	{
+		Xang = 45;
+	}
+
+	Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, targetVec);
+
+	if (m_rangedAttackShotPos.y >= m_rangedAttackTargetPos.y)
+	{
+		Xang *= -1;
+	}
+
+	if (a_bBeem)
+	{
+		m_bShotBeam = true;
+		KdEffekseerManager::GetInstance().
+			Play("Beem.efk", m_rangedAttackShotPos);
+		KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Beem.efk"); // これでループしない
+		//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+		Math::Matrix efcMat = Math::Matrix::CreateScale(1.0f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180)) *  Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(Xang)) * Math::Matrix::CreateTranslation(m_rangedAttackShotPos);
+		KdEffekseerManager::GetInstance().SetWorldMatrix("Beem.efk", efcMat);
+	}
+	else
+	{
+		m_beamCollisionPos = m_rangedAttackShotPos;
+		m_bShotEnergyBullet = true;
+		KdEffekseerManager::GetInstance().
+			Play("EnergyBullet.efk", m_rangedAttackShotPos);
+		KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnergyBullet.efk"); // これでループしない
+		//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+		Math::Matrix efcMat = Math::Matrix::CreateScale(1.0f) * Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y + 180), DirectX::XMConvertToRadians(Xang), 0) * Math::Matrix::CreateTranslation(m_rangedAttackShotPos);
+		KdEffekseerManager::GetInstance().SetWorldMatrix("EnergyBullet.efk", efcMat);
+
+		m_energyBulletDir = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y), DirectX::XMConvertToRadians(-Xang), 0));
+		m_energyBulletDir.Normalize();
+	}
 }
 
 void Enemy::ScorpionAttackMove()

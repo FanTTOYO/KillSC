@@ -91,6 +91,7 @@ void Player::Init()
 	m_hitColorChangeTimeCnt = 0;
 
 	m_bRushRp = false;
+	m_bBlowingAwayHitB = false;
 }
 
 void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_enemy)
@@ -491,7 +492,7 @@ void Player::Update()
 		{
 			m_hitStopCnt = 0;
 
-			if (m_playerState & nomalHit | cutRaiseHit)
+			if (m_playerState & (nomalHit | cutRaiseHit))
 			{
 				if (!(m_playerState & idle))
 				{
@@ -501,11 +502,22 @@ void Player::Update()
 			}
 			else if (m_playerState & blowingAwayHit)
 			{
-				if (!(m_playerState & blowingAwayRise))
+				if (!m_bBlowingAwayHitB)
 				{
-					m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayRise"), false);
+					if (!(m_playerState & blowingAwayRise))
+					{
+						m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayRise"), false);
+					}
+					m_playerState = blowingAwayRise;
 				}
-				m_playerState = blowingAwayRise;
+				else
+				{
+					if (!(m_playerState & iaiKiriRise))
+					{
+						m_animator->SetAnimation(m_model->GetAnimation("IaiKiriRise"), false);
+					}
+					m_playerState = iaiKiriRise;
+				}
 			}
 			else if (m_playerState & iaiKiriHit)
 			{
@@ -1667,6 +1679,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 			{
 				SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
 			}
+			break;
 		}
 		else
 		{
@@ -1674,6 +1687,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 			{
 				SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
 			}
+			break;
 		}
 	}
 
@@ -1688,7 +1702,30 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 30.0f;
 	m_attackHit = true;
-	m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
+	Math::Vector3 nowVec = m_mWorld.Backward();
+
+	Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, a_KnocBackvec);
+	if (dot.x > 1)
+	{
+		dot.x = 1;
+	}
+	if (dot.x < -1)
+	{
+		dot.x = -1;
+	}
+
+	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+	if (ang > 90)
+	{
+		m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
+	}
+	else
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayHitBB"), false);
+		m_bBlowingAwayHitB = true;
+	}
+
 	m_invincibilityTimeCnt = 100;
 	if (m_endurance < 0)
 	{

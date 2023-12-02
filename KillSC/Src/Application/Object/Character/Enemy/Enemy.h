@@ -159,6 +159,9 @@ public:
 
 	const UINT& GetEnemyType() { return m_enemyType; }
 
+	const bool GetBShotBeam() { return m_bShotBeam; }
+	const bool GetBShotEnergyBullet() { return m_bShotEnergyBullet; }
+
 private:
 
 	void CollisionUpdate();
@@ -167,6 +170,8 @@ private:
 	void WimpEnemyTypeOneUpdate();
 	void TutorialUpdate();
 	void EnemyKickHitAttackChaeck();
+	void EnemyBeamHitChaeck();
+	void EnemyEnergyBulletHitChaeck();
 	void UpdateRotate(Math::Vector3& a_srcMoveVec);
 	void GrassMoveVecDecision();
 	void ScorpionDefenseDecision();
@@ -187,6 +192,7 @@ private:
 	void AllRounderBrain();
 	void CoarseFishEnemyBrain();
 	void WimpEnemyBrain();
+	void EnergyCharge(bool a_bBeem);
 
 	std::shared_ptr<KdModelWork> m_model;
 
@@ -322,4 +328,18 @@ private:
 	int m_coarseFishEnemyAttackDelayCnt;
 
 	int m_idleCnt; // なにもしてな時間を計る
+
+	bool  m_bShotBeam;			// 打った時 : true
+	bool  m_bShotEnergyBullet;	// 打った時 : true
+	float m_beamRange;			// ビームの当たり判定の長さ
+	Math::Vector3 m_beamCollisionPos = {}; // エネルギー弾が当たり判定する場所
+	Math::Vector3 m_energyBulletDir = {}; // エネルギー弾が飛んでく方向
+
+	int   m_rangedAttackAnimeCnt; // 遠距離攻撃系のエフェクトのアニメーションカウント
+	Math::Vector3 m_rangedAttackTargetPos; // 遠距離攻撃系の狙っている場所
+	Math::Vector3 m_rangedAttackShotPos; // 遠距離攻撃系攻撃を発射した地点
+
+
+	bool  m_bBeamHitStart;	        // 当たり判定してる時 : true
+	bool  m_bEnergyBulletHitStart;	// 当たり判定してる時 : true
 };
