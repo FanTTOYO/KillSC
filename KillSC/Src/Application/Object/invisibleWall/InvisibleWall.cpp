@@ -19,7 +19,7 @@ void InvisibleWall::Init()
 	// “–‚½‚è”»’è‰Šú‰»
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape
-	("StageModel" ,m_model,KdCollider::TypeGround);
+	("StageModel" ,m_model,KdCollider::TypeGround | KdCollider::TypeAttackDec);
 }
 
 void InvisibleWall::DrawUnLit()

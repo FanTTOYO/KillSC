@@ -77,11 +77,18 @@ void GameScene::Event()
 		}
 		else if (SceneManager::Instance().GetEnemyTotal() == 1)
 		{
-			SceneManager::Instance().SetPointAddOrSubVal(500);
+			if (SceneManager::Instance().GetBHumanoidEnemy())
+			{
+				SceneManager::Instance().SetPointAddOrSubVal(500);
+			}
+			else
+			{
+				SceneManager::Instance().SetPointAddOrSubVal(1500);
+			}
 		}
 		else if (SceneManager::Instance().GetEnemyTotal() == 2)
 		{
-			SceneManager::Instance().SetPointAddOrSubVal(1000);
+			SceneManager::Instance().SetPointAddOrSubVal(2000);
 		}
 		else if (SceneManager::Instance().GetEnemyTotal() == 3)
 		{
@@ -421,6 +428,23 @@ void GameScene::Event()
 
 						m_objList.push_back(enemy);
 					}
+
+
+					/*SceneManager::Instance().AddEnemyDrawTotal();
+					enemy = std::make_shared<Enemy>();
+					enemy->SetTarget(m_wpPlayer.lock());
+					m_wpPlayer.lock()->AddEnemy(enemy);
+					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+					m_wpUi.lock()->AddEnemy(enemy);
+					enemy->Init();
+					enemy->SetEnemyNumber(1);
+					enemy->SetBBoss(false);
+					enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+					enemy->SetPos(Math::Vector3(0.0f, 0.0f, 30.0f));
+					enemy->SetMatrix(Math::Vector3(0.0, 0.0f, 30.0f));
+					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+
+					m_objList.push_back(enemy);*/
 				}
 			}
 		}
@@ -447,6 +471,7 @@ void GameScene::Event()
 
 			if (m_appearanceEffectCnt >= 25)
 			{
+
 				int total = SceneManager::Instance().GetEnemyTotal();
 				std::shared_ptr<Enemy> enemy;
 				// ‘O•ûŒü
@@ -462,6 +487,11 @@ void GameScene::Event()
 					enemy->Init();
 					enemy->SetEnemyNumber(1);
 					enemy->SetBBoss(true);
+					if (!SceneManager::Instance().GetBHumanoidEnemy())
+					{
+						enemy->SetModelAndType(Enemy::EnemyType::bossEnemyTypeOne);
+					}
+
 					switch (total)
 					{
 					case 1:

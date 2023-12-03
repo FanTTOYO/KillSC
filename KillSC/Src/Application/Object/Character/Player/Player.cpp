@@ -92,6 +92,7 @@ void Player::Init()
 
 	m_bRushRp = false;
 	m_bBlowingAwayHitB = false;
+	m_bAtttackMoveSpeedDec = false;
 }
 
 void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_enemy)
@@ -602,7 +603,7 @@ void Player::Update()
 		//rayInfo.m_range = 0.25f;
 	}
 
-	rayInfo.m_type = KdCollider::TypeGround | KdCollider::TypeRideEnemy;
+	rayInfo.m_type = KdCollider::TypeGround;
 
 #ifdef _DEBUG
 	m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range, { 1,1,1,1 });
@@ -622,6 +623,73 @@ void Player::Update()
 	float maxOverLap = 0;
 	Math::Vector3 groundPos = {};
 	bool hit = false;
+	for (auto& ret : retRayList)
+	{
+		// レイを遮断しオーバーした長さ
+		// 一番長いものを探す
+		if (maxOverLap < ret.m_overlapDistance)
+		{
+			maxOverLap = ret.m_overlapDistance;
+			groundPos = ret.m_hitPos;
+			hit = true;
+		}
+	}
+
+	if (hit)
+	{
+		if (!(m_playerState & (grassHopperDash | grassHopperDashUp)))
+		{
+			//m_pos = groundPos;
+			m_pos = groundPos + Math::Vector3(0, -0.7f, 0);
+			m_gravity = 0;
+			if (m_playerState & (fall | jump) && !m_bPlayerDeath)
+			{
+				m_bMove = false;
+				if (!(m_playerState & idle))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+				}
+				m_playerState = idle;
+			}
+
+			m_wpCamera.lock()->SetStepOnPlayerPos(groundPos);
+		}
+		else
+		{
+			//m_pos = groundPos /*+ Math::Vector3(0,-0.1,0)*/;
+			m_gravity = 0;
+			//m_playerState = fall;
+			m_rGrassHopperTime = 0;
+			m_lGrassHopperTime = 0;
+			//m_bMove = false;
+			m_grassHopperDashDir = {};
+			m_dashSpd = 0.0f;
+		}
+	}
+
+	rayInfo.m_type = KdCollider::TypeRideEnemy;
+
+#ifdef _DEBUG
+	m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range, { 1,1,1,1 });
+#endif
+	retRayList.clear();
+
+	for (auto& enemyList : m_enemyList)
+	{
+		if (enemyList.expired())continue;
+		if (enemyList.lock()->GetBEnemyDeath())continue;
+		
+		enemyList.lock()->Intersects
+		(
+			rayInfo,
+			&retRayList
+		);
+	}
+
+	// レイに当たったリストから一番近いオブジェクトを検出
+	maxOverLap = 0;
+	groundPos = {};
+	hit = false;
 	for (auto& ret : retRayList)
 	{
 		// レイを遮断しオーバーした長さ
@@ -849,7 +917,6 @@ void Player::Update()
 
 	sphereInfo.m_sphere.Radius = 0.3f;
 
-
 	// 当たり判定をしたいタイプを設定
 	sphereInfo.m_type = KdCollider::TypeBump;
 #ifdef _DEBUG
@@ -869,6 +936,11 @@ void Player::Update()
 	{
 		if (enemyList.expired())continue;
 		if (enemyList.lock()->GetBEnemyDeath())continue;
+
+		if (enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne && m_playerState & (grassHopperDash | grassHopperDashUp | step))
+		{
+			sphereInfo.m_sphere.Radius = 1.2f;
+		}
 
 		enemyList.lock()->Intersects
 		(
@@ -899,6 +971,125 @@ void Player::Update()
 			m_pos += (hitDir * maxOverLap);
 		}
 	}
+
+	if (m_playerState & (rAttack | lAttack | rlAttack | rlAttackRush))
+	{
+		sphereInfo.m_sphere.Radius = 1.15f;
+
+		// 当たり判定をしたいタイプを設定
+		sphereInfo.m_type = KdCollider::TypeAttackDec;
+#ifdef _DEBUG
+		// デバック用
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius
+		);
+#endif
+		// 球の当たったオブジェクト情報
+		retSphereList.clear();
+
+		// 球と当たり判定 
+
+		if (!m_enemy.expired())
+		{
+			m_enemy.lock()->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
+
+			maxOverLap = 0;
+			hit = false;
+			hitDir = {}; // 当たった方向
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hit = true;
+					hitDir = ret.m_hitDir;
+				}
+			}
+
+			if (hit)
+			{
+				m_bAtttackMoveSpeedDec = true;
+			}
+			else
+			{
+				for (auto& obj : SceneManager::Instance().GetObjList())
+				{
+					obj->Intersects
+					(
+						sphereInfo,
+						&retSphereList
+					);
+				}
+
+				// 球に当たったリスト情報から一番近いオブジェクトを検出
+				maxOverLap = 0;
+				hit = false;
+				hitDir = {}; // 当たった方向
+				for (auto& ret : retSphereList)
+				{
+					// 一番近くで当たったものを探す
+					if (maxOverLap < ret.m_overlapDistance)
+					{
+						maxOverLap = ret.m_overlapDistance;
+						hit = true;
+						hitDir = ret.m_hitDir;
+					}
+				}
+
+				if (hit)
+				{
+					m_bAtttackMoveSpeedDec = true;
+				}
+				else
+				{
+					m_bAtttackMoveSpeedDec = false;
+				}
+			}
+		}
+		else
+		{
+			for (auto& obj : SceneManager::Instance().GetObjList())
+			{
+				obj->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+			}
+
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
+			maxOverLap = 0;
+			hit = false;
+			hitDir = {}; // 当たった方向
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hit = true;
+					hitDir = ret.m_hitDir;
+				}
+			}
+
+			if (hit)
+			{
+				m_bAtttackMoveSpeedDec = true;
+			}
+			else
+			{
+				m_bAtttackMoveSpeedDec = false;
+			}
+		}
+	}
+	
 
 	if (!m_bRushRp)
 	{
@@ -1814,6 +2005,7 @@ void Player::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 		m_gravity = -0.05f;
 	}
 
+	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 15.0f;
 	m_attackHit = true;
 	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
@@ -2914,26 +3106,9 @@ void Player::ScorpionAttackMove()
 			}
 			else
 			{
-				if (!m_enemy.expired())
+				if (m_bAtttackMoveSpeedDec)
 				{
-					Math::Vector3 dis = m_enemy.lock()->GetPos() - m_pos;
-					if (dis.Length() <= 1.15f)
-					{
-						m_attackMoveSpd *= 0.25f;
-					}
-				}
-				else
-				{
-					for (auto& enemyList : m_enemyList)
-					{
-						if (enemyList.expired())continue;
-						Math::Vector3 dis = enemyList.lock()->GetPos() - m_pos;
-						if (dis.Length() <= 1.15f)
-						{
-							m_attackMoveSpd *= 0.25f;
-							break;
-						}
-					}
+					m_attackMoveSpd *= 0.25f;
 				}
 			}
 		}
@@ -3043,6 +3218,7 @@ void Player::ScorpionAttackMove()
 						case 74:
 						case 89:
 							m_attackMoveSpd = 0.115f;
+							break;
 						case 107:
 							m_attackMoveSpd = 0.05f;
 							break;
@@ -3322,6 +3498,7 @@ void Player::ScorpionActionDecision()
 									scopion2->SetBMantis(true);
 								}
 								m_bMove = true;
+								m_bAtttackMoveSpeedDec = false;
 								m_animator->SetAnimation(m_model->GetAnimation("Mantis"), false);
 							}
 						}
@@ -3343,7 +3520,7 @@ void Player::ScorpionActionDecision()
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
 							m_bMove = true;
-
+							m_bAtttackMoveSpeedDec = false;
 							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 
 							m_attackMoveDir.y = 0;
@@ -3389,6 +3566,7 @@ void Player::ScorpionActionDecision()
 									scopion2->SetBMantis(true);
 								}
 								m_bMove = true;
+								m_bAtttackMoveSpeedDec = false;
 								//m_animator->SetAnimation(m_model->GetAnimation("mantis"), false);
 							}
 						}
@@ -3409,7 +3587,7 @@ void Player::ScorpionActionDecision()
 							m_attackAnimeCnt = 0;
 							m_attackAnimeDelayCnt = 0;
 							m_bMove = true;
-
+							m_bAtttackMoveSpeedDec = false;
 							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
@@ -3447,7 +3625,7 @@ void Player::ScorpionActionDecision()
 						m_attackAnimeCnt = 0;
 						m_attackAnimeDelayCnt = 0;
 						m_bMove = true;
-
+						m_bAtttackMoveSpeedDec = false;
 						m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 						m_attackMoveDir.y = 0;
 						m_attackMoveDir.Normalize();
@@ -3491,7 +3669,7 @@ void Player::ScorpionActionDecision()
 						m_attackAnimeCnt = 0;
 						m_attackAnimeDelayCnt = 0;
 						m_bMove = true;
-
+						m_bAtttackMoveSpeedDec = false;
 						m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 						m_attackMoveDir.y = 0;
 						m_attackMoveDir.Normalize();
@@ -3605,6 +3783,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.Normalize();
 						}
 
+						m_bAtttackMoveSpeedDec = false;
 						m_bMove = true;
 					}
 				}
@@ -3646,6 +3825,7 @@ void Player::ScorpionActionDecision()
 							m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
 						}
 
+						m_bAtttackMoveSpeedDec = false;
 						m_playerState &= ~rAttack;
 						m_bMove = true;
 					}
@@ -3693,6 +3873,7 @@ void Player::ScorpionActionDecision()
 							m_animator->SetAnimation(m_model->GetAnimation("RAttack3"), false);
 						}
 
+						m_bAtttackMoveSpeedDec = false;
 						m_playerState &= ~lAttack;
 						m_bMove = true;
 					}

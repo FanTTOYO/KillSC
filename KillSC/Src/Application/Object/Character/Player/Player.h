@@ -242,4 +242,6 @@ private:
 
 	bool m_bRushRp;
 	bool m_bBlowingAwayHitB;
+
+	bool m_bAtttackMoveSpeedDec; // Œ¸‘¬‚³‚¹‚é : true
 };

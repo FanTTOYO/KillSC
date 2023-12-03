@@ -94,6 +94,7 @@ public:
 		allRounder = 1 << 3,
 		coarseFishEnemy = 1 << 4,
 		wimpEnemyTypeOne = 1 << 5,
+		bossEnemyTypeOne = 1 << 6,
 	};
 
 	Enemy() {}
@@ -166,6 +167,7 @@ private:
 
 	void CollisionUpdate();
 	void BossUpdate();
+	void BossEnemyTyepOneUpdate();
 	void CoarseFishEnemyUpdate();
 	void WimpEnemyTypeOneUpdate();
 	void TutorialUpdate();
@@ -192,6 +194,7 @@ private:
 	void AllRounderBrain();
 	void CoarseFishEnemyBrain();
 	void WimpEnemyBrain();
+	void BossEnemyTypeOneBrain();
 	void EnergyCharge(bool a_bBeem);
 
 	std::shared_ptr<KdModelWork> m_model;
@@ -335,6 +338,9 @@ private:
 	Math::Vector3 m_beamCollisionPos = {}; // エネルギー弾が当たり判定する場所
 	Math::Vector3 m_energyBulletDir = {}; // エネルギー弾が飛んでく方向
 
+	Math::Vector3 m_rangedAttackDir = {}; // 遠距離攻撃が飛んでいく方向
+	//Math::Vector3 m_rangedAttackDir = {}; // 遠距離攻撃が飛んでいく方向
+
 	int   m_rangedAttackAnimeCnt; // 遠距離攻撃系のエフェクトのアニメーションカウント
 	Math::Vector3 m_rangedAttackTargetPos; // 遠距離攻撃系の狙っている場所
 	Math::Vector3 m_rangedAttackShotPos; // 遠距離攻撃系攻撃を発射した地点
@@ -342,4 +348,6 @@ private:
 
 	bool  m_bBeamHitStart;	        // 当たり判定してる時 : true
 	bool  m_bEnergyBulletHitStart;	// 当たり判定してる時 : true
+
+	Math::Vector3 m_hitpos;
 };
