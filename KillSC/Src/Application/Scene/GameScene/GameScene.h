@@ -2,6 +2,7 @@
 #include "../BaseScene/BaseScene.h"
 class Player;
 class Ui;
+class Enemy;
 
 class GameScene:public BaseScene
 {
@@ -21,4 +22,6 @@ private:
 	int m_bossAppearanceCnt = 0;
 	int m_appearanceEffectCnt = 0;
 	bool m_bAppearanceEffect;
+
+	std::list<std::weak_ptr<Enemy>> m_wpEnemyList;
 };

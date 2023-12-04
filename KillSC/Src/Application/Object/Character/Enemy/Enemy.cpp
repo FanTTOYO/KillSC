@@ -95,7 +95,20 @@ void Enemy::Init()
 	m_bShotEnergyBullet = false;
 	m_bBeamHitStart = false;
 	m_bEnergyBulletHitStart = false;
+	m_bRangedAttack = false;
 
+	m_enemyAttackTotal = 0;
+	m_enemyAttackMaxTotal = 0;
+
+	m_bRangedAttackCapableOfFiring = false;
+	m_rangedAttackAnimeCnt = 0;
+
+	m_weaknesSsuccessionHitCnt = 0;
+	m_addWeaknesSsuccessionHitCntTime = 0;
+
+	m_addRotationAttackDistToPlayerTime = 0;
+	m_notHumanoidEnemyState = stand;
+	m_attackAnimeCnt = 0;
 }
 
 void Enemy::Update()
@@ -411,7 +424,7 @@ void Enemy::Update()
 		}
 		else if (m_bEnergyBulletHitStart)
 		{
-			m_beamCollisionPos += m_energyBulletDir * 1.15f;
+			m_beamCollisionPos += m_energyBulletDir * 0.985f;
 			EnemyEnergyBulletHitChaeck();
 		}
 	}
@@ -835,6 +848,66 @@ void Enemy::CollisionUpdate()
 				hitDir.Normalize();
 				// 球とモデルが当たっている
 				m_pos += (hitDir * maxOverLap);
+			}
+		}
+
+		if (m_enemyType & (bossEnemyTypeOne) && !(m_notHumanoidEnemyState & rotationAttack))
+		{
+			sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 12, 0);
+			sphereInfo.m_sphere.Radius = 40.0f;
+			// 当たり判定をしたいタイプを設定
+			sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+			// デバック用
+			m_pDebugWire->AddDebugSphere
+			(
+				sphereInfo.m_sphere.Center,
+				sphereInfo.m_sphere.Radius,
+				{0,0,0,1}
+			);
+#endif
+
+			// 球の当たったオブジェクト情報
+			retSphereList.clear();
+
+			// 球と当たり判定 
+
+			if (!m_target.expired())
+			{
+				if (!m_target.lock()->GetBPlayerLose())
+				{
+					m_target.lock()->Intersects
+					(
+						sphereInfo,
+						&retSphereList
+					);
+				}
+
+
+				// 球に当たったリスト情報から一番近いオブジェクトを検出
+				maxOverLap = 0;
+				hit = false;
+				hitDir = {}; // 当たった方向
+				for (auto& ret : retSphereList)
+				{
+					// 一番近くで当たったものを探す
+					if (maxOverLap < ret.m_overlapDistance)
+					{
+						maxOverLap = ret.m_overlapDistance;
+						hit = true;
+						hitDir = ret.m_hitDir;
+					}
+				}
+
+				if (hit)
+				{
+					m_addRotationAttackDistToPlayerTime++;
+					if (m_addRotationAttackDistToPlayerTime > ADDROTAYIONATTACKDISTTOPLAYERTIME)
+					{
+						m_addRotationAttackDistToPlayerTime = ADDROTAYIONATTACKDISTTOPLAYERTIME;
+					}
+				}
 			}
 		}
 	}
@@ -1652,8 +1725,8 @@ void Enemy::BossEnemyTyepOneUpdate()
 		m_leftWeaponNumber = 0;
 		m_rightWeaponNumber = 0;
 
-		m_torion    = 3000.0f;
-		m_endurance = 1000.0f;
+		m_torion    = 10000.0f;
+		m_endurance =  1000.0f;
 
 		if (!(m_EnemyState & eRun))
 		{
@@ -1677,57 +1750,84 @@ void Enemy::BossEnemyTyepOneUpdate()
 		{ 0,0,0,1 }
 	);
 #endif
-
-	if (m_bShotBeam || m_bShotEnergyBullet)
+	if (m_hitStopCnt > 0)
 	{
-		m_bMove = true;
+		--m_hitStopCnt;
+	}
 
-		if (m_bShotBeam)
+	if (m_hitStopCnt == 0)
+	{
+		if (m_addWeaknesSsuccessionHitCntTime > 0)
 		{
-			if (m_rangedAttackAnimeCnt >= 10 && !m_bBeamHitStart)
+			--m_addWeaknesSsuccessionHitCntTime;
+		}
+
+		if (m_bShotBeam || m_bShotEnergyBullet)
+		{
+			m_bMove = true;
+
+			if (m_bShotBeam)
 			{
-				m_bBeamHitStart = true;
+				if (m_rangedAttackAnimeCnt >= 10 && !m_bBeamHitStart)
+				{
+					m_bBeamHitStart = true;
+				}
+			}
+
+			if (m_bShotEnergyBullet)
+			{
+				if (m_rangedAttackAnimeCnt >= 25 && !m_bEnergyBulletHitStart)
+				{
+					m_bEnergyBulletHitStart = true;
+				}
 			}
 		}
 
-		if (m_bShotEnergyBullet)
+		if (!(m_notHumanoidEnemyState & rotationAttack))
 		{
-			if (m_rangedAttackAnimeCnt >= 30 && !m_bEnergyBulletHitStart)
+			if (m_addRotationAttackDistToPlayerTime == ADDROTAYIONATTACKDISTTOPLAYERTIME)
 			{
-				m_bEnergyBulletHitStart = true;
+				m_addRotationAttackDistToPlayerTime = 0;
+				m_notHumanoidEnemyState = rotationAttack;
+				m_animator->SetAnimation(m_model->GetAnimation("RotationAttack"),false);
+			}
+
+
+			if (m_wantToMoveState & none && !m_bEnemyDeath && !m_bShotEnergyBullet && !m_bShotBeam)
+			{
+				BossEnemyTypeOneBrain();
+			}
+
+			if (!(m_wantToMoveState & WantToMoveState::none) && !m_bShotEnergyBullet && !m_bShotBeam)
+			{
+				switch (m_wantToMoveState)
+				{
+				case WantToMoveState::run:
+					NormalMoveVecDecision();
+					break;
+				}
+
+				if (m_EnemyState & eRun | m_EnemyState & eJump)
+				{
+					NormalMove();
+				}
 			}
 		}
-	}
-
-	if (m_wantToMoveState & none && !m_bEnemyDeath && !m_bShotEnergyBullet && !m_bShotBeam)
-	{
-		BossEnemyTypeOneBrain();
-	}
-
-	if (!(m_wantToMoveState & WantToMoveState::none) && !m_bShotEnergyBullet && !m_bShotBeam)
-	{
-		switch (m_wantToMoveState)
+		else
 		{
-		case WantToMoveState::run:
-			NormalMoveVecDecision();
-			break;
+			RotationAttackMove();
 		}
 
-		if (m_EnemyState & eRun | m_EnemyState & eJump)
+		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial && !m_bShotEnergyBullet && !m_bShotBeam)
 		{
-			NormalMove();
-		}
-	}
+			std::shared_ptr<Player> spTarget = m_target.lock();
+			if (spTarget)
+			{
+				Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+				UpdateRotate(vTarget);
+			}
 
-	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial && !m_bShotEnergyBullet && !m_bShotBeam)
-	{
-		std::shared_ptr<Player> spTarget = m_target.lock();
-		if (spTarget)
-		{
-			Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
-			UpdateRotate(vTarget);
 		}
-
 	}
 }
 
@@ -1930,7 +2030,7 @@ void Enemy::WimpEnemyTypeOneUpdate()
 
 		if (m_bShotEnergyBullet)
 		{
-			if (m_rangedAttackAnimeCnt >= 30 && !m_bEnergyBulletHitStart)
+			if (m_rangedAttackAnimeCnt >= 25 && !m_bEnergyBulletHitStart)
 			{
 				m_bEnergyBulletHitStart = true;
 			}
@@ -1992,11 +2092,12 @@ void Enemy::PostUpdate()
 			}
 		}
 
-		if (KdEffekseerManager::GetInstance().IsPlaying("EnergyBullet.efk") || KdEffekseerManager::GetInstance().IsPlaying("Beem.efk"))
+		if (m_bShotBeam || m_bShotEnergyBullet)
 		{
 			m_rangedAttackAnimeCnt++;
 		}
-		else
+		
+		if(m_rangedAttackAnimeCnt >= 80)
 		{
 			m_beamRange = 0;
 			m_rangedAttackAnimeCnt = 0;
@@ -2005,6 +2106,8 @@ void Enemy::PostUpdate()
 			m_bBeamHitStart = false;
 			m_bEnergyBulletHitStart = false;
 			m_bMove = false;
+			m_bRangedAttack = false;
+			m_wantToMoveState = none;
 		}
 
 		if (m_rGrassHopperPauCnt > 0)
@@ -2032,7 +2135,7 @@ void Enemy::PostUpdate()
 			}
 		}
 
-		if (!(m_EnemyState & (eLAttack | eRAttack | eRlAttack | eRlAttackRush)))
+		if (!(m_EnemyState & (eLAttack | eRAttack | eRlAttack | eRlAttackRush)) && !(m_notHumanoidEnemyState & rotationAttack))
 		{
 			m_animator->AdvanceTime(m_model->WorkNodes());
 			m_model->CalcNodeMatrices();
@@ -2164,6 +2267,12 @@ void Enemy::PostUpdate()
 				}
 			}
 
+			m_animator->AdvanceTime(m_model->WorkNodes());
+			m_model->CalcNodeMatrices();
+		}
+		else if (m_notHumanoidEnemyState & rotationAttack)
+		{
+			++m_attackAnimeCnt;
 			m_animator->AdvanceTime(m_model->WorkNodes());
 			m_model->CalcNodeMatrices();
 		}
@@ -2479,7 +2588,16 @@ void Enemy::WeaknessOnHit()
 
 	if (m_enemyType & bossEnemyTypeOne)
 	{
-		m_endurance -= 100.0f;
+		if (m_addWeaknesSsuccessionHitCntTime == 0)
+		{
+			m_weaknesSsuccessionHitCnt = 1;
+		}
+		else
+		{
+			++m_weaknesSsuccessionHitCnt;
+		}
+
+		m_addWeaknesSsuccessionHitCntTime = ADDWEAKNESSEUCCESSIONHITCNTTIMELIMIT;
 	}
 	else
 	{
@@ -2494,6 +2612,17 @@ void Enemy::WeaknessOnHit()
 	else
 	{
 		m_graduallyTorionDecVal *= 1.5f;
+	}
+
+	m_hitColorChangeTimeCnt = 15;
+
+	if (m_weaknesSsuccessionHitCnt >= 5)
+	{
+		m_weaknesSsuccessionHitCnt = 0;
+		m_addWeaknesSsuccessionHitCntTime = 0;
+		m_invincibilityTimeCnt = 80;
+		m_hitStopCnt = 80;
+		m_animator->SetAnimation(m_model->GetAnimation("SuccessionWeaknessOnHit"), false);
 	}
 }
 
@@ -2661,6 +2790,7 @@ void Enemy::SetModelAndType(EnemyType a_enemyType)
 		m_pCollider = std::make_unique<KdCollider>();
 		m_pCollider->RegisterCollisionShape
 		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage  | KdCollider::TypeAttackDec);
+		m_enemyAttackMaxTotal = 2;
 		break;
 	case wimpEnemyTypeOne:
 		m_model = std::make_shared<KdModelWork>();
@@ -2676,6 +2806,7 @@ void Enemy::SetModelAndType(EnemyType a_enemyType)
 		mat = node->m_worldTransform * m_mWorld;
 		m_pCollider->RegisterCollisionShape
 		("EnemyModelWeakness", { mat._41,mat._42,mat._43 - 5 }, 0.45f, KdCollider::TypeWeakness);
+		m_enemyAttackMaxTotal = 4;
 		break;
 	case bossEnemyTypeOne:
 		m_model = std::make_shared<KdModelWork>();
@@ -2868,7 +2999,7 @@ void Enemy::EnemyKickHitAttackChaeck()
 void Enemy::EnemyBeamHitChaeck()
 {
 	if (m_target.expired())return;
-	if (!m_target.lock()->GetDefenseSuc() && m_target.lock()->GetInvincibilityTimeCnt() == 0 && !m_target.lock()->GetBPlayerDeath()) // ここになくていいかも
+	if (!m_target.lock()->GetAttackHit() && !m_target.lock()->GetDefenseSuc() && m_target.lock()->GetInvincibilityTimeCnt() == 0 && !m_target.lock()->GetBPlayerDeath()) // ここになくていいかも
 	{
 		KdCollider::RayInfo rayInfo;
 		rayInfo.m_pos = m_rangedAttackShotPos;
@@ -3100,7 +3231,7 @@ void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
 		m_bMantisPossAng = false;
 	}
 
-	if (SceneManager::Instance().GetBHumanoidEnemy())
+	if (!(m_enemyType & (bossEnemyTypeOne | wimpEnemyTypeOne)))
 	{
 		if (ang >= 8.0f)
 		{
@@ -3109,19 +3240,18 @@ void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
 	}
 	else
 	{
-		if (m_enemyType & bossEnemyTypeOne)
+		if (ang < 30)
 		{
-			if (ang >= 1.0f)
-			{
-				ang = 1.0f;
-			}
+			m_bRangedAttackCapableOfFiring = true;
 		}
 		else
 		{
-			if (ang >= 3.0f)
-			{
-				ang = 3.0f;
-			}
+			m_bRangedAttackCapableOfFiring = false;
+		}
+
+		if (ang >= 1.0f)
+		{
+			ang = 1.0f;
 		}
 	}
 
@@ -5204,7 +5334,7 @@ void Enemy::CoarseFishEnemyBrain()
 
 	int rand = intRand(mt);
 
-	if (m_coarseFishEnemyAttackDelayCnt == 0)
+	if (m_coarseFishEnemyAttackDelayCnt == 0 && m_enemyAttackMaxTotal > m_enemyAttackTotal)
 	{
 		if (src.Length() <= 2.0f)
 		{
@@ -5262,11 +5392,10 @@ void Enemy::WimpEnemyBrain()
 	}
 
 	int rand = intRand(mt);
-
-	if (src.Length() <= 110.0f && src.Length() > 20.0f)
+	if (src.Length() <= 110.0f && src.Length() > 20.0f && m_enemyAttackMaxTotal > m_enemyAttackTotal && m_bRangedAttackCapableOfFiring)
 	{
-		randNum[0] = 970;
-		randNum[1] =  30;
+		randNum[0] = 990;
+		randNum[1] =  10;
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -5289,7 +5418,10 @@ void Enemy::WimpEnemyBrain()
 	}
 	else
 	{
-		m_wantToMoveState = Enemy::WantToMoveState::run;
+		if (!m_bShotBeam && !m_bShotEnergyBullet)
+		{
+			m_wantToMoveState = Enemy::WantToMoveState::run;
+		}
 	}
 }
 
@@ -5309,52 +5441,62 @@ void Enemy::BossEnemyTypeOneBrain()
 
 	int rand = intRand(mt);
 
-	if (src.Length() <= 45.0f)
+	if (m_bRangedAttackCapableOfFiring)
 	{
-		randNum[0] = 970;
-		randNum[1] = 30;
-
-		for (int i = 0; i < 2; i++)
+		if (src.Length() <= 45.0f)
 		{
-			rand -= randNum[i];
-			if (rand < 0)
+			randNum[0] = 970;
+			randNum[1] = 30;
+
+			for (int i = 0; i < 2; i++)
 			{
-				switch (i)
+				rand -= randNum[i];
+				if (rand < 0)
 				{
-				case 0:
-					m_wantToMoveState = Enemy::WantToMoveState::run;
-					break;
-				case 1:
-					EnergyCharge(true);
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveState = Enemy::WantToMoveState::run;
+						break;
+					case 1:
+						EnergyCharge(true);
+						break;
+					}
 					break;
 				}
-				break;
-			}
 
+			}
+		}
+		else
+		{
+			randNum[0] = 970;
+			randNum[1] = 30;
+
+			for (int i = 0; i < 2; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_wantToMoveState = Enemy::WantToMoveState::run;
+						break;
+					case 1:
+						EnergyCharge(false);
+						break;
+					}
+					break;
+				}
+
+			}
 		}
 	}
 	else
 	{
-		randNum[0] = 970;
-		randNum[1] = 30;
-
-		for (int i = 0; i < 2; i++)
+		if (!m_bShotBeam && !m_bShotEnergyBullet)
 		{
-			rand -= randNum[i];
-			if (rand < 0)
-			{
-				switch (i)
-				{
-				case 0:
-					m_wantToMoveState = Enemy::WantToMoveState::run;
-					break;
-				case 1:
-					EnergyCharge(false);
-					break;
-				}
-				break;
-			}
-
+			m_wantToMoveState = Enemy::WantToMoveState::run;
 		}
 	}
 }
@@ -5393,16 +5535,39 @@ void Enemy::EnergyCharge(bool a_bBeem)
 
 	float Xang = DirectX::XMConvertToDegrees(acos(dot.x));
 
-	if (Xang >= 45)
-	{
-		Xang = 45;
-	}
-
 	Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, targetVec);
 
-	if (m_rangedAttackShotPos.y >= m_rangedAttackTargetPos.y)
+	if (m_enemyType & wimpEnemyTypeOne)
 	{
-		Xang *= -1;
+		if (m_rangedAttackShotPos.y >= m_rangedAttackTargetPos.y)
+		{
+			if (Xang >= 3)
+			{
+				Xang = 3;
+			}
+
+			Xang *= -1;
+		}
+		else
+		{
+			if (Xang >= 45)
+			{
+				Xang = 45;
+			}
+		}
+	}
+	else
+	{
+
+		if (Xang >= 45)
+		{
+			Xang = 45;
+		}
+
+		if (m_rangedAttackShotPos.y >= m_rangedAttackTargetPos.y)
+		{
+			Xang *= -1;
+		}
 	}
 
 	if (a_bBeem)
@@ -5431,6 +5596,110 @@ void Enemy::EnergyCharge(bool a_bBeem)
 
 		m_energyBulletDir = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y), DirectX::XMConvertToRadians(-Xang), 0));
 		m_energyBulletDir.Normalize();
+	}
+
+	m_bRangedAttack = true;
+}
+
+void Enemy::RotationAttackMove()
+{
+	Math::Vector3 moveVec;
+	float moveSpd = 0.25;
+	moveVec += Math::Vector3::TransformNormal({ 0, 0, 1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+	m_pos += moveVec * moveSpd;
+
+	if (m_animator->IsAnimationEnd())
+	{
+		m_attackAnimeCnt = 0;
+		m_notHumanoidEnemyState = stand;
+		m_notHumanoidEnemyState &= ~rotationAttack;
+		Brain();
+	}
+
+	if (!m_target.expired())
+	{
+		if (m_target.lock()->GetInvincibilityTimeCnt() == 0 && m_attackAnimeCnt >= 17 && m_attackAnimeCnt <= 73)
+		{
+			m_target.lock()->SetAttackHit(false);
+			m_target.lock()->SetDefenseSuc(false);
+		}
+	}
+
+	RotationAttackChaeck();
+}
+
+void Enemy::RotationAttackChaeck()
+{
+	KdCollider::SphereInfo sphereInfo;
+
+	// 球の当たったオブジェクト情報
+	std::list<KdCollider::CollisionResult> retSphereList;
+
+	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 12, 0);
+	sphereInfo.m_sphere.Radius = 50.0f;
+	// 当たり判定をしたいタイプを設定
+	sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+	// デバック用
+	m_pDebugWire->AddDebugSphere
+	(
+		sphereInfo.m_sphere.Center,
+		sphereInfo.m_sphere.Radius,
+		{ 0,0,0,1 }
+	);
+#endif
+
+	// 球の当たったオブジェクト情報
+	retSphereList.clear();
+
+	// 球と当たり判定 
+
+	if (!m_target.expired())
+	{
+		if (!m_target.lock()->GetAttackHit() && !m_target.lock()->GetDefenseSuc() && m_target.lock()->GetInvincibilityTimeCnt() == 0 && !m_target.lock()->GetBPlayerDeath() && m_attackAnimeCnt >= 18 && m_attackAnimeCnt <= 73)
+		{
+			if (!m_target.lock()->GetBPlayerLose())
+			{
+				m_target.lock()->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+			}
+
+
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
+			float maxOverLap = 0;
+			bool hit = false;
+			Math::Vector3 hitDir = {}; // 当たった方向
+			Math::Vector3 hitPos;
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hit = true;
+					hitDir = ret.m_hitDir;
+					hitPos = ret.m_hitPos;
+				}
+			}
+
+			if (hit)
+			{
+				m_target.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
+				KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+
+				hitPos.y += 0.35f;
+				KdEffekseerManager::GetInstance().
+					Play("Hit3.efk", hitPos);
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
+				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+				Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
+			}
+		}
 	}
 }
 

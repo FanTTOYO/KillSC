@@ -124,6 +124,9 @@ void GameScene::Event()
 					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 
 					m_objList.push_back(enemy);
+					std::weak_ptr<Enemy> wpEnemy;
+					wpEnemy = enemy;
+					m_wpEnemyList.push_back(wpEnemy);
 				}
 			}
 			if (SceneManager::Instance().GetEnemyDrawTotal() < 5)
@@ -135,14 +138,48 @@ void GameScene::Event()
 				m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
 				enemy->Init();
 				enemy->SetBBoss(true);
-				m_objList.push_back(enemy);
 				m_wpUi.lock()->AddEnemy(enemy);
+				m_objList.push_back(enemy);
+				std::weak_ptr<Enemy> wpEnemy;
+				wpEnemy = enemy;
+				m_wpEnemyList.push_back(wpEnemy);
 				SceneManager::Instance().AddEnemyDrawTotal();
 			}
 		}
 	}
 	else if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle && !m_bCountDown)
 	{
+		int attackCnt = 0;
+		for (auto& wpEnemy : m_wpEnemyList)
+		{
+			if (wpEnemy.expired())continue;
+			if (wpEnemy.lock()->GetBBoss())continue;
+			if (wpEnemy.lock()->GetEnemyAttackTotal() >= 4)continue;
+
+			
+			if (wpEnemy.lock()->GetEnemyState() & (eRAttack | eLAttack | eRlAttack | eRlAttackRush | eMantis) || wpEnemy.lock()->GetBRangedAttack())
+			{
+				++attackCnt;
+				for (auto& enemy : m_wpEnemyList)
+				{
+					if (enemy.expired())continue;
+					if (enemy.lock()->GetBBoss())continue;
+
+					enemy.lock()->AddEnemyAttackTotal();
+				}
+			}
+		}
+
+		if (attackCnt == 0)
+		{
+			for (auto& wpEnemy : m_wpEnemyList)
+			{
+				if (wpEnemy.expired())continue;
+				if (wpEnemy.lock()->GetBBoss())continue;
+				wpEnemy.lock()->SetEnemyAttackTotal(0);
+			}
+		}
+
 		if (!KdEffekseerManager::GetInstance().IsPlaying("EnemyAppearance.efk"))
 		{
 			m_appearanceEffectCnt = 0;
@@ -214,6 +251,9 @@ void GameScene::Event()
 						enemy->SetMatrix(Math::Vector3(0.0f, 0.0f, 40.0f));
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 						m_objList.push_back(enemy);
+						std::weak_ptr<Enemy> wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 
 						SceneManager::Instance().AddEnemyDrawTotal();
 						enemy = std::make_shared<Enemy>();
@@ -229,6 +269,9 @@ void GameScene::Event()
 						enemy->SetMatrix(Math::Vector3(0.0f, 0.0f, -40.0f));
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 						m_objList.push_back(enemy);
+						wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 
 						SceneManager::Instance().AddEnemyDrawTotal();
 						enemy = std::make_shared<Enemy>();
@@ -244,6 +287,9 @@ void GameScene::Event()
 						enemy->SetMatrix(Math::Vector3(40.0f, 0.0f, 0.0f));
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
 						m_objList.push_back(enemy);
+						wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 
 						SceneManager::Instance().AddEnemyDrawTotal();
 						enemy = std::make_shared<Enemy>();
@@ -259,6 +305,9 @@ void GameScene::Event()
 						enemy->SetMatrix(Math::Vector3(-40.0f, 0.0f, 0.0f));
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
 						m_objList.push_back(enemy);
+						wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 					}
 
 					// ‘O•ûŒü
@@ -280,6 +329,9 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 
 						m_objList.push_back(enemy);
+						std::weak_ptr<Enemy> wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 					}
 
 					// Œã‚ë•ûŒü
@@ -301,6 +353,9 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 
 						m_objList.push_back(enemy);
+						std::weak_ptr<Enemy> wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 					}
 
 					// ‰E•ûŒü
@@ -322,6 +377,9 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
 
 						m_objList.push_back(enemy);
+						std::weak_ptr<Enemy> wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 					}
 
 					// ¶•ûŒü
@@ -343,6 +401,9 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
 
 						m_objList.push_back(enemy);
+						std::weak_ptr<Enemy> wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 					}
 				}
 				else
@@ -365,6 +426,9 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 
 						m_objList.push_back(enemy);
+						std::weak_ptr<Enemy> wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 					}
 
 					// Œã‚ë•ûŒü
@@ -387,6 +451,9 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 
 						m_objList.push_back(enemy);
+						std::weak_ptr<Enemy> wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 					}
 
 					// ‰E•ûŒü
@@ -407,6 +474,9 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
 
 						m_objList.push_back(enemy);
+						std::weak_ptr<Enemy> wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 					}
 
 					// ¶•ûŒü
@@ -427,6 +497,9 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
 
 						m_objList.push_back(enemy);
+						std::weak_ptr<Enemy> wpEnemy;
+						wpEnemy = enemy;
+						m_wpEnemyList.push_back(wpEnemy);
 					}
 
 
@@ -508,6 +581,9 @@ void GameScene::Event()
 						break;
 					}
 					m_objList.push_back(enemy);
+					std::weak_ptr<Enemy> wpEnemy;
+					wpEnemy = enemy;
+					m_wpEnemyList.push_back(wpEnemy);
 
 				}
 			}

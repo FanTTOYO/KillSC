@@ -2,6 +2,8 @@
 #define ENEMYAIRBORNETIMETOBECNTVAL 180
 #define INITIALPOSZ 10
 #define INITIALROTATIONY 180
+#define ADDWEAKNESSEUCCESSIONHITCNTTIMELIMIT 90 // 連続攻撃と認められる時間
+#define ADDROTAYIONATTACKDISTTOPLAYERTIME   120 // 攻撃開始する時間
 
 class WeaponBase;
 class Player;
@@ -97,6 +99,15 @@ public:
 		bossEnemyTypeOne = 1 << 6,
 	};
 
+	enum NotHumanoidEnemyState
+	{
+		stand			= 1 << 0,
+		weaknessHit		= 1 << 1,
+		rangedAttack	= 1 << 2,
+		rotationAttack	= 1 << 3,
+
+	};
+
 	Enemy() {}
 	~Enemy() {}
 
@@ -159,9 +170,16 @@ public:
 	const bool GetBBoss() { return m_bBoss; }
 
 	const UINT& GetEnemyType() { return m_enemyType; }
+	const UINT& GetNotHumanoidEnemyState() { return m_notHumanoidEnemyState; }
 
 	const bool GetBShotBeam() { return m_bShotBeam; }
 	const bool GetBShotEnergyBullet() { return m_bShotEnergyBullet; }
+
+	const int GetEnemyAttackTotal() { return m_enemyAttackTotal; }
+	void AddEnemyAttackTotal() { ++m_enemyAttackTotal; }
+	void SetEnemyAttackTotal(int a_enemyAttackTotal) { m_enemyAttackTotal = a_enemyAttackTotal; }
+
+	const bool GetBRangedAttack() { return m_bRangedAttack; }
 
 private:
 
@@ -196,6 +214,8 @@ private:
 	void WimpEnemyBrain();
 	void BossEnemyTypeOneBrain();
 	void EnergyCharge(bool a_bBeem);
+	void RotationAttackMove();
+	void RotationAttackChaeck();
 
 	std::shared_ptr<KdModelWork> m_model;
 
@@ -210,6 +230,7 @@ private:
 	UINT m_wantToMoveState;
 	UINT m_wantToMoveCategory;
 	UINT m_enemyType;
+	UINT m_notHumanoidEnemyState;
 
 	int m_rightWeaponNumber = 0;
 	int m_leftWeaponNumber = 0;
@@ -342,6 +363,7 @@ private:
 	//Math::Vector3 m_rangedAttackDir = {}; // 遠距離攻撃が飛んでいく方向
 
 	int   m_rangedAttackAnimeCnt; // 遠距離攻撃系のエフェクトのアニメーションカウント
+	bool  m_bRangedAttack; // 遠距離攻撃をしてる true;
 	Math::Vector3 m_rangedAttackTargetPos; // 遠距離攻撃系の狙っている場所
 	Math::Vector3 m_rangedAttackShotPos; // 遠距離攻撃系攻撃を発射した地点
 
@@ -350,4 +372,16 @@ private:
 	bool  m_bEnergyBulletHitStart;	// 当たり判定してる時 : true
 
 	Math::Vector3 m_hitpos;
+
+	int m_enemyAttackTotal;
+	int m_enemyAttackMaxTotal;
+
+	bool m_bAttackEnd; // 攻撃が終了した時 : true
+
+	bool  m_bRangedAttackCapableOfFiring; // 遠距離攻撃を打てるか : true;
+
+	int m_weaknesSsuccessionHitCnt;             // 連続で弱点に当たった回数
+	int m_addWeaknesSsuccessionHitCntTime;      // 弱点Hitから何秒経過したか計る
+
+	int m_addRotationAttackDistToPlayerTime;	// 回転攻撃範囲内にPlayerがいる時間を計る
 };
