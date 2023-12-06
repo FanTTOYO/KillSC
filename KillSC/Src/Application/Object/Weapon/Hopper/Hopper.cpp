@@ -88,32 +88,32 @@ void Hopper::Update()
 			m_mWorld._42 += 0.9f;
 		}
 
-		if (enemy->GetEnemyState() & eGrassHopperDashF)
+		if (enemy->GetEnemyState() & Enemy::EnemyState::grassHopperDashF)
 		{
 			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng),
 				DirectX::XMConvertToRadians(45),
 				DirectX::XMConvertToRadians(0)) * Math::Matrix::CreateTranslation(m_pos);
 		}
-		else if (enemy->GetEnemyState() & eGrassHopperDashB)
+		else if (enemy->GetEnemyState() & Enemy::EnemyState::grassHopperDashB)
 		{
 			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng + 180),
 				DirectX::XMConvertToRadians(315),
 				DirectX::XMConvertToRadians(0)) * Math::Matrix::CreateTranslation(m_pos);
 		}
-		else if (enemy->GetEnemyState() & eGrassHopperDashL)
+		else if (enemy->GetEnemyState() & Enemy::EnemyState::grassHopperDashL)
 		{
 			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng + 90),
 				DirectX::XMConvertToRadians(315),
 				DirectX::XMConvertToRadians(0)) * Math::Matrix::CreateTranslation(m_pos);
 		}
-		else if (enemy->GetEnemyState() & eGrassHopperDashR)
+		else if (enemy->GetEnemyState() & Enemy::EnemyState::grassHopperDashR)
 		{
 			m_hopperMat = Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_yAng + 270),
 				DirectX::XMConvertToRadians(315),
 				DirectX::XMConvertToRadians(0)) * Math::Matrix::CreateTranslation(m_pos);
 		}
 
-		if (enemy->GetEnemyState() & eGrassHopperDashUp)
+		if (enemy->GetEnemyState() & Enemy::EnemyState::grassHopperDashUp)
 		{
 			m_hopperMat = Math::Matrix::CreateTranslation(m_pos);
 		}
@@ -172,12 +172,12 @@ void Hopper::DrawBright()
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
 
-		if (m_arrmType == rArrm && enemy->GetRGrassHopperTime() >= 60 && enemy->GetEnemyState() & (eGrassHopperDashUp | eGrassHopperDash))
+		if (m_arrmType == rArrm && enemy->GetRGrassHopperTime() >= 60 && enemy->GetEnemyState() & (Enemy::EnemyState::grassHopperDashUp | Enemy::EnemyState::grassHopperDash))
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_hopperModel, m_hopperMat);
 		}
 
-		if (m_arrmType == lArrm && enemy->GetLGrassHopperTime() >= 60 && enemy->GetEnemyState() & (eGrassHopperDashUp | eGrassHopperDash))
+		if (m_arrmType == lArrm && enemy->GetLGrassHopperTime() >= 60 && enemy->GetEnemyState() & (Enemy::EnemyState::grassHopperDashUp | Enemy::EnemyState::grassHopperDash))
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_hopperModel, m_hopperMat);
 		}

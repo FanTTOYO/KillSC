@@ -145,7 +145,7 @@ void Scopion::Update()
 		{
 			EnemyHitAttackChaeck();
 		}
-		else if (!(enemy->GetEnemyState() & eRlAttackRush && enemy->GetAnimationCnt() >= 107))
+		else if (!(enemy->GetEnemyState() & Enemy::EnemyState::rlAttackRush && enemy->GetAnimationCnt() >= 107))
 		{
 			EnemyManAttackChaeck();
 		}
@@ -407,7 +407,7 @@ void Scopion::PlayerHitAttackChaeck()
 		for (auto& wepLis : pTarget.lock()->GetWeaponList())
 		{
 			// •Ší‚Æ‚Ì“–‚½‚è”»’è
-			if (pTarget.lock()->GetEnemyState() & eDefense && !pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetBEnemyDeath() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
+			if (pTarget.lock()->GetEnemyState() & Enemy::EnemyState::defense && !pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetBEnemyDeath() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
 			{
 				if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm  && !(player->GetWeaponType() & scorpion))break;
 				if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm  && !(player->GetWeaponType() & lScorpion))break;
@@ -1132,9 +1132,9 @@ Math::Matrix Scopion::EnemyHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<Pl
 	Math::Matrix scaleMat = Math::Matrix::CreateScale(0.45f);
 	Math::Matrix RotYMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY()));
 
-	if (enemy->GetEnemyState() & eRAttackOne)
+	if (enemy->GetEnemyState() & Enemy::EnemyState::rAttackOne)
 	{
-		if (enemy->GetEnemyState() & eGrassHopperDash)
+		if (enemy->GetEnemyState() & Enemy::EnemyState::grassHopperDash)
 		{
 			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
 				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
@@ -1145,19 +1145,19 @@ Math::Matrix Scopion::EnemyHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<Pl
 				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 		}
 	}
-	else if (enemy->GetEnemyState() & eRAttackTwo)
+	else if (enemy->GetEnemyState() & Enemy::EnemyState::rAttackTwo)
 	{
 		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
-	else if (enemy->GetEnemyState() & eRAttackThree)
+	else if (enemy->GetEnemyState() & Enemy::EnemyState::rAttackThree)
 	{
 		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
-	else if (enemy->GetEnemyState() & eLAttackOne)
+	else if (enemy->GetEnemyState() & Enemy::EnemyState::lAttackOne)
 	{
-		if (enemy->GetEnemyState() & eGrassHopperDash)
+		if (enemy->GetEnemyState() & Enemy::EnemyState::grassHopperDash)
 		{
 			mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
 				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
@@ -1168,32 +1168,32 @@ Math::Matrix Scopion::EnemyHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<Pl
 				RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 		}
 	}
-	else if (enemy->GetEnemyState() & eLAttackTwo)
+	else if (enemy->GetEnemyState() & Enemy::EnemyState::lAttackTwo)
 	{
 		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
-	else if (enemy->GetEnemyState() & eLAttackThree)
+	else if (enemy->GetEnemyState() & Enemy::EnemyState::lAttackThree)
 	{
 		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
-	else if (enemy->GetEnemyState() & eRlAttackOne)
+	else if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackOne)
 	{
 		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(225)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
-	else if (enemy->GetEnemyState() & eRlAttackTwo)
+	else if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackTwo)
 	{
 		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(0)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
-	else if (enemy->GetEnemyState() & eRlAttackThree)
+	else if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackThree)
 	{
 		mat = scaleMat * Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(315)) *
 			RotYMat * Math::Matrix::CreateTranslation(a_hitPos);
 	}
-	else if (enemy->GetEnemyState() & eRlAttackRush)
+	else if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackRush)
 	{
 		if (enemy->GetAnimationCnt() < 21)
 		{
@@ -1529,10 +1529,13 @@ void Scopion::EnemyHitAttackChaeck()
 	for (auto& wepLis : m_eTarget.lock()->GetWeaponList())
 	{
 		// •Ší‚Æ‚Ì“–‚½‚è”»’è
-		if (m_eTarget.lock()->GetPlayerState() & Player::PlayerState::defense && !m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack | eRlAttack) && !m_eTarget.lock()->GetBPlayerDeath())
+		if (m_eTarget.lock()->GetPlayerState() & Player::PlayerState::defense && 
+			!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && 
+			enemy->GetEnemyState() & (Enemy::EnemyState::rAttack | Enemy::EnemyState::lAttack | Enemy::EnemyState::rlAttack) && 
+			!m_eTarget.lock()->GetBPlayerDeath())
 		{
-			if ((enemy->GetEnemyState() & eRAttack) && m_arrmType == lArrm)break;
-			if ((enemy->GetEnemyState() & eLAttack) && m_arrmType == rArrm)break;
+			if ((enemy->GetEnemyState() & Enemy::EnemyState::rAttack) && m_arrmType == lArrm)break;
+			if ((enemy->GetEnemyState() & Enemy::EnemyState::lAttack) && m_arrmType == rArrm)break;
 
 			node = m_model->FindNode("AttackPointOne");
 			KdCollider::SphereInfo sphereInfo;
@@ -1693,10 +1696,12 @@ void Scopion::EnemyHitAttackChaeck()
 	//}
 
 	// Player‚Æ‚Ì“–‚½‚è”»’è
-	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & (eRAttack | eLAttack | eRlAttack | eRlAttackRush) && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0 && !m_eTarget.lock()->GetBPlayerDeath())
+	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && 
+		enemy->GetEnemyState() & (Enemy::EnemyState::rAttack | Enemy::EnemyState::lAttack | Enemy::EnemyState::rlAttack | Enemy::EnemyState::rlAttackRush) &&
+		m_eTarget.lock()->GetInvincibilityTimeCnt() == 0 && !m_eTarget.lock()->GetBPlayerDeath())
 	{
-		if (enemy->GetEnemyState() & eRAttack && m_arrmType == lArrm)return;
-		if (enemy->GetEnemyState() & eLAttack && m_arrmType == rArrm)return;
+		if (enemy->GetEnemyState() & Enemy::EnemyState::rAttack && m_arrmType == lArrm)return;
+		if (enemy->GetEnemyState() & Enemy::EnemyState::lAttack && m_arrmType == rArrm)return;
 		node = m_model->FindNode("AttackPointOne");
 		KdCollider::SphereInfo sphereInfo;
 		mat = node->m_worldTransform * m_mWorld;
@@ -1735,22 +1740,23 @@ void Scopion::EnemyHitAttackChaeck()
 
 		if (hit)
 		{
-			if (enemy->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemy->GetEnemyState() & (eGrassHopperDashF))
+			if (enemy->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::lAttackOne) &&
+				enemy->GetEnemyState() & (Enemy::EnemyState::grassHopperDashF))
 			{
 				m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
-			else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
+			else if (enemy->GetEnemyState() & (Enemy::EnemyState::lAttackThree | Enemy::EnemyState::rAttackThree))
 			{
 				m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
-			else if (enemy->GetEnemyState() & (eRAttackOne | eRAttackTwo |
-				eLAttackOne | eLAttackTwo |
-				eRlAttack) ||
-				(eRlAttackRush && enemy->GetAnimationCnt() < 41))
+			else if (enemy->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::rAttackTwo |
+				Enemy::EnemyState::lAttackOne | Enemy::EnemyState::lAttackTwo |
+				Enemy::EnemyState::rlAttack) ||
+				(Enemy::EnemyState::rlAttackRush && enemy->GetAnimationCnt() < 41))
 			{
-				if (enemy->GetEnemyState() & eRlAttackThree)
+				if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackThree)
 				{
 					enemy->SetBRushAttackPossible(true);
 				}
@@ -1759,7 +1765,7 @@ void Scopion::EnemyHitAttackChaeck()
 				KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 			}
 
-			else if (enemy->GetEnemyState() & eRlAttackRush &&
+			else if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackRush &&
 				(enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 57) ||
 				(enemy->GetAnimationCnt() >= 58 && enemy->GetAnimationCnt() < 66) ||
 				(enemy->GetAnimationCnt() >= 74 && enemy->GetAnimationCnt() < 89) ||
@@ -1812,22 +1818,23 @@ void Scopion::EnemyHitAttackChaeck()
 
 			if (hit)
 			{
-				if (enemy->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemy->GetEnemyState() & (eGrassHopperDashF))
+				if (enemy->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::lAttackOne) && 
+					enemy->GetEnemyState() & (Enemy::EnemyState::grassHopperDashF))
 				{
 					m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
-				else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
+				else if (enemy->GetEnemyState() & (Enemy::EnemyState::lAttackThree | Enemy::EnemyState::rAttackThree))
 				{
 					m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
-				else if (enemy->GetEnemyState() & (eRAttackOne | eRAttackTwo |
-					eLAttackOne | eLAttackTwo |
-					eRlAttack) ||
-					(eRlAttackRush && enemy->GetAnimationCnt() < 41))
+				else if (enemy->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::rAttackTwo |
+					Enemy::EnemyState::lAttackOne | Enemy::EnemyState::lAttackTwo |
+					Enemy::EnemyState::rlAttack) ||
+					(Enemy::EnemyState::rlAttackRush && enemy->GetAnimationCnt() < 41))
 				{
-					if (enemy->GetEnemyState() & eRlAttackThree)
+					if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackThree)
 					{
 						enemy->SetBRushAttackPossible(true);
 					}
@@ -1836,7 +1843,7 @@ void Scopion::EnemyHitAttackChaeck()
 					KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 				}
 
-				else if (enemy->GetEnemyState() & eRlAttackRush &&
+				else if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackRush &&
 					(enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 57) ||
 					(enemy->GetAnimationCnt() >= 58 && enemy->GetAnimationCnt() < 66) ||
 					(enemy->GetAnimationCnt() >= 74 && enemy->GetAnimationCnt() < 89) ||
@@ -1889,22 +1896,22 @@ void Scopion::EnemyHitAttackChaeck()
 
 				if (hit)
 				{
-					if (enemy->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemy->GetEnemyState() & (eGrassHopperDashF))
+					if (enemy->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::lAttackOne) && enemy->GetEnemyState() & (Enemy::EnemyState::grassHopperDashF))
 					{
 						m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
-					else if (enemy->GetEnemyState() & (eLAttackThree | eRAttackThree))
+					else if (enemy->GetEnemyState() & (Enemy::EnemyState::lAttackThree | Enemy::EnemyState::rAttackThree))
 					{
 						m_eTarget.lock()->BlowingAwayAttackOnHit(enemy->GetMatrix().Backward());
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
-					else if (enemy->GetEnemyState() & (eRAttackOne | eRAttackTwo |
-						eLAttackOne | eLAttackTwo |
-						eRlAttack) ||
-						(eRlAttackRush && enemy->GetAnimationCnt() < 41))
+					else if (enemy->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::rAttackTwo |
+						Enemy::EnemyState::lAttackOne | Enemy::EnemyState::lAttackTwo |
+						Enemy::EnemyState::rlAttack) ||
+						(Enemy::EnemyState::rlAttackRush && enemy->GetAnimationCnt() < 41))
 					{
-						if (enemy->GetEnemyState() & eRlAttackThree)
+						if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackThree)
 						{
 							enemy->SetBRushAttackPossible(true);
 						}
@@ -1913,7 +1920,7 @@ void Scopion::EnemyHitAttackChaeck()
 						KdAudioManager::Instance().Play("Asset/Audio/SE/AttackHitOverlapping.wav");
 					}
 
-					else if (enemy->GetEnemyState() & eRlAttackRush &&
+					else if (enemy->GetEnemyState() & Enemy::EnemyState::rlAttackRush &&
 						(enemy->GetAnimationCnt() >= 49 && enemy->GetAnimationCnt() < 57) ||
 						(enemy->GetAnimationCnt() >= 58 && enemy->GetAnimationCnt() < 66) ||
 						(enemy->GetAnimationCnt() >= 74 && enemy->GetAnimationCnt() < 89) ||
@@ -1945,10 +1952,10 @@ void Scopion::EnemyManAttackChaeck()
 	Math::Matrix mat = Math::Matrix::Identity;
 
 	// Player‚Æ‚Ì“–‚½‚è”»’è
-	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & eMantis && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0 && !m_eTarget.lock()->GetBPlayerDeath())
+	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & Enemy::EnemyState::mantis && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0 && !m_eTarget.lock()->GetBPlayerDeath())
 	{
-		if (enemy->GetEnemyState() & eRAttack && m_arrmType == lArrm)return;
-		if (enemy->GetEnemyState() & eLAttack && m_arrmType == rArrm)return;
+		if (enemy->GetEnemyState() & Enemy::EnemyState::rAttack && m_arrmType == lArrm)return;
+		if (enemy->GetEnemyState() & Enemy::EnemyState::lAttack && m_arrmType == rArrm)return;
 		node = m_manModel->FindNode("AttackPointOne");
 		KdCollider::SphereInfo sphereInfo;
 		mat = node->m_worldTransform * m_mWorld;

@@ -81,6 +81,9 @@ public:
 	void SetDefenseSuc(bool a_defenseSuc) { m_bDefenseSuc = a_defenseSuc; }
 	bool GetDefenseSuc() { return m_bDefenseSuc; }
 
+
+	const bool GetBBldg() { return m_bBldg; }
+
 protected:
 
 	void Release() {}
@@ -103,4 +106,6 @@ protected:
 
 	bool m_attackHit; // 一つの攻撃が複数回当たらないためのフラグ
 	bool m_bDefenseSuc; // 防御に成功したフラグ
+
+	bool m_bBldg = false; // 建物 : true
 };

@@ -111,82 +111,82 @@ void Player::Update()
 
 	/*if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 	{*/
-		float lowestYPos;
-		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
-		{
-			lowestYPos = -10.0f;
-		}
-		else
-		{
-			lowestYPos = -1.0f;
-		}
+	float lowestYPos;
+	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
+	{
+		lowestYPos = -10.0f;
+	}
+	else
+	{
+		lowestYPos = -1.0f;
+	}
 
-		if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < lowestYPos)
+	if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < lowestYPos)
 		//if(0)
+	{
+		m_overStageTime++;
+		if (m_overStageTime >= 90)
 		{
-			m_overStageTime++;
-			if (m_overStageTime >= 90)
-			{
-				m_pos = { 0,0,0 };
-				m_overStageTime = 0;
-			}
+			m_pos = { 0,0,0 };
+			m_overStageTime = 0;
 		}
-		else
+	}
+	else
+	{
+		if (m_overStageTime >= 90)
 		{
-			if (m_overStageTime >= 90)
-			{
-				m_pos = { 0,0,0 };
-				m_overStageTime = 0;
-			}
+			m_pos = { 0,0,0 };
+			m_overStageTime = 0;
+		}
 
-			KdCollider::SphereInfo sphereInfo;
-			// 球の中心位置を設定
-			sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
-			// 球の半径を設定
+		KdCollider::SphereInfo sphereInfo;
+		// 球の中心位置を設定
+		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
+		// 球の半径を設定
 
-			sphereInfo.m_sphere.Radius = 0.4f;
+		sphereInfo.m_sphere.Radius = 0.4f;
 
-			// 当たり判定をしたいタイプを設定
-			sphereInfo.m_type = KdCollider::TypeBuried;
+		// 当たり判定をしたいタイプを設定
+		sphereInfo.m_type = KdCollider::TypeBuried;
 #ifdef _DEBUG
-			// デバック用
-			m_pDebugWire->AddDebugSphere
-			(
-				sphereInfo.m_sphere.Center,
-				sphereInfo.m_sphere.Radius
-			);
+		// デバック用
+		m_pDebugWire->AddDebugSphere
+		(
+			sphereInfo.m_sphere.Center,
+			sphereInfo.m_sphere.Radius
+		);
 #endif
-			// 球の当たったオブジェクト情報
-			std::list<KdCollider::CollisionResult> retSphereList;
+		// 球の当たったオブジェクト情報
+		std::list<KdCollider::CollisionResult> retSphereList;
 
-			// 球と当たり判定 
-			for (auto& obj : SceneManager::Instance().GetObjList())
-			{
-				obj->Intersects
-				(
-					sphereInfo,
-					&retSphereList
-				);
-			}
+		// 球と当たり判定 
+		for (auto& obj : SceneManager::Instance().GetObjList())
+		{
+			obj->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
+		}
 
-			// 球に当たったリスト情報から一番近いオブジェクトを検出
-			float maxOverLap = 0;
-			bool hit = false;
-			for (auto& ret : retSphereList)
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		float maxOverLap = 0;
+		bool hit = false;
+		for (auto& ret : retSphereList)
+		{
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
 			{
-				// 一番近くで当たったものを探す
-				if (maxOverLap < ret.m_overlapDistance)
-				{
-					maxOverLap = ret.m_overlapDistance;
-					hit = true;
-				}
-			}
-
-			if (hit)
-			{
-				++m_overStageTime;
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
 			}
 		}
+
+		if (hit)
+		{
+			++m_overStageTime;
+		}
+	}
 	//}
 
 	if (m_bFirstUpdate)
@@ -680,7 +680,7 @@ void Player::Update()
 	{
 		if (enemyList.expired())continue;
 		if (enemyList.lock()->GetBEnemyDeath())continue;
-		
+
 		enemyList.lock()->Intersects
 		(
 			rayInfo,
@@ -798,7 +798,7 @@ void Player::Update()
 	{
 		if (enemyList.expired())continue;
 
-		if (enemyList.lock()->GetEnemyState() & eDefense)
+		if (enemyList.lock()->GetEnemyState() & Enemy::EnemyState::defense)
 		{
 			if (!(m_playerState & (grassHopperDash | grassHopperDashUp | step)))
 			{
@@ -917,69 +917,13 @@ void Player::Update()
 		}
 	}
 
-	sphereInfo.m_sphere.Radius = 0.3f;
 
-	// 当たり判定をしたいタイプを設定
-	sphereInfo.m_type = KdCollider::TypeBump;
-#ifdef _DEBUG
-	// デバック用
-	m_pDebugWire->AddDebugSphere
-	(
-		sphereInfo.m_sphere.Center,
-		sphereInfo.m_sphere.Radius
-	);
-#endif
-	// 球の当たったオブジェクト情報
-	retSphereList.clear();
-
-	// 球と当たり判定 
-
-	for (auto& enemyList : m_enemyList)
+	if (!(m_playerState & cutRaiseHit))
 	{
-		if (enemyList.expired())continue;
-		if (enemyList.lock()->GetBEnemyDeath())continue;
-
-		if (enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne && m_playerState & (grassHopperDash | grassHopperDashUp | step))
-		{
-			sphereInfo.m_sphere.Radius = 1.2f;
-		}
-
-		enemyList.lock()->Intersects
-		(
-			sphereInfo,
-			&retSphereList
-		);
-
-		// 球に当たったリスト情報から一番近いオブジェクトを検出
-		maxOverLap = 0;
-		hit = false;
-		hitDir = {}; // 当たった方向
-		for (auto& ret : retSphereList)
-		{
-			// 一番近くで当たったものを探す
-			if (maxOverLap < ret.m_overlapDistance)
-			{
-				maxOverLap = ret.m_overlapDistance;
-				hit = true;
-				hitDir = ret.m_hitDir;
-			}
-		}
-
-		if (hit)
-		{
-			hitDir.y = 0.0f;
-			hitDir.Normalize();
-			// 球とモデルが当たっている
-			m_pos += (hitDir * maxOverLap);
-		}
-	}
-
-	if (m_playerState & (rAttack | lAttack | rlAttack | rlAttackRush))
-	{
-		sphereInfo.m_sphere.Radius = 1.15f;
+		sphereInfo.m_sphere.Radius = 0.3f;
 
 		// 当たり判定をしたいタイプを設定
-		sphereInfo.m_type = KdCollider::TypeAttackDec;
+		sphereInfo.m_type = KdCollider::TypeBump;
 #ifdef _DEBUG
 		// デバック用
 		m_pDebugWire->AddDebugSphere
@@ -993,14 +937,23 @@ void Player::Update()
 
 		// 球と当たり判定 
 
-		if (!m_enemy.expired())
+		for (auto& enemyList : m_enemyList)
 		{
-			m_enemy.lock()->Intersects
+			if (enemyList.expired())continue;
+			if (enemyList.lock()->GetBEnemyDeath())continue;
+
+			if (enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne && m_playerState & (grassHopperDash | grassHopperDashUp | step))
+			{
+				sphereInfo.m_sphere.Radius = 1.2f;
+			}
+
+			enemyList.lock()->Intersects
 			(
 				sphereInfo,
 				&retSphereList
 			);
 
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
 			maxOverLap = 0;
 			hit = false;
 			hitDir = {}; // 当たった方向
@@ -1017,49 +970,65 @@ void Player::Update()
 
 			if (hit)
 			{
-				m_bAtttackMoveSpeedDec = true;
+				hitDir.y = 0.0f;
+				hitDir.Normalize();
+				// 球とモデルが当たっている
+				m_pos += (hitDir * maxOverLap);
 			}
-			else
+		}
+	}
+
+	sphereInfo.m_sphere.Radius = 1.15f;
+
+	// 当たり判定をしたいタイプを設定
+	sphereInfo.m_type = KdCollider::TypeAttackDec;
+#ifdef _DEBUG
+	// デバック用
+	m_pDebugWire->AddDebugSphere
+	(
+		sphereInfo.m_sphere.Center,
+		sphereInfo.m_sphere.Radius
+	);
+#endif
+	// 球の当たったオブジェクト情報
+	retSphereList.clear();
+
+	// 球と当たり判定 
+
+	if (!m_enemy.expired())
+	{
+		m_enemy.lock()->Intersects
+		(
+			sphereInfo,
+			&retSphereList
+		);
+
+		maxOverLap = 0;
+		hit = false;
+		hitDir = {}; // 当たった方向
+		for (auto& ret : retSphereList)
+		{
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
 			{
-				for (auto& obj : SceneManager::Instance().GetObjList())
-				{
-					obj->Intersects
-					(
-						sphereInfo,
-						&retSphereList
-					);
-				}
-
-				// 球に当たったリスト情報から一番近いオブジェクトを検出
-				maxOverLap = 0;
-				hit = false;
-				hitDir = {}; // 当たった方向
-				for (auto& ret : retSphereList)
-				{
-					// 一番近くで当たったものを探す
-					if (maxOverLap < ret.m_overlapDistance)
-					{
-						maxOverLap = ret.m_overlapDistance;
-						hit = true;
-						hitDir = ret.m_hitDir;
-					}
-				}
-
-				if (hit)
-				{
-					m_bAtttackMoveSpeedDec = true;
-				}
-				else
-				{
-					m_bAtttackMoveSpeedDec = false;
-				}
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+				hitDir = ret.m_hitDir;
 			}
+		}
+
+		if (hit)
+		{
+			m_bAtttackMoveSpeedDec = true;
 		}
 		else
 		{
-			for (auto& obj : SceneManager::Instance().GetObjList())
+			for (auto& enemyList : m_enemyList)
 			{
-				obj->Intersects
+				if (enemyList.expired())continue;
+				if (enemyList.lock()->GetBEnemyDeath())continue;
+
+				enemyList.lock()->Intersects
 				(
 					sphereInfo,
 					&retSphereList
@@ -1091,7 +1060,45 @@ void Player::Update()
 			}
 		}
 	}
-	
+	else
+	{
+		for (auto& enemyList : m_enemyList)
+		{
+			if (enemyList.expired())continue;
+			if (enemyList.lock()->GetBEnemyDeath())continue;
+
+			enemyList.lock()->Intersects
+			(
+				sphereInfo,
+				&retSphereList
+			);
+		}
+
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		maxOverLap = 0;
+		hit = false;
+		hitDir = {}; // 当たった方向
+		for (auto& ret : retSphereList)
+		{
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
+			{
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+				hitDir = ret.m_hitDir;
+			}
+		}
+
+		if (hit)
+		{
+			m_bAtttackMoveSpeedDec = true;
+		}
+		else
+		{
+			m_bAtttackMoveSpeedDec = false;
+		}
+	}
+
 
 	if (!m_bRushRp)
 	{
@@ -1107,7 +1114,7 @@ void Player::Update()
 			PlayerPanchiHitAttackChaeck();
 		}
 	}
-	
+
 
 	Math::Matrix mat;
 #ifdef _DEBUG
@@ -1649,14 +1656,14 @@ void Player::PostUpdate()
 						}
 					}
 					else if (m_attackAnimeCnt == 22 ||
-						     m_attackAnimeCnt == 33 ||
-						     m_attackAnimeCnt == 43 ||
-						     m_attackAnimeCnt == 53 ||
-						     m_attackAnimeCnt == 63 ||
-						     m_attackAnimeCnt == 73 ||
-						     m_attackAnimeCnt == 83 ||
-						     m_attackAnimeCnt == 93
-						     )
+						m_attackAnimeCnt == 33 ||
+						m_attackAnimeCnt == 43 ||
+						m_attackAnimeCnt == 53 ||
+						m_attackAnimeCnt == 63 ||
+						m_attackAnimeCnt == 73 ||
+						m_attackAnimeCnt == 83 ||
+						m_attackAnimeCnt == 93
+						)
 					{
 						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 					}
@@ -1760,7 +1767,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	for (auto& enemyList : m_enemyList)
 	{
 		if (enemyList.expired())continue;
-		if (enemyList.lock()->GetEnemyState() & eRlAttackThree)
+		if (enemyList.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackThree)
 		{
 			m_hitStopCnt = 60;
 		}
@@ -1780,8 +1787,8 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	{
 		if (enemyList.expired())continue;
 
-		if (enemyList.lock()->GetEnemyState() & (eRAttackOne | eRlAttackOne |
-			eRlAttackThree))
+		if (enemyList.lock()->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::rlAttackOne |
+			Enemy::EnemyState::rlAttackThree))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
@@ -1789,7 +1796,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 				SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 			}
 		}
-		else if (enemyList.lock()->GetEnemyState() & (eRAttackTwo | eRlAttackTwo))
+		else if (enemyList.lock()->GetEnemyState() & (Enemy::EnemyState::rAttackTwo | Enemy::EnemyState::rlAttackTwo))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
@@ -1798,7 +1805,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 			}
 		}
 
-		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() < 8 ||
+		if (enemyList.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackRush && enemyList.lock()->GetAnimationCnt() < 8 ||
 			(enemyList.lock()->GetAnimationCnt() >= 21 && enemyList.lock()->GetAnimationCnt() < 41))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
@@ -1808,7 +1815,8 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
 			}
 		}
-		else if (enemyList.lock()->GetEnemyState() & eRlAttackRush && (enemyList.lock()->GetAnimationCnt() >= 8 && enemyList.lock()->GetAnimationCnt() < 21))
+		else if (enemyList.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackRush && 
+			(enemyList.lock()->GetAnimationCnt() >= 8 && enemyList.lock()->GetAnimationCnt() < 21))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
 
@@ -1854,7 +1862,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 	{
 		if (enemyList.expired())continue;
 
-		if (enemyList.lock()->GetEnemyState() & eRlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107 || enemyList.lock()->GetNotHumanoidEnemyState() & Enemy::NotHumanoidEnemyState::rotationAttack)
+		if (enemyList.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackRush && enemyList.lock()->GetAnimationCnt() >= 107 || enemyList.lock()->GetNotHumanoidEnemyState() & Enemy::NotHumanoidEnemyState::rotationAttack)
 		{
 			m_hitMoveSpd = 0.95f;
 			cnt++;
@@ -1864,7 +1872,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 			}
 			break;
 		}
-		else if (enemyList.lock()->GetEnemyState() & (eRAttackOne | eLAttackOne) && enemyList.lock()->GetEnemyState() & (eGrassHopperDashF))
+		else if (enemyList.lock()->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::lAttackOne) && enemyList.lock()->GetEnemyState() & (Enemy::EnemyState::grassHopperDashF))
 		{
 			m_hitMoveSpd = 0.35f;
 			cnt++;
@@ -2073,19 +2081,19 @@ void Player::DrawLit_SkinMesh()
 		m_invincibilityTimeCnt <= 50 && m_invincibilityTimeCnt > 40 ||
 		m_invincibilityTimeCnt <= 30 && m_invincibilityTimeCnt > 20 ||
 		m_invincibilityTimeCnt <= 15 && m_invincibilityTimeCnt > 10 ||
-		m_invincibilityTimeCnt <= 5  && m_invincibilityTimeCnt >  3 ||
+		m_invincibilityTimeCnt <= 5 && m_invincibilityTimeCnt > 3 ||
 		m_invincibilityTimeCnt == 1
 		)return;
 
 	KdShaderManager::Instance().m_HD2DShader.SetOutLineColor({ 0,0,1 });
 	if (m_hitColorChangeTimeCnt == 0)
 	{
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld,true);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true);
 	}
 	else
 	{
 		Math::Color color = { 1,0,0,1 };
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true,color);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true, color);
 	}
 }
 
@@ -2222,10 +2230,10 @@ void Player::GrassMoveVecDecision()
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 
 					KdEffekseerManager::GetInstance().
-						Play("GrassDashBlurPlayer.efk", {m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z});
+						Play("GrassDashBlurPlayer.efk", { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
 					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // これでループしない
 					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
-					Math::Matrix efcMat = Math::Matrix::CreateScale(1)* Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y))* Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
 				else if (KdInputManager::Instance().GetButtonState("left"))
@@ -2338,7 +2346,7 @@ void Player::GrassMoveVecDecision()
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
 
 					KdEffekseerManager::GetInstance().
-						Play("GrassDashBlurPlayer.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z});
+						Play("GrassDashBlurPlayer.efk", { m_pos.x,m_pos.y + 2.9f,m_pos.z });
 					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // これでループしない
 					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
@@ -2617,7 +2625,7 @@ void Player::GrassMove()
 			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
 			KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 		}
-		
+
 		m_bMove = true;
 		if (m_lGrassHopperTime <= 90 && m_lGrassHopperTime > 75 || m_rGrassHopperTime <= 90 && m_rGrassHopperTime > 75)
 		{
@@ -2909,7 +2917,7 @@ void Player::NormalMove()
 						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}
-					else if(m_runAnimeCnt == 0)
+					else if (m_runAnimeCnt == 0)
 					{
 						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 					}
@@ -3534,6 +3542,7 @@ void Player::ScorpionActionDecision()
 								m_attackMoveSpd = 0.8f;
 							}
 
+							//m_attackMoveSpd = 1.0f;
 							m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
 						}
 					}
@@ -3566,7 +3575,6 @@ void Player::ScorpionActionDecision()
 									scopion2->SetBMantis(true);
 								}
 								m_bMove = true;
-								//m_animator->SetAnimation(m_model->GetAnimation("mantis"), false);
 							}
 						}
 						else
@@ -3589,14 +3597,15 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
-							if (KdInputManager::Instance().GetButtonState("forward"))
+							/*if (KdInputManager::Instance().GetButtonState("forward"))
 							{
 								m_attackMoveSpd = 1.0f;
 							}
 							else
 							{
 								m_attackMoveSpd = 0.8f;
-							}
+							}*/
+							m_attackMoveSpd = 1.0f;
 
 							m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
 						}
@@ -3626,14 +3635,15 @@ void Player::ScorpionActionDecision()
 						m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 						m_attackMoveDir.y = 0;
 						m_attackMoveDir.Normalize();
-						if (KdInputManager::Instance().GetButtonState("forward"))
+						/*if (KdInputManager::Instance().GetButtonState("forward"))
 						{
 							m_attackMoveSpd = 1.0f;
 						}
 						else
 						{
 							m_attackMoveSpd = 0.8f;
-						}
+						}*/
+						m_attackMoveSpd = 1.0f;
 
 						if (m_playerState & grassHopperDash)
 						{
@@ -3669,14 +3679,15 @@ void Player::ScorpionActionDecision()
 						m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 						m_attackMoveDir.y = 0;
 						m_attackMoveDir.Normalize();
-						if (KdInputManager::Instance().GetButtonState("forward"))
+						/*if (KdInputManager::Instance().GetButtonState("forward"))
 						{
 							m_attackMoveSpd = 1.0f;
 						}
 						else
 						{
 							m_attackMoveSpd = 0.8f;
-						}
+						}*/
+						m_attackMoveSpd = 1.0f;
 
 						if (m_playerState & (grassHopperDashF | step))
 						{
@@ -3742,7 +3753,7 @@ void Player::ScorpionActionDecision()
 
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
-							m_attackMoveSpd = 0.8f;
+							m_attackMoveSpd = 0.9f;
 							m_animator->SetAnimation(m_model->GetAnimation("RLAttackThree"), false);
 						}
 						else if (m_playerState & rlAttackThree && m_bRushAttackPossible)
@@ -3816,7 +3827,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.8f;
-		
+
 							m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
 						}
 

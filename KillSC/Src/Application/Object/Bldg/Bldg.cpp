@@ -13,7 +13,7 @@ void Bldg::GenerateDepthMapFromLight()
 
 void Bldg::Init()
 {
-	
+	m_bBldg = true;
 }
 
 void Bldg::Update()

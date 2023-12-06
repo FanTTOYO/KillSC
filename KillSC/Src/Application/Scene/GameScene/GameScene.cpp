@@ -124,9 +124,7 @@ void GameScene::Event()
 					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 
 					m_objList.push_back(enemy);
-					std::weak_ptr<Enemy> wpEnemy;
-					wpEnemy = enemy;
-					m_wpEnemyList.push_back(wpEnemy);
+					m_wpEnemyList.push_back(enemy);
 				}
 			}
 			if (SceneManager::Instance().GetEnemyDrawTotal() < 5)
@@ -140,9 +138,7 @@ void GameScene::Event()
 				enemy->SetBBoss(true);
 				m_wpUi.lock()->AddEnemy(enemy);
 				m_objList.push_back(enemy);
-				std::weak_ptr<Enemy> wpEnemy;
-				wpEnemy = enemy;
-				m_wpEnemyList.push_back(wpEnemy);
+				m_wpEnemyList.push_back(enemy);
 				SceneManager::Instance().AddEnemyDrawTotal();
 			}
 		}
@@ -157,7 +153,7 @@ void GameScene::Event()
 			if (wpEnemy.lock()->GetEnemyAttackTotal() >= 4)continue;
 
 			
-			if (wpEnemy.lock()->GetEnemyState() & (eRAttack | eLAttack | eRlAttack | eRlAttackRush | eMantis) || wpEnemy.lock()->GetBRangedAttack())
+			if (wpEnemy.lock()->GetEnemyState() & (Enemy::EnemyState::rAttack | Enemy::EnemyState::lAttack | Enemy::EnemyState::rlAttack | Enemy::EnemyState::rlAttackRush | Enemy::EnemyState::mantis) || wpEnemy.lock()->GetBRangedAttack())
 			{
 				++attackCnt;
 				for (auto& enemy : m_wpEnemyList)
@@ -251,9 +247,7 @@ void GameScene::Event()
 						enemy->SetMatrix(Math::Vector3(0.0f, 0.0f, 40.0f));
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 						m_objList.push_back(enemy);
-						std::weak_ptr<Enemy> wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 
 						SceneManager::Instance().AddEnemyDrawTotal();
 						enemy = std::make_shared<Enemy>();
@@ -269,9 +263,7 @@ void GameScene::Event()
 						enemy->SetMatrix(Math::Vector3(0.0f, 0.0f, -40.0f));
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 						m_objList.push_back(enemy);
-						wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 
 						SceneManager::Instance().AddEnemyDrawTotal();
 						enemy = std::make_shared<Enemy>();
@@ -287,9 +279,7 @@ void GameScene::Event()
 						enemy->SetMatrix(Math::Vector3(40.0f, 0.0f, 0.0f));
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
 						m_objList.push_back(enemy);
-						wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 
 						SceneManager::Instance().AddEnemyDrawTotal();
 						enemy = std::make_shared<Enemy>();
@@ -305,9 +295,7 @@ void GameScene::Event()
 						enemy->SetMatrix(Math::Vector3(-40.0f, 0.0f, 0.0f));
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
 						m_objList.push_back(enemy);
-						wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 					}
 
 					// 前方向
@@ -329,9 +317,7 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 
 						m_objList.push_back(enemy);
-						std::weak_ptr<Enemy> wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 					}
 
 					// 後ろ方向
@@ -353,9 +339,7 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 
 						m_objList.push_back(enemy);
-						std::weak_ptr<Enemy> wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 					}
 
 					// 右方向
@@ -377,9 +361,7 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
 
 						m_objList.push_back(enemy);
-						std::weak_ptr<Enemy> wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 					}
 
 					// 左方向
@@ -401,9 +383,7 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
 
 						m_objList.push_back(enemy);
-						std::weak_ptr<Enemy> wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 					}
 				}
 				else
@@ -426,9 +406,7 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
 
 						m_objList.push_back(enemy);
-						std::weak_ptr<Enemy> wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 					}
 
 					// 後ろ方向
@@ -451,9 +429,7 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 
 						m_objList.push_back(enemy);
-						std::weak_ptr<Enemy> wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 					}
 
 					// 右方向
@@ -474,9 +450,7 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
 
 						m_objList.push_back(enemy);
-						std::weak_ptr<Enemy> wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 					}
 
 					// 左方向
@@ -497,9 +471,7 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
 
 						m_objList.push_back(enemy);
-						std::weak_ptr<Enemy> wpEnemy;
-						wpEnemy = enemy;
-						m_wpEnemyList.push_back(wpEnemy);
+						m_wpEnemyList.push_back(enemy);
 					}
 
 
@@ -528,12 +500,24 @@ void GameScene::Event()
 				m_appearanceEffectCnt = 0;
 				m_bAppearanceEffect = true;
 
-				KdEffekseerManager::GetInstance().
-					Play("EnemyAppearance.efk", { 0, 10.0f, 30.0f });
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
+				if (!SceneManager::Instance().GetBHumanoidEnemy())
+				{
+					KdEffekseerManager::GetInstance().
+						Play("EnemyAppearance.efk", { 0, 10.0f, 30.0f });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
 
-				Math::Matrix efcMat = Math::Matrix::CreateScale(1.5f) * Math::Matrix::CreateTranslation({ 0, 10.0f, 30.0f });
-				KdEffekseerManager::GetInstance().SetWorldMatrix("EnemyAppearance.efk", efcMat);
+					Math::Matrix efcMat = Math::Matrix::CreateScale(20) * Math::Matrix::CreateTranslation({ 0, 10.0f, 30.0f });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("EnemyAppearance.efk", efcMat);
+				}
+				else
+				{
+					KdEffekseerManager::GetInstance().
+						Play("EnemyAppearance.efk", { 0, 10.0f, 30.0f });
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
+
+					Math::Matrix efcMat = Math::Matrix::CreateScale(1.5f) * Math::Matrix::CreateTranslation({ 0, 10.0f, 30.0f });
+					KdEffekseerManager::GetInstance().SetWorldMatrix("EnemyAppearance.efk", efcMat);
+				}
 
 			}
 
@@ -544,7 +528,6 @@ void GameScene::Event()
 
 			if (m_appearanceEffectCnt >= 25)
 			{
-
 				int total = SceneManager::Instance().GetEnemyTotal();
 				std::shared_ptr<Enemy> enemy;
 				// 前方向
@@ -563,6 +546,49 @@ void GameScene::Event()
 					if (!SceneManager::Instance().GetBHumanoidEnemy())
 					{
 						enemy->SetModelAndType(Enemy::EnemyType::bossEnemyTypeOne);
+						auto it = m_objList.begin();
+						while (it != m_objList.end()) // 数が変動するため範囲ベースForが使えない
+						{
+							// 不要になったオブジェクトを消す
+							if ((*it)->GetBBldg())
+							{
+								// 消す
+								it = m_objList.erase(it); // 戻り値で次の場所を返してくれる
+							}
+							else
+							{
+								++it; // 次へ
+							}
+						}
+
+						std::shared_ptr<Bldg> bldg;
+						std::ifstream ifs("Asset/Data/BldgInfoBackUpBossOne.csv");
+						std::string str, filed;
+						while (getline(ifs, str))
+						{
+							bldg = std::make_shared<Bldg>();
+							std::istringstream ss(str);
+							int j = 0;
+							std::string aStr[8];
+
+							while (getline(ss, filed, ','))
+							{
+								aStr[j] = filed;
+								j++;
+							}
+
+							if (j >= 7)
+							{
+								bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4], Math::Vector3(stof(aStr[5]), stof(aStr[6]), stof(aStr[7])));
+							}
+							else
+							{
+								bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4]);
+							}
+							m_objList.push_back(bldg);
+
+							m_wpGameCamera.lock()->SetHitObj(bldg);
+						}
 					}
 
 					switch (total)
@@ -581,9 +607,7 @@ void GameScene::Event()
 						break;
 					}
 					m_objList.push_back(enemy);
-					std::weak_ptr<Enemy> wpEnemy;
-					wpEnemy = enemy;
-					m_wpEnemyList.push_back(wpEnemy);
+					m_wpEnemyList.push_back(enemy);
 
 				}
 			}
@@ -696,6 +720,7 @@ void GameScene::Init()
 	m_objList.push_back(camera);
 
 	KdEffekseerManager::GetInstance().SetCamera(camera);
+	m_wpGameCamera = camera;
 
 
 	SetCursorPos(640, 360);

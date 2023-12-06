@@ -3,6 +3,7 @@
 class Player;
 class Ui;
 class Enemy;
+class GameCamera;
 
 class GameScene:public BaseScene
 {
@@ -17,6 +18,7 @@ private:
 
 	std::weak_ptr<Player> m_wpPlayer;
 	std::weak_ptr<Ui> m_wpUi;
+	std::weak_ptr<GameCamera> m_wpGameCamera;
 
 	int m_waveCnt = 0;
 	int m_bossAppearanceCnt = 0;

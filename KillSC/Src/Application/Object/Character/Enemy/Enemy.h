@@ -4,52 +4,11 @@
 #define INITIALROTATIONY 180
 #define ADDWEAKNESSEUCCESSIONHITCNTTIMELIMIT 90 // 連続攻撃と認められる時間
 #define ADDROTAYIONATTACKDISTTOPLAYERTIME   120 // 攻撃開始する時間
+#define ROTAYIONATTACKDISTTOPLAYERINITTIME   60 // 攻撃開始する時間
+#define BOSSTYPEONEATTACKDELAYTIME			120 // 攻撃開始する時間
 
 class WeaponBase;
 class Player;
-
-enum EnemyState
-{
-	eIdle = 1 << 0,
-	eJump = 1 << 1,
-	eFall = 1 << 2,
-	eRun  = 1 << 3,
-	eGrassHopperDashF = 1 << 4,
-	eGrassHopperDashB = 1 << 5,
-	eGrassHopperDashR = 1 << 6,
-	eGrassHopperDashL = 1 << 7,
-	eGrassHopperDash  = eGrassHopperDashF | eGrassHopperDashB | eGrassHopperDashR | eGrassHopperDashL,
-	eGrassHopperDashUp = 1 << 8,
-	eLAttackOne = 1 << 9,
-	eLAttackTwo = 1 << 10,
-	eLAttackThree = 1 << 11,
-	eLAttack = eLAttackOne | eLAttackTwo | eLAttackThree,
-	eRAttackOne = 1 << 12,
-	eRAttackTwo = 1 << 13,
-	eRAttackThree = 1 << 14,
-	eRAttack = eRAttackOne | eRAttackTwo | eRAttackThree,
-	eDefense = 1 << 15,
-	eMantis = 1 << 16,
-	eHasDefense = 1 << 17,
-	eBlowingAwayHit = 1 << 18,
-	eIaiKiriHit = 1 << 19,
-	eNomalHit = 1 << 20,
-	eCutRaiseHit = 1 << 21,
-	eHit = eNomalHit | eIaiKiriHit | eBlowingAwayHit | eCutRaiseHit,
-	eStepF = 1 << 22,
-	eStepR = 1 << 23,
-	eStepL = 1 << 24,
-	eStepB = 1 << 25,
-	eStep  = eStepF | eStepB | eStepR | eStepL,
-	eBlowingAwayRise = 1 << 26,
-	eIaiKiriRise = 1 << 27,
-	eRise = eIaiKiriRise | eBlowingAwayRise,
-	eRlAttackOne = 1 << 28,
-	eRlAttackTwo = 1 << 29,
-	eRlAttackThree = 1 << 30,
-	eRlAttack = eRlAttackOne | eRlAttackTwo | eRlAttackThree,
-	eRlAttackRush = 1 << 31,
-};
 
 enum eWeaponType
 {
@@ -65,18 +24,60 @@ enum eWeaponType
 class Enemy : public KdGameObject
 {
 public:
+	enum EnemyState
+	{
+		idle = 1 << 0,
+		jump = 1 << 1,
+		fall = 1 << 2,
+		run = 1 << 3,
+		grassHopperDashF = 1 << 4,
+		grassHopperDashB = 1 << 5,
+		grassHopperDashR = 1 << 6,
+		grassHopperDashL = 1 << 7,
+		grassHopperDash = grassHopperDashF | grassHopperDashB | grassHopperDashR | grassHopperDashL,
+		grassHopperDashUp = 1 << 8,
+		lAttackOne = 1 << 9,
+		lAttackTwo = 1 << 10,
+		lAttackThree = 1 << 11,
+		lAttack = lAttackOne | lAttackTwo | lAttackThree,
+		rAttackOne = 1 << 12,
+		rAttackTwo = 1 << 13,
+		rAttackThree = 1 << 14,
+		rAttack = rAttackOne | rAttackTwo | rAttackThree,
+		defense = 1 << 15,
+		mantis = 1 << 16,
+		hasDefense = 1 << 17,
+		blowingAwayHit = 1 << 18,
+		iaiKiriHit = 1 << 19,
+		nomalHit = 1 << 20,
+		cutRaiseHit = 1 << 21,
+		hit = nomalHit | iaiKiriHit | blowingAwayHit | cutRaiseHit,
+		stepF = 1 << 22,
+		stepR = 1 << 23,
+		stepL = 1 << 24,
+		stepB = 1 << 25,
+		step = stepF | stepB | stepR | stepL,
+		blowingAwayRise = 1 << 26,
+		iaiKiriRise = 1 << 27,
+		rise = iaiKiriRise | blowingAwayRise,
+		rlAttackOne = 1 << 28,
+		rlAttackTwo = 1 << 29,
+		rlAttackThree = 1 << 30,
+		rlAttack = rlAttackOne | rlAttackTwo | rlAttackThree,
+		rlAttackRush = 1 << 31,
+	};
 
 	enum WantToMoveState
 	{
-		none             = 1 << 0,
-		attack           = 1 << 1,
-		escape           = 1 << 2,
-		defense          = 1 << 3,
-		dashAttack       = 1 << 4,
-		run              = 1 << 5,
-		step             = 1 << 6,
-		grassDash        = 1 << 7,
-		avoidance        = 1 << 8,
+		wNone             = 1 << 0,
+		wAttack           = 1 << 1,
+		wEscape           = 1 << 2,
+		wDefense          = 1 << 3,
+		wDashAttack       = 1 << 4,
+		wRun              = 1 << 5,
+		wStep             = 1 << 6,
+		wGrassDash        = 1 << 7,
+		wAvoidance        = 1 << 8,
 	};
 
 	enum WantToMoveCategory
@@ -383,5 +384,8 @@ private:
 	int m_weaknesSsuccessionHitCnt;             // 連続で弱点に当たった回数
 	int m_addWeaknesSsuccessionHitCntTime;      // 弱点Hitから何秒経過したか計る
 
-	int m_addRotationAttackDistToPlayerTime;	// 回転攻撃範囲内にPlayerがいる時間を計る
+	int m_addRotationAttackDistToPlayerTime;	    // 回転攻撃範囲内にPlayerがいる時間を計る
+	int m_rotationAttackDistToPlayerTimeInitTime;	// 回転攻撃範囲内にPlayerがいない時間を計る
+
+	int m_bossTypeOneAttackDelayTime;
 };
