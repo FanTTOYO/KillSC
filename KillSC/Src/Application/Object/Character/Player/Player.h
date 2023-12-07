@@ -198,7 +198,7 @@ private:
 	bool m_bEwaponDrawPosible = false;
 
 
-	std::weak_ptr<Enemy> m_enemy;
+	std::weak_ptr<Enemy> m_wpEnemy;
 	std::list<std::weak_ptr<Enemy>> m_enemyList;
 
 	int m_attackAnimeCnt = 0;
@@ -236,7 +236,7 @@ private:
 	bool m_bPlayerDeath;
 	bool m_bPlayerLose;
 
-	std::shared_ptr<KdSquarePolygon> m_rocKOnPolygon;
+	KdSquarePolygon m_rocKOnPolygon;
 
 	Math::Matrix m_rockOnPolyMat;
 

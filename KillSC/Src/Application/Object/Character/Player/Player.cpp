@@ -85,8 +85,7 @@ void Player::Init()
 	m_bPlayerDeath = false;
 	m_bPlayerLose = false;
 
-	m_rocKOnPolygon = std::make_shared<KdSquarePolygon>();
-	m_rocKOnPolygon->SetMaterial("Asset/Textures/Ui/Game/ターゲット N 白.png");
+	m_rocKOnPolygon.SetMaterial("Asset/Textures/Ui/Game/ターゲット N 白.png");
 
 	m_hitColorChangeTimeCnt = 0;
 
@@ -221,7 +220,7 @@ void Player::Update()
 			m_spAnimator->SetAnimation(m_spModel->GetAnimation("Death"), false);
 			m_playerState = idle;
 			gCamera->SetBRotateEnemy(false);
-			m_enemy.reset();
+			m_wpEnemy.reset();
 		}
 	}
 
@@ -235,7 +234,7 @@ void Player::Update()
 			m_spAnimator->SetAnimation(m_spModel->GetAnimation("Death"), false);
 			m_playerState = idle;
 			gCamera->SetBRotateEnemy(false);
-			m_enemy.reset();
+			m_wpEnemy.reset();
 		}
 	}
 
@@ -355,7 +354,7 @@ void Player::Update()
 				if (gCamera->GetBRotateEnemy())
 				{
 					gCamera->SetBRotateEnemy(false);
-					m_enemy.reset();
+					m_wpEnemy.reset();
 				}
 				else
 				{
@@ -399,7 +398,7 @@ void Player::Update()
 							smallAng = ang;
 							++i;
 							gCamera->SetEnemy(enemyList.lock());
-							m_enemy = enemyList.lock();
+							m_wpEnemy = enemyList.lock();
 							continue;
 						}
 
@@ -407,7 +406,7 @@ void Player::Update()
 						{
 							smallAng = ang;
 							gCamera->SetEnemy(enemyList.lock());
-							m_enemy = enemyList.lock();
+							m_wpEnemy = enemyList.lock();
 							continue;
 						}
 						else if (smallAng == ang)
@@ -418,7 +417,7 @@ void Player::Update()
 								smallAng = ang;
 								++i;
 								gCamera->SetEnemy(enemyList.lock());
-								m_enemy = enemyList.lock();
+								m_wpEnemy = enemyList.lock();
 								continue;
 							}
 						}
@@ -995,9 +994,9 @@ void Player::Update()
 
 	// 球と当たり判定 
 
-	if (!m_enemy.expired())
+	if (!m_wpEnemy.expired())
 	{
-		m_enemy.lock()->Intersects
+		m_wpEnemy.lock()->Intersects
 		(
 			sphereInfo,
 			&retSphereList
@@ -1161,9 +1160,9 @@ void Player::Update()
 		WeaList->Update();
 	}
 
-	if (m_enemy.expired())return;
+	if (m_wpEnemy.expired())return;
 
-	mat = Math::Matrix::CreateTranslation(m_enemy.lock()->GetMatrix().Translation());
+	mat = Math::Matrix::CreateTranslation(m_wpEnemy.lock()->GetMatrix().Translation());
 	m_rockOnPolyMat = mat;
 	m_rockOnPolyMat._42 += 1.75f;
 	m_rockOnPolyMat._41 += 0.5f * m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Forward().x;
@@ -2125,9 +2124,9 @@ void Player::DrawLit()
 void Player::DrawUnLit()
 {
 	if (m_bPlayerLose)return;
-	if (m_enemy.expired())return;
-	if (m_enemy.lock()->GetBEnemyDeath())return;
-	KdShaderManager::Instance().m_HD2DShader.DrawPolygon(*m_rocKOnPolygon, m_rockOnPolyMat);
+	if (m_wpEnemy.expired())return;
+	if (m_wpEnemy.lock()->GetBEnemyDeath())return;
+	KdShaderManager::Instance().m_HD2DShader.DrawPolygon(m_rocKOnPolygon, m_rockOnPolyMat);
 }
 
 void Player::DrawBright()
@@ -3285,9 +3284,9 @@ void Player::ScorpionAttackMove()
 							m_attackMoveSpd = 0.35f;
 							break;
 						case 115:
-							if (!m_enemy.expired())
+							if (!m_wpEnemy.expired())
 							{
-								Math::Vector3 dis = m_enemy.lock()->GetPos() - m_pos;
+								Math::Vector3 dis = m_wpEnemy.lock()->GetPos() - m_pos;
 								if (dis.Length() <= 1.15f)
 								{
 									m_attackMoveSpd = 0.25f;
