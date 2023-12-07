@@ -460,7 +460,7 @@ void Scopion::PlayerHitAttackChaeck()
 				if (hit)
 				{
 					pTarget.lock()->SetDefenseSuc(true);
-					m_owner.lock()->HasDefense();
+					player->HasDefense();
 					KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
 				}
 				else
@@ -511,7 +511,7 @@ void Scopion::PlayerHitAttackChaeck()
 					if (hit)
 					{
 						pTarget.lock()->SetDefenseSuc(true);
-						m_owner.lock()->HasDefense();
+						player->HasDefense();
 						KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
 					}
 					else
@@ -562,7 +562,7 @@ void Scopion::PlayerHitAttackChaeck()
 						if (hit)
 						{
 							pTarget.lock()->SetDefenseSuc(true);
-							m_owner.lock()->HasDefense();
+							player->HasDefense();
 							KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
 						}
 					}
@@ -1600,7 +1600,7 @@ void Scopion::EnemyHitAttackChaeck()
 			if (hit)
 			{
 				m_eTarget.lock()->SetDefenseSuc(true);
-				m_owner.lock()->HasDefense();
+				enemy->HasDefense();
 				KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
 			}
 			else
@@ -1651,7 +1651,7 @@ void Scopion::EnemyHitAttackChaeck()
 				if (hit)
 				{
 					m_eTarget.lock()->SetDefenseSuc(true);
-					m_owner.lock()->HasDefense();
+					enemy->HasDefense();
 					KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
 				}
 				else
@@ -1702,7 +1702,7 @@ void Scopion::EnemyHitAttackChaeck()
 					if (hit)
 					{
 						m_eTarget.lock()->SetDefenseSuc(true);
-						m_owner.lock()->HasDefense();
+						enemy->HasDefense();
 						KdAudioManager::Instance().Play("Asset/Audio/SE/grad1.wav");
 					}
 				}

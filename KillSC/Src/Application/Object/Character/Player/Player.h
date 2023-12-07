@@ -108,11 +108,11 @@ public:
 	const int GetAnimationCnt() { return m_attackAnimeCnt; }
 	std::vector<std::shared_ptr<WeaponBase>> GetWeaponList() { return m_weaponList; }
 
-	void OnHit(Math::Vector3 a_KnocBackvec)override;
-	void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)override;
-	void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)override;
-	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec)override;
-	void HasDefense()override;
+	void OnHit(Math::Vector3 a_KnocBackvec);
+	void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec);
+	void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec);
+	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec);
+	void HasDefense();
 
 	const bool GetBPlayerDeath() { return m_bPlayerDeath; }
 	const bool GetBPlayerLose() { return m_bPlayerLose; }
