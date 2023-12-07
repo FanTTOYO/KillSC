@@ -1,4 +1,5 @@
 #include "Scopion.h"
+#include "../../../Scene/SceneManager.h"
 #include "../../Character/Player/Player.h"
 #include "../../Character/Enemy/Enemy.h"
 
@@ -1016,7 +1017,22 @@ Math::Matrix Scopion::PlayerHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<E
 	Math::Matrix effeMat = node->m_worldTransform * a_enemy.lock()->GetMatrix();
 	effeMat._42 += 0.7f;*/
 
-	Math::Matrix scaleMat = Math::Matrix::CreateScale(0.45f);
+	Math::Matrix scaleMat = Math::Matrix::Identity;
+	if (a_enemy.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne)
+	{
+		scaleMat = Math::Matrix::CreateScale(1.05f);
+	}
+	else if (a_enemy.lock()->GetEnemyType() & Enemy::EnemyType::wimpEnemyTypeOne)
+	{
+		scaleMat = Math::Matrix::CreateScale(0.85f);
+	}
+	else
+	{
+		scaleMat = Math::Matrix::CreateScale(0.45f);
+	}
+	
+
+	
 	Math::Matrix RotYMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(player->GetAngleY()));
 
 	if (player->GetPlayerState() & Player::PlayerState::rAttackOne)

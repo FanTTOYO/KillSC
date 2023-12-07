@@ -110,6 +110,8 @@ void Enemy::Init()
 	m_notHumanoidEnemyState = stand;
 	m_attackAnimeCnt = 0;
 	m_bBlowingAwayHitB = false;
+
+	m_attackDelayTime = 0;
 }
 
 void Enemy::Update()
@@ -1747,7 +1749,6 @@ void Enemy::BossEnemyTyepOneUpdate()
 			m_animator->SetAnimation(m_model->GetAnimation("RUN"));
 		}
 		m_EnemyState = run;
-		m_bossTypeOneAttackDelayTime = 0;
 		return;
 	}
 
@@ -1765,9 +1766,9 @@ void Enemy::BossEnemyTyepOneUpdate()
 	);
 #endif
 
-	if (m_bossTypeOneAttackDelayTime < BOSSTYPEONEATTACKDELAYTIME)
+	if (m_attackDelayTime < ATTACKDELAYTIME)
 	{
-		++m_bossTypeOneAttackDelayTime;
+		++m_attackDelayTime;
 		return;
 	}
 
@@ -2023,6 +2024,11 @@ void Enemy::WimpEnemyTypeOneUpdate()
 		}
 		m_EnemyState = run;
 
+		m_mWorldRot.y = 180;
+		Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
+		Math::Matrix RotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
+		m_mWorld = RotMat * transMat;
+
 		return;
 	}
 
@@ -2039,6 +2045,12 @@ void Enemy::WimpEnemyTypeOneUpdate()
 		{ 0,0,0,1 }
 	);
 #endif
+
+	if (m_attackDelayTime < ATTACKDELAYTIME)
+	{
+		++m_attackDelayTime;
+		return;
+	}
 
 	if (m_bShotBeam || m_bShotEnergyBullet)
 	{

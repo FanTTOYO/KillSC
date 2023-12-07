@@ -1,11 +1,11 @@
 #pragma once
-#define ENEMYAIRBORNETIMETOBECNTVAL 180
-#define INITIALPOSZ 10
-#define INITIALROTATIONY 180
+#define ENEMYAIRBORNETIMETOBECNTVAL			180
+#define INITIALPOSZ							 10
+#define INITIALROTATIONY					180
 #define ADDWEAKNESSEUCCESSIONHITCNTTIMELIMIT 90 // 連続攻撃と認められる時間
 #define ADDROTAYIONATTACKDISTTOPLAYERTIME   120 // 攻撃開始する時間
-#define ROTAYIONATTACKDISTTOPLAYERINITTIME   60 // 攻撃開始する時間
-#define BOSSTYPEONEATTACKDELAYTIME			120 // 攻撃開始する時間
+#define ROTAYIONATTACKDISTTOPLAYERINITTIME   60 // 攻撃開始時間を初期化する時間
+#define ATTACKDELAYTIME						120 // 攻撃できない時間
 
 class WeaponBase;
 class Player;
@@ -387,5 +387,5 @@ private:
 	int m_addRotationAttackDistToPlayerTime;	    // 回転攻撃範囲内にPlayerがいる時間を計る
 	int m_rotationAttackDistToPlayerTimeInitTime;	// 回転攻撃範囲内にPlayerがいない時間を計る
 
-	int m_bossTypeOneAttackDelayTime;
+	int m_attackDelayTime;
 };

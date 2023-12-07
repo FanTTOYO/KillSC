@@ -233,6 +233,7 @@ void GameScene::Event()
 				{
 					if (SceneManager::Instance().GetEnemyTotal() == 2)
 					{
+						// モンスター型Enemyインスタンス化==========================================================================================================
 						SceneManager::Instance().AddEnemyDrawTotal();
 						enemy = std::make_shared<Enemy>();
 						enemy->SetTarget(m_wpPlayer.lock());
@@ -296,8 +297,10 @@ void GameScene::Event()
 						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
+						// ===============================================================================================================================================
 					}
 
+					// 人型Enemyインスタンス化========================================================================================================================
 					// 前方向
 					for (int i = 0; i < total; ++i)
 					{
@@ -385,8 +388,9 @@ void GameScene::Event()
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
 					}
-				}
-				else
+					//========================================================================================================================================================
+				}   
+				else // モンスター型Enemyインスタンス化==========================================================================================================
 				{
 					// 前方向
 					for (int i = 0; i < total; ++i)
@@ -472,24 +476,7 @@ void GameScene::Event()
 
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
-					}
-
-
-					/*SceneManager::Instance().AddEnemyDrawTotal();
-					enemy = std::make_shared<Enemy>();
-					enemy->SetTarget(m_wpPlayer.lock());
-					m_wpPlayer.lock()->AddEnemy(enemy);
-					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
-					enemy->Init();
-					enemy->SetEnemyNumber(1);
-					enemy->SetBBoss(false);
-					enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
-					enemy->SetPos(Math::Vector3(0.0f, 0.0f, 30.0f));
-					enemy->SetMatrix(Math::Vector3(0.0, 0.0f, 30.0f));
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
-
-					m_objList.push_back(enemy);*/
+					}// ==================================================================================================================================
 				}
 			}
 		}
@@ -502,21 +489,25 @@ void GameScene::Event()
 
 				if (!SceneManager::Instance().GetBHumanoidEnemy())
 				{
+					// モンスター型ボス出現ゲートエフェクト==================================================================================================
 					KdEffekseerManager::GetInstance().
 						Play("EnemyAppearance.efk", { 0, 10.0f, 30.0f });
 					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
 
 					Math::Matrix efcMat = Math::Matrix::CreateScale(20) * Math::Matrix::CreateTranslation({ 0, 10.0f, 30.0f });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("EnemyAppearance.efk", efcMat);
+					//=======================================================================================================================================
 				}
 				else
 				{
+					// 人型ボス出現ゲートエフェクト========================================================================================================
 					KdEffekseerManager::GetInstance().
 						Play("EnemyAppearance.efk", { 0, 10.0f, 30.0f });
 					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
 
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1.5f) * Math::Matrix::CreateTranslation({ 0, 10.0f, 30.0f });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("EnemyAppearance.efk", efcMat);
+					//=======================================================================================================================================
 				}
 
 			}
@@ -526,6 +517,7 @@ void GameScene::Event()
 				++m_appearanceEffectCnt;
 			}
 
+			// ボスEnemyのインスタンス化================================================================================================================
 			if (m_appearanceEffectCnt >= 25)
 			{
 				int total = SceneManager::Instance().GetEnemyTotal();
@@ -545,9 +537,9 @@ void GameScene::Event()
 					enemy->SetBBoss(true);
 					if (!SceneManager::Instance().GetBHumanoidEnemy())
 					{
-						enemy->SetModelAndType(Enemy::EnemyType::bossEnemyTypeOne);
+						enemy->SetModelAndType(Enemy::EnemyType::bossEnemyTypeOne); // モンスター型のボスをここでセット
 						auto it = m_objList.begin();
-						while (it != m_objList.end()) // 数が変動するため範囲ベースForが使えない
+						while (it != m_objList.end())
 						{
 							// 不要になったオブジェクトを消す
 							if ((*it)->GetBBldg())
@@ -611,6 +603,7 @@ void GameScene::Event()
 
 				}
 			}
+			//===============================================================================================================
 		}
 	}
 }

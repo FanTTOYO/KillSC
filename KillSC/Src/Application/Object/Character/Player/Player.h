@@ -80,11 +80,11 @@ public:
 	void Init()									override;
 	void Release() {};
 
-	void SetCamera(std::shared_ptr<CameraBase> a_camera) { m_wpCamera = a_camera; }
+	void SetCamera(std::shared_ptr<CameraBase> a_spCcamera) { m_wpCamera = a_spCcamera; }
 	// void SetEnemy(std::shared_ptr<Enemy> a_enemy) { m_enemy = a_enemy; }
-	void AddEnemy(std::shared_ptr<Enemy> a_enemy) { m_enemyList.push_back(a_enemy); }
-	void AddWeaponToEnemy(std::shared_ptr<Enemy> a_enemy);
-	void SetUi(std::shared_ptr<Ui> a_ui) { m_wpUi = a_ui; }
+	void AddEnemy(std::shared_ptr<Enemy> a_spEnemy) { m_enemyList.push_back(a_spEnemy); }
+	void AddWeaponToEnemy(std::shared_ptr<Enemy> a_spEnemy);
+	void SetUi(std::shared_ptr<Ui> a_spUi) { m_wpUi = a_spUi; }
 
 	const UINT& GetPlayerState() { return m_playerState; }
 	const UINT& GetWeaponType() { return m_weaponType; }
@@ -100,7 +100,7 @@ public:
 	const float& GetDashSpd() { return m_dashSpd;}
 	const float& GetTorion()  { return m_torion; }
 	const float& GetEndurance()  { return m_endurance; }
-	const std::shared_ptr<KdModelWork>& GetModel() { return m_model; }
+	const std::shared_ptr<KdModelWork>& GetModel() { return m_spModel; }
 	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }
 	const bool GetBRushAttackPossible() { return m_bRushAttackPossible; }
 	void SetBRushAttackPossible(bool a_bRushAttackPossible) { m_bRushAttackPossible = a_bRushAttackPossible; }
@@ -137,7 +137,7 @@ private:
 	void HasDefenseMove();
 	void TutorialUpdate();
 
-	std::shared_ptr<KdModelWork> m_model;
+	std::shared_ptr<KdModelWork> m_spModel;
 
 	const int MAXWEAPONTYPE = 2;
 	const int FIRSTWEAPONTYPENUMBER = 1;
@@ -190,7 +190,7 @@ private:
 	Math::Vector3 m_grassHopperDashDir = {};
 	float m_dashSpd = 0;
 
-	std::shared_ptr<KdAnimator> m_animator;
+	std::shared_ptr<KdAnimator> m_spAnimator;
 
 	std::vector<std::shared_ptr<WeaponBase>> m_weaponList;
 

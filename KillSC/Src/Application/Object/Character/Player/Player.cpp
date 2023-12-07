@@ -20,14 +20,14 @@ void Player::Init()
 	// 行列合成
 	m_mWorld = scaleMat * transMat;
 
-	m_model = std::make_shared<KdModelWork>();
-	m_model->SetModelData
+	m_spModel = std::make_shared<KdModelWork>();
+	m_spModel->SetModelData
 	(KdAssets::Instance().m_modeldatas.GetData
 	("Asset/Models/Player/Player.gltf"));
 	// 当たり判定初期化
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape
-	("PlayerModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage);
+	("PlayerModel", m_spModel, KdCollider::TypeBump | KdCollider::TypeDamage);
 
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 
@@ -46,8 +46,8 @@ void Player::Init()
 	m_bRushAttackPossible = false;
 	m_invincibilityTimeCnt = 0;
 
-	m_animator = std::make_shared<KdAnimator>();
-	m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+	m_spAnimator = std::make_shared<KdAnimator>();
+	m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
 
 
 	std::shared_ptr<Scopion> sco;
@@ -96,13 +96,13 @@ void Player::Init()
 	m_attackHit = false;
 }
 
-void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_enemy)
+void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_spEnemy)
 {
 	const std::shared_ptr<Scopion> gScopion1 = std::dynamic_pointer_cast<Scopion>(m_weaponList[0]);
 	const std::shared_ptr<Scopion> gScopion2 = std::dynamic_pointer_cast<Scopion>(m_weaponList[1]);
 
-	gScopion1->AddTarget(a_enemy);
-	gScopion2->AddTarget(a_enemy);
+	gScopion1->AddTarget(a_spEnemy);
+	gScopion2->AddTarget(a_spEnemy);
 }
 
 void Player::Update()
@@ -218,7 +218,7 @@ void Player::Update()
 		{
 			const std::shared_ptr<GameCamera> gCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
 			m_bPlayerDeath = true;
-			m_animator->SetAnimation(m_model->GetAnimation("Death"), false);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("Death"), false);
 			m_playerState = idle;
 			gCamera->SetBRotateEnemy(false);
 			m_enemy.reset();
@@ -232,7 +232,7 @@ void Player::Update()
 		{
 			const std::shared_ptr<GameCamera> gCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
 			m_bPlayerDeath = true;
-			m_animator->SetAnimation(m_model->GetAnimation("Death"), false);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("Death"), false);
 			m_playerState = idle;
 			gCamera->SetBRotateEnemy(false);
 			m_enemy.reset();
@@ -498,7 +498,7 @@ void Player::Update()
 			{
 				if (!(m_playerState & idle))
 				{
-					m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
 				}
 				m_playerState = idle;
 			}
@@ -508,7 +508,7 @@ void Player::Update()
 				{
 					if (!(m_playerState & blowingAwayRise))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayRise"), false);
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("BlowingAwayRise"), false);
 					}
 					m_playerState = blowingAwayRise;
 				}
@@ -517,7 +517,7 @@ void Player::Update()
 					m_bBlowingAwayHitB = false;
 					if (!(m_playerState & iaiKiriRise))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("IaiKiriRise"), false);
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("IaiKiriRise"), false);
 					}
 					m_playerState = iaiKiriRise;
 				}
@@ -526,7 +526,7 @@ void Player::Update()
 			{
 				if (!(m_playerState & iaiKiriRise))
 				{
-					m_animator->SetAnimation(m_model->GetAnimation("IaiKiriRise"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("IaiKiriRise"), false);
 				}
 				m_playerState = iaiKiriRise;
 			}
@@ -553,11 +553,11 @@ void Player::Update()
 	else if (m_playerState & rise)
 	{
 		m_bMove = true;
-		if (m_animator->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
 			if (!(m_playerState & idle))
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
 			}
 			m_playerState = idle;
 		}
@@ -574,7 +574,7 @@ void Player::Update()
 		{
 			if (!(m_playerState & idle))
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
 			}
 			m_playerState = idle;
 		}
@@ -649,7 +649,7 @@ void Player::Update()
 				m_bMove = false;
 				if (!(m_playerState & idle))
 				{
-					m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
 				}
 				m_playerState = idle;
 			}
@@ -716,7 +716,7 @@ void Player::Update()
 				m_bMove = false;
 				if (!(m_playerState & idle))
 				{
-					m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
 				}
 				m_playerState = idle;
 			}
@@ -1121,7 +1121,7 @@ void Player::Update()
 	const KdModelWork::Node* node = nullptr;
 	mat = Math::Matrix::Identity;
 
-	node = m_model->FindNode("LegAttackPoint");
+	node = m_spModel->FindNode("LegAttackPoint");
 	mat = node->m_worldTransform * m_mWorld;
 	mat._42 += 0.7f;
 	m_pDebugWire->AddDebugSphere
@@ -1131,7 +1131,7 @@ void Player::Update()
 		{ 0,0,1,1 }
 	);
 
-	node = m_model->FindNode("LegAttackHitPoint");
+	node = m_spModel->FindNode("LegAttackHitPoint");
 	mat = node->m_worldTransform * m_mWorld;
 	mat._42 += 0.7f;
 	m_pDebugWire->AddDebugSphere
@@ -1141,7 +1141,7 @@ void Player::Update()
 		{ 0,0,1,1 }
 	);
 
-	node = m_model->FindNode("LegAttackHitPointTwo");
+	node = m_spModel->FindNode("LegAttackHitPointTwo");
 	mat = node->m_worldTransform * m_mWorld;
 	mat._42 += 0.7f;
 	m_pDebugWire->AddDebugSphere
@@ -1187,7 +1187,7 @@ void Player::PlayerKickHitAttackChaeck()
 			/*if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
 			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;*/
 
-			node = m_model->FindNode("LegAttackPoint");
+			node = m_spModel->FindNode("LegAttackPoint");
 			KdCollider::SphereInfo sphereInfo;
 			mat = node->m_worldTransform * m_mWorld;
 			mat._42 += 0.7f;
@@ -1236,7 +1236,7 @@ void Player::PlayerKickHitAttackChaeck()
 			}
 			else
 			{
-				node = m_model->FindNode("LegAttackHitPoint");
+				node = m_spModel->FindNode("LegAttackHitPoint");
 				sphereInfo;
 				mat = node->m_worldTransform * m_mWorld;
 				mat._42 += 0.7f;
@@ -1285,7 +1285,7 @@ void Player::PlayerKickHitAttackChaeck()
 				}
 				else
 				{
-					node = m_model->FindNode("LegAttackHitPointTwo");
+					node = m_spModel->FindNode("LegAttackHitPointTwo");
 					sphereInfo;
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
@@ -1352,7 +1352,7 @@ void Player::PlayerPanchiHitAttackChaeck()
 			/*if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
 			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;*/
 
-			node = m_model->FindNode("ArrmAttackPoint");
+			node = m_spModel->FindNode("ArrmAttackPoint");
 			KdCollider::SphereInfo sphereInfo;
 			mat = node->m_worldTransform * m_mWorld;
 			mat._42 += 0.7f;
@@ -1401,7 +1401,7 @@ void Player::PlayerPanchiHitAttackChaeck()
 			}
 			else
 			{
-				node = m_model->FindNode("ArrmAttackHitPoint");
+				node = m_spModel->FindNode("ArrmAttackHitPoint");
 				sphereInfo;
 				mat = node->m_worldTransform * m_mWorld;
 				mat._42 += 0.7f;
@@ -1450,7 +1450,7 @@ void Player::PlayerPanchiHitAttackChaeck()
 				}
 				else
 				{
-					node = m_model->FindNode("ArrmAttackHitPointTwo");
+					node = m_spModel->FindNode("ArrmAttackHitPointTwo");
 					sphereInfo;
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
@@ -1528,7 +1528,7 @@ void Player::PostUpdate()
 			{
 				if (!(m_playerState & fall))
 				{
-					m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("FallA"), false);
 				}
 
 				m_playerState = fall;
@@ -1555,11 +1555,11 @@ void Player::PostUpdate()
 			}
 		}
 
-		if (!m_animator) return;
+		if (!m_spAnimator) return;
 
 		if (!(m_playerState & (lAttack | rAttack | rlAttack | rlAttackRush)))
 		{
-			m_animator->AdvanceTime(m_model->WorkNodes());
+			m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
 			if (m_playerState & run)
 			{
 				++m_runAnimeCnt;
@@ -1611,8 +1611,8 @@ void Player::PostUpdate()
 				}
 			}
 
-			m_animator->AdvanceTime(m_model->WorkNodes());
-			m_model->CalcNodeMatrices();
+			m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
+			m_spModel->CalcNodeMatrices();
 		}
 		else if (m_playerState & (rlAttack | rlAttackRush))
 		{
@@ -1702,8 +1702,8 @@ void Player::PostUpdate()
 				}
 			}
 
-			m_animator->AdvanceTime(m_model->WorkNodes());
-			m_model->CalcNodeMatrices();
+			m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
+			m_spModel->CalcNodeMatrices();
 		}
 
 		for (auto& WeaList : m_weaponList)
@@ -1713,8 +1713,8 @@ void Player::PostUpdate()
 	}
 	else
 	{
-		m_animator->AdvanceTime(m_model->WorkNodes());
-		m_model->CalcNodeMatrices();
+		m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
+		m_spModel->CalcNodeMatrices();
 
 		if (!KdEffekseerManager::GetInstance().IsPlaying("BailOutPlayer.efk"))
 		{
@@ -1734,7 +1734,7 @@ void Player::PostUpdate()
 			}
 		}
 
-		if (m_animator->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
 			if (!m_bPlayerLose)
 			{
@@ -1790,7 +1790,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 		if (enemyList.lock()->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::rlAttackOne |
 			Enemy::EnemyState::rlAttackThree))
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit1"), false);
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
 				SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
@@ -1798,7 +1798,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 		}
 		else if (enemyList.lock()->GetEnemyState() & (Enemy::EnemyState::rAttackTwo | Enemy::EnemyState::rlAttackTwo))
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit2"), false);
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
 				SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
@@ -1808,7 +1808,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 		if (enemyList.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackRush && enemyList.lock()->GetAnimationCnt() < 8 ||
 			(enemyList.lock()->GetAnimationCnt() >= 21 && enemyList.lock()->GetAnimationCnt() < 41))
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit1"), false);
 
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
@@ -1818,7 +1818,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 		else if (enemyList.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackRush && 
 			(enemyList.lock()->GetAnimationCnt() >= 8 && enemyList.lock()->GetAnimationCnt() < 21))
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit2"), false);
 
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
@@ -1919,11 +1919,11 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 
 	if (ang > 90)
 	{
-		m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
+		m_spAnimator->SetAnimation(m_spModel->GetAnimation(" BlowingAwayHitB"), false);
 	}
 	else
 	{
-		m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayHitBB"), false);
+		m_spAnimator->SetAnimation(m_spModel->GetAnimation("BlowingAwayHitBB"), false);
 		m_bBlowingAwayHitB = true;
 	}
 
@@ -1965,7 +1965,7 @@ void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 50.0f;
 	m_attackHit = true;
-	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
+	m_spAnimator->SetAnimation(m_spModel->GetAnimation("IaiKiriAttackHitB"), false);
 	m_invincibilityTimeCnt = 100;
 	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 	{
@@ -2018,7 +2018,7 @@ void Player::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 	m_knockBackVec = a_KnocBackvec;
 	m_endurance -= 15.0f;
 	m_attackHit = true;
-	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
+	m_spAnimator->SetAnimation(m_spModel->GetAnimation("CutRaiseHit"), false);
 	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 	{
 		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
@@ -2043,11 +2043,11 @@ void Player::HasDefense()
 {
 	if (m_playerState & (rAttack | rlAttack))
 	{
-		m_animator->SetAnimation(m_model->GetAnimation("RHasDefense"), false);
+		m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHasDefense"), false);
 	}
 	else if (m_playerState & lAttack)
 	{
-		m_animator->SetAnimation(m_model->GetAnimation("LHasDefense"), false);
+		m_spAnimator->SetAnimation(m_spModel->GetAnimation("LHasDefense"), false);
 	}
 
 	if (m_bRushRp)
@@ -2066,15 +2066,15 @@ void Player::DrawSprite()
 void Player::GenerateDepthMapFromLight_SkinMesh()
 {
 	if (m_bPlayerLose)return;
-	if (!m_model) return;
+	if (!m_spModel) return;
 
-	KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
+	KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_spModel, m_mWorld);
 }
 
 void Player::DrawLit_SkinMesh()
 {
 	if (m_bPlayerLose)return;
-	if (!m_model) return;
+	if (!m_spModel) return;
 
 	if (m_invincibilityTimeCnt <= 90 && m_invincibilityTimeCnt > 80 ||
 		m_invincibilityTimeCnt <= 70 && m_invincibilityTimeCnt > 60 ||
@@ -2088,12 +2088,12 @@ void Player::DrawLit_SkinMesh()
 	KdShaderManager::Instance().m_HD2DShader.SetOutLineColor({ 0,0,1 });
 	if (m_hitColorChangeTimeCnt == 0)
 	{
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_spModel, m_mWorld, true);
 	}
 	else
 	{
 		Math::Color color = { 1,0,0,1 };
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true, color);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_spModel, m_mWorld, true, color);
 	}
 }
 
@@ -2222,9 +2222,9 @@ void Player::GrassMoveVecDecision()
 					m_lGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2250,9 +2250,9 @@ void Player::GrassMoveVecDecision()
 					m_lGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashLB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2280,9 +2280,9 @@ void Player::GrassMoveVecDecision()
 					m_lGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashBB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2309,9 +2309,9 @@ void Player::GrassMoveVecDecision()
 					m_lGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashRB"), false);
 
-					node = m_model->FindNode("GrassHopperLegLPoint");
+					node = m_spModel->FindNode("GrassHopperLegLPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2338,9 +2338,9 @@ void Player::GrassMoveVecDecision()
 					m_lGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashJB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2366,9 +2366,9 @@ void Player::GrassMoveVecDecision()
 					m_lGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashJB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2416,9 +2416,9 @@ void Player::GrassMoveVecDecision()
 					m_rGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2444,9 +2444,9 @@ void Player::GrassMoveVecDecision()
 					m_rGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashLB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2474,9 +2474,9 @@ void Player::GrassMoveVecDecision()
 					m_rGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashBB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2503,9 +2503,9 @@ void Player::GrassMoveVecDecision()
 					m_rGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashRB"), false);
 
-					node = m_model->FindNode("GrassHopperLegLPoint");
+					node = m_spModel->FindNode("GrassHopperLegLPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2532,9 +2532,9 @@ void Player::GrassMoveVecDecision()
 					m_rGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashJB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2560,9 +2560,9 @@ void Player::GrassMoveVecDecision()
 					m_rGrassHopperTime = 0;
 					m_gravity = 0;
 					m_torion -= TORIONDOWNVALUE;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashJB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashJB"), false);
 
-					node = m_model->FindNode("GrassHopperLegRPoint");
+					node = m_spModel->FindNode("GrassHopperLegRPoint");
 					mat = node->m_worldTransform * m_mWorld;
 					mat._42 += 0.7f;
 					m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, spCamera->GetYAng());
@@ -2671,23 +2671,23 @@ void Player::GrassMove()
 			m_weaponList[3]->StartAnime();
 			if (m_playerState & grassHopperDashF)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFA"), true);
 			}
 			else if (m_playerState & grassHopperDashR)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashRA"), true);
 			}
 			else if (m_playerState & grassHopperDashL)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashLA"), true);
 			}
 			else if (m_playerState & grassHopperDashB)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashBA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashBA"), true);
 			}
 			else if (m_playerState & grassHopperDashUp)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashJA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashJA"), true);
 			}
 		}
 
@@ -2696,23 +2696,23 @@ void Player::GrassMove()
 			m_weaponList[2]->StartAnime();
 			if (m_playerState & grassHopperDashF)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFA"), true);
 			}
 			else if (m_playerState & grassHopperDashR)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashRA"), true);
 			}
 			else if (m_playerState & grassHopperDashL)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashLA"), true);
 			}
 			else if (m_playerState & grassHopperDashB)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashBA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashBA"), true);
 			}
 			else if (m_playerState & grassHopperDashUp)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashJA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashJA"), true);
 			}
 		}
 	}
@@ -2783,19 +2783,19 @@ void Player::StepMove()
 		{
 			if (m_playerState & stepF)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFA"), true);
 			}
 			else if (m_playerState & stepR)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashRA"), true);
 			}
 			else if (m_playerState & stepL)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashLA"), true);
 			}
 			else if (m_playerState & stepB)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashBA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashBA"), true);
 			}
 		}
 	}
@@ -2808,7 +2808,7 @@ void Player::StepMove()
 
 		/*if (!(m_playerState & idle))
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"));
 		}
 		m_playerState = idle;*/
 	}
@@ -2842,11 +2842,11 @@ void Player::NormalMove()
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					/*if (!(m_playerState & run))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}*/
 					m_playerState = stepF;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFB"), false);
 				}
 			}
 
@@ -2860,11 +2860,11 @@ void Player::NormalMove()
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					/*if (!(m_playerState & run))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}*/
 					m_playerState = stepL;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashLB"), false);
 				}
 			}
 
@@ -2878,11 +2878,11 @@ void Player::NormalMove()
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					/*if (!(m_playerState & run))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}*/
 					m_playerState = stepB;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashBB"), false);
 				}
 			}
 
@@ -2896,11 +2896,11 @@ void Player::NormalMove()
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					/*if (!(m_playerState & run))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}*/
 					m_playerState = stepR;
-					m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashRB"), false);
 				}
 			}
 		}
@@ -2914,12 +2914,12 @@ void Player::NormalMove()
 				{
 					if (!(m_playerState & run))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}
 					else if (m_runAnimeCnt == 0)
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 					}
 					m_playerState = run;
 				}
@@ -2933,12 +2933,12 @@ void Player::NormalMove()
 				{
 					if (!(m_playerState & run))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}
 					else if (m_runAnimeCnt == 0)
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 					}
 					m_playerState = run;
 				}
@@ -2952,12 +2952,12 @@ void Player::NormalMove()
 				{
 					if (!(m_playerState & run))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}
 					else if (m_runAnimeCnt == 0)
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 					}
 					m_playerState = run;
 				}
@@ -2971,12 +2971,12 @@ void Player::NormalMove()
 				{
 					if (!(m_playerState & run))
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 						m_runAnimeCnt = 0;
 					}
 					else if (m_runAnimeCnt == 0)
 					{
-						m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+						m_spAnimator->SetAnimation(m_spModel->GetAnimation("RUN"));
 					}
 					m_playerState = run;
 				}
@@ -2990,7 +2990,7 @@ void Player::NormalMove()
 				m_gravity = -0.2f;
 				m_playerState |= jump;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
-				m_animator->SetAnimation(m_model->GetAnimation("JumpA"), false);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("JumpA"), false);
 				m_bMove = true;
 
 			}
@@ -3017,25 +3017,25 @@ void Player::NormalMove()
 
 	if (m_playerState & jump)
 	{
-		if (m_animator->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("JumpB"), true);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("JumpB"), true);
 		}
 	}
 
 	if (m_playerState & idle)
 	{
-		if (m_animator->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("IdleB"), true);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleB"), true);
 		}
 	}
 
 	if (m_playerState & fall)
 	{
-		if (m_animator->IsAnimationEnd())
+		if (m_spAnimator->IsAnimationEnd())
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("FallB"), true);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("FallB"), true);
 		}
 	}
 
@@ -3046,7 +3046,7 @@ void Player::NormalMove()
 
 void Player::ScorpionAttackMove()
 {
-	if (m_animator->IsAnimationEnd())
+	if (m_spAnimator->IsAnimationEnd())
 	{
 		if (m_playerState & lAttack)
 		{
@@ -3057,7 +3057,7 @@ void Player::ScorpionAttackMove()
 			m_attackAnimeDelayCnt = 0;
 			if (m_playerState & grassHopperDashF)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFA"), true);
 			}
 			else
 			{
@@ -3074,7 +3074,7 @@ void Player::ScorpionAttackMove()
 			m_attackAnimeDelayCnt = 0;
 			if (m_playerState & grassHopperDashF)
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFA"), true);
 			}
 			else
 			{
@@ -3356,7 +3356,7 @@ void Player::ScorpionDefenseMove()
 			m_bMove = false;
 			if (!(m_playerState & idle))
 			{
-				m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+				m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
 			}
 			m_playerState = idle;
 			//m_playerState &= ~defense;
@@ -3367,7 +3367,7 @@ void Player::ScorpionDefenseMove()
 		m_bMove = false;
 		if (!(m_playerState & idle))
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
 		}
 		m_playerState = idle;
 		//m_playerState &= ~defense;
@@ -3379,11 +3379,11 @@ void Player::HasDefenseMove()
 	m_pos.y -= m_gravity;
 	m_gravity += 0.01f;
 	m_bMove = true;
-	if (m_animator->IsAnimationEnd())
+	if (m_spAnimator->IsAnimationEnd())
 	{
 		if (!(m_playerState & idle))
 		{
-			m_animator->SetAnimation(m_model->GetAnimation("IdleA"), false);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
 		}
 		m_playerState = idle;
 	}
@@ -3399,7 +3399,7 @@ void Player::TutorialUpdate()
 			m_wpUi.lock()->AddTutorialCnt();
 		}
 
-		if (m_playerState & jump && m_animator->IsAnimationEnd())
+		if (m_playerState & jump && m_spAnimator->IsAnimationEnd())
 		{
 			m_wpUi.lock()->AddTutorialCnt();
 		}
@@ -3407,7 +3407,7 @@ void Player::TutorialUpdate()
 	case Ui::TutorialType::bukiTu:
 		break;
 	case Ui::TutorialType::sukoADMoveTu:
-		if (m_playerState & (rlAttackThree | rlAttackRush | rAttackThree | lAttackThree | mantis) && m_animator->IsAnimationEnd())
+		if (m_playerState & (rlAttackThree | rlAttackRush | rAttackThree | lAttackThree | mantis) && m_spAnimator->IsAnimationEnd())
 		{
 			m_wpUi.lock()->AddTutorialCnt();
 		}
@@ -3448,7 +3448,7 @@ void Player::ScorpionActionDecision()
 					m_playerState &= ~rlAttack;
 					m_playerState &= ~rlAttackRush;
 					m_bMove = true;
-					m_animator->SetAnimation(m_model->GetAnimation("Defense"), true);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("Defense"), true);
 				}
 				return;
 			}
@@ -3463,7 +3463,7 @@ void Player::ScorpionActionDecision()
 					m_playerState &= ~rlAttack;
 					m_playerState &= ~rlAttackRush;
 					m_bMove = true;
-					m_animator->SetAnimation(m_model->GetAnimation("Defense"), true);
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("Defense"), true);
 				}
 				return;
 			}
@@ -3508,7 +3508,7 @@ void Player::ScorpionActionDecision()
 									scopion2->SetBMantis(true);
 								}
 								m_bMove = true;
-								m_animator->SetAnimation(m_model->GetAnimation("Mantis"), false);
+								m_spAnimator->SetAnimation(m_spModel->GetAnimation("Mantis"), false);
 							}
 						}
 						else
@@ -3543,7 +3543,7 @@ void Player::ScorpionActionDecision()
 							}
 
 							//m_attackMoveSpd = 1.0f;
-							m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("RLAttackOne"), false);
 						}
 					}
 
@@ -3607,7 +3607,7 @@ void Player::ScorpionActionDecision()
 							}*/
 							m_attackMoveSpd = 1.0f;
 
-							m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("RLAttackOne"), false);
 						}
 					}
 				}
@@ -3647,11 +3647,11 @@ void Player::ScorpionActionDecision()
 
 						if (m_playerState & grassHopperDash)
 						{
-							m_animator->SetAnimation(m_model->GetAnimation("GrassDashLAttack"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashLAttack"), false);
 						}
 						else
 						{
-							m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("LAttack1"), false);
 						}
 					}
 				}
@@ -3691,11 +3691,11 @@ void Player::ScorpionActionDecision()
 
 						if (m_playerState & (grassHopperDashF | step))
 						{
-							m_animator->SetAnimation(m_model->GetAnimation("GrassDashRAttack"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashRAttack"), false);
 						}
 						else
 						{
-							m_animator->SetAnimation(m_model->GetAnimation("RAttack1"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("RAttack1"), false);
 						}
 					}
 				}
@@ -3731,7 +3731,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.8f;
-							m_animator->SetAnimation(m_model->GetAnimation("RLAttackTwo"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("RLAttackTwo"), false);
 						}
 						else if (m_playerState & rlAttackTwo)
 						{
@@ -3754,7 +3754,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.9f;
-							m_animator->SetAnimation(m_model->GetAnimation("RLAttackThree"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("RLAttackThree"), false);
 						}
 						else if (m_playerState & rlAttackThree && m_bRushAttackPossible)
 						{
@@ -3768,13 +3768,13 @@ void Player::ScorpionActionDecision()
 							if (KdInputManager::Instance().GetButtonState("lAttack"))
 							{
 								m_bRushRp = false;
-								m_animator->SetAnimation(m_model->GetAnimation("RLAttackRush"), false);
+								m_spAnimator->SetAnimation(m_spModel->GetAnimation("RLAttackRush"), false);
 								m_attackMoveSpd = 0.8f;
 							}
 							else if (KdInputManager::Instance().GetButtonState("rAttack"))
 							{
 								m_bRushRp = true;
-								m_animator->SetAnimation(m_model->GetAnimation("RLAttackRushRP"), false);
+								m_spAnimator->SetAnimation(m_spModel->GetAnimation("RLAttackRushRP"), false);
 								m_attackMoveSpd = 0.25f;
 							}
 
@@ -3811,7 +3811,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.8f;
-							m_animator->SetAnimation(m_model->GetAnimation("LAttack2"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("LAttack2"), false);
 						}
 						else if (m_playerState & lAttackTwo)
 						{
@@ -3828,7 +3828,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.8f;
 
-							m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("LAttack3"), false);
 						}
 
 						m_playerState &= ~rAttack;
@@ -3853,7 +3853,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.8f;
-							m_animator->SetAnimation(m_model->GetAnimation("RAttack2"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("RAttack2"), false);
 						}
 						else if (m_playerState & rAttackTwo)
 						{
@@ -3875,7 +3875,7 @@ void Player::ScorpionActionDecision()
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.8f;
-							m_animator->SetAnimation(m_model->GetAnimation("RAttack3"), false);
+							m_spAnimator->SetAnimation(m_spModel->GetAnimation("RAttack3"), false);
 						}
 
 						m_playerState &= ~lAttack;

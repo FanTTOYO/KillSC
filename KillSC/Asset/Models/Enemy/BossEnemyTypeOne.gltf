@@ -3,6 +3,9 @@
 		"generator":"Khronos glTF Blender I/O v3.6.27",
 		"version":"2.0"
 	},
+	"extensionsUsed":[
+		"KHR_materials_emissive_strength"
+	],
 	"scene":0,
 	"scenes":[
 		{
@@ -14878,6 +14881,16 @@
 		},
 		{
 			"doubleSided":true,
+			"emissiveFactor":[
+				1,
+				1,
+				0
+			],
+			"extensions":{
+				"KHR_materials_emissive_strength":{
+					"emissiveStrength":3
+				}
+			},
 			"name":"\u30de\u30c6\u30ea\u30a2\u30eb.001",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
