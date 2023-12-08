@@ -1,0 +1,7 @@
+{
+  "Player": {
+    "Endurance": 400,
+    "Vforce": 300,
+    "Position" :  [0,0,-20]  
+  }
+}

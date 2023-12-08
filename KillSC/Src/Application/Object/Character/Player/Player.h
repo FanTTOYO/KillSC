@@ -1,7 +1,6 @@
 #pragma once
 #define TORIONDOWNVALUE 1.0f
 #define  GRASSHOPPERPAUCNT 30
-#define INITIALPOSZ 10
 
 class CameraBase;
 class WeaponBase;
@@ -163,6 +162,7 @@ private:
 	Math::Vector3    m_pos = {};
 	Math::Vector3    m_move = {};
 	Math::Vector3    m_scale = {};
+	Math::Vector3    m_addCenterVal = {}; //m_pos‚É‘«‚µ‚½‚çPlayer‚Ì’†S‚É‚È‚é’l
 
 	Math::Matrix m_deathWorldMat;
 	int          m_isExpiredCnt = 0;

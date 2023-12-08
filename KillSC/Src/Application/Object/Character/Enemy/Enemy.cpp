@@ -2018,13 +2018,9 @@ void Enemy::WimpEnemyTypeOneUpdate()
 		m_torion    = 300.0f;
 		m_endurance = 200.0f;
 
-		if (!(m_EnemyState & run))
-		{
-			m_animator->SetAnimation(m_model->GetAnimation("RUN"));
-		}
-		m_EnemyState = run;
+		m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
+		m_EnemyState = idle;
 
-		m_mWorldRot.y = 180;
 		Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
 		Math::Matrix RotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
 		m_mWorld = RotMat * transMat;

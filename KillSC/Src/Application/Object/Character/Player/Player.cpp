@@ -8,17 +8,28 @@
 
 void Player::Init()
 {
+	// jsonファイルを開く
+	std::ifstream ifs("Asset/Data/objectVal.json");
+	if (ifs.fail()) { assert(0 && "Json ファイルのパスが間違っています！！！");};
+
+	// 文字列として全読み込み
+	std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
+	std::string err;
+	json11::Json jsonObj = json11::Json::parse(strJson, err);
+	if (err.size() > 0) { assert(0 && "読み込んだファイルのjson変換に失敗"); };
+
+	auto& object = jsonObj["Player"].object_items();
+
 	// 座標行列
 	Math::Matrix transMat;
-	transMat = Math::Matrix::CreateTranslation(0, 0, -INITIALPOSZ);
+	transMat = Math::Matrix::CreateTranslation(object["Position"][0].number_value(), 
+											   object["Position"][1].number_value(), 
+											   object["Position"][2].number_value());
 	m_pos = transMat.Translation();
 
-	// 拡縮行列
-	Math::Matrix scaleMat;
-	scaleMat = Math::Matrix::CreateScale(Math::Vector3::One);
-
 	// 行列合成
-	m_mWorld = scaleMat * transMat;
+	m_mWorld = transMat;
 
 	m_spModel = std::make_shared<KdModelWork>();
 	m_spModel->SetModelData
@@ -39,8 +50,11 @@ void Player::Init()
 	m_rightWeaponNumber = 1;
 	m_leftWeaponNumber = 1;
 
-	m_torion = 300.0f;
-	m_endurance = 400;
+	m_torion = object["Vforce"].number_value();
+	m_endurance = object["Endurance"].number_value();
+	m_addCenterVal;
+
+
 	m_graduallyTorionDecVal = 0.0f;
 	m_bAttackAnimeCnt = true;
 	m_bRushAttackPossible = false;

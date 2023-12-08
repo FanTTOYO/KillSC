@@ -127,6 +127,9 @@
     <Filter Include="Src\Framework\Effekseer">
       <UniqueIdentifier>{8b35de41-b602-4ce0-b0b9-816a45cac03e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Library\json11KdCustom">
+      <UniqueIdentifier>{bea12a4e-fef5-43df-bde2-d07431e8a801}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -312,6 +315,9 @@
     <ClInclude Include="Src\Framework\Effekseer\KdEffekseerManager.h">
       <Filter>Src\Framework\Effekseer</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\json11KdCustom\json11.hpp">
+      <Filter>Library\json11KdCustom</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -475,6 +481,9 @@
     </ClCompile>
     <ClCompile Include="Src\Framework\Effekseer\KdEffekseerManager.cpp">
       <Filter>Src\Framework\Effekseer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\json11KdCustom\json11.cpp">
+      <Filter>Library\json11KdCustom</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

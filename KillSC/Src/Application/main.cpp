@@ -167,6 +167,71 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	KdEffekseerManager::GetInstance().Create(w, h);
 
+	// JSONファイルを開く
+	std::ifstream ifs("Asset/Data/test.json");
+	if (ifs.fail()) { assert(0 && "Json ファイルのパスが間違ってます"); };
+
+	// 文字列として全読み込み
+	std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
+	// 文字列のJSONを解析（パース）する
+	std::string err;
+	json11::Json jsonObj = json11::Json::parse(strJson, err);
+	if (err.size() > 0) { assert(0 && "読み込んだファイルのJson変換に失敗"); };
+
+	{
+		// 値アクセス
+		OutputDebugStringA(jsonObj["Name"].string_value().append("\n").c_str());
+		OutputDebugStringA(std::to_string(jsonObj["Hp"].int_value()).append("\n").c_str());
+	}
+
+	// 配列アクセス
+	{
+		// 配列全アクセス
+		auto& pos = jsonObj["Position"].array_items();
+		for (auto&& p : pos)
+		{
+			OutputDebugStringA(std::to_string(p.number_value()).append("\n").c_str());
+		}
+
+		// 配列添え字アクセス
+		OutputDebugStringA(std::to_string(pos[0].number_value()).append("\n").c_str());
+		OutputDebugStringA(std::to_string(pos[1].number_value()).append("\n").c_str());
+		OutputDebugStringA(std::to_string(pos[2].number_value()).append("\n").c_str());
+
+	}
+
+	//Object習得
+	{
+		auto& object = jsonObj["monster"].object_items();
+		OutputDebugStringA(object["name"].string_value().append("\n").c_str());
+
+		OutputDebugStringA(std::to_string(object["hp"].number_value()).append("\n").c_str());
+
+		OutputDebugStringA(std::to_string(object["pos"][0].number_value()).append("\n").c_str());
+		OutputDebugStringA(std::to_string(object["pos"][1].number_value()).append("\n").c_str());
+		OutputDebugStringA(std::to_string(object["pos"][2].number_value()).append("\n").c_str());
+	}
+
+	//Object 配列取得
+	{
+		auto& objects = jsonObj["techniques"].array_items();
+		for (auto&& object : objects)
+		{
+			// 共通の要素はチェックなしでアクセス
+			OutputDebugStringA(object["name"].string_value().append("\n").c_str());
+			OutputDebugStringA(std::to_string(object["atk"].int_value()).append("\n").c_str());
+			OutputDebugStringA(std::to_string(object["hitrate"].number_value()).append("\n").c_str());
+
+			// 固有のパラメーターはチェックしてからアクセス
+			if (object["effect"].is_string())
+			{
+				OutputDebugStringA(object["effect"].string_value().append("\n").c_str());
+			}
+		}
+	}
+
+
 	return true;
 }
 
