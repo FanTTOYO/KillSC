@@ -7,22 +7,9 @@
 
 void Enemy::Init()
 {
-	// 座標行列
-	Math::Matrix transMat;
-	transMat = Math::Matrix::CreateTranslation(0, 0, INITIALPOSZ);
-	m_pos = transMat.Translation();
-
-	// 拡縮行列
-	Math::Matrix scaleMat;
-	scaleMat = Math::Matrix::CreateScale(Math::Vector3::One);
-
-	// 回転行列
-	Math::Matrix rotMat;
-	rotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(INITIALROTATIONY));
-	m_mWorldRot.y = 180;
-
 	// 行列合成
-	m_mWorld = rotMat * scaleMat * transMat;
+	m_mWorld = Math::Matrix::Identity;
+	m_mWorldRot.y = 0;
 
 	m_model = std::make_shared<KdModelWork>();
 	m_model->SetModelData
@@ -474,8 +461,8 @@ void Enemy::Update()
 #endif
 
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
-	Math::Matrix RotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
-	m_mWorld = RotMat * transMat;
+	Math::Matrix rotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
+	m_mWorld = rotMat * transMat;
 
 	for (auto& WeaList : m_weaponList)
 	{
@@ -2021,10 +2008,6 @@ void Enemy::WimpEnemyTypeOneUpdate()
 		m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
 		m_EnemyState = idle;
 
-		Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
-		Math::Matrix RotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
-		m_mWorld = RotMat * transMat;
-
 		return;
 	}
 
@@ -2824,11 +2807,26 @@ void Enemy::GenerateDepthMapFromLight()
 	}
 }
 
+void Enemy::SetMatrix()
+{
+	// 座標行列
+	Math::Matrix transMat;
+	transMat = Math::Matrix::CreateTranslation(m_pos);
+
+	// 回転行列
+	Math::Matrix rotMat;
+	rotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
+
+	// 行列合成
+	m_mWorld = rotMat * transMat;
+}
+
 void Enemy::SetModelAndType(EnemyType a_enemyType)
 {
 	m_enemyType = a_enemyType;
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
+
 	switch (m_enemyType)
 	{
 	case coarseFishEnemy:
@@ -2853,9 +2851,9 @@ void Enemy::SetModelAndType(EnemyType a_enemyType)
 		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage | KdCollider::TypeRideEnemy | KdCollider::TypeAttackDec);
 		
 		node = m_model->FindNode("HitPoint");
-		mat = node->m_worldTransform * m_mWorld;
+		mat = node->m_worldTransform * Math::Matrix::Identity;
 		m_pCollider->RegisterCollisionShape
-		("EnemyModelWeakness", { mat._41,mat._42,mat._43 - 5 }, 0.45f, KdCollider::TypeWeakness);
+		("EnemyModelWeakness", { mat._41,mat._42,mat._43}, 0.45f, KdCollider::TypeWeakness);
 		m_enemyAttackMaxTotal = 4;
 		break;
 	case bossEnemyTypeOne:
@@ -2869,10 +2867,10 @@ void Enemy::SetModelAndType(EnemyType a_enemyType)
 		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage | KdCollider::TypeRideEnemy | KdCollider::TypeAttackDec);
 
 		node = m_model->FindNode("HitPoint");
-		mat = node->m_worldTransform * m_mWorld;
+		mat = node->m_worldTransform * Math::Matrix::Identity;
 		m_pCollider->RegisterCollisionShape
-		("EnemyModelWeakness", { mat._41,mat._42,mat._43 + 52.5f}, 3.00f, KdCollider::TypeWeakness);
-		m_hitpos = { mat._41,mat._42,mat._43 + 52.5f};
+		("EnemyModelWeakness", { mat._41,mat._42,mat._43}, 3.00f, KdCollider::TypeWeakness);
+		m_hitpos = { mat._41,mat._42,mat._43};
 		break;
 	}
 }

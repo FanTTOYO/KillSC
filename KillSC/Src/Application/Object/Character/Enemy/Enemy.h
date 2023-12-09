@@ -127,7 +127,7 @@ public:
 	void GenerateDepthMapFromLight()override;
 	void SetTarget(std::shared_ptr<Player> a_target) { m_target = a_target; }
 	void SetPos(Math::Vector3 a_pos) { m_pos = a_pos;}
-	void SetMatrix(Math::Vector3 a_pos) { m_mWorld = Math::Matrix::CreateTranslation(a_pos); }
+	void SetMatrix();
 	void SetWorldRotationY(float a_mWorldRotY) { m_mWorldRot.y = a_mWorldRotY; }
 	void SetModelAndType(EnemyType a_enemyType); // この敵が雑魚敵（人型）か雑魚敵（モンスター）かをいれる　ボスの場合はつかわない
 	//void Release() {};

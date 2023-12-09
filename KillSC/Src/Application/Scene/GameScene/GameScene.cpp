@@ -120,8 +120,8 @@ void GameScene::Event()
 					enemy->SetEnemyNumber(i + 1);
 					enemy->SetBBoss(true);
 					enemy->SetPos(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
-					enemy->SetMatrix(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
-					enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+					enemy->SetWorldRotationY(180);
+					enemy->SetMatrix();
 
 					m_objList.push_back(enemy);
 					m_wpEnemyList.push_back(enemy);
@@ -243,10 +243,10 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						enemy->SetPos(Math::Vector3(0.0f, 0.0f, 40.0f));
-						enemy->SetMatrix(Math::Vector3(0.0f, 0.0f, 40.0f));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+						enemy->SetWorldRotationY(180);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
 
@@ -259,10 +259,10 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						enemy->SetPos(Math::Vector3(0.0f, 0.0f, -40.0f));
-						enemy->SetMatrix(Math::Vector3(0.0f, 0.0f, -40.0f));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
+						enemy->SetWorldRotationY(0);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
 
@@ -275,10 +275,10 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						enemy->SetPos(Math::Vector3(40.0f, 0.0f, 0.0f));
-						enemy->SetMatrix(Math::Vector3(40.0f, 0.0f, 0.0f));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
+						enemy->SetWorldRotationY(90);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
 
@@ -291,10 +291,10 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						enemy->SetPos(Math::Vector3(-40.0f, 0.0f, 0.0f));
-						enemy->SetMatrix(Math::Vector3(-40.0f, 0.0f, 0.0f));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
+						enemy->SetWorldRotationY(270);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
 						// ===============================================================================================================================================
@@ -313,11 +313,11 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 						enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
-						enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, 20.0f));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+						enemy->SetWorldRotationY(180);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
@@ -336,10 +336,10 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
 						enemy->SetPos(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
-						enemy->SetMatrix(Math::Vector3(-0.5f + 1.0f * i, 0.0f, -30.0f));
+						enemy->SetWorldRotationY(0);
+						enemy->SetMatrix();
 						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
@@ -357,11 +357,11 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 						enemy->SetPos(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
-						enemy->SetMatrix(Math::Vector3(20, 0.0f, -0.5f + 1.0f * i));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
+						enemy->SetWorldRotationY(270);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
@@ -379,11 +379,11 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 						enemy->SetPos(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
-						enemy->SetMatrix(Math::Vector3(-20.0f, 0.0f, -0.5f + 1.0f * i));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
+						enemy->SetWorldRotationY(90);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::coarseFishEnemy);
 
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
@@ -404,10 +404,10 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, 30.0f));
-						enemy->SetMatrix(Math::Vector3(-5.0f + 10.0f * i, 0.0f, 30.0f));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(180));
+						enemy->SetWorldRotationY(180);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
@@ -426,11 +426,11 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
 
-						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
+						enemy->SetWorldRotationY(0);
 						enemy->SetPos(Math::Vector3(-5.0f + 10.0f * i, 0.0f, -30.0f));
-						enemy->SetMatrix(Math::Vector3(-5.0f + 10.0f * i, 0.0f, -30.0f));
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(0));
 
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
@@ -448,10 +448,10 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						enemy->SetPos(Math::Vector3(30.0f, 0.0f, -5.0f + 10.0f * i));
-						enemy->SetMatrix(Math::Vector3(30.0f, 0.0f, -5.0f + 10.0f * i));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(270));
+						enemy->SetWorldRotationY(270);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
@@ -469,10 +469,10 @@ void GameScene::Event()
 						enemy->Init();
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
-						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						enemy->SetPos(Math::Vector3(-30.0f, 0.0f, -5.0f + 10.0f * i));
-						enemy->SetMatrix(Math::Vector3(-30.0f, 0.0f, -5.0f + 10.0f * i));
-						enemy->SetWorldRotationY(DirectX::XMConvertToRadians(90));
+						enemy->SetWorldRotationY(90);
+						enemy->SetMatrix();
+						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 
 						m_objList.push_back(enemy);
 						m_wpEnemyList.push_back(enemy);
@@ -535,6 +535,26 @@ void GameScene::Event()
 					enemy->Init();
 					enemy->SetEnemyNumber(1);
 					enemy->SetBBoss(true);
+
+					switch (total)
+					{
+					case 1:
+						enemy->SetPos(Math::Vector3(0, 10.0f, 30.0f));
+						enemy->SetWorldRotationY(180);
+						enemy->SetMatrix();
+						break;
+					case 2:
+						enemy->SetPos(Math::Vector3(-3.0f + 6.0f * i, 10.0f, 30.0f));
+						enemy->SetWorldRotationY(180);
+						enemy->SetMatrix();
+						break;
+					case 3:
+						enemy->SetPos(Math::Vector3(-3.0f + 3.0f * i, 10.0f, 30.0f));
+						enemy->SetWorldRotationY(180);
+						enemy->SetMatrix();
+						break;
+					}
+
 					if (!SceneManager::Instance().GetBHumanoidEnemy())
 					{
 						enemy->SetModelAndType(Enemy::EnemyType::bossEnemyTypeOne); // モンスター型のボスをここでセット
@@ -581,22 +601,6 @@ void GameScene::Event()
 
 							m_wpGameCamera.lock()->SetHitObj(bldg);
 						}
-					}
-
-					switch (total)
-					{
-					case 1:
-						enemy->SetPos(Math::Vector3(0, 10.0f, 30.0f));
-						enemy->SetMatrix(Math::Vector3(0, 10.0f, 30.0f));
-						break;
-					case 2:
-						enemy->SetPos(Math::Vector3(-3.0f + 6.0f * i, 10.0f, 30.0f));
-						enemy->SetMatrix(Math::Vector3(0, 10.0f, 30.0f));
-						break;
-					case 3:
-						enemy->SetPos(Math::Vector3(-3.0f + 3.0f * i, 10.0f, 30.0f));
-						enemy->SetMatrix(Math::Vector3(0, 10.0f, 30.0f));
-						break;
 					}
 					m_objList.push_back(enemy);
 					m_wpEnemyList.push_back(enemy);
