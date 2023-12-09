@@ -23,9 +23,9 @@ void Player::Init()
 
 	// 座標行列
 	Math::Matrix transMat;
-	transMat = Math::Matrix::CreateTranslation(object["Position"][0].number_value(), 
-											   object["Position"][1].number_value(), 
-											   object["Position"][2].number_value());
+	transMat = Math::Matrix::CreateTranslation((float)object["Position"][0].number_value(), 
+											   (float)object["Position"][1].number_value(), 
+											   (float)object["Position"][2].number_value());
 	m_pos = transMat.Translation();
 
 	// 行列合成
@@ -50,8 +50,8 @@ void Player::Init()
 	m_rightWeaponNumber = 1;
 	m_leftWeaponNumber = 1;
 
-	m_torion = object["Vforce"].number_value();
-	m_endurance = object["Endurance"].number_value();
+	m_torion = (float)object["Vforce"].number_value();
+	m_endurance = (float)object["Endurance"].number_value();
 	m_addCenterVal;
 
 
@@ -955,9 +955,17 @@ void Player::Update()
 			if (enemyList.expired())continue;
 			if (enemyList.lock()->GetBEnemyDeath())continue;
 
-			if (enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne && m_playerState & (grassHopperDash | grassHopperDashUp | step))
+			if (enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne)
 			{
-				sphereInfo.m_sphere.Radius = 1.2f;
+				if (m_playerState & (grassHopperDash | grassHopperDashUp | step))
+				{
+					sphereInfo.m_sphere.Radius = 1.2f;
+				}
+				else
+				{
+					sphereInfo.m_sphere.Radius = 1.2f;
+				}
+				
 			}
 
 			enemyList.lock()->Intersects
@@ -983,7 +991,11 @@ void Player::Update()
 
 			if (hit)
 			{
-				hitDir.y = 0.0f;
+				if(!(enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne) || m_playerState & (grassHopperDash | grassHopperDashUp | step))
+				{
+					hitDir.y = 0.0f;
+				}
+
 				hitDir.Normalize();
 				// 球とモデルが当たっている
 				m_pos += (hitDir * maxOverLap);

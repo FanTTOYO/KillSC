@@ -30,7 +30,7 @@ public:
 
 	void OnPauseEfkUpdate()
 	{
-		m_isPause = true;
+		m_isPause = !m_isPause;
 	}
 
 	void Release();

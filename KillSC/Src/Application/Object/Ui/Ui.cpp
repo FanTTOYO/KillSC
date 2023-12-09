@@ -269,12 +269,6 @@ void Ui::GameUpdate()
 		}
 		else if (m_time >= 90 && m_time < 120)
 		{
-			/*m_countThreeScale += (1.0f / 10.0f);
-			if (m_countThreeScale > 1.0f)
-			{
-				m_countThreeScale = 1.0f;
-			}*/
-
 			m_countTwoAlpha -= (1.0f / 30.0f);
 			if (m_countThreeAlpha < 0.0f)
 			{
@@ -297,12 +291,6 @@ void Ui::GameUpdate()
 		}
 		else if (m_time >= 150 && m_time < 180)
 		{
-			/*m_countThreeScale += (1.0f / 10.0f);
-			if (m_countThreeScale > 1.0f)
-			{
-				m_countThreeScale = 1.0f;
-			}*/
-
 			m_countOneAlpha -= (1.0f / 30.0f);
 			if (m_countOneAlpha < 0.0f)
 			{
@@ -325,12 +313,6 @@ void Ui::GameUpdate()
 		}
 		else if (m_time >= 210 && m_time < 240)
 		{
-			/*m_countThreeScale += (1.0f / 10.0f);
-			if (m_countThreeScale > 1.0f)
-			{
-				m_countThreeScale = 1.0f;
-			}*/
-
 			m_countGoAlpha -= (1.0f / 30.0f);
 			if (m_countGoAlpha < 0.0f)
 			{
@@ -394,6 +376,7 @@ void Ui::GameUpdate()
 					m_bOption = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
 					ShowCursor(true); // マウスカーソルを消す
+					KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
 				}
 				else if (m_bOption)
 				{
@@ -406,6 +389,7 @@ void Ui::GameUpdate()
 					SetCursorPos(640, 360);
 					KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
 					ShowCursor(false); // マウスカーソルを消す
+					KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
 				}
 			}
 		}
@@ -523,6 +507,7 @@ void Ui::GameUpdate()
 							ShowCursor(false); // マウスカーソルを消す
 							SetCursorPos(640, 360);
 							KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+							KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
 						}
 					}
 					else

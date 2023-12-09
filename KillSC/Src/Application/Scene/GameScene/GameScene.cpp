@@ -558,6 +558,7 @@ void GameScene::Event()
 					if (!SceneManager::Instance().GetBHumanoidEnemy())
 					{
 						enemy->SetModelAndType(Enemy::EnemyType::bossEnemyTypeOne); // モンスター型のボスをここでセット
+						m_wpGameCamera.lock()->SetHitObj(enemy);
 						auto it = m_objList.begin();
 						while (it != m_objList.end())
 						{

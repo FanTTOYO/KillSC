@@ -1780,6 +1780,7 @@ void Enemy::BossEnemyTyepOneUpdate()
 				if (m_rangedAttackAnimeCnt >= 10 && !m_bBeamHitStart)
 				{
 					m_bBeamHitStart = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Beem.wav");
 				}
 			}
 
@@ -1788,6 +1789,7 @@ void Enemy::BossEnemyTyepOneUpdate()
 				if (m_rangedAttackAnimeCnt >= 25 && !m_bEnergyBulletHitStart)
 				{
 					m_bEnergyBulletHitStart = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/energyShot.wav");
 				}
 			}
 		}
@@ -2040,6 +2042,7 @@ void Enemy::WimpEnemyTypeOneUpdate()
 			if (m_rangedAttackAnimeCnt >= 10 && !m_bBeamHitStart)
 			{
 				m_bBeamHitStart = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/Beem.wav");
 			}
 		}
 
@@ -2048,6 +2051,7 @@ void Enemy::WimpEnemyTypeOneUpdate()
 			if (m_rangedAttackAnimeCnt >= 25 && !m_bEnergyBulletHitStart)
 			{
 				m_bEnergyBulletHitStart = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/energyShot.wav");
 			}
 		}
 	}
@@ -2114,7 +2118,7 @@ void Enemy::PostUpdate()
 		
 		if (m_bShotBeam)
 		{
-			if (m_rangedAttackAnimeCnt >= 80)
+			if (m_rangedAttackAnimeCnt >= 66)
 			{
 				m_beamRange = 0;
 				m_rangedAttackAnimeCnt = 0;
@@ -3225,7 +3229,8 @@ void Enemy::EnemyEnergyBulletHitChaeck()
 		if (hit)
 		{
 			m_target.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
-			KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+			//KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+			KdAudioManager::Instance().Play("Asset/Audio/SE/EnergyBulletHit.wav");
 
 			KdEffekseerManager::GetInstance().
 				Play("Hit3.efk", hitPos);
@@ -3320,7 +3325,7 @@ void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
 			if (spTarget)
 			{
 				Math::Vector3 std = spTarget->GetPos() - mat.Translation();
-				if (spTarget->GetPos().y < mat.Translation().y)
+				if (spTarget->GetPos().y < mat.Translation().y - 1.25f)
 				{
 					if (ang < 5)
 					{
@@ -5561,8 +5566,8 @@ void Enemy::BossEnemyTypeOneBrain()
 	{
 		if (src.Length() <= 45.0f)
 		{
-			randNum[0] = 900;
-			randNum[1] = 100;
+			randNum[0] = 850;
+			randNum[1] = 150;
 
 			for (int i = 0; i < 2; i++)
 			{
