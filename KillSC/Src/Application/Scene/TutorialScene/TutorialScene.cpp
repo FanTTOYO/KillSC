@@ -28,6 +28,19 @@ void TutorialScene::Event()
 
 void TutorialScene::Init()
 {
+	// jsonファイルを開く
+	std::ifstream ifs("Asset/Data/objectVal.json");
+	if (ifs.fail()) { assert(0 && "Json ファイルのパスが間違っています！！！"); };
+
+	// 文字列として全読み込み
+	std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
+	std::string err;
+	std::shared_ptr<json11::Json> jsonObj = std::make_shared<json11::Json>();
+	*jsonObj = json11::Json::parse(strJson, err);
+
+	if (err.size() > 0) { assert(0 && "読み込んだファイルのjson変換に失敗"); };
+
 	KdAudioManager::Instance().StopAllSound();
 
 	KdInputCollector* gamepadCollector = new KdInputCollector();
@@ -73,7 +86,7 @@ void TutorialScene::Init()
 	m_wpPlayer = player;
 	enemy->SetTarget(player);
 	player->AddEnemy(enemy);
-	player->Init();
+	player->Init(jsonObj);
 	enemy->Init();
 
 	std::shared_ptr<GameCamera> camera = std::make_shared<GameCamera>();

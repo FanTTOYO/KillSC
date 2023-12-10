@@ -6,20 +6,9 @@
 #include "../Enemy/Enemy.h"
 #include "../../Ui/Ui.h"
 
-void Player::Init()
+void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
-	// jsonファイルを開く
-	std::ifstream ifs("Asset/Data/objectVal.json");
-	if (ifs.fail()) { assert(0 && "Json ファイルのパスが間違っています！！！");};
-
-	// 文字列として全読み込み
-	std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-
-	std::string err;
-	json11::Json jsonObj = json11::Json::parse(strJson, err);
-	if (err.size() > 0) { assert(0 && "読み込んだファイルのjson変換に失敗"); };
-
-	auto& object = jsonObj["Player"].object_items();
+	auto& object = (*a_wpJsonObj.lock())["Player"].object_items();
 
 	// 座標行列
 	Math::Matrix transMat;
@@ -52,13 +41,66 @@ void Player::Init()
 
 	m_torion = (float)object["Vforce"].number_value();
 	m_endurance = (float)object["Endurance"].number_value();
-	m_addCenterVal;
+	m_addCenterVal = {(float)object["AddCenterVal"][0].number_value(),
+					  (float)object["AddCenterVal"][1].number_value(),
+					  (float)object["AddCenterVal"][2].number_value()};
 
+
+	m_minimumYPos = (float)object["MinimumYPos"].number_value();
+	m_tutorialMinimumYPos = (float)object["TutorialMinimumYPos"].number_value();
+
+	m_minimumXPos = (float)object["MinimumXPos"].number_value();
+	m_hightXPos   = (float)object["HightXPos"].number_value();
+
+	m_minimumZPos = (float)object["MinimumZPos"].number_value();
+	m_hightZPos   = (float)object["HightZPos"].number_value();
+
+	m_maxOverStageTime = (*a_wpJsonObj.lock())["MaxOverStageTime"].int_value();
+
+	m_gravityAcceleration = (float)(*a_wpJsonObj.lock())["GravityAcceleration"].number_value();
+	m_cutRaiseHitGravityAcceleration = (float)(*a_wpJsonObj.lock())["CutRaiseHitGravityAcceleration"].number_value();
+
+	m_moveSpeedDecelerationamount           = (float)(*a_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value();
+	m_moveSpeedStopsAbruptly                = (float)(*a_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value();
+	m_rushAttackMoveSpeedDecelerationamount = (float)(*a_wpJsonObj.lock())["RushAttackMoveSpeedDecelerationamount"].number_value();
+
+	for (int i = 0; i < 2; i++)
+	{
+		m_footfallPointMoment[i] = (*a_wpJsonObj.lock())["m_footfallPointMoment"][i].int_value();
+	}
+
+	m_lastRunAnimationTime = (*a_wpJsonObj.lock())["LastRunAnimationTime"].int_value();
+	m_attackPointMoment = (*a_wpJsonObj.lock())["AttackPointMoment"].int_value();
+	m_lastAttackAnimationMoment = (*a_wpJsonObj.lock())["LastAttackAnimationMoment"].int_value();
+	m_rushLastAttackPointTime = (*a_wpJsonObj.lock())["RushLastAttackPointTime"].int_value();
+	m_rotationRushLastAttackPointTime = (*a_wpJsonObj.lock())["RotationRushLastAttackPointTime"].int_value();
+	m_maxAttackAnimeDelayCnt = (*a_wpJsonObj.lock())["MaxAttackAnimeDelayCnt"].int_value();
+	m_attackOneOrTwoSoundMoment = (*a_wpJsonObj.lock())["AttackOneOrTwoSoundMoment"].int_value();
+	m_attackThreeSoundMoment = (*a_wpJsonObj.lock())["AttackThreeSoundMoment"].int_value();
+	m_rlAttackOneSoundFirstMoment = (*a_wpJsonObj.lock())["RLAttackOneSoundFirstMoment"].int_value();
+	m_rlAttackOneSoundSecondMoment = (*a_wpJsonObj.lock())["RLAttackOneSoundSecondMoment"].int_value();
+	m_rlAttackTwoSoundFirstMoment = (*a_wpJsonObj.lock())["RLAttackTwoSoundFirstMoment"].int_value();
+	m_rlAttackTwoSoundSecondMoment = (*a_wpJsonObj.lock())["RLAttackTwoSoundSecondMoment"].int_value();
+	m_rlAttackThreeSoundFirstMoment = (*a_wpJsonObj.lock())["RLAttackThreeSoundFirstMoment"].int_value();
+	m_rlAttackThreeSoundSecondMoment = (*a_wpJsonObj.lock())["RLAttackThreeSoundSecondMoment"].int_value();
+
+	m_lastRLAttackAnimationdMoment = (*a_wpJsonObj.lock())["LastRLAttackAnimationdMoment"].int_value();
+	m_lastRLAttackThreeAnimationMoment = (*a_wpJsonObj.lock())["LastRLAttackThreeAnimationMoment"].int_value();
+
+	for (int i = 0; i < 7; i++)
+	{
+		m_rlAttackRushSoundMoment[i] = (*a_wpJsonObj.lock())["RLAttackRushSoundMoment"][i].int_value();
+		m_rlAttackRotationRushSoundMoment[i] = (*a_wpJsonObj.lock())["RLAttackRotationRushSoundMoment"][i].int_value();
+	}
+
+	m_rlAttackRotationRushSoundMoment[7] = (*a_wpJsonObj.lock())["RLAttackRotationRushSoundMoment"][7].int_value();
 
 	m_graduallyTorionDecVal = 0.0f;
 	m_bAttackAnimeCnt = true;
 	m_bRushAttackPossible = false;
 	m_invincibilityTimeCnt = 0;
+
+
 
 	m_spAnimator = std::make_shared<KdAnimator>();
 	m_spAnimator->SetAnimation(m_spModel->GetAnimation("IdleA"), false);
@@ -122,85 +164,85 @@ void Player::Update()
 {
 	if (m_bPlayerLose)return;
 
-	/*if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
-	{*/
-	float lowestYPos;
-	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
-	{
-		lowestYPos = -10.0f;
-	}
-	else
-	{
-		lowestYPos = -1.0f;
-	}
 
-	if (m_pos.x > 62.5 || m_pos.x < -62.5 || m_pos.z > 62.5 || m_pos.z < -62.5 || m_pos.y < lowestYPos)
-		//if(0)
 	{
-		m_overStageTime++;
-		if (m_overStageTime >= 90)
+		float lowestYPos;
+		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
 		{
-			m_pos = { 0,0,0 };
-			m_overStageTime = 0;
+			lowestYPos = m_tutorialMinimumYPos;
 		}
-	}
-	else
-	{
-		if (m_overStageTime >= 90)
+		else
 		{
-			m_pos = { 0,0,0 };
-			m_overStageTime = 0;
+			lowestYPos = m_minimumYPos;
 		}
 
-		KdCollider::SphereInfo sphereInfo;
-		// 球の中心位置を設定
-		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
-		// 球の半径を設定
-
-		sphereInfo.m_sphere.Radius = 0.4f;
-
-		// 当たり判定をしたいタイプを設定
-		sphereInfo.m_type = KdCollider::TypeBuried;
-#ifdef _DEBUG
-		// デバック用
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius
-		);
-#endif
-		// 球の当たったオブジェクト情報
-		std::list<KdCollider::CollisionResult> retSphereList;
-
-		// 球と当たり判定 
-		for (auto& obj : SceneManager::Instance().GetObjList())
+		if (m_pos.x > m_hightXPos || m_pos.x < m_minimumXPos || m_pos.z > m_hightZPos || m_pos.z < m_minimumZPos || m_pos.y < lowestYPos)
+			//if(0)
 		{
-			obj->Intersects
-			(
-				sphereInfo,
-				&retSphereList
-			);
-		}
-
-		// 球に当たったリスト情報から一番近いオブジェクトを検出
-		float maxOverLap = 0;
-		bool hit = false;
-		for (auto& ret : retSphereList)
-		{
-			// 一番近くで当たったものを探す
-			if (maxOverLap < ret.m_overlapDistance)
+			m_overStageTime++;
+			if (m_overStageTime >= m_maxOverStageTime)
 			{
-				maxOverLap = ret.m_overlapDistance;
-				hit = true;
+				m_pos = { 0,0,0 };
+				m_overStageTime = 0;
 			}
 		}
-
-		if (hit)
+		else
 		{
-			++m_overStageTime;
+			if (m_overStageTime >= m_maxOverStageTime)
+			{
+				m_pos = { 0,0,0 };
+				m_overStageTime = 0;
+			}
+
+			KdCollider::SphereInfo sphereInfo;
+			// 球の中心位置を設定
+			sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
+			// 球の半径を設定
+
+			sphereInfo.m_sphere.Radius = 0.4f;
+
+			// 当たり判定をしたいタイプを設定
+			sphereInfo.m_type = KdCollider::TypeBuried;
+#ifdef _DEBUG
+			// デバック用
+			m_pDebugWire->AddDebugSphere
+			(
+				sphereInfo.m_sphere.Center,
+				sphereInfo.m_sphere.Radius
+			);
+#endif
+			// 球の当たったオブジェクト情報
+			std::list<KdCollider::CollisionResult> retSphereList;
+
+			// 球と当たり判定 
+			for (auto& obj : SceneManager::Instance().GetObjList())
+			{
+				obj->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+			}
+
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
+			float maxOverLap = 0;
+			bool hit = false;
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hit = true;
+				}
+			}
+
+			if (hit)
+			{
+				++m_overStageTime;
+			}
 		}
 	}
-	//}
 
 	if (m_bFirstUpdate)
 	{
@@ -496,11 +538,11 @@ void Player::Update()
 		m_pos.y -= m_gravity;
 		if (m_playerState & cutRaiseHit)
 		{
-			m_gravity += 0.0075f;
+			m_gravity += m_cutRaiseHitGravityAcceleration;
 		}
 		else
 		{
-			m_gravity += 0.01f;
+			m_gravity += m_gravityAcceleration;
 		}
 
 		if (m_hitStopCnt <= 0)
@@ -553,11 +595,11 @@ void Player::Update()
 				m_hitMoveSpd = 0;
 			}
 
-			m_hitMoveSpd *= 0.95f;
+			m_hitMoveSpd *= m_moveSpeedDecelerationamount;
 		}
 		else
 		{
-			m_hitMoveSpd *= 0.95f;
+			m_hitMoveSpd *= m_moveSpeedDecelerationamount;
 		}
 
 		m_pos += m_knockBackVec * m_hitMoveSpd;
@@ -575,10 +617,11 @@ void Player::Update()
 			m_playerState = idle;
 		}
 	}
-	else
+
+	if (!(m_playerState & (grassHopperDash | grassHopperDashUp | hit | step)))
 	{
 		m_pos.y -= m_gravity;
-		m_gravity += 0.01f;
+		m_gravity += m_gravityAcceleration;
 	}
 
 	if (!m_bMove && !m_bPlayerDeath)
@@ -605,7 +648,7 @@ void Player::Update()
 	rayInfo.m_pos.y += 0.7f;
 	if (!(m_playerState & (grassHopperDash | grassHopperDashUp)))
 	{
-		rayInfo.m_dir = { 0,-1,0 };
+		rayInfo.m_dir = { 0,-(int)kOne,0 };
 		/*rayInfo.m_pos.y += 0.1f;*/
 		static float enableStepHight = 0.2f;
 		rayInfo.m_pos.y += enableStepHight;
@@ -751,7 +794,7 @@ void Player::Update()
 
 	KdCollider::SphereInfo sphereInfo;
 	// 球の中心位置を設定
-	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
+	sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
 	// 球の半径を設定
 
 	if (!(m_playerState & (grassHopperDash | grassHopperDashUp | step)))
@@ -875,7 +918,7 @@ void Player::Update()
 	{
 		sphereInfo;
 		// 球の中心位置を設定
-		sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 1.5f, 0);
+		sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
 		// 球の半径を設定
 
 		sphereInfo.m_sphere.Radius = 0.4f;
@@ -1127,14 +1170,14 @@ void Player::Update()
 
 	if (!m_bRushRp)
 	{
-		if ((m_playerState & Player::PlayerState::rlAttackRush) && m_attackAnimeCnt >= 107)
+		if ((m_playerState & Player::PlayerState::rlAttackRush) && m_attackAnimeCnt >= m_rushLastAttackPointTime)
 		{
 			PlayerKickHitAttackChaeck();
 		}
 	}
 	else
 	{
-		if ((m_playerState & Player::PlayerState::rlAttackRush) && m_attackAnimeCnt >= 115)
+		if ((m_playerState & Player::PlayerState::rlAttackRush) && m_attackAnimeCnt >= m_rotationRushLastAttackPointTime)
 		{
 			PlayerPanchiHitAttackChaeck();
 		}
@@ -1610,18 +1653,18 @@ void Player::PostUpdate()
 				m_attackAnimeCnt++;
 				if (m_playerState & (lAttackOne | lAttackTwo | rAttackOne | rAttackTwo))
 				{
-					if (m_attackAnimeCnt == 10)
+					if (m_attackAnimeCnt == m_attackOneOrTwoSoundMoment)
 					{
 						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 					}
 				}
 
-				if (m_attackAnimeCnt == 20)
+				if (m_attackAnimeCnt == m_lastAttackAnimationMoment)
 				{
 					m_bAttackAnimeDelay = true;
 					m_bAttackAnimeCnt = false;
 					m_attackAnimeCnt = 0;
-					m_attackAnimeDelayCnt = 10;
+					m_attackAnimeDelayCnt = m_maxAttackAnimeDelayCnt;
 				}
 			}
 			else
@@ -1629,7 +1672,7 @@ void Player::PostUpdate()
 				m_attackAnimeCnt++;
 				if (m_playerState & (lAttackThree | rAttackThree))
 				{
-					if (m_attackAnimeCnt == 15)
+					if (m_attackAnimeCnt == m_attackThreeSoundMoment)
 					{
 						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 					}
@@ -1646,21 +1689,21 @@ void Player::PostUpdate()
 				m_attackAnimeCnt++;
 				if (m_playerState & rlAttackOne)
 				{
-					if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 17)
+					if (m_attackAnimeCnt == m_rlAttackOneSoundFirstMoment || m_attackAnimeCnt == m_rlAttackOneSoundSecondMoment)
 					{
 						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 					}
 				}
 				else if (m_playerState & rlAttackTwo)
 				{
-					if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 16)
+					if (m_attackAnimeCnt == m_rlAttackTwoSoundFirstMoment || m_attackAnimeCnt == m_rlAttackTwoSoundSecondMoment)
 					{
 						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 					}
 				}
 				else if (m_playerState & rlAttackThree)
 				{
-					if (m_attackAnimeCnt == 15 || m_attackAnimeCnt == 23)
+					if (m_attackAnimeCnt == m_rlAttackThreeSoundFirstMoment || m_attackAnimeCnt == m_rlAttackThreeSoundSecondMoment)
 					{
 						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 					}
@@ -1669,26 +1712,26 @@ void Player::PostUpdate()
 				{
 					if (!m_bRushRp)
 					{
-						if (m_attackAnimeCnt == 8 ||
-							m_attackAnimeCnt == 21 ||
-							m_attackAnimeCnt == 31 ||
-							m_attackAnimeCnt == 49 ||
-							m_attackAnimeCnt == 57 ||
-							m_attackAnimeCnt == 74 ||
-							m_attackAnimeCnt == 89)
+						if (m_attackAnimeCnt == m_rlAttackRushSoundMoment[0] ||
+							m_attackAnimeCnt == m_rlAttackRushSoundMoment[1] ||
+							m_attackAnimeCnt == m_rlAttackRushSoundMoment[2] ||
+							m_attackAnimeCnt == m_rlAttackRushSoundMoment[3] ||
+							m_attackAnimeCnt == m_rlAttackRushSoundMoment[4] ||
+							m_attackAnimeCnt == m_rlAttackRushSoundMoment[5] ||
+							m_attackAnimeCnt == m_rlAttackRushSoundMoment[6])
 						{
 							KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 						}
 					}
-					else if (m_attackAnimeCnt == 22 ||
-						m_attackAnimeCnt == 33 ||
-						m_attackAnimeCnt == 43 ||
-						m_attackAnimeCnt == 53 ||
-						m_attackAnimeCnt == 63 ||
-						m_attackAnimeCnt == 73 ||
-						m_attackAnimeCnt == 83 ||
-						m_attackAnimeCnt == 93
-						)
+					else if (m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[0] ||
+						     m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[1] ||
+						     m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[2] ||
+						     m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[3] ||
+						     m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[4] ||
+						     m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[5] ||
+						     m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[6] ||
+						     m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[7]
+						   )
 					{
 						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
 					}
@@ -1697,7 +1740,7 @@ void Player::PostUpdate()
 
 				if (m_playerState & rlAttackOne)
 				{
-					if (m_attackAnimeCnt == 20)
+					if (m_attackAnimeCnt == m_lastRLAttackAnimationdMoment)
 					{
 						m_bAttackAnimeDelay = true;
 						m_bAttackAnimeCnt = false;
@@ -1707,7 +1750,7 @@ void Player::PostUpdate()
 				}
 				else if (m_playerState & rlAttackTwo)
 				{
-					if (m_attackAnimeCnt == 20)
+					if (m_attackAnimeCnt == m_lastRLAttackAnimationdMoment)
 					{
 						m_bAttackAnimeDelay = true;
 						m_bAttackAnimeCnt = false;
@@ -1717,7 +1760,7 @@ void Player::PostUpdate()
 				}
 				else if (m_playerState & rlAttackThree)
 				{
-					if (m_attackAnimeCnt == 40)
+					if (m_attackAnimeCnt == m_lastRLAttackThreeAnimationMoment)
 					{
 						m_bAttackAnimeDelay = true;
 						m_bAttackAnimeCnt = false;
@@ -3064,8 +3107,6 @@ void Player::NormalMove()
 		}
 	}
 
-	m_pos.y -= m_gravity;
-	m_gravity += 0.01f;
 	UpdateRotate(moveVec);
 }
 
@@ -3135,15 +3176,15 @@ void Player::ScorpionAttackMove()
 	{
 		if (!(m_playerState & rlAttackRush))
 		{
-			if (m_attackAnimeCnt >= 15)
+			if (m_attackAnimeCnt >= m_attackPointMoment)
 			{
-				m_attackMoveSpd *= 0.25f;
+				m_attackMoveSpd *= m_moveSpeedStopsAbruptly;
 			}
 			else
 			{
 				if (m_bAtttackMoveSpeedDec)
 				{
-					m_attackMoveSpd *= 0.25f;
+					m_attackMoveSpd *= m_moveSpeedStopsAbruptly;
 				}
 			}
 		}
@@ -3151,11 +3192,11 @@ void Player::ScorpionAttackMove()
 		m_bMove = true;
 		if (!(m_playerState & (rlAttack | rlAttackRush)))
 		{
-			m_attackMoveSpd *= 0.95f;
+			m_attackMoveSpd *= m_moveSpeedDecelerationamount;
 
 			if (m_playerState & (rAttackTwo | lAttackTwo))
 			{
-				if (m_attackAnimeCnt == 15)
+				if (m_attackAnimeCnt == m_attackPointMoment)
 				{
 					for (auto& enemyList : m_enemyList)
 					{
@@ -3167,7 +3208,7 @@ void Player::ScorpionAttackMove()
 			}
 			else if (m_playerState & (rAttackThree | lAttackThree))
 			{
-				if (m_attackAnimeCnt == 15)
+				if (m_attackAnimeCnt == m_attackPointMoment)
 				{
 					for (auto& enemyList : m_enemyList)
 					{
@@ -3182,8 +3223,8 @@ void Player::ScorpionAttackMove()
 		{
 			if (m_playerState & rlAttackOne)
 			{
-				m_attackMoveSpd *= 0.95f;
-				if (m_attackAnimeCnt == 17)
+				m_attackMoveSpd *= m_moveSpeedDecelerationamount;
+				if (m_attackAnimeCnt == m_rlAttackOneSoundSecondMoment)
 				{
 					for (auto& enemyList : m_enemyList)
 					{
@@ -3195,8 +3236,8 @@ void Player::ScorpionAttackMove()
 			}
 			else if (m_playerState & rlAttackTwo)
 			{
-				m_attackMoveSpd *= 0.95f;
-				if (m_attackAnimeCnt == 16)
+				m_attackMoveSpd *= m_moveSpeedDecelerationamount;
+				if (m_attackAnimeCnt == m_rlAttackTwoSoundSecondMoment)
 				{
 					for (auto& enemyList : m_enemyList)
 					{
@@ -3208,8 +3249,8 @@ void Player::ScorpionAttackMove()
 			}
 			else if (m_playerState & rlAttackThree)
 			{
-				m_attackMoveSpd *= 0.95f;
-				if (m_attackAnimeCnt == 23)
+				m_attackMoveSpd *= m_moveSpeedDecelerationamount;
+				if (m_attackAnimeCnt == m_rlAttackThreeSoundSecondMoment)
 				{
 					for (auto& enemyList : m_enemyList)
 					{
@@ -3223,14 +3264,14 @@ void Player::ScorpionAttackMove()
 			{
 				if (!m_bRushRp)
 				{
-					m_attackMoveSpd *= 0.55f;
-					if (m_attackAnimeCnt == 21 ||
-						m_attackAnimeCnt == 31 ||
-						m_attackAnimeCnt == 49 ||
-						m_attackAnimeCnt == 57 ||
-						m_attackAnimeCnt == 74 ||
-						m_attackAnimeCnt == 89 ||
-						m_attackAnimeCnt == 107
+					m_attackMoveSpd *= m_rushAttackMoveSpeedDecelerationamount;
+					if (m_attackAnimeCnt == m_rlAttackRushSoundMoment[1] ||
+						m_attackAnimeCnt == m_rlAttackRushSoundMoment[2] ||
+						m_attackAnimeCnt == m_rlAttackRushSoundMoment[3] ||
+						m_attackAnimeCnt == m_rlAttackRushSoundMoment[4] ||
+						m_attackAnimeCnt == m_rlAttackRushSoundMoment[5] ||
+						m_attackAnimeCnt == m_rlAttackRushSoundMoment[6] ||
+						m_attackAnimeCnt == m_rushLastAttackPointTime
 						)
 					{
 						for (auto& enemyList : m_enemyList)
@@ -3240,46 +3281,53 @@ void Player::ScorpionAttackMove()
 							enemyList.lock()->SetDefenseSuc(false);
 						}
 
-						switch (m_attackAnimeCnt)
+						if (m_attackAnimeCnt == m_rlAttackRushSoundMoment[1] ||
+							m_attackAnimeCnt == m_rlAttackRushSoundMoment[2]
+							)
 						{
-						case 21:
-						case 31:
 							m_attackMoveSpd = 0.2f;
-							break;
-						case 49:
-						case 55:
+						}
+
+						if (m_attackAnimeCnt == m_rlAttackRushSoundMoment[3] ||
+							m_attackAnimeCnt == m_rlAttackRushSoundMoment[4]
+							)
+						{
 							m_attackMoveSpd = 0.25f;
-							break;
-						case 74:
-						case 89:
-							m_attackMoveSpd = 0.115f;
-							break;
-						case 107:
+						}
+
+						if (m_attackAnimeCnt == m_rlAttackRushSoundMoment[5] ||
+							m_attackAnimeCnt == m_rlAttackRushSoundMoment[6]
+							)
+						{
+							m_attackMoveSpd = 0.1f;
+						}
+
+						if (m_attackAnimeCnt == m_rushLastAttackPointTime)
+						{
 							m_attackMoveSpd = 0.05f;
-							break;
 						}
 					}
 				}
 				else
 				{
-					if (m_attackAnimeCnt < 115)
+					if (m_attackAnimeCnt < m_rotationRushLastAttackPointTime)
 					{
-						m_attackMoveSpd *= 0.95f;
+						m_attackMoveSpd *= m_moveSpeedDecelerationamount;
 					}
 					else
 					{
 						m_attackMoveSpd *= 0.75f;
 					}
 
-					if (m_attackAnimeCnt == 22 ||
-						m_attackAnimeCnt == 33 ||
-						m_attackAnimeCnt == 43 ||
-						m_attackAnimeCnt == 53 ||
-						m_attackAnimeCnt == 63 ||
-						m_attackAnimeCnt == 73 ||
-						m_attackAnimeCnt == 83 ||
-						m_attackAnimeCnt == 93 ||
-						m_attackAnimeCnt == 115
+					if (m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[0] ||
+						m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[1] ||
+						m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[2] ||
+						m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[3] ||
+						m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[4] ||
+						m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[5] ||
+						m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[6] ||
+						m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[7] ||
+						m_attackAnimeCnt == m_rotationRushLastAttackPointTime
 						)
 					{
 						for (auto& enemyList : m_enemyList)
@@ -3289,27 +3337,28 @@ void Player::ScorpionAttackMove()
 							enemyList.lock()->SetDefenseSuc(false);
 						}
 
-						switch (m_attackAnimeCnt)
+						if (m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[0])
 						{
-						case 22:
 							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.395f;
-							break;
-						case 33:
-						case 43:
-						case 53:
-						case 63:
-						case 73:
-						case 83:
-						case 93:
+						}
+						if (m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[1] ||
+							m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[2] ||
+							m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[3] ||
+							m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[4] ||
+							m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[5] ||
+							m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[6] ||
+							m_attackAnimeCnt == m_rlAttackRotationRushSoundMoment[7])
+						{
 							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
 							m_attackMoveDir.y = 0;
 							m_attackMoveDir.Normalize();
 							m_attackMoveSpd = 0.35f;
-							break;
-						case 115:
+						}
+						if (m_attackAnimeCnt == m_rotationRushLastAttackPointTime)
+						{
 							if (!m_wpEnemy.expired())
 							{
 								Math::Vector3 dis = m_wpEnemy.lock()->GetPos() - m_pos;
@@ -3349,7 +3398,6 @@ void Player::ScorpionAttackMove()
 									}
 								}
 							}
-							break;
 						}
 					}
 				}
@@ -3401,8 +3449,6 @@ void Player::ScorpionDefenseMove()
 
 void Player::HasDefenseMove()
 {
-	m_pos.y -= m_gravity;
-	m_gravity += 0.01f;
 	m_bMove = true;
 	if (m_spAnimator->IsAnimationEnd())
 	{

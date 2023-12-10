@@ -48,7 +48,7 @@ void Enemy::Init()
 	m_enemyAirborneTimetoBeCnt = ENEMYAIRBORNETIMETOBECNTVAL;
 
 	m_animator = std::make_shared<KdAnimator>();
-	m_animator->SetAnimation(m_model->GetAnimation("Idle"));
+	m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
 
 	//m_thinkActionDelayTimeVal = 5;
 	m_thinkActionDelayTimeVal = 1;

@@ -2,6 +2,39 @@
   "Player": {
     "Endurance": 400,
     "Vforce": 300,
-    "Position" :  [0,0,-20]  
-  }
+    "Position": [ 0, 0, -20 ],
+    "AddCenterVal": [ 0, 1.5, 0 ],
+    "TutorialMinimumYPos": -10,
+    "MinimumYPos": -1,
+    "MinimumXPos": -62.5,
+    "HightXPos": 62.5,
+    "MinimumZPos": -62.5,
+    "HightZPos": 62.5
+  },
+  "MaxOverStageTime": 90,
+  "CutRaiseHitGravityAcceleration": 0.0075,
+  "GravityAcceleration": 0.01,
+  "MoveSpeedDecelerationamount": 0.95,
+  "MoveSpeedStopsAbruptly": 0.25,
+  "RushAttackMoveSpeedDecelerationamount": 0.55,
+  "m_footfallPointMoment": [ 16, 31 ],
+  "LastRunAnimationTime": 40,
+  "AttackPointMoment": 15,
+  "LastAttackAnimationMoment": 20,
+  "RushLastAttackPointTime": 107,
+  "RotationRushLastAttackPointTime": 115,
+  "MaxAttackAnimeDelayCnt": 10,
+  "AttackOneOrTwoSoundMoment": 10,
+  "AttackThreeSoundMoment": 15,
+  "RLAttackOneSoundFirstMoment": 13,
+  "RLAttackOneSoundSecondMoment": 17,
+  "RLAttackTwoSoundFirstMoment": 13,
+  "RLAttackTwoSoundSecondMoment": 16,
+  "RLAttackThreeSoundFirstMoment": 15,
+  "RLAttackThreeSoundSecondMoment": 23,
+  "LastRLAttackAnimationdMoment": 20,
+  "LastRLAttackThreeAnimationMoment": 40,
+
+  "RLAttackRushSoundMoment": [ 8, 21, 31, 49, 55, 74, 89 ],
+  "RLAttackRotationRushSoundMoment": [ 22, 33, 43, 53, 63, 73, 83, 93 ]
 }

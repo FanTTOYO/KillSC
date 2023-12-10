@@ -75,9 +75,9 @@ void Ui::TitleUpdate()
 		if (m_bPushToEnterAlphaAdd)
 		{
 			m_pushToEnterAlpha += (0.8f / 30);
-			if (m_pushToEnterAlpha >= 1.0f)
+			if (m_pushToEnterAlpha >= kOne)
 			{
-				m_pushToEnterAlpha = 1.0f;
+				m_pushToEnterAlpha = kOne;
 				m_bPushToEnterAlphaAdd = false;
 			}
 		}
@@ -93,10 +93,10 @@ void Ui::TitleUpdate()
 
 		if (m_addFadeAlpha)
 		{
-			m_fadeAlpha += (1.0f / 60);
-			if (m_fadeAlpha >= 1.0f)
+			m_fadeAlpha += (kOne / 60.0f);
+			if (m_fadeAlpha >= kOne)
 			{
-				m_fadeAlpha = 1.0f;
+				m_fadeAlpha = kOne;
 
 				if (m_uiType == UiType::title)
 				{
@@ -111,7 +111,7 @@ void Ui::TitleUpdate()
 
 	if (m_time >= 0 && m_time <= 120)
 	{
-		m_fadeAlpha -= (1.0f / 120);
+		m_fadeAlpha -= (kOne / 120.0f);
 		if (m_fadeAlpha <= 0.0f)
 		{
 			m_fadeAlpha = 0.0f;
@@ -119,15 +119,15 @@ void Ui::TitleUpdate()
 	}
 	else if (m_time >= 240 && m_time < 360)
 	{
-		m_fadeAlpha += (1.0f / 120);
-		if (m_fadeAlpha >= 1.0f)
+		m_fadeAlpha += (kOne / 120.0f);
+		if (m_fadeAlpha >= kOne)
 		{
-			m_fadeAlpha = 1.0f;
+			m_fadeAlpha = kOne;
 		}
 	}
 	else if (m_time >= 360 && m_time <= 480)
 	{
-		m_fadeAlpha -= (1.0f / 120);
+		m_fadeAlpha -= (kOne / 120.0f);
 		if (m_fadeAlpha <= 0.0f)
 		{
 			m_fadeAlpha = 0.0f;
@@ -139,7 +139,7 @@ void Ui::TitleUpdate()
 		if (m_time < 360)
 		{
 			m_time = 360;
-			m_fadeAlpha = 1.0f;
+			m_fadeAlpha = kOne;
 		}
 	}
 }
@@ -148,8 +148,8 @@ void Ui::GameUpdate()
 {
 	if (m_time == 0)
 	{
-		m_exitScale = 1.0f;
-		m_selectScale = 1.0f;
+		m_exitScale = kOne;
+		m_selectScale = kOne;
 
 		m_selectPos = { 0,0,0 };
 		m_exitPos = { 0,-250,0 };
@@ -182,21 +182,21 @@ void Ui::GameUpdate()
 	{
 		if (m_time >= 0 && m_time < 90)
 		{
-			m_waveScale += (1.0f / 10.0f);
-			if (m_waveScale > 1.0f)
+			m_waveScale += (kOne / 10.0f);
+			if (m_waveScale > kOne)
 			{
-				m_waveScale = 1.0f;
+				m_waveScale = kOne;
 			}
 
-			m_waveAlpha += (1.0f / 30.0f);
-			if (m_waveAlpha > 1.0f)
+			m_waveAlpha += (kOne / 30.0f);
+			if (m_waveAlpha > kOne)
 			{
-				m_waveAlpha = 1.0f;
+				m_waveAlpha = kOne;
 			}
 		}
 		else if (m_time >= 90 && m_time < 180)
 		{
-			m_waveAlpha -= (1.0f / 60.0f);
+			m_waveAlpha -= (kOne / 60.0f);
 			if (m_waveAlpha < 0.0f)
 			{
 				m_waveAlpha = 0.0f;
@@ -204,21 +204,21 @@ void Ui::GameUpdate()
 		}
 		else if (m_time >= 180 && m_time < 210)
 		{
-			m_countGoScale += (1.0f / 10.0f);
-			if (m_countGoScale > 1.0f)
+			m_countGoScale += (kOne / 10.0f);
+			if (m_countGoScale > kOne)
 			{
-				m_countGoScale = 1.0f;
+				m_countGoScale = kOne;
 			}
 
-			m_countGoAlpha += (1.0f / 30.0f);
-			if (m_countGoAlpha > 1.0f)
+			m_countGoAlpha += (kOne / 30.0f);
+			if (m_countGoAlpha > kOne)
 			{
-				m_countGoAlpha = 1.0f;
+				m_countGoAlpha = kOne;
 			}
 		}
 		else if (m_time >= 210 && m_time < 240)
 		{
-			m_countGoAlpha -= (1.0f / 30.0f);
+			m_countGoAlpha -= (kOne / 30.0f);
 			if (m_countGoAlpha < 0.0f)
 			{
 				m_countGoAlpha = 0.0f;
@@ -232,22 +232,22 @@ void Ui::GameUpdate()
 	{
 		if (m_time >= 0 && m_time < 30)
 		{
-			m_countThreeScale += (1.0f / 10.0f);
-			if (m_countThreeScale > 1.0f)
+			m_countThreeScale += (kOne / 10.0f);
+			if (m_countThreeScale > kOne)
 			{
-				m_countThreeScale = 1.0f;
+				m_countThreeScale = kOne;
 			}
 
-			m_countThreeAlpha += (1.0f / 30.0f);
-			if (m_countThreeAlpha > 1.0f)
+			m_countThreeAlpha += (kOne / 30.0f);
+			if (m_countThreeAlpha > kOne)
 			{
-				m_countThreeAlpha = 1.0f;
+				m_countThreeAlpha = kOne;
 			}
 		}
 		else if (m_time >= 30 && m_time < 60)
 		{
 
-			m_countThreeAlpha -= (1.0f / 30.0f);
+			m_countThreeAlpha -= (kOne / 30.0f);
 			if (m_countThreeAlpha < 0.0f)
 			{
 				m_countThreeAlpha = 0.0f;
@@ -255,21 +255,21 @@ void Ui::GameUpdate()
 		}
 		else if (m_time >= 60 && m_time < 90)
 		{
-			m_countTwoScale += (1.0f / 10.0f);
-			if (m_countTwoScale > 1.0f)
+			m_countTwoScale += (kOne / 10.0f);
+			if (m_countTwoScale > kOne)
 			{
-				m_countTwoScale = 1.0f;
+				m_countTwoScale = kOne;
 			}
 
-			m_countTwoAlpha += (1.0f / 30.0f);
-			if (m_countTwoAlpha > 1.0f)
+			m_countTwoAlpha += (kOne / 30.0f);
+			if (m_countTwoAlpha > kOne)
 			{
-				m_countTwoAlpha = 1.0f;
+				m_countTwoAlpha = kOne;
 			}
 		}
 		else if (m_time >= 90 && m_time < 120)
 		{
-			m_countTwoAlpha -= (1.0f / 30.0f);
+			m_countTwoAlpha -= (kOne / 30.0f);
 			if (m_countThreeAlpha < 0.0f)
 			{
 				m_countThreeAlpha = 0.0f;
@@ -277,21 +277,21 @@ void Ui::GameUpdate()
 		}
 		else if (m_time >= 120 && m_time < 150)
 		{
-			m_countOneScale += (1.0f / 10.0f);
-			if (m_countOneScale > 1.0f)
+			m_countOneScale += (kOne / 10.0f);
+			if (m_countOneScale > kOne)
 			{
-				m_countOneScale = 1.0f;
+				m_countOneScale = kOne;
 			}
 
-			m_countOneAlpha += (1.0f / 30.0f);
-			if (m_countOneAlpha > 1.0f)
+			m_countOneAlpha += (kOne / 30.0f);
+			if (m_countOneAlpha > kOne)
 			{
-				m_countOneAlpha = 1.0f;
+				m_countOneAlpha = kOne;
 			}
 		}
 		else if (m_time >= 150 && m_time < 180)
 		{
-			m_countOneAlpha -= (1.0f / 30.0f);
+			m_countOneAlpha -= (kOne / 30.0f);
 			if (m_countOneAlpha < 0.0f)
 			{
 				m_countOneAlpha = 0.0f;
@@ -299,21 +299,21 @@ void Ui::GameUpdate()
 		}
 		else if (m_time >= 180 && m_time < 210)
 		{
-			m_countGoScale += (1.0f / 10.0f);
-			if (m_countGoScale > 1.0f)
+			m_countGoScale += (kOne / 10.0f);
+			if (m_countGoScale > kOne)
 			{
-				m_countGoScale = 1.0f;
+				m_countGoScale = kOne;
 			}
 
-			m_countGoAlpha += (1.0f / 30.0f);
-			if (m_countGoAlpha > 1.0f)
+			m_countGoAlpha += (kOne / 30.0f);
+			if (m_countGoAlpha > kOne)
 			{
-				m_countGoAlpha = 1.0f;
+				m_countGoAlpha = kOne;
 			}
 		}
 		else if (m_time >= 210 && m_time < 240)
 		{
-			m_countGoAlpha -= (1.0f / 30.0f);
+			m_countGoAlpha -= (kOne / 30.0f);
 			if (m_countGoAlpha < 0.0f)
 			{
 				m_countGoAlpha = 0.0f;
@@ -332,21 +332,21 @@ void Ui::GameUpdate()
 				++m_waveTimeCnt;
 				if (m_waveTimeCnt >= 0 && m_waveTimeCnt < 90)
 				{
-					m_waveScale += (1.0f / 10.0f);
-					if (m_waveScale > 1.0f)
+					m_waveScale += (kOne / 10.0f);
+					if (m_waveScale > kOne)
 					{
-						m_waveScale = 1.0f;
+						m_waveScale = kOne;
 					}
 
-					m_waveAlpha += (1.0f / 30.0f);
-					if (m_waveAlpha > 1.0f)
+					m_waveAlpha += (kOne / 30.0f);
+					if (m_waveAlpha > kOne)
 					{
-						m_waveAlpha = 1.0f;
+						m_waveAlpha = kOne;
 					}
 				}
 				else if (m_waveTimeCnt >= 90 && m_waveTimeCnt < 180)
 				{
-					m_waveAlpha -= (1.0f / 60.0f);
+					m_waveAlpha -= (kOne / 60.0f);
 					if (m_waveAlpha < 0.0f)
 					{
 						m_waveAlpha = 0.0f;
@@ -420,7 +420,7 @@ void Ui::GameUpdate()
 				if (Dis.Length() <= 75)
 				{
 					m_exitScale = 1.5f;
-					m_titleScale = 1.0f;
+					m_titleScale = kOne;
 
 					if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 					{
@@ -436,7 +436,7 @@ void Ui::GameUpdate()
 				}
 				else
 				{
-					m_exitScale = 1.0f;
+					m_exitScale = kOne;
 				}
 
 				Math::Vector3 SelectPos;
@@ -447,7 +447,7 @@ void Ui::GameUpdate()
 				Dis = SelectPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 75)
 				{
-					m_exitScale = 1.0f;
+					m_exitScale = kOne;
 					m_selectScale = 1.5f;
 
 					if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -463,7 +463,7 @@ void Ui::GameUpdate()
 				}
 				else
 				{
-					m_selectScale = 1.0f;
+					m_selectScale = kOne;
 				}
 
 				Math::Vector3 InfoPos;
@@ -474,8 +474,8 @@ void Ui::GameUpdate()
 				Dis = InfoPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 75)
 				{
-					m_exitScale = 1.0f;
-					m_titleScale = 1.0f;
+					m_exitScale = kOne;
+					m_titleScale = kOne;
 					m_infoScale = 1.5f;
 
 					if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -487,7 +487,7 @@ void Ui::GameUpdate()
 				}
 				else
 				{
-					m_infoScale = 1.0f;
+					m_infoScale = kOne;
 				}
 
 				Math::Vector3 BackPos;
@@ -497,7 +497,7 @@ void Ui::GameUpdate()
 				Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 40)
 				{
-					m_backScale = 1.0f;
+					m_backScale = kOne;
 					if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 					{
 						if (!bLButtonKey)
@@ -523,10 +523,10 @@ void Ui::GameUpdate()
 
 				if (m_addFadeAlpha)
 				{
-					m_fadeAlpha += (1.0f / 90);
-					if (m_fadeAlpha >= 1.0f)
+					m_fadeAlpha += (kOne / 90);
+					if (m_fadeAlpha >= kOne)
 					{
-						m_fadeAlpha = 1.0f;
+						m_fadeAlpha = kOne;
 
 						if (m_bSelect)
 						{
@@ -565,7 +565,7 @@ void Ui::GameUpdate()
 				Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 40)
 				{
-					m_backScale = 1.0f;
+					m_backScale = kOne;
 					if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 					{
 						if (!bLButtonKey)
@@ -599,7 +599,7 @@ void Ui::GameUpdate()
 				if (Dis.Length() <= 30)
 				{
 					m_weaOrHowLeftYaiScale = 1.5f;
-					m_weaOrHowRightYaiScale = 1.0f;
+					m_weaOrHowRightYaiScale = kOne;
 
 					if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 					{
@@ -627,7 +627,7 @@ void Ui::GameUpdate()
 				}
 				else
 				{
-					m_weaOrHowLeftYaiScale = 1.0f;
+					m_weaOrHowLeftYaiScale = kOne;
 				}
 
 				Math::Vector3 WeaOrHowRightYaiPos;
@@ -637,7 +637,7 @@ void Ui::GameUpdate()
 				Dis = m_weaOrHowRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 30)
 				{
-					m_weaOrHowLeftYaiScale = 1.0f;
+					m_weaOrHowLeftYaiScale = kOne;
 					m_weaOrHowRightYaiScale = 1.5f;
 
 					if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -666,7 +666,7 @@ void Ui::GameUpdate()
 				}
 				else
 				{
-					m_weaOrHowRightYaiScale = 1.0f;
+					m_weaOrHowRightYaiScale = kOne;
 				}
 
 				if (m_bWeaponDataPage)
@@ -680,7 +680,7 @@ void Ui::GameUpdate()
 					if (Dis.Length() <= 30)
 					{
 						m_weaponLeftYaiScale = 1.5f;
-						m_weaponRightYaiScale = 1.0f;
+						m_weaponRightYaiScale = kOne;
 
 						if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 						{
@@ -708,7 +708,7 @@ void Ui::GameUpdate()
 					}
 					else
 					{
-						m_weaponLeftYaiScale = 1.0f;
+						m_weaponLeftYaiScale = kOne;
 					}
 
 					Math::Vector3 WeaponRightYaiPos;
@@ -719,7 +719,7 @@ void Ui::GameUpdate()
 					Dis = WeaponRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 					if (Dis.Length() <= 30)
 					{
-						m_weaponLeftYaiScale = 1.0f;
+						m_weaponLeftYaiScale = kOne;
 						m_weaponRightYaiScale = 1.5f;
 
 						if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -748,7 +748,7 @@ void Ui::GameUpdate()
 					}
 					else
 					{
-						m_weaponRightYaiScale = 1.0f;
+						m_weaponRightYaiScale = kOne;
 					}
 				}
 			}
@@ -804,8 +804,8 @@ void Ui::TutorialUpdate()
 {
 	if (m_time == 0)
 	{
-		m_exitScale = 1.0f;
-		m_titleScale = 1.0f;
+		m_exitScale = kOne;
+		m_titleScale = kOne;
 
 		m_titlePos = { 0,0,0 };
 		m_exitPos = { 0,-250,0 };
@@ -871,7 +871,7 @@ void Ui::TutorialUpdate()
 			if (Dis.Length() <= 75)
 			{
 				m_exitScale = 1.5f;
-				m_titleScale = 1.0f;
+				m_titleScale = kOne;
 
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
@@ -887,7 +887,7 @@ void Ui::TutorialUpdate()
 			}
 			else
 			{
-				m_exitScale = 1.0f;
+				m_exitScale = kOne;
 			}
 
 			Math::Vector3 SelectPos;
@@ -898,7 +898,7 @@ void Ui::TutorialUpdate()
 			Dis = SelectPos - Math::Vector3(mouseX, mouseY, 0.0f);
 			if (Dis.Length() <= 75)
 			{
-				m_exitScale = 1.0f;
+				m_exitScale = kOne;
 				m_selectScale = 1.5f;
 
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -914,7 +914,7 @@ void Ui::TutorialUpdate()
 			}
 			else
 			{
-				m_selectScale = 1.0f;
+				m_selectScale = kOne;
 			}
 
 			Math::Vector3 InfoPos;
@@ -925,8 +925,8 @@ void Ui::TutorialUpdate()
 			Dis = InfoPos - Math::Vector3(mouseX, mouseY, 0.0f);
 			if (Dis.Length() <= 75)
 			{
-				m_exitScale = 1.0f;
-				m_titleScale = 1.0f;
+				m_exitScale = kOne;
+				m_titleScale = kOne;
 				m_infoScale = 1.5f;
 
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -938,7 +938,7 @@ void Ui::TutorialUpdate()
 			}
 			else
 			{
-				m_infoScale = 1.0f;
+				m_infoScale = kOne;
 			}
 
 			Math::Vector3 BackPos;
@@ -948,7 +948,7 @@ void Ui::TutorialUpdate()
 			Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
 			if (Dis.Length() <= 40)
 			{
-				m_backScale = 1.0f;
+				m_backScale = kOne;
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
 					if (!bLButtonKey)
@@ -973,13 +973,14 @@ void Ui::TutorialUpdate()
 
 			if (m_addFadeAlpha)
 			{
-				m_fadeAlpha += (1.0f / 90);
-				if (m_fadeAlpha >= 1.0f)
+				m_fadeAlpha += (kOne / 90);
+				if (m_fadeAlpha >= kOne)
 				{
-					m_fadeAlpha = 1.0f;
+					m_fadeAlpha = kOne;
 
 					if (m_bSelect)
 					{
+						KdEffekseerManager::GetInstance().Release();
 						ShowCursor(false); // マウスカーソルを消す
 						SceneManager::Instance().SetNextScene
 						(
@@ -1015,7 +1016,7 @@ void Ui::TutorialUpdate()
 			Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
 			if (Dis.Length() <= 40)
 			{
-				m_backScale = 1.0f;
+				m_backScale = kOne;
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
 					if (!bLButtonKey)
@@ -1049,7 +1050,7 @@ void Ui::TutorialUpdate()
 			if (Dis.Length() <= 30)
 			{
 				m_weaOrHowLeftYaiScale = 1.5f;
-				m_weaOrHowRightYaiScale = 1.0f;
+				m_weaOrHowRightYaiScale = kOne;
 
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 				{
@@ -1077,7 +1078,7 @@ void Ui::TutorialUpdate()
 			}
 			else
 			{
-				m_weaOrHowLeftYaiScale = 1.0f;
+				m_weaOrHowLeftYaiScale = kOne;
 			}
 
 			Math::Vector3 WeaOrHowRightYaiPos;
@@ -1087,7 +1088,7 @@ void Ui::TutorialUpdate()
 			Dis = m_weaOrHowRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 			if (Dis.Length() <= 30)
 			{
-				m_weaOrHowLeftYaiScale = 1.0f;
+				m_weaOrHowLeftYaiScale = kOne;
 				m_weaOrHowRightYaiScale = 1.5f;
 
 				if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -1116,7 +1117,7 @@ void Ui::TutorialUpdate()
 			}
 			else
 			{
-				m_weaOrHowRightYaiScale = 1.0f;
+				m_weaOrHowRightYaiScale = kOne;
 			}
 
 			if (m_bWeaponDataPage)
@@ -1130,7 +1131,7 @@ void Ui::TutorialUpdate()
 				if (Dis.Length() <= 30)
 				{
 					m_weaponLeftYaiScale = 1.5f;
-					m_weaponRightYaiScale = 1.0f;
+					m_weaponRightYaiScale = kOne;
 
 					if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 					{
@@ -1158,7 +1159,7 @@ void Ui::TutorialUpdate()
 				}
 				else
 				{
-					m_weaponLeftYaiScale = 1.0f;
+					m_weaponLeftYaiScale = kOne;
 				}
 
 				Math::Vector3 WeaponRightYaiPos;
@@ -1169,7 +1170,7 @@ void Ui::TutorialUpdate()
 				Dis = WeaponRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 				if (Dis.Length() <= 30)
 				{
-					m_weaponLeftYaiScale = 1.0f;
+					m_weaponLeftYaiScale = kOne;
 					m_weaponRightYaiScale = 1.5f;
 
 					if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -1198,7 +1199,7 @@ void Ui::TutorialUpdate()
 				}
 				else
 				{
-					m_weaponRightYaiScale = 1.0f;
+					m_weaponRightYaiScale = kOne;
 				}
 			}
 		}
@@ -1451,16 +1452,16 @@ void Ui::ResultUpdate()
 	{
 		if (m_bPushToEnterAlphaAdd)
 		{
-			m_pushToEnterAlpha += (1.0f / 30);
-			if (m_pushToEnterAlpha >= 1.0f)
+			m_pushToEnterAlpha += (kOne / 30);
+			if (m_pushToEnterAlpha >= kOne)
 			{
-				m_pushToEnterAlpha = 1.0f;
+				m_pushToEnterAlpha = kOne;
 				m_bPushToEnterAlphaAdd = false;
 			}
 		}
 		else
 		{
-			m_pushToEnterAlpha -= (1.0f / 30);
+			m_pushToEnterAlpha -= (kOne / 30);
 			if (m_pushToEnterAlpha <= 0.0f)
 			{
 				m_pushToEnterAlpha = 0.0f;
@@ -1471,10 +1472,10 @@ void Ui::ResultUpdate()
 
 	if (m_addFadeAlpha)
 	{
-		m_fadeAlpha += (1.0f / 90);
-		if (m_fadeAlpha >= 1.0f)
+		m_fadeAlpha += (kOne / 90);
+		if (m_fadeAlpha >= kOne)
 		{
-			m_fadeAlpha = 1.0f;
+			m_fadeAlpha = kOne;
 
 			if (m_uiType == UiType::result)
 			{
@@ -1531,7 +1532,7 @@ void Ui::SelectUpdate()
 		if (MouseRight > BackLeft && BackRight > MouseLeft &&
 			MouseTop > BackBottom && BackTop > MouseBottom)
 		{
-			m_backScale = 1.0f;
+			m_backScale = kOne;
 			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
 				if (!bLButtonKey)
@@ -1579,7 +1580,7 @@ void Ui::SelectUpdate()
 		if (MouseRight > BackLeft && BackRight > MouseLeft &&
 			MouseTop > BackBottom && BackTop > MouseBottom)
 		{
-			m_backScale = 1.0f;
+			m_backScale = kOne;
 			if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
 				if (!bLButtonKey)
@@ -1644,7 +1645,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_tutorialScale = 1.0f;
+			m_tutorialScale = kOne;
 		}
 
 		Math::Vector3 ExitPos;
@@ -1676,7 +1677,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_exitScale = 1.0f;
+			m_exitScale = kOne;
 		}
 
 		Math::Vector3 GamePos;
@@ -1717,7 +1718,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_battleCharaScale = 1.0f;
+			m_battleCharaScale = kOne;
 		}
 
 		if (m_bBattleChara)
@@ -1750,7 +1751,7 @@ void Ui::SelectUpdate()
 			}
 			else
 			{
-				m_enemyBossTypeOneScale = 1.0f;
+				m_enemyBossTypeOneScale = kOne;
 			}
 
 			GamePos.x = m_enemyBossTypeTwoPos.x + (float)(pwi->rcWindow.left);
@@ -1781,7 +1782,7 @@ void Ui::SelectUpdate()
 			}
 			else
 			{
-				m_enemyBossTypeTwoScale = 1.0f;
+				m_enemyBossTypeTwoScale = kOne;
 			}
 
 			GamePos.x = m_twoEnemyBossTypeOnePos.x + (float)(pwi->rcWindow.left);
@@ -1812,7 +1813,7 @@ void Ui::SelectUpdate()
 			}
 			else
 			{
-				m_twoEnemyBossTypeOneScale = 1.0f;
+				m_twoEnemyBossTypeOneScale = kOne;
 			}
 		}
 
@@ -1854,7 +1855,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_challengeCharaScale = 1.0f;
+			m_challengeCharaScale = kOne;
 		}
 
 		if (m_bChallengeChara)
@@ -1886,7 +1887,7 @@ void Ui::SelectUpdate()
 			}
 			else
 			{
-				m_chalenge50Scale = 1.0f;
+				m_chalenge50Scale = kOne;
 			}
 
 			ChallengePos;
@@ -1917,7 +1918,7 @@ void Ui::SelectUpdate()
 			}
 			else
 			{
-				m_chalenge100Scale = 1.0f;
+				m_chalenge100Scale = kOne;
 			}
 		}
 
@@ -1951,7 +1952,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_trainingScale = 1.0f;
+			m_trainingScale = kOne;
 		}
 
 		Math::Vector3 TitlePos;
@@ -1982,7 +1983,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_titleScale = 1.0f;
+			m_titleScale = kOne;
 		}
 
 		Math::Vector3 BattlehelpMkPos;
@@ -2008,7 +2009,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_BattlehelpMkScale = 1.0f;
+			m_BattlehelpMkScale = kOne;
 		}
 
 		Math::Vector3 ChalengehelpMkPos;
@@ -2034,16 +2035,16 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_chalengehelpMkScale = 1.0f;
+			m_chalengehelpMkScale = kOne;
 		}
 	}
 
 	if (m_addFadeAlpha)
 	{
-		m_fadeAlpha += (1.0f / 90);
-		if (m_fadeAlpha >= 1.0f)
+		m_fadeAlpha += (kOne / 90);
+		if (m_fadeAlpha >= kOne)
 		{
-			m_fadeAlpha = 1.0f;
+			m_fadeAlpha = kOne;
 
 			if (m_bTitle)
 			{
@@ -2765,7 +2766,7 @@ void Ui::DrawSprite()
 		{
 			transMat = Math::Matrix::Identity;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			color = { 0.15f,0.15f,0.7f,1.0f };
+			color = { 0.15f,0.15f,0.7f,kOne };
 			KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 
 		}
@@ -2773,7 +2774,7 @@ void Ui::DrawSprite()
 		{
 			transMat = Math::Matrix::Identity;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			color = { 0.4f,0.1f,0.1f,1.0f };
+			color = { 0.4f,0.1f,0.1f,kOne };
 			KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 		}
 
@@ -3174,7 +3175,7 @@ void Ui::DrawUnLit()
 
 		Math::Vector3 pos = list.lock()->GetPos();
 		pos.y += 1.8f;
-		Math::Matrix scaleMat = Math::Matrix::CreateScale(1.0f);
+		Math::Matrix scaleMat = Math::Matrix::CreateScale(kOne);
 		Math::Matrix mat = scaleMat * Math::Matrix::CreateTranslation(pos);
 		mat.Backward(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Backward());
 		mat.Up(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Up());
@@ -3321,21 +3322,21 @@ void Ui::Init()
 	m_bBattleSelect = false;
 	m_bChallengeSelect = false;
 
-	m_fadeAlpha = 1.0f;
+	m_fadeAlpha = kOne;
 	m_addFadeAlpha = false;
 	m_bFirstInResult = true;
 	m_bSceneCangePossible = false;
-	m_pushToEnterAlpha = 1.0f;
+	m_pushToEnterAlpha = kOne;
 	m_bPushToEnterAlphaAdd = false;
 
-	m_tutorialScale = 1.0f;
-	m_gameScale = 1.0f;
+	m_tutorialScale = kOne;
+	m_gameScale = kOne;
 	m_challengeScale = 0;
 	m_trainingScale = 0;
 
-	m_titleScale = 1.0f;
-	m_optionScale = 1.0f;
-	m_exitScale = 1.0f;
+	m_titleScale = kOne;
+	m_optionScale = kOne;
+	m_exitScale = kOne;
 
 	m_optionPos = { 550,-125,0 };
 	m_titlePos = { -555,-310,0 };
@@ -3357,10 +3358,10 @@ void Ui::Init()
 	m_trainingPos = { -205, -138, 0 };
 	m_selectBackPos = { 0,    0, 0 };
 
-	m_battleCharaScale = 1.0f;
-	m_challengeCharaScale = 1.0f;
-	m_chalenge50Scale = 1.0f;
-	m_chalenge100Scale = 1.0f;
+	m_battleCharaScale = kOne;
+	m_challengeCharaScale = kOne;
+	m_chalenge50Scale = kOne;
+	m_chalenge100Scale = kOne;
 
 	m_bChalenge50 = false;
 	m_bChalenge100 = false;
@@ -3402,19 +3403,19 @@ void Ui::Init()
 	m_bWeaponDataScoPage = true;
 	m_bHowToPage = true;
 
-	m_weaponLeftYaiScale = 1.0f;
+	m_weaponLeftYaiScale = kOne;
 	m_weaponLeftYaiPos = { -500,250,0 };
 
-	m_weaponRightYaiScale = 1.0f;
+	m_weaponRightYaiScale = kOne;
 	m_weaponRightYaiPos = { 500,250,0, };
 
-	m_weaOrHowLeftYaiScale = 1.0f;
+	m_weaOrHowLeftYaiScale = kOne;
 	m_weaOrHowLeftYaiPos = { -600,0,0 };
 
-	m_weaOrHowRightYaiScale = 1.0f;
+	m_weaOrHowRightYaiScale = kOne;
 	m_weaOrHowRightYaiPos = { 600,0,0 };
 
-	m_infoScale = 1.0f;
+	m_infoScale = kOne;
 	m_infoPos = { 0,250,0 };
 	m_bInfo = false;
 	bLButtonKey = false;
@@ -3423,10 +3424,10 @@ void Ui::Init()
 	m_bTutorialView = true;
 	m_tutorialSwitchAfterTime = 120;
 
-	m_BattlehelpMkScale = 1.0f;
+	m_BattlehelpMkScale = kOne;
 	m_bBattlehelp = false;
 
-	m_chalengehelpMkScale = 1.0f;
+	m_chalengehelpMkScale = kOne;
 	m_bChalengehelp = false;
 	m_gameTimeCntDeray = 0;
 

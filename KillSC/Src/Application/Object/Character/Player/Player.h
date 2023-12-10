@@ -76,7 +76,7 @@ public:
 	void GenerateDepthMapFromLight_SkinMesh()	override;
 	void DrawLit_SkinMesh()						override;
 	void DrawDebug()override;
-	void Init()									override;
+	void Init(std::weak_ptr<json11::Json> a_wpJsonObj);
 	void Release() {};
 
 	void SetCamera(std::shared_ptr<CameraBase> a_spCcamera) { m_wpCamera = a_spCcamera; }
@@ -244,4 +244,45 @@ private:
 	bool m_bBlowingAwayHitB;
 
 	bool m_bAtttackMoveSpeedDec; // 減速させる : true
+
+	float m_minimumYPos; // Y座標最低値(Game)
+	float m_tutorialMinimumYPos; // Y座標最低値(Tutolial)
+	
+	float m_minimumXPos; // X座標最低値
+	float m_hightXPos;   // X座標最高値
+
+	float m_minimumZPos; // Z座標最低値
+	float m_hightZPos;   // Z座標最高値
+
+	int   m_maxOverStageTime; // ステージ外に出ていられる最大時間
+	float m_cutRaiseHitGravityAcceleration; // 切り上げされているときの重力加速度
+	float m_gravityAcceleration;            //通常時の重力加速度
+	float m_moveSpeedDecelerationamount;    // 通常時の動く速度の減速度
+	float m_moveSpeedStopsAbruptly;         // 動く速度が急速に落ちるときの減速度
+	float m_rushAttackMoveSpeedDecelerationamount;         // ラッシュ攻撃時の動く速度の減速度
+
+
+
+	int   m_footfallPointMoment[2];         // 足音がなる瞬間 
+	int   m_lastRunAnimationTime;           // 走りアニメーションラストの時間
+	int   m_attackPointMoment;              // 攻撃する瞬間 
+	int   m_lastAttackAnimationMoment;      // 攻撃アニメーションが終わった瞬間 
+	int   m_rushLastAttackPointTime;        // ラッシュ攻撃のラスト攻撃の時間
+	int   m_rotationRushLastAttackPointTime;        // 回転ラッシュ攻撃のラスト攻撃の時間
+	int   m_maxAttackAnimeDelayCnt;         // 攻撃のアニメーションを遅らせる時の最大値
+	int   m_attackOneOrTwoSoundMoment;      // 片手１段目攻撃時か２段目攻撃時の音が発生する瞬間
+	int   m_attackThreeSoundMoment;         // 片手３段目攻撃時の音が発生する瞬間
+	int   m_rlAttackOneSoundFirstMoment;    // 両手一段目攻撃時の音が発生する瞬間一段階目
+	int   m_rlAttackOneSoundSecondMoment;   // 両手一段目攻撃時の音が発生する瞬間二段階目
+	int   m_rlAttackTwoSoundFirstMoment;    // 両手二段目攻撃時の音が発生する瞬間一段階目
+	int   m_rlAttackTwoSoundSecondMoment;   // 両手二段目攻撃時の音が発生する瞬間二段階目
+	int   m_rlAttackThreeSoundFirstMoment;  // 両手三段目攻撃時の音が発生する瞬間一段階目
+	int   m_rlAttackThreeSoundSecondMoment; // 両手三段目攻撃時の音が発生する瞬間二段階目
+
+	int   m_lastRLAttackAnimationdMoment;      // 両手一段目と二段目攻撃アニメーションが終わった瞬間
+	int   m_lastRLAttackThreeAnimationMoment;  // 両手三段目攻撃アニメーションが終わった瞬間
+
+
+	int   m_rlAttackRushSoundMoment[7];         // ラッシュ攻撃時の音が発生する瞬間
+	int   m_rlAttackRotationRushSoundMoment[8]; // 両手回転ラッシュ攻撃時の音が発生する瞬間
 };

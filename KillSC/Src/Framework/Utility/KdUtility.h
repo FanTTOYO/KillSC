@@ -59,6 +59,22 @@ static const Math::Color	kGreenColor		= Math::Color(0.0f, 1.0f, 0.0f, 1.0f);
 static const Math::Color	kBlueColor		= Math::Color(0.0f, 0.0f, 1.0f, 1.0f);
 static const Math::Color	kNormalColor	= Math::Color(0.5f, 0.5f, 1.0f, 1.0f);	// 垂直に伸びる法線情報
 
+//===========================================
+//
+// 数字定数
+//
+//===========================================
+static const float		kZero  =  0.0f;
+static const float		kOne   =  1.0f;
+static const float		kTwo   =  2.0f;
+static const float		kThree =  3.0f;
+static const float		kFour  =  4.0f;
+static const float		kFive  =  5.0f;
+static const float		kSix   =  6.0f;
+static const float		kSeven =  7.0f;
+static const float		kEight =  8.0f;
+static const float		kNine  =  9.0f;
+static const float		kTen   = 10.0f;
 
 //===========================================
 //

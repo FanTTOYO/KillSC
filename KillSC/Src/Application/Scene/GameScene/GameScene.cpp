@@ -620,6 +620,21 @@ void GameScene::Init()
 	m_appearanceEffectCnt = 0;
 	m_bAppearanceEffect = false;
 
+	std::shared_ptr<json11::Json> jsonObj = std::make_shared<json11::Json>();
+	{
+		// jsonファイルを開く
+		std::ifstream ifs("Asset/Data/objectVal.json");
+		if (ifs.fail()) { assert(0 && "Json ファイルのパスが間違っています！！！"); };
+
+		// 文字列として全読み込み
+		std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+
+		std::string err;
+		*jsonObj = json11::Json::parse(strJson, err);
+
+		if (err.size() > 0) { assert(0 && "読み込んだファイルのjson変換に失敗"); };
+	}
+
 	KdAudioManager::Instance().StopAllSound();
 
 	KdInputCollector* gamepadCollector = new KdInputCollector();
@@ -708,7 +723,7 @@ void GameScene::Init()
 	m_objList.push_back(ui);
 	m_wpUi = ui;
 
-	player->Init();
+	player->Init(jsonObj);
 
 
 	camera->SetTarget(player);
