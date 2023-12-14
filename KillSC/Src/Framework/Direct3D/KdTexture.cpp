@@ -289,7 +289,7 @@ bool KdTexture::Load(std::string_view filename, bool renderTarget, bool depthSte
 		bindFlags,							// Bind Flags
 		0,									// CPU Access Flags
 		0,									// MiscFlags
-		DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT,								// 元はForceSRGB
+		DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT,		// 元はForceSRGB
 		(ID3D11Resource**)&tex2D)
 	)) {
 

@@ -13,7 +13,6 @@ public:
 		challenge,
 		result,
 		select,
-		art,
 		tutorial,
 	};
 

@@ -327,6 +327,11 @@ void KdEffekseerManager::SetCamera(const std::shared_ptr<CameraBase>& camera)
 	m_wpCamera = camera;
 }
 
+void KdEffekseerManager::EffectListClear()
+{
+	m_effectMap.clear();
+}
+
 bool KdEffekseerObject::IsPlaying()
 {
 	if (m_parentManager == nullptr) { return false; }

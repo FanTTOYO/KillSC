@@ -61,11 +61,14 @@ public:
 
 private:
 	void Init()override;
+	void OptionUpdate();
 
 	UiType m_uiType = UiType::title;
 
 	KdTexture m_titleCharRogoTex;
 	KdTexture m_FTtoyoRogoTex;
+	KdTexture m_modeSelectTex;
+	KdTexture m_pictureFrameTex;
 
 	KdTexture m_weaponType1Tex;
 	KdTexture m_weaponType2Tex;
@@ -74,7 +77,7 @@ private:
 	KdTexture m_torionBarTex;
 	KdTexture m_enduranceTex;
 	KdTexture m_enduranceBarTex;
-	KdTexture m_pushToEnterTex;
+	KdTexture m_pushLClickTex;
 
 	KdPolygon m_torionPolygon;
 	KdPolygon m_torionBarPolygon;
@@ -119,12 +122,13 @@ private:
 	Math::Vector3 m_optionPos = {};
 	Math::Vector3 m_titlePos = {};
 	Math::Vector3 m_selectPos = {};
-
-	Math::Vector3 m_tutorialPos   = {};
-	Math::Vector3 m_gamePos       = {};
-	Math::Vector3 m_challengePos  = {};
-	Math::Vector3 m_selectBackPos = {};
-	Math::Vector3 m_trainingPos   = {};
+	  
+	Math::Vector3 m_tutorialPos     = {};
+	Math::Vector3 m_gamePos         = {};
+	Math::Vector3 m_pictureFramePos = {};
+	Math::Vector3 m_challengePos    = {};
+	Math::Vector3 m_selectBackPos   = {};
+	Math::Vector3 m_trainingPos     = {};
 
 
 	bool m_bExit = false;
@@ -150,8 +154,8 @@ private:
 	bool m_bFirstInResult = false;
 	int m_pointAddOrSubVal = 0;
 	bool m_bSceneCangePossible = false;
-	float m_pushToEnterAlpha = 0.0f;
-	bool  m_bPushToEnterAlphaAdd = false;
+	float m_pushLClickAlpha = 0.0f;
+	bool  m_bPushLClickAlphaAdd = false;
 
 	float m_countOneScale;
 	float m_countOneAlpha;
@@ -219,21 +223,6 @@ private:
 
 	std::vector<Math::Vector2> m_enemyScPosList;
 
-	/*KdTexture      m_oneEnemyTotalTex;
-	Math::Vector3  m_oneEnemyTotalPos;
-	float          m_oneEnemyScale;
-	bool           m_bOneEnemyTotal;
-
-	KdTexture      m_twoEnemyTotalTex;
-	Math::Vector3  m_twoEnemyTotalPos;
-	float          m_twoEnemyScale;
-	bool           m_bTwoEnemyTotal;
-
-	KdTexture      m_threeEnemyTotalTex;
-	Math::Vector3  m_threeEnemyTotalPos;
-	float          m_threeEnemyScale;
-	bool           m_bThreeEnemyTotal;*/
-
 	KdTexture      m_enemyBossTypeOneTex;
 	Math::Vector3  m_enemyBossTypeOnePos;
 	float          m_enemyBossTypeOneScale;
@@ -249,12 +238,17 @@ private:
 	float          m_twoEnemyBossTypeOneScale;
 	bool           m_bTwoEnemyBossTypeOneTotal;
 
-	KdTexture m_helpMkTex;
+	KdTexture	  m_helpMkTex;
+	Math::Vector3 m_helpMkPos;
+	float         m_helpMkScale;
+	bool          m_bhelp;
+	bool          m_bBattlehelp;
+
+	KdTexture	  m_clauseMkTex;
+	Math::Vector3 m_clauseMkPos;
+	float         m_clauseMkScale;
 
 	KdTexture     m_battlehelpTex;
-	Math::Vector3 m_BattlehelpMkPos;
-	float         m_BattlehelpMkScale;
-	bool          m_bBattlehelp;
 
 	KdTexture     m_battleCharaTex;
 	Math::Vector3 m_battleCharaPos;
@@ -262,8 +256,6 @@ private:
 	bool          m_bBattleChara;
 
 	KdTexture     m_chalengehelpTex;
-	Math::Vector3 m_chalengehelpMkPos;
-	float         m_chalengehelpMkScale;
 	bool          m_bChalengehelp;
 
 	KdTexture     m_challengeCharaTex;
@@ -292,6 +284,7 @@ private:
 	KdTexture m_timeTex[10];
 
 	KdTexture m_winCharaTex;
+	KdTexture m_winPlayerCharaTex;
 	KdTexture m_loseCharaTex;
 
 	bool m_bBattleSelect = false;

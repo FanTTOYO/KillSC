@@ -30,7 +30,12 @@ public:
 
 	void OnPauseEfkUpdate()
 	{
-		m_isPause = !m_isPause;
+		m_isPause = true;
+	}
+
+	void OnResumeEfkUpdate()
+	{
+		m_isPause = false;
 	}
 
 	void Release();
@@ -51,6 +56,8 @@ public:
 	const bool IsPlaying(const std::string& name) const;
 
 	void SetCamera(const std::shared_ptr<CameraBase>& camera);
+
+	void EffectListClear();
 
 private:
 

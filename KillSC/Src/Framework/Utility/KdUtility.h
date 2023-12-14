@@ -64,17 +64,29 @@ static const Math::Color	kNormalColor	= Math::Color(0.5f, 0.5f, 1.0f, 1.0f);	// 
 // 数字定数
 //
 //===========================================
-static const float		kZero  =  0.0f;
-static const float		kOne   =  1.0f;
-static const float		kTwo   =  2.0f;
-static const float		kThree =  3.0f;
-static const float		kFour  =  4.0f;
-static const float		kFive  =  5.0f;
-static const float		kSix   =  6.0f;
-static const float		kSeven =  7.0f;
-static const float		kEight =  8.0f;
-static const float		kNine  =  9.0f;
-static const float		kTen   = 10.0f;
+static const float		kFZero  =  0.0f;
+static const float		kFOne   =  1.0f;
+static const float		kFTwo   =  2.0f;
+static const float		kFThree =  3.0f;
+static const float		kFFour  =  4.0f;
+static const float		kFFive  =  5.0f;
+static const float		kFSix   =  6.0f;
+static const float		kFSeven =  7.0f;
+static const float		kFEight =  8.0f;
+static const float		kFNine  =  9.0f;
+static const float		kFTen   = 10.0f;
+
+static const int		kZero  =  0;
+static const int		kOne   =  1;
+static const int		kTwo   =  2;
+static const int		kThree =  3;
+static const int		kFour  =  4;
+static const int		kFive  =  5;
+static const int		kSix   =  6;
+static const int		kSeven =  7;
+static const int		kEight =  8;
+static const int		kNine  =  9;
+static const int		kTen   = 10;
 
 //===========================================
 //

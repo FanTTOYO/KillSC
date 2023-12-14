@@ -4,7 +4,7 @@
 
 void ResultScene::Event()
 {
-	if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+	if (KdInputManager::Instance().IsPress("select"))
 	{
 		if (m_wpUi.lock()->GetBSceneCangePossible())
 		{

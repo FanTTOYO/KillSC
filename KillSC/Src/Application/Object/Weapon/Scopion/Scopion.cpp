@@ -11,6 +11,8 @@ void Scopion::Update()
 
 		const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
 		if (!(player->GetWeaponType() & (scorpion | lScorpion)))return;
+		if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm || m_arrmType == rArrm && !(player->GetWeaponType() & scorpion))return;
+		if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm || m_arrmType == lArrm && !(player->GetWeaponType() & lScorpion))return;
 
 		const KdModelWork::Node* node = nullptr;
 
@@ -394,8 +396,6 @@ void Scopion::Init()
 void Scopion::PlayerHitAttackChaeck()
 {
 	const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
-	if (!(player->GetWeaponType() & (scorpion | lScorpion)))return;
-
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
 
@@ -410,9 +410,6 @@ void Scopion::PlayerHitAttackChaeck()
 			// •Ší‚Æ‚Ì“–‚½‚è”»’è
 			if (pTarget.lock()->GetEnemyState() & Enemy::EnemyState::defense && !pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetBEnemyDeath() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
 			{
-				if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm  && !(player->GetWeaponType() & scorpion))break;
-				if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm  && !(player->GetWeaponType() & lScorpion))break;
-
 				node = m_model->FindNode("AttackPointOne");
 				KdCollider::SphereInfo sphereInfo;
 				mat = node->m_worldTransform * m_mWorld;

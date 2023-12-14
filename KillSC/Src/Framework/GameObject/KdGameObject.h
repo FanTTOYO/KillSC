@@ -75,6 +75,7 @@ public:
 
 
 	const bool GetBBldg() { return m_bBldg; }
+	const bool GetBEnemy() { return m_bEnemy; }
 
 protected:
 
@@ -100,4 +101,5 @@ protected:
 	bool m_bDefenseSuc; // 防御に成功したフラグ
 
 	bool m_bBldg = false; // 建物 : true
+	bool m_bEnemy = false; // 建物 : true
 };

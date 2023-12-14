@@ -5,7 +5,6 @@
 #include "TitleScene/TitleScene.h"
 #include "ResultScene/ResultScene.h"
 #include "SelectScene/SelectScene.h"
-#include "ArtScene/ArtScene.h"
 #include "TutorialScene/TutorialScene.h"
 
 void SceneManager::PreUpdate()
@@ -92,9 +91,6 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	case SceneType::select:
 		ShowCursor(true); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_currentScene = std::make_shared<SelectScene>();
-		break;
-	case SceneType::art:
-		m_currentScene = std::make_shared<ArtScene>();
 		break;
 	case SceneType::tutorial:
 		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)

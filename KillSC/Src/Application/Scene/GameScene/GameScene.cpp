@@ -21,7 +21,10 @@ void GameScene::Event()
 
 	if (m_wpUi.lock()->GetTime() >= 0 && m_wpUi.lock()->GetTime() < 240 || m_wpUi.lock()->GetBOption())
 	{
-		m_bCountDown = true;
+		if (!m_bCountDown)
+		{
+			m_bCountDown = true;
+		}
 	}
 	else
 	{
@@ -216,7 +219,7 @@ void GameScene::Event()
 				++m_appearanceEffectCnt;
 			}
 
-			if (m_appearanceEffectCnt >= 25)
+			if (m_appearanceEffectCnt == 25)
 			{
 				std::shared_ptr<Enemy> enemy;
 				int total = 2;
@@ -276,7 +279,7 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
 						enemy->SetPos(Math::Vector3(40.0f, 0.0f, 0.0f));
-						enemy->SetWorldRotationY(90);
+						enemy->SetWorldRotationY(270);
 						enemy->SetMatrix();
 						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						m_objList.push_back(enemy);
@@ -292,7 +295,7 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
 						enemy->SetPos(Math::Vector3(-40.0f, 0.0f, 0.0f));
-						enemy->SetWorldRotationY(270);
+						enemy->SetWorldRotationY(90);
 						enemy->SetMatrix();
 						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
 						m_objList.push_back(enemy);
@@ -518,7 +521,7 @@ void GameScene::Event()
 			}
 
 			// ボスEnemyのインスタンス化================================================================================================================
-			if (m_appearanceEffectCnt >= 25)
+			if (m_appearanceEffectCnt == 25)
 			{
 				int total = SceneManager::Instance().GetEnemyTotal();
 				std::shared_ptr<Enemy> enemy;
@@ -597,6 +600,7 @@ void GameScene::Event()
 							else
 							{
 								bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4]);
+
 							}
 							m_objList.push_back(bldg);
 
@@ -636,35 +640,6 @@ void GameScene::Init()
 	}
 
 	KdAudioManager::Instance().StopAllSound();
-
-	KdInputCollector* gamepadCollector = new KdInputCollector();
-
-	//	KdInputButtonForWindows* pForward = new KdInputButtonForWindows(VK_GAMEPAD_LEFT_THUMBSTICK_UP);
-	KdInputButtonForWindows* pForward = new KdInputButtonForWindows({ 'W' , VK_GAMEPAD_LEFT_THUMBSTICK_UP });
-	KdInputButtonForWindows* pLeft = new KdInputButtonForWindows({ 'A' , VK_GAMEPAD_LEFT_THUMBSTICK_LEFT });
-	KdInputButtonForWindows* pBackWard = new KdInputButtonForWindows({ 'S' , VK_GAMEPAD_LEFT_THUMBSTICK_DOWN });
-	KdInputButtonForWindows* pRight = new KdInputButtonForWindows({ 'D' ,VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT });
-	KdInputButtonForWindows* pLAttack = new KdInputButtonForWindows(VK_LBUTTON);
-	KdInputButtonForWindows* pRAttack = new KdInputButtonForWindows(VK_RBUTTON);
-	KdInputButtonForWindows* pJump = new KdInputButtonForWindows(VK_SPACE);
-
-	//gamepadCollector->AddButton("right", pRight);
-	//gamepadCollector->AddButton("left", pLeft);
-	gamepadCollector->AddButton("forward", pForward);
-	gamepadCollector->AddButton("left", pLeft);
-	gamepadCollector->AddButton("backward", pBackWard);
-	gamepadCollector->AddButton("right", pRight);
-
-	KdInputAxisForWindows* pMove = new KdInputAxisForWindows(gamepadCollector->GetButton("forward"), gamepadCollector->GetButton("right"),
-		gamepadCollector->GetButton("backward"), gamepadCollector->GetButton("left"));
-
-	gamepadCollector->AddAxis("move", pMove);
-
-	gamepadCollector->AddButton("rAttack", pRAttack);
-	gamepadCollector->AddButton("lAttack", pLAttack);
-	gamepadCollector->AddButton("jump", pJump);
-
-	KdInputManager::Instance().AddDevice("GamePad", gamepadCollector);
 
 	std::shared_ptr<Sky> sky;
 	sky = std::make_shared<Sky>();

@@ -167,70 +167,33 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	KdEffekseerManager::GetInstance().Create(w, h);
 
-	// JSONファイルを開く
-	std::ifstream ifs("Asset/Data/test.json");
-	if (ifs.fail()) { assert(0 && "Json ファイルのパスが間違ってます"); };
+	KdInputCollector* keyboardCollector = new KdInputCollector();
 
-	// 文字列として全読み込み
-	std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+	KdInputButtonForWindows* pForward      = new KdInputButtonForWindows({ 'W' , VK_GAMEPAD_LEFT_THUMBSTICK_UP });
+	KdInputButtonForWindows* pLeft         = new KdInputButtonForWindows({ 'A' , VK_GAMEPAD_LEFT_THUMBSTICK_LEFT });
+	KdInputButtonForWindows* pBackWard     = new KdInputButtonForWindows({ 'S' , VK_GAMEPAD_LEFT_THUMBSTICK_DOWN });
+	KdInputButtonForWindows* pRight        = new KdInputButtonForWindows({ 'D' ,VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT });
+	KdInputButtonForWindows* pRAttack      = new KdInputButtonForWindows(VK_RBUTTON);
+	KdInputButtonForWindows* pLAttack      = new KdInputButtonForWindows(VK_LBUTTON);
+	KdInputButtonForWindows* pSelectButton = new KdInputButtonForWindows({ VK_LBUTTON , VK_RETURN });
+	KdInputButtonForWindows* pJump         = new KdInputButtonForWindows(VK_SPACE);
 
-	// 文字列のJSONを解析（パース）する
-	std::string err;
-	json11::Json jsonObj = json11::Json::parse(strJson, err);
-	if (err.size() > 0) { assert(0 && "読み込んだファイルのJson変換に失敗"); };
+	keyboardCollector->AddButton("forward", pForward);
+	keyboardCollector->AddButton("left", pLeft);
+	keyboardCollector->AddButton("backward", pBackWard);
+	keyboardCollector->AddButton("right", pRight);
 
-	{
-		// 値アクセス
-		OutputDebugStringA(jsonObj["Name"].string_value().append("\n").c_str());
-		OutputDebugStringA(std::to_string(jsonObj["Hp"].int_value()).append("\n").c_str());
-	}
+	KdInputAxisForWindows* pMove = new KdInputAxisForWindows(keyboardCollector->GetButton("forward"), keyboardCollector->GetButton("right"),
+		keyboardCollector->GetButton("backward"), keyboardCollector->GetButton("left"));
 
-	// 配列アクセス
-	{
-		// 配列全アクセス
-		auto& pos = jsonObj["Position"].array_items();
-		for (auto&& p : pos)
-		{
-			OutputDebugStringA(std::to_string(p.number_value()).append("\n").c_str());
-		}
+	keyboardCollector->AddAxis("move", pMove);
 
-		// 配列添え字アクセス
-		OutputDebugStringA(std::to_string(pos[0].number_value()).append("\n").c_str());
-		OutputDebugStringA(std::to_string(pos[1].number_value()).append("\n").c_str());
-		OutputDebugStringA(std::to_string(pos[2].number_value()).append("\n").c_str());
+	keyboardCollector->AddButton("rAttack", pRAttack);
+	keyboardCollector->AddButton("lAttack", pLAttack);
+	keyboardCollector->AddButton("select" , pSelectButton);
+	keyboardCollector->AddButton("jump", pJump);
 
-	}
-
-	//Object習得
-	{
-		auto& object = jsonObj["monster"].object_items();
-		OutputDebugStringA(object["name"].string_value().append("\n").c_str());
-
-		OutputDebugStringA(std::to_string(object["hp"].number_value()).append("\n").c_str());
-
-		OutputDebugStringA(std::to_string(object["pos"][0].number_value()).append("\n").c_str());
-		OutputDebugStringA(std::to_string(object["pos"][1].number_value()).append("\n").c_str());
-		OutputDebugStringA(std::to_string(object["pos"][2].number_value()).append("\n").c_str());
-	}
-
-	//Object 配列取得
-	{
-		auto& objects = jsonObj["techniques"].array_items();
-		for (auto&& object : objects)
-		{
-			// 共通の要素はチェックなしでアクセス
-			OutputDebugStringA(object["name"].string_value().append("\n").c_str());
-			OutputDebugStringA(std::to_string(object["atk"].int_value()).append("\n").c_str());
-			OutputDebugStringA(std::to_string(object["hitrate"].number_value()).append("\n").c_str());
-
-			// 固有のパラメーターはチェックしてからアクセス
-			if (object["effect"].is_string())
-			{
-				OutputDebugStringA(object["effect"].string_value().append("\n").c_str());
-			}
-		}
-	}
-
+	KdInputManager::Instance().AddDevice("Keyboard", keyboardCollector);
 
 	return true;
 }

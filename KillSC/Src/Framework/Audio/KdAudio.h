@@ -39,7 +39,7 @@ public:
 	void StopAllSound();
 	// 再生中の音をすべて一時停止する
 	void PauseAllSound();
-	// 再生中の音をすべて停止する
+	// 再生中の音をすべて開始する
 	void ResumeAllSound();
 
 	// 再生中の音をすべて停止・サウンドアセットの解放を行う

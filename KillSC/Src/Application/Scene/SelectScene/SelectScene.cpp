@@ -4,13 +4,7 @@
 
 void SelectScene::Event()
 {
-	/*if (GetAsyncKeyState(VK_RETURN) & 0x8000)
-	{
-		if (m_spUi->GetBSceneCangePossible())
-		{
-			m_spUi->SetAddFadeAlpha();
-		}
-	}*/
+	
 }
 
 void SelectScene::Init()

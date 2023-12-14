@@ -17,7 +17,7 @@
   "MoveSpeedDecelerationamount": 0.95,
   "MoveSpeedStopsAbruptly": 0.25,
   "RushAttackMoveSpeedDecelerationamount": 0.55,
-  "m_footfallPointMoment": [ 16, 31 ],
+  "FootfallPointMoment": [ 16, 31 ],
   "LastRunAnimationTime": 40,
   "AttackPointMoment": 15,
   "LastAttackAnimationMoment": 20,
@@ -35,6 +35,6 @@
   "LastRLAttackAnimationdMoment": 20,
   "LastRLAttackThreeAnimationMoment": 40,
 
-  "RLAttackRushSoundMoment": [ 8, 21, 31, 49, 55, 74, 89 ],
+  "RLAttackRushSoundMoment": [ 8, 21, 31, 49, 57, 74, 89 ],
   "RLAttackRotationRushSoundMoment": [ 22, 33, 43, 53, 63, 73, 83, 93 ]
 }

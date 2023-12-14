@@ -158,7 +158,6 @@
     <ClInclude Include="Src\Application\Object\Weapon\Hopper\Hopper.h" />
     <ClInclude Include="Src\Application\Object\Weapon\Scopion\Scopion.h" />
     <ClInclude Include="Src\Application\Object\Weapon\WeaponBase.h" />
-    <ClInclude Include="Src\Application\Scene\ArtScene\ArtScene.h" />
     <ClInclude Include="Src\Application\Scene\BaseScene\BaseScene.h" />
     <ClInclude Include="Src\Application\Scene\GameScene\GameScene.h" />
     <ClInclude Include="Src\Application\Scene\ResultScene\ResultScene.h" />
@@ -217,7 +216,6 @@
     <ClCompile Include="Src\Application\Object\Weapon\Hopper\Hopper.cpp" />
     <ClCompile Include="Src\Application\Object\Weapon\Scopion\Scopion.cpp" />
     <ClCompile Include="Src\Application\Object\Weapon\WeaponBase.cpp" />
-    <ClCompile Include="Src\Application\Scene\ArtScene\ArtScene.cpp" />
     <ClCompile Include="Src\Application\Scene\BaseScene\BaseScene.cpp" />
     <ClCompile Include="Src\Application\Scene\GameScene\GameScene.cpp" />
     <ClCompile Include="Src\Application\Scene\ResultScene\ResultScene.cpp" />

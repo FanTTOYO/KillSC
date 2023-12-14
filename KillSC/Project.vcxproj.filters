@@ -106,9 +106,6 @@
     <Filter Include="Src\Application\Scene\SelectScene">
       <UniqueIdentifier>{b0e65b8e-040c-4b55-864d-f6703ade9eb9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Src\Application\Scene\ArtScene">
-      <UniqueIdentifier>{4c8fb2e9-e951-4504-940a-93bf4bca822c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Src\Application\Object\Sky">
       <UniqueIdentifier>{70b4e377-693a-47a0-8617-351508e18c78}</UniqueIdentifier>
     </Filter>
@@ -294,9 +291,6 @@
     <ClInclude Include="Src\Application\Scene\SelectScene\SelectScene.h">
       <Filter>Src\Application\Scene\SelectScene</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Application\Scene\ArtScene\ArtScene.h">
-      <Filter>Src\Application\Scene\ArtScene</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Application\Object\Sky\Sky.h">
       <Filter>Src\Application\Object\Sky</Filter>
     </ClInclude>
@@ -460,9 +454,6 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Scene\SelectScene\SelectScene.cpp">
       <Filter>Src\Application\Scene\SelectScene</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Application\Scene\ArtScene\ArtScene.cpp">
-      <Filter>Src\Application\Scene\ArtScene</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Object\Sky\Sky.cpp">
       <Filter>Src\Application\Object\Sky</Filter>
