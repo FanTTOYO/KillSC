@@ -126,6 +126,7 @@ public:
 
 	void GenerateDepthMapFromLight()override;
 	void SetTarget(std::shared_ptr<Player> a_target) { m_target = a_target; }
+	void SetWeaponToTarget(std::shared_ptr<Player> a_spPlayer);
 	void SetPos(Math::Vector3 a_pos) { m_pos = a_pos;}
 	void SetMatrix();
 	void SetWorldRotationY(float a_mWorldRotY) { m_mWorldRot.y = a_mWorldRotY; }

@@ -24,7 +24,7 @@ void InvisibleWall::Init()
 
 void InvisibleWall::DrawUnLit()
 {
-	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
+	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial || SceneManager::Instance().GetSceneType() == SceneManager::SceneType::training)
 	{
 		Math::Matrix transMat;
 		transMat = Math::Matrix::CreateTranslation(0, -5, 0);

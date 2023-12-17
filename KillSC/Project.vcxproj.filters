@@ -127,6 +127,9 @@
     <Filter Include="Library\json11KdCustom">
       <UniqueIdentifier>{bea12a4e-fef5-43df-bde2-d07431e8a801}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Scene\TrainingScene">
+      <UniqueIdentifier>{afd8461c-def6-4898-ba43-b91a30ed44c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -312,6 +315,9 @@
     <ClInclude Include="..\Library\json11KdCustom\json11.hpp">
       <Filter>Library\json11KdCustom</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Scene\TrainingScene\TrainingScene.h">
+      <Filter>Src\Application\Scene\TrainingScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -475,6 +481,9 @@
     </ClCompile>
     <ClCompile Include="..\Library\json11KdCustom\json11.cpp">
       <Filter>Library\json11KdCustom</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Scene\TrainingScene\TrainingScene.cpp">
+      <Filter>Src\Application\Scene\TrainingScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

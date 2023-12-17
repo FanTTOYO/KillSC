@@ -43,35 +43,6 @@ void TutorialScene::Init()
 
 	KdAudioManager::Instance().StopAllSound();
 
-	KdInputCollector* gamepadCollector = new KdInputCollector();
-
-	//	KdInputButtonForWindows* pForward = new KdInputButtonForWindows(VK_GAMEPAD_LEFT_THUMBSTICK_UP);
-	KdInputButtonForWindows* pForward = new KdInputButtonForWindows({ 'W' , VK_GAMEPAD_LEFT_THUMBSTICK_UP });
-	KdInputButtonForWindows* pLeft = new KdInputButtonForWindows({ 'A' , VK_GAMEPAD_LEFT_THUMBSTICK_LEFT });
-	KdInputButtonForWindows* pBackWard = new KdInputButtonForWindows({ 'S' , VK_GAMEPAD_LEFT_THUMBSTICK_DOWN });
-	KdInputButtonForWindows* pRight = new KdInputButtonForWindows({ 'D' ,VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT });
-	KdInputButtonForWindows* pLAttack = new KdInputButtonForWindows(VK_LBUTTON);
-	KdInputButtonForWindows* pRAttack = new KdInputButtonForWindows(VK_RBUTTON);
-	KdInputButtonForWindows* pJump = new KdInputButtonForWindows(VK_SPACE);
-
-	//gamepadCollector->AddButton("right", pRight);
-	//gamepadCollector->AddButton("left", pLeft);
-	gamepadCollector->AddButton("forward", pForward);
-	gamepadCollector->AddButton("left", pLeft);
-	gamepadCollector->AddButton("backward", pBackWard);
-	gamepadCollector->AddButton("right", pRight);
-
-	KdInputAxisForWindows* pMove = new KdInputAxisForWindows(gamepadCollector->GetButton("forward"), gamepadCollector->GetButton("right"),
-		gamepadCollector->GetButton("backward"), gamepadCollector->GetButton("left"));
-
-	gamepadCollector->AddAxis("move", pMove);
-
-	gamepadCollector->AddButton("rAttack", pRAttack);
-	gamepadCollector->AddButton("lAttack", pLAttack);
-	gamepadCollector->AddButton("jump", pJump);
-
-	KdInputManager::Instance().AddDevice("GamePad", gamepadCollector);
-
 	std::shared_ptr<InvisibleWall> invisibleWall;
 	invisibleWall = std::make_shared<InvisibleWall>();
 	m_objList.push_back(invisibleWall);
@@ -93,14 +64,15 @@ void TutorialScene::Init()
 	camera->SetTarget(player);
 	camera->SetPlayer(player);
 	player->SetCamera(camera);
+	camera->SetHitObj(invisibleWall);
 	m_objList.push_back(camera);
+	KdEffekseerManager::GetInstance().SetCamera(camera);
 
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
 	ui->SetPlayer(player);
 	ui->SetUiType(Ui::UiType::tutorial);
 	m_objList.push_back(ui);
 	m_wpUi = ui;
-	player->SetUi(ui);
 
 	SetCursorPos(640, 360);
 }

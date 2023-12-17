@@ -536,7 +536,7 @@ void GameScene::Event()
 					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
 					m_wpUi.lock()->AddEnemy(enemy);
 					enemy->Init();
-					enemy->SetEnemyNumber(1);
+					enemy->SetEnemyNumber(kOne);
 					enemy->SetBBoss(true);
 
 					switch (total)

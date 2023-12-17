@@ -14,6 +14,7 @@ public:
 		result,
 		select,
 		tutorial,
+		training,
 	};
 
 	void PreUpdate();

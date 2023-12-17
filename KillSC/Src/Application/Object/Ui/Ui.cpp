@@ -12,6 +12,9 @@ void Ui::Update()
 	case UiType::title:
 		TitleUpdate();
 		break;
+	case UiType::training:
+		TrainingUpdate();
+		break;
 	case UiType::game:
 		GameUpdate();
 		break;
@@ -29,7 +32,7 @@ void Ui::Update()
 
 void Ui::PostUpdate()
 {
-	if (m_uiType == UiType::game)
+	if (m_uiType == UiType::game || m_uiType == UiType::training)
 	{
 		auto it = m_wpEnemyList.begin();
 		while (it != m_wpEnemyList.end()) // 数が変動するため範囲ベースForが使えない
@@ -142,6 +145,158 @@ void Ui::TitleUpdate()
 			m_fadeAlpha = kFOne;
 		}
 	}
+}
+
+void Ui::TrainingUpdate()
+{
+	if (m_time == 0)
+	{
+		m_exitScale = kFOne;
+		m_selectScale = kFOne;
+
+		m_selectPos = { 0,0,0 };
+		m_exitPos = { 0,-250,0 };
+		m_fadeAlpha = 0.0f;
+	}
+
+	if (m_time <= 240)
+	{
+		m_time++;
+	}
+
+	if (m_time >= 0 && m_time < 30)
+	{
+		m_countThreeScale += (kFOne / 10.0f);
+		if (m_countThreeScale > kFOne)
+		{
+			m_countThreeScale = kFOne;
+		}
+
+		m_countThreeAlpha += (kFOne / 30.0f);
+		if (m_countThreeAlpha > kFOne)
+		{
+			m_countThreeAlpha = kFOne;
+		}
+	}
+	else if (m_time >= 30 && m_time < 60)
+	{
+
+		m_countThreeAlpha -= (kFOne / 30.0f);
+		if (m_countThreeAlpha < 0.0f)
+		{
+			m_countThreeAlpha = 0.0f;
+		}
+	}
+	else if (m_time >= 60 && m_time < 90)
+	{
+		m_countTwoScale += (kFOne / 10.0f);
+		if (m_countTwoScale > kFOne)
+		{
+			m_countTwoScale = kFOne;
+		}
+
+		m_countTwoAlpha += (kFOne / 30.0f);
+		if (m_countTwoAlpha > kFOne)
+		{
+			m_countTwoAlpha = kFOne;
+		}
+	}
+	else if (m_time >= 90 && m_time < 120)
+	{
+		m_countTwoAlpha -= (kFOne / 30.0f);
+		if (m_countThreeAlpha < 0.0f)
+		{
+			m_countThreeAlpha = 0.0f;
+		}
+	}
+	else if (m_time >= 120 && m_time < 150)
+	{
+		m_countOneScale += (kFOne / 10.0f);
+		if (m_countOneScale > kFOne)
+		{
+			m_countOneScale = kFOne;
+		}
+
+		m_countOneAlpha += (kFOne / 30.0f);
+		if (m_countOneAlpha > kFOne)
+		{
+			m_countOneAlpha = kFOne;
+		}
+	}
+	else if (m_time >= 150 && m_time < 180)
+	{
+		m_countOneAlpha -= (kFOne / 30.0f);
+		if (m_countOneAlpha < 0.0f)
+		{
+			m_countOneAlpha = 0.0f;
+		}
+	}
+	else if (m_time >= 180 && m_time < 210)
+	{
+		m_countGoScale += (kFOne / 10.0f);
+		if (m_countGoScale > kFOne)
+		{
+			m_countGoScale = kFOne;
+		}
+
+		m_countGoAlpha += (kFOne / 30.0f);
+		if (m_countGoAlpha > kFOne)
+		{
+			m_countGoAlpha = kFOne;
+		}
+	}
+	else if (m_time >= 210 && m_time < 240)
+	{
+		m_countGoAlpha -= (kFOne / 30.0f);
+		if (m_countGoAlpha < 0.0f)
+		{
+			m_countGoAlpha = 0.0f;
+			SetCursorPos(640, 360);
+		}
+	}
+
+	PWINDOWINFO pwi = new WINDOWINFO;
+	pwi->cbSize = sizeof(WINDOWINFO);
+	GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
+
+	if (GetAsyncKeyState(VK_TAB) & 0x8000)
+	{
+		if (!m_bTABKey)
+		{
+			m_bTABKey = true;
+			if (!m_bOption)
+			{
+				m_bOption = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+				ShowCursor(true); // マウスカーソルを消す
+				KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
+			}
+			else if (m_bOption)
+			{
+				m_bOption = false;
+				m_bWeaponDataPage = false;
+				m_bWeaponDataHopperPage = false;
+				m_bWeaponDataScoPage = true;
+				m_bHowToPage = true;
+				m_bOperation = false;
+				SetCursorPos(640, 360);
+				KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+				ShowCursor(false); // マウスカーソルを消す
+				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
+			}
+		}
+	}
+	else
+	{
+		m_bTABKey = false;
+	}
+
+	if (m_bOption)
+	{
+		OptionUpdate();
+	}
+
+	KdSafeDelete(pwi);
 }
 
 void Ui::GameUpdate()
@@ -382,7 +537,7 @@ void Ui::GameUpdate()
 					m_bWeaponDataHopperPage = false;
 					m_bWeaponDataScoPage = true;
 					m_bHowToPage = true;
-					m_bInfo = false;
+					m_bOperation = false;
 					SetCursorPos(640, 360);
 					KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
 					ShowCursor(false); // マウスカーソルを消す
@@ -481,7 +636,7 @@ void Ui::TutorialUpdate()
 				m_bWeaponDataHopperPage = false;
 				m_bWeaponDataScoPage = true;
 				m_bHowToPage = true;
-				m_bInfo = false;
+				m_bOperation = false;
 				SetCursorPos(640, 360);
 				KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
 				ShowCursor(false); // マウスカーソルを消す
@@ -1168,9 +1323,7 @@ void Ui::SelectUpdate()
 		{
 			m_trainingScale = 1.1f;
 
-			//m_optionScale    = 1.1f;
-
-			/*if (KdInputManager::Instance().IsPress("select"))
+			if (KdInputManager::Instance().IsPress("select"))
 			{
 				if (!m_addFadeAlpha)
 				{
@@ -1178,7 +1331,7 @@ void Ui::SelectUpdate()
 					m_addFadeAlpha = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
 				}
-			}*/
+			}
 
 		}
 		else
@@ -1301,6 +1454,19 @@ void Ui::SelectUpdate()
 				);
 			}
 
+			if (m_bTraining)
+			{
+				SceneManager::Instance().SetEnemyTotal(1);
+				SceneManager::Instance().SetEnemyIeftover(1);
+				SceneManager::Instance().SetBHumanoidEnemy(true);
+
+				SceneManager::Instance().SetNextScene
+				(
+					SceneManager::SceneType::training
+				);
+
+			}
+
 			if (m_bExit)
 			{
 				if (m_bFirstExit)
@@ -1369,7 +1535,7 @@ void Ui::OptionUpdate()
 	float MouseTop = mouseY + 2.0f;
 	float MouseBottom = mouseY - 2.0f;
 
-	if (!m_bInfo)
+	if (!m_bOperation)
 	{
 		Math::Vector3 ExitPos;
 		ExitPos.x = m_exitPos.x + (float)(pwi->rcWindow.left);
@@ -1438,9 +1604,9 @@ void Ui::OptionUpdate()
 		}
 
 		Math::Vector3 InfoPos;
-		InfoPos.x = m_infoPos.x + (float)(pwi->rcWindow.left);
-		InfoPos.y = m_infoPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		InfoPos.z = m_infoPos.z;
+		InfoPos.x = m_operationPos.x + (float)(pwi->rcWindow.left);
+		InfoPos.y = m_operationPos.y /*+ (float)(pwi->rcWindow.top)*/;
+		InfoPos.z = m_operationPos.z;
 
 		float InfoLeft = InfoPos.x - 350;
 		float InfoRight = InfoPos.x + 350;
@@ -1452,18 +1618,18 @@ void Ui::OptionUpdate()
 		{
 			m_exitScale = kFOne;
 			m_titleScale = kFOne;
-			m_infoScale = 1.2f;
+			m_operationScale = 1.2f;
 
 			if (KdInputManager::Instance().IsPress("select"))
 			{
-				m_bInfo = true;
+				m_bOperation = true;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
 			}
 
 		}
 		else
 		{
-			m_infoScale = kFOne;
+			m_operationScale = kFOne;
 		}
 
 		Math::Vector3 BackPos;
@@ -1552,7 +1718,7 @@ void Ui::OptionUpdate()
 					m_bWeaponDataHopperPage = false;
 					m_bWeaponDataScoPage = true;
 					m_bHowToPage = true;
-					m_bInfo = false;
+					m_bOperation = false;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
 				}
 			}
@@ -2047,11 +2213,11 @@ void Ui::DrawSprite()
 			color = { 0,0,0,0.2f };
 			KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 
-			if (!m_bInfo)
+			if (!m_bOperation)
 			{
-				mat = Math::Matrix::CreateScale(m_infoScale) * Math::Matrix::CreateTranslation(m_infoPos);
+				mat = Math::Matrix::CreateScale(m_operationScale) * Math::Matrix::CreateTranslation(m_operationPos);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_infoTex, 0, 0, 700, 120);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_operationTex, 0, 0, 700, 120);
 
 				mat = Math::Matrix::CreateScale(m_selectScale) * Math::Matrix::CreateTranslation(m_selectPos);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -2061,7 +2227,7 @@ void Ui::DrawSprite()
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_exitTex, 0, 0, 700, 120);
 			}
-			else if (m_bInfo)
+			else if (m_bOperation)
 			{
 				if (m_bHowToPage)
 				{
@@ -2245,11 +2411,11 @@ void Ui::DrawSprite()
 			color = { 0,0,0,0.2f };
 			KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 
-			if (!m_bInfo)
+			if (!m_bOperation)
 			{
-				mat = Math::Matrix::CreateScale(m_infoScale) * Math::Matrix::CreateTranslation(m_infoPos);
+				mat = Math::Matrix::CreateScale(m_operationScale) * Math::Matrix::CreateTranslation(m_operationPos);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_infoTex, 0, 0, 700, 120);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_operationTex, 0, 0, 700, 120);
 
 				mat = Math::Matrix::CreateScale(m_selectScale) * Math::Matrix::CreateTranslation(m_selectPos);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -2259,7 +2425,7 @@ void Ui::DrawSprite()
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_exitTex, 0, 0, 700, 120);
 			}
-			else if (m_bInfo)
+			else if (m_bOperation)
 			{
 				if (m_bHowToPage)
 				{
@@ -2755,6 +2921,313 @@ void Ui::DrawSprite()
 		}*/
 
 		break;
+	case UiType::training:
+
+		transMat = Math::Matrix::Identity;
+
+		if (m_time >= 0 && m_time < 60)
+		{
+			mat = Math::Matrix::CreateScale(m_countThreeScale) * transMat;
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			Math::Rectangle rc = { 0,0,121, 136 };
+			color = { 1,1,1,m_countThreeAlpha };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countThreeTex, 0, 0, 121, 136, &rc, &color);
+		}
+		else if (m_time >= 60 && m_time < 120)
+		{
+			mat = Math::Matrix::CreateScale(m_countTwoScale) * transMat;
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			Math::Rectangle rc = { 0,0,121, 136 };
+			color = { 1,1,1,m_countTwoAlpha };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countTwoTex, 0, 0, 121, 136, &rc, &color);
+		}
+		else if (m_time >= 120 && m_time < 180)
+		{
+			mat = Math::Matrix::CreateScale(m_countOneScale) * transMat;
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			Math::Rectangle rc = { 0,0,121, 136 };
+			color = { 1,1,1,m_countOneAlpha };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countOneTex, 0, 0, 121, 136, &rc, &color);
+		}
+		else if (m_time >= 180 && m_time < 240)
+		{
+			mat = Math::Matrix::CreateScale(m_countGoScale) * transMat;
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			Math::Rectangle rc = { 0,0,211, 136 };
+			color = { 1,1,1,m_countGoAlpha };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countGoTex, 0, 0, 211, 136, &rc, &color);
+		}
+
+
+		if (m_spPlayer)
+		{
+			transMat = Math::Matrix::CreateTranslation(350, -250, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
+			if (m_spPlayer->GetWeaponType() & grassHopper)
+			{
+				Math::Rectangle rc = { 0,0,120,50 };
+				color = { 1,1,1,0.6f };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color);
+			}
+
+			transMat = Math::Matrix::CreateTranslation(500, -250, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
+			if (m_spPlayer->GetWeaponType() & scorpion)
+			{
+				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				Math::Rectangle rc = { 0,0,120,50 };
+				color = { 1,1,1,0.6f };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
+			}
+			else if (m_spPlayer->GetWeaponType() & grassHopper && m_spPlayer->GetRGrassHopperPauCnt() != 0)
+			{
+				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				Math::Rectangle rc = { 0,0,m_spPlayer->GetRGrassHopperPauCnt() * 4,50 };
+				color = { 1,1,1,0.6f };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, m_spPlayer->GetRGrassHopperPauCnt() * 4, 50, &rc, &color, Math::Vector2(0, 0.5f));
+			}
+
+			transMat = Math::Matrix::CreateTranslation(-500, -250, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
+			if (m_spPlayer->GetWeaponType() & lGrassHopper)
+			{
+				Math::Rectangle rc = { 0,0,120,50 };
+				color = { 1,1,1,0.6f };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color);
+			}
+
+			transMat = Math::Matrix::CreateTranslation(-350, -250, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
+			if (m_spPlayer->GetWeaponType() & lScorpion)
+			{
+				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				Math::Rectangle rc = { 0,0,120,50 };
+				color = { 1,1,1,0.6f };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
+			}
+			else if (m_spPlayer->GetWeaponType() & lGrassHopper && m_spPlayer->GetLGrassHopperPauCnt() != 0)
+			{
+				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				Math::Rectangle rc = { 0,0,m_spPlayer->GetLGrassHopperPauCnt() * 4,50 };
+				color = { 1,1,1,0.6f };
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, m_spPlayer->GetLGrassHopperPauCnt() * 4, 50, &rc, &color, Math::Vector2(0, 0.5f));
+			}
+
+			transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			Math::Rectangle rc = { 0,0,400,50 };
+			color = { 1, 1, 1, 1 };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
+
+			transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			rc = { 0,0,(int)(m_spPlayer->GetEndurance()),50 };
+			color = { 1, 1, 1, 1 };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(m_spPlayer->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+
+			transMat = Math::Matrix::CreateTranslation(-630, 255, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			rc = { 0,0,320,40 };
+			color = { 1, 1, 1, 1 };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionBarTex, 0, 0, 320, 40, &rc, &color, Math::Vector2(0, 0.5f));
+
+			transMat = Math::Matrix::CreateTranslation(-620, 255, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			rc = { 0,0,(int)(m_spPlayer->GetTorion()),30 };
+			color = { 1, 1, 1, 1 };
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetTorion()), 30, &rc, &color, Math::Vector2(0, 0.5f));
+
+			int i = 0;
+			for (auto& list : m_wpEnemyList)
+			{
+				if (list.expired())continue;
+				if (list.lock()->GetBEnemyDeath())
+				{
+					++i;
+					continue;
+				}
+
+				Math::Vector3 nowVec = m_wpCamera.lock()->GetMatrix().Backward();
+				nowVec.Normalize();
+
+				// 向きたい方向
+				Math::Vector3 toVec = list.lock()->GetPos() - m_wpCamera.lock()->GetPos();
+				toVec.Normalize();
+
+				Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, toVec);
+				if (dot.x > 1)
+				{
+					dot.x = 1;
+				}
+				if (dot.x < -1)
+				{
+					dot.x = -1;
+				}
+
+				// 角度を取得
+				float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+				if (ang <= 85)
+				{
+					mat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation(m_enemyScPosList[i].x, m_enemyScPosList[i].y, 0.0f);
+
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+					rc = { 0,0,(int)(list.lock()->GetEndurance()),50 };
+					color = { 1, 1, 1, 1 };
+					if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+					{
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 2.6f), 50, &rc, &color, Math::Vector2(0, 0.5f));
+					}
+					else
+					{
+						if (list.lock()->GetBBoss())
+						{
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+						}
+						else
+						{
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 4.0f), 50, &rc, &color, Math::Vector2(0, 0.5f));
+						}
+					}
+
+					rc = { 0,0,400,50 };
+					color = { 1, 1, 1, 1 };
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
+				}
+
+				if (ang >= 45)
+				{
+					float m_heightDifference = list.lock()->GetPos().y - m_wpPlayer.lock()->GetPos().y;
+
+					if (m_heightDifference >= 2.0f)
+					{
+						mat = Math::Matrix::CreateTranslation(-25, 225.0f, 0.0f);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+						rc = { 0,0,100,125 };
+						color = { 1, 1, 1, 1 };
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowUTex, 0, 0, 100, 125, &rc, &color, Math::Vector2(0, 0.5f));
+					}
+					else if (m_heightDifference <= -2.0f)
+					{
+						mat = Math::Matrix::CreateTranslation(-25, -225.0f, 0.0f);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+						rc = { 0,0,100,125 };
+						color = { 1, 1, 1, 1 };
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowBTex, 0, 0, 100, 125, &rc, &color, Math::Vector2(0, 0.5f));
+					}
+
+
+					Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
+
+					if (cross.y < 0)
+					{
+						mat = Math::Matrix::CreateTranslation(-500, 0.0f, 0.0f);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+						rc = { 0,0,125,100 };
+						color = { 1, 1, 1, 1 };
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowLTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
+					}
+					else if (cross.y >= 0)
+					{
+						mat = Math::Matrix::CreateTranslation(500, 0.0f, 0.0f);
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+						rc = { 0,0,125,100 };
+						color = { 1, 1, 1, 1 };
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowRTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
+					}
+
+				}
+				++i;
+			}
+
+
+
+		}
+
+		if (m_bOption)
+		{
+			transMat = Math::Matrix::Identity;
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			color = { 0,0,0,0.2f };
+			KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
+
+			if (!m_bOperation)
+			{
+				mat = Math::Matrix::CreateScale(m_operationScale) * Math::Matrix::CreateTranslation(m_operationPos);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_operationTex, 0, 0, 700, 120);
+
+				mat = Math::Matrix::CreateScale(m_selectScale) * Math::Matrix::CreateTranslation(m_selectPos);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectTex, 0, 0, 700, 120);
+
+				mat = Math::Matrix::CreateScale(m_exitScale) * Math::Matrix::CreateTranslation(m_exitPos);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_exitTex, 0, 0, 700, 120);
+			}
+			else if (m_bOperation)
+			{
+				if (m_bHowToPage)
+				{
+					transMat = Math::Matrix::Identity;
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_howToTex, 0, 0, 1250, 500);
+				}
+
+				if (m_bWeaponDataPage)
+				{
+					if (m_bWeaponDataHopperPage)
+					{
+						transMat = Math::Matrix::Identity;
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_hopperDataTex, 0, 0, 1156, 260);
+					}
+					else if (m_bWeaponDataScoPage)
+					{
+						transMat = Math::Matrix::Identity;
+						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponInfoTex, 0, 0, 1151, 431);
+					}
+
+					mat = Math::Matrix::CreateScale(m_weaponRightYaiScale) * Math::Matrix::CreateTranslation(m_weaponRightYaiPos);
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, 70, 55);
+
+					mat = Math::Matrix::CreateScale(m_weaponLeftYaiScale) * Math::Matrix::CreateTranslation(m_weaponLeftYaiPos);
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, 70, 55);
+				}
+
+				mat = Math::Matrix::CreateScale(m_weaOrHowRightYaiScale) * Math::Matrix::CreateTranslation(m_weaOrHowRightYaiPos);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, 70, 55);
+
+				mat = Math::Matrix::CreateScale(m_weaOrHowLeftYaiScale) * Math::Matrix::CreateTranslation(m_weaOrHowLeftYaiPos);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, 70, 55);
+
+			}
+
+			mat = Math::Matrix::CreateScale(m_backScale) * Math::Matrix::CreateTranslation(m_backPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_backTex, 0, 0, 182, 80);
+		}
+
+		mat = Math::Matrix::CreateTranslation(-50, 325, 0);
+
+		transMat = Math::Matrix::Identity;
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+		color = { 0,0,0,m_fadeAlpha };
+		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
+		break;
 	}
 
 	transMat = Math::Matrix::Identity;
@@ -2846,8 +3319,8 @@ void Ui::Init()
 	m_pushLClickTex.Load("Asset/Textures/Ui/shared/PUSHTLCLICK.png");
 
 	m_exitTex.Load("Asset/Textures/Ui/OPTION/EXIT.png");
-	m_optionTex.Load("Asset/Textures/Ui/OPTION/OPTION.png");
-	m_selectTex.Load("Asset/Textures/Ui/OPTION/Select.png");
+	m_selectTex.Load("Asset/Textures/Ui/OPTION/ModeSelect.png");
+	m_operationTex.Load("Asset/Textures/Ui/OPTION/Operation.png");
 
 	m_countOneTex.Load("Asset/Textures/Ui/Game/one.png");
 	m_countTwoTex.Load("Asset/Textures/Ui/Game/two.png");
@@ -2862,7 +3335,6 @@ void Ui::Init()
 	m_leftYaiTex.Load("Asset/Textures/Ui/Game/leftYaji.png");
 	m_rightYaiTex.Load("Asset/Textures/Ui/Game/rightYaji.png");
 	m_howToTex.Load("Asset/Textures/Ui/Game/how-to.png");
-	m_infoTex.Load("Asset/Textures/Ui/OPTION/info.png");
 
 	m_hopperTyuTex.Load("Asset/Textures/Ui/Tutorial/hopperTyu.png");
 	m_sonotaTyuTex.Load("Asset/Textures/Ui/Tutorial/sonotaTyu.png");
@@ -2937,7 +3409,6 @@ void Ui::Init()
 	m_optionScale = kFOne;
 	m_exitScale = kFOne;
 
-	m_optionPos = { 550,-125,0 };
 	m_titlePos = { -555,-310,0 };
 	m_exitPos = { -420,-310,0 };
 
@@ -3015,9 +3486,9 @@ void Ui::Init()
 	m_weaOrHowRightYaiScale = kFOne;
 	m_weaOrHowRightYaiPos = { 600,0,0 };
 
-	m_infoScale = kFOne;
-	m_infoPos = { 0,250,0 };
-	m_bInfo = false;
+	m_operationScale = kFOne;
+	m_operationPos = { 0,250,0 };
+	m_bOperation = false;
 	bLButtonKey = false;
 
 	m_tutorialType = kihonTu;

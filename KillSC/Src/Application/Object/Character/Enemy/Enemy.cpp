@@ -116,7 +116,15 @@ void Enemy::Update()
 	}
 	else
 	{
-		lowestYPos = -1.0f;
+		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::training)
+		{
+			lowestYPos = -10.0f;
+		}
+		else
+		{
+			lowestYPos = -1.0f;
+		}
+		
 		if (m_bEnemyLose)
 		{
 			return;
@@ -574,7 +582,7 @@ void Enemy::CollisionUpdate()
 			m_pos += (hitDir * maxOverLap);
 		}
 
-		if (m_target.lock()->GetPlayerState() & (Player::PlayerState::defense) && !(m_enemyType & bossEnemyTypeOne))
+		if (!m_target.expired() && m_target.lock()->GetPlayerState() & (Player::PlayerState::defense) && !(m_enemyType & bossEnemyTypeOne))
 		{
 			sphereInfo.m_sphere.Radius = 0.6f;
 
@@ -1066,7 +1074,7 @@ void Enemy::CollisionUpdate()
 			m_pos += (hitDir * maxOverLap);
 		}
 
-		if (m_target.lock()->GetPlayerState() & (Player::PlayerState::defense))
+		if (!m_target.expired() && m_target.lock()->GetPlayerState() & (Player::PlayerState::defense))
 		{
 			if (!(m_EnemyState & (grassHopperDash | grassHopperDashUp | step)) || !(m_wantToMoveState & (wEscape | wDashAttack | wGrassDash | wAvoidance)))
 			{
@@ -1448,9 +1456,10 @@ void Enemy::BossUpdate()
 		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 		{
 			std::shared_ptr<Player> spTarget = m_target.lock();
+			Math::Vector3 vTarget = Math::Vector3::Zero;
 			if (spTarget)
 			{
-				Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+				vTarget = spTarget->GetPos() - m_pos;
 				UpdateRotate(vTarget);
 			}
 
@@ -1466,8 +1475,7 @@ void Enemy::BossUpdate()
 			}
 			else if (!m_bEnemyDeath)
 			{
-				Math::Vector3 src = spTarget->GetPos() - m_pos;
-				if (src.Length() >= 20.0f && !(m_EnemyState & (grassHopperDash & ~grassHopperDashB) | grassHopperDashUp))
+				if (vTarget.Length() >= 20.0f && !(m_EnemyState & (grassHopperDash & ~grassHopperDashB) | grassHopperDashUp))
 				{
 					Brain();
 				}
@@ -1497,7 +1505,6 @@ void Enemy::BossUpdate()
 				break;
 			}
 
-			Math::Vector3 src;
 			if (!(m_wantToMoveState & WantToMoveState::wNone))
 			{
 				if (!(m_EnemyState & hasDefense))
@@ -1522,10 +1529,9 @@ void Enemy::BossUpdate()
 
 						break;
 					case WantToMoveState::wDashAttack:
-						src = spTarget->GetPos() - m_pos;
 						if (m_dashSpd == 1.2f)
 						{
-							if (src.Length() <= 14.5f)
+							if (vTarget.Length() <= 14.5f)
 							{
 								if (m_weaponType & eGrassHopper)
 								{
@@ -1557,7 +1563,7 @@ void Enemy::BossUpdate()
 						}
 						else if (m_dashSpd == 0.8f || m_dashSpd == 0.5f)
 						{
-							if (src.Length() <= 8.0f)
+							if (vTarget.Length() <= 8.0f)
 							{
 								if (m_weaponType & eGrassHopper)
 								{
@@ -1589,7 +1595,7 @@ void Enemy::BossUpdate()
 						}
 						else if (m_dashSpd == 0.4f || m_dashSpd == 0.35f)
 						{
-							if (src.Length() <= 4.0f)
+							if (vTarget.Length() <= 4.0f)
 							{
 								if (m_weaponType & eGrassHopper)
 								{
@@ -1621,7 +1627,7 @@ void Enemy::BossUpdate()
 						}
 						else if (m_dashSpd <= 0.25f)
 						{
-							if (src.Length() <= 2.0f)
+							if (vTarget.Length() <= 2.0f)
 							{
 								if (m_weaponType & eGrassHopper)
 								{
@@ -1927,9 +1933,10 @@ void Enemy::CoarseFishEnemyUpdate()
 		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
 		{
 			std::shared_ptr<Player> spTarget = m_target.lock();
+			Math::Vector3 vTarget = Math::Vector3::Zero;
 			if (spTarget)
 			{
-				Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+				vTarget = spTarget->GetPos() - m_pos;
 				UpdateRotate(vTarget);
 			}
 
@@ -1945,14 +1952,12 @@ void Enemy::CoarseFishEnemyUpdate()
 			}
 			else if (!m_bEnemyDeath)
 			{
-				Math::Vector3 src = spTarget->GetPos() - m_pos;
-				if (src.Length() >= 20.0f && !(m_EnemyState & (grassHopperDash & ~grassHopperDashB) | grassHopperDashUp))
+				if (vTarget.Length() >= 20.0f && !(m_EnemyState & (grassHopperDash & ~grassHopperDashB) | grassHopperDashUp))
 				{
 					Brain();
 				}
 			}
 
-			Math::Vector3 src;
 			if (!(m_wantToMoveState & WantToMoveState::wNone))
 			{
 				if (!(m_EnemyState & hasDefense))
@@ -2346,7 +2351,7 @@ void Enemy::PostUpdate()
 					SceneManager::Instance().SubEnemyIeftover();
 					SceneManager::Instance().SubEnemyDrawTotal();
 				}
-				else if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
+				else if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle || SceneManager::Instance().GetSceneType() == SceneManager::SceneType::training)
 				{
 					if (m_bBoss)
 					{
@@ -2824,6 +2829,12 @@ void Enemy::GenerateDepthMapFromLight()
 			WeaList->GenerateDepthMapFromLight();
 		}
 	}
+}
+
+void Enemy::SetWeaponToTarget(std::shared_ptr<Player> a_spPlayer)
+{
+	m_weaponList[kZero]->SetTarget(a_spPlayer);
+	m_weaponList[kOne]->SetTarget(a_spPlayer);
 }
 
 void Enemy::SetMatrix()
@@ -3404,6 +3415,12 @@ void Enemy::GrassMoveVecDecision()
 {
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
+	Math::Vector3 src = Math::Vector3::Zero;
+
+	if (!m_target.expired())
+	{
+		src = m_target.lock()->GetPos() - m_pos;
+	}
 
 	if (m_rGrassHopperPauCnt == 0)
 	{
@@ -3415,8 +3432,14 @@ void Enemy::GrassMoveVecDecision()
 			int randNum[5] = {};
 
 			int rand = intRand(mt);
-			Math::Vector3 src;
-			float y = m_target.lock()->GetPos().y - m_pos.y;
+			
+			float y = kFZero;
+
+			if (!m_target.expired())
+			{
+				y = m_target.lock()->GetPos().y - m_pos.y;
+				
+			}
 
 			switch (m_wantToMoveState)
 			{
@@ -3429,7 +3452,6 @@ void Enemy::GrassMoveVecDecision()
 				randNum[4] = 150;
 				break;
 			case WantToMoveState::wDashAttack:
-				src = m_target.lock()->GetPos() - m_pos;
 				if (src.Length() <= 2.0f)
 				{
 					randNum[0] = 0;    // ‘O
@@ -3449,7 +3471,6 @@ void Enemy::GrassMoveVecDecision()
 				break;
 			case WantToMoveState::wGrassDash:
 				if (m_grassSuccessionDelayCnt != 0)return;
-				src = m_target.lock()->GetPos() - m_pos;
 				if (y >= 1.0f)
 				{
 					randNum[0] = 0;    // ‘O
@@ -3685,7 +3706,6 @@ void Enemy::GrassMoveVecDecision()
 			int randNum[5] = {};
 
 			int rand = intRand(mt);
-			Math::Vector3 src;
 			float y = m_target.lock()->GetPos().y - m_pos.y;
 			switch (m_wantToMoveState)
 			{
@@ -3698,7 +3718,6 @@ void Enemy::GrassMoveVecDecision()
 				randNum[4] = 150;
 				break;
 			case WantToMoveState::wDashAttack:
-				src = m_target.lock()->GetPos() - m_pos;
 
 				if (y >= 1.0f)
 				{
@@ -3730,7 +3749,6 @@ void Enemy::GrassMoveVecDecision()
 				break;
 			case WantToMoveState::wGrassDash:
 				if (m_grassSuccessionDelayCnt != 0)return;
-				src = m_target.lock()->GetPos() - m_pos;
 				if (y >= 1.0f)
 				{
 					randNum[0] = 0;    // ‘O
@@ -4040,8 +4058,12 @@ void Enemy::GrassMove()
 		if (m_lGrassHopperTime <= 90 && m_lGrassHopperTime > 80 || m_rGrassHopperTime <= 90 && m_rGrassHopperTime > 80)
 		{
 			m_dashSpd = 0.0f;
+			float y = kFZero;
+			if (!m_target.expired())
+			{
+				y = m_target.lock()->GetPos().y - m_pos.y;
+			}
 
-			float y = m_target.lock()->GetPos().y - m_pos.y;
 			if (y >= -0.5f && y <= 0.5f)
 			{
 				if (m_EnemyState & grassHopperDashUp)
@@ -4158,7 +4180,12 @@ void Enemy::GrassMove()
 			m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
 		}
 
-		Math::Vector3  src = m_target.lock()->GetPos() - m_pos;
+		Math::Vector3  src = Math::Vector3::Zero;
+		if (!m_target.expired())
+		{
+			src = m_target.lock()->GetPos() - m_pos;
+		}
+
 		if (src.Length() <= 1.2f)
 		{
 			if (m_lGrassHopperTime <= 75 || m_rGrassHopperTime <= 75)
@@ -4170,7 +4197,12 @@ void Enemy::GrassMove()
 			}
 		}
 
-		float y = m_target.lock()->GetPos().y - m_pos.y;
+		float y = kFZero;
+		if (!m_target.expired())
+		{
+			y = m_target.lock()->GetPos().y - m_pos.y;
+		}
+
 		if (y >= -0.35f && y <= 0.35f)
 		{
 			if (m_EnemyState & grassHopperDashUp)
@@ -4501,7 +4533,12 @@ void Enemy::Brain()
 
 	if (!m_bEnemyBetweenPlayer)
 	{
-		float y = m_target.lock()->GetPos().y - m_pos.y;
+		float y = kFZero;
+		if (!m_target.expired())
+		{
+			y = m_target.lock()->GetPos().y - m_pos.y;
+		}
+
 		if (y <= -0.85f)
 		{
 			if (!(m_EnemyState & (hit | hasDefense)))
@@ -4536,7 +4573,7 @@ void Enemy::StrikerBrain()
 
 	if (src.Length() <= 1.2f)
 	{
-		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
 		{
 			randNum[0] = 450;
 			randNum[1] = 550;
@@ -4586,7 +4623,7 @@ void Enemy::StrikerBrain()
 	}
 	else
 	{
-		if (src.Length() <= 8.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
+		if (src.Length() <= 8.0f && spTarget && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
 		{
 			rand = intRand(mt);
 			randNum[0] = 650;
@@ -4627,7 +4664,7 @@ void Enemy::StrikerBrain()
 				}
 			}
 		}
-		else if (src.Length() <= 2.5f && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		else if (src.Length() <= 2.5f && spTarget && spTarget->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			rand = intRand(mt);
 			randNum[0] = 600;
@@ -4660,7 +4697,7 @@ void Enemy::StrikerBrain()
 	{
 	case Enemy::WantToMoveCategory::attackCategory:
 		m_wantToMoveState = Enemy::WantToMoveState::wAttack;
-		if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		if (spTarget && spTarget->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			m_bMantisAttack = true;
 		}
@@ -4779,7 +4816,7 @@ void Enemy::DefenderBrain()
 
 	if (src.Length() <= 1.2f)
 	{
-		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
 		{
 			randNum[0] = 950;
 			randNum[1] = 50;
@@ -4851,7 +4888,7 @@ void Enemy::DefenderBrain()
 				}
 			}
 		}
-		else if (src.Length() <= 2.5f && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		else if (src.Length() <= 2.5f && !m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			randNum[0] = 600;
 			randNum[1] = 400;
@@ -4883,7 +4920,7 @@ void Enemy::DefenderBrain()
 	{
 	case Enemy::WantToMoveCategory::attackCategory:
 		m_wantToMoveState = Enemy::WantToMoveState::wAttack;
-		if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		if (!m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			m_bMantisAttack = true;
 		}
@@ -4959,7 +4996,7 @@ void Enemy::SpeedSterBrain()
 
 	if (src.Length() <= 1.2f)
 	{
-		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
 		{
 			randNum[0] = 750;
 			randNum[1] = 250;
@@ -5009,7 +5046,7 @@ void Enemy::SpeedSterBrain()
 	}
 	else
 	{
-		if (src.Length() <= 5.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
+		if (src.Length() <= 5.0f && spTarget && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
 		{
 			randNum[0] = 150;
 			randNum[1] = 850;
@@ -5031,7 +5068,7 @@ void Enemy::SpeedSterBrain()
 				}
 			}
 		}
-		else if (src.Length() <= 2.5f && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		else if (src.Length() <= 2.5f && !m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			randNum[0] = 600;
 			randNum[1] = 400;
@@ -5062,7 +5099,7 @@ void Enemy::SpeedSterBrain()
 	switch (m_wantToMoveCategory)
 	{
 	case Enemy::WantToMoveCategory::attackCategory:
-		if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		if (!m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			m_wantToMoveState = Enemy::WantToMoveState::wAttack;
 			m_bMantisAttack = true;
@@ -5194,9 +5231,9 @@ void Enemy::AllRounderBrain()
 
 	int rand = intRand(mt);
 
-	if (src.Length() <= 8.0f)
+	if (src.Length() <= 8.0f && spTarget)
 	{
-		if (spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
 		{
 			randNum[0] = 750;
 			randNum[1] = 250;
@@ -5246,7 +5283,7 @@ void Enemy::AllRounderBrain()
 	}
 	else
 	{
-		if (src.Length() <= 5.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
+		if (src.Length() <= 5.0f && spTarget && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
 		{
 			randNum[0] = 750;
 			randNum[1] = 250;
@@ -5268,7 +5305,7 @@ void Enemy::AllRounderBrain()
 				}
 			}
 		}
-		else if (src.Length() <= 2.5f && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		else if (src.Length() <= 2.5f && !m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			randNum[0] = 600;
 			randNum[1] = 400;
@@ -5300,7 +5337,7 @@ void Enemy::AllRounderBrain()
 	{
 	case Enemy::WantToMoveCategory::attackCategory:
 		m_wantToMoveState = Enemy::WantToMoveState::wAttack;
-		if (m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		if (!m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			m_bMantisAttack = true;
 		}
@@ -5958,7 +5995,7 @@ void Enemy::ScorpionAttackMove()
 
 		if (m_bAttackAnimeDelay)
 		{
-			if (m_target.lock()->GetAttackHit())
+			if (!m_target.expired() && m_target.lock()->GetAttackHit())
 			{
 				m_wantToMoveState = WantToMoveState::wAttack;
 			}
@@ -5986,8 +6023,11 @@ void Enemy::ScorpionAttackMove()
 				m_attackMoveSpd *= 0.95f;
 				if (m_attackAnimeCnt == 17)
 				{
-					m_target.lock()->SetAttackHit(false);
-					m_target.lock()->SetDefenseSuc(false);
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
 				}
 			}
 			else if (m_EnemyState & rlAttackTwo)
@@ -5995,8 +6035,11 @@ void Enemy::ScorpionAttackMove()
 				m_attackMoveSpd *= 0.95f;
 				if (m_attackAnimeCnt == 16)
 				{
-					m_target.lock()->SetAttackHit(false);
-					m_target.lock()->SetDefenseSuc(false);
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
 				}
 			}
 			else if (m_EnemyState & rlAttackThree)
@@ -6004,8 +6047,11 @@ void Enemy::ScorpionAttackMove()
 				m_attackMoveSpd *= 0.95f;
 				if (m_attackAnimeCnt == 23)
 				{
-					m_target.lock()->SetAttackHit(false);
-					m_target.lock()->SetDefenseSuc(false);
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
 				}
 			}
 			else if (m_EnemyState & rlAttackRush)
@@ -6020,8 +6066,11 @@ void Enemy::ScorpionAttackMove()
 					m_attackAnimeCnt == 107
 					)
 				{
-					m_target.lock()->SetAttackHit(false);
-					m_target.lock()->SetDefenseSuc(false);
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
 
 					switch (m_attackAnimeCnt)
 					{
@@ -6099,8 +6148,11 @@ void Enemy::ScorpionAttackDecision()
 		}
 
 		m_bMove = true;
-		m_target.lock()->SetAttackHit(false);
-		m_target.lock()->SetDefenseSuc(false);
+		if (!m_target.expired())
+		{
+			m_target.lock()->SetAttackHit(false);
+			m_target.lock()->SetDefenseSuc(false);
+		}
 	}
 	else
 	{
@@ -6162,9 +6214,6 @@ void Enemy::ScorpionAttackDecision()
 
 			if (m_EnemyState & rlAttackOne)
 			{
-				m_target.lock()->SetAttackHit(false);
-				m_target.lock()->SetDefenseSuc(false);
-
 				m_EnemyState |= rlAttackTwo;
 				m_EnemyState &= ~rlAttackOne;
 				m_bAttackAnimeDelay = false;
@@ -6178,14 +6227,14 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveSpd = 0.8f;
 				m_animator->SetAnimation(m_model->GetAnimation("RLAttackTwo"), false);
 				m_bMove = true;
-				m_target.lock()->SetAttackHit(false);
-				m_target.lock()->SetDefenseSuc(false);
+				if (!m_target.expired())
+				{
+					m_target.lock()->SetAttackHit(false);
+					m_target.lock()->SetDefenseSuc(false);
+				}
 			}
 			else if (m_EnemyState & rlAttackTwo)
 			{
-				m_target.lock()->SetAttackHit(false);
-				m_target.lock()->SetDefenseSuc(false);
-
 				m_EnemyState |= rlAttackThree;
 				m_EnemyState &= ~rlAttackTwo;
 				m_bAttackAnimeDelay = false;
@@ -6199,14 +6248,14 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveSpd = 0.8f;
 				m_animator->SetAnimation(m_model->GetAnimation("RLAttackThree"), false);
 				m_bMove = true;
-				m_target.lock()->SetAttackHit(false);
-				m_target.lock()->SetDefenseSuc(false);
+				if (!m_target.expired())
+				{
+					m_target.lock()->SetAttackHit(false);
+					m_target.lock()->SetDefenseSuc(false);
+				}
 			}
 			else if (m_EnemyState & rlAttackThree && m_bRushAttackPossible)
 			{
-				m_target.lock()->SetAttackHit(false);
-				m_target.lock()->SetDefenseSuc(false);
-
 				m_EnemyState |= rlAttackRush;
 				m_EnemyState &= rlAttackRush;
 				m_bAttackAnimeDelay = false;
@@ -6220,8 +6269,11 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveSpd = 0.8f;
 				m_animator->SetAnimation(m_model->GetAnimation("RLAttackRush"), false);
 				m_bMove = true;
-				m_target.lock()->SetAttackHit(false);
-				m_target.lock()->SetDefenseSuc(false);
+				if (!m_target.expired())
+				{
+					m_target.lock()->SetAttackHit(false);
+					m_target.lock()->SetDefenseSuc(false);
+				}
 			}
 			m_EnemyState &= ~lAttack;
 		}
@@ -6241,8 +6293,11 @@ void Enemy::ScorpionAttackDecision()
 			m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 			m_attackMoveDir.y = 0;
 			m_attackMoveDir.Normalize();
-			m_target.lock()->SetAttackHit(false);
-			m_target.lock()->SetDefenseSuc(false);
+			if (!m_target.expired())
+			{
+				m_target.lock()->SetAttackHit(false);
+				m_target.lock()->SetDefenseSuc(false);
+			}
 			
 			m_attackMoveSpd = 0.8f;
 
@@ -6267,8 +6322,12 @@ void Enemy::ScorpionAttackDecision()
 			m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 			m_attackMoveDir.y = 0;
 			m_attackMoveDir.Normalize();
-			m_target.lock()->SetAttackHit(false);
-			m_target.lock()->SetDefenseSuc(false);
+
+			if (!m_target.expired())
+			{
+				m_target.lock()->SetAttackHit(false);
+				m_target.lock()->SetDefenseSuc(false);
+			}
 			
 			m_attackMoveSpd = 0.8f;
 			if (m_EnemyState & grassHopperDash && m_bBoss)

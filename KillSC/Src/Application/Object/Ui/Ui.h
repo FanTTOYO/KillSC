@@ -16,6 +16,7 @@ public:
 		result,
 		select,
 		tutorial,
+		training,
 	};
 
 	enum TutorialType
@@ -29,11 +30,7 @@ public:
 
 	void Update()override;
 	void PostUpdate()override;
-	void TitleUpdate();
-	void GameUpdate();
-	void TutorialUpdate();
-	void ResultUpdate();
-	void SelectUpdate();
+
 	void DrawSprite()override;
 	void DrawUnLit()override;
 	//void PreDraw()override;
@@ -61,6 +58,12 @@ public:
 
 private:
 	void Init()override;
+	void TitleUpdate();
+	void TrainingUpdate();
+	void GameUpdate();
+	void TutorialUpdate();
+	void ResultUpdate();
+	void SelectUpdate();
 	void OptionUpdate();
 
 	UiType m_uiType = UiType::title;
@@ -99,7 +102,6 @@ private:
 
 	KdTexture m_selectTitleTex;
 	KdTexture m_selectExitTex;
-	KdTexture m_optionTex;
 
 	KdTexture m_gameTex;
 	KdTexture m_challengeTex;
@@ -119,7 +121,6 @@ private:
 	float m_trainingScale = 0;
 
 	Math::Vector3 m_exitPos = {};
-	Math::Vector3 m_optionPos = {};
 	Math::Vector3 m_titlePos = {};
 	Math::Vector3 m_selectPos = {};
 	  
@@ -180,7 +181,7 @@ private:
 	bool m_bTABKey = false;
 	bool m_bEnterKey = false;
 
-	KdTexture m_infoTex;
+	KdTexture m_operationTex;
 	KdTexture m_hopperDataTex;
 	KdTexture m_weaponDataTex;
 	KdTexture m_weaponInfoTex;
@@ -194,9 +195,9 @@ private:
 	KdTexture m_tyubukiTex;
 	KdTexture m_tyuKihonTex;
 
-	float         m_infoScale;
-	Math::Vector3 m_infoPos;
-	bool m_bInfo;
+	float         m_operationScale;
+	Math::Vector3 m_operationPos;
+	bool m_bOperation;
 
 	float     m_weaponLeftYaiScale;
 	Math::Vector3 m_weaponLeftYaiPos;

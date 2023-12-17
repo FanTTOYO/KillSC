@@ -6,6 +6,7 @@
 #include "ResultScene/ResultScene.h"
 #include "SelectScene/SelectScene.h"
 #include "TutorialScene/TutorialScene.h"
+#include "TrainingScene/TrainingScene.h"
 
 void SceneManager::PreUpdate()
 {
@@ -76,12 +77,12 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	case SceneType::challenge:
 		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_bPlayerWin = false;
-		m_pointAddOrSubVal = 0;
+		m_pointAddOrSubVal = kZero;
 		m_bAddOrSubVal = true;
 		m_bWinEnd = false;
-		m_updateStopCnt = 0;
-		m_enemyDrawTotal = 0;
-		m_screenVibFrames = 0;
+		m_updateStopCnt = kZero;
+		m_enemyDrawTotal = kZero;
+		m_screenVibFrames = kZero;
 		m_currentScene = std::make_shared<GameScene>();
 		break;
 	case SceneType::result:
@@ -95,6 +96,12 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	case SceneType::tutorial:
 		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_currentScene = std::make_shared<TutorialScene>();
+		break;
+	case SceneType::training:
+		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)
+		m_updateStopCnt = kZero;
+		m_enemyDrawTotal = kZero;
+		m_currentScene = std::make_shared<TrainingScene>();
 		break;
 	}
 

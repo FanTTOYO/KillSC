@@ -1530,6 +1530,7 @@ void Scopion::PlayerManAttackChaeck()
 
 void Scopion::EnemyHitAttackChaeck()
 {
+	if (m_eTarget.expired())return;
 	const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
 	if (!(enemy->GetWeaponType() & (eScorpion | eLScorpion)))return;
 
@@ -1958,6 +1959,7 @@ void Scopion::EnemyHitAttackChaeck()
 
 void Scopion::EnemyManAttackChaeck()
 {
+	if (m_eTarget.expired())return;
 	const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
 	if (!(enemy->GetWeaponType() & (eScorpion | eLScorpion)))return;
 

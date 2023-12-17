@@ -153,11 +153,8 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_spEnemy)
 {
-	const std::shared_ptr<Scopion> gScopion1 = std::dynamic_pointer_cast<Scopion>(m_weaponList[kZero]);
-	const std::shared_ptr<Scopion> gScopion2 = std::dynamic_pointer_cast<Scopion>(m_weaponList[kOne]);
-
-	gScopion1->AddTarget(a_spEnemy);
-	gScopion2->AddTarget(a_spEnemy);
+	m_weaponList[kZero]->AddTarget(a_spEnemy);
+	m_weaponList[kOne]->AddTarget(a_spEnemy);
 }
 
 void Player::Update()
@@ -167,7 +164,7 @@ void Player::Update()
 
 	{
 		float lowestYPos;
-		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
+		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial || SceneManager::Instance().GetSceneType() == SceneManager::SceneType::training)
 		{
 			lowestYPos = m_tutorialMinimumYPos;
 		}
@@ -973,79 +970,69 @@ void Player::Update()
 		}
 	}
 
-
-	if (!(m_playerState & cutRaiseHit))
-	{
-		sphereInfo.m_sphere.Radius = 0.3f;
-
-		// 当たり判定をしたいタイプを設定
-		sphereInfo.m_type = KdCollider::TypeBump;
+	// 当たり判定をしたいタイプを設定
+	sphereInfo.m_type = KdCollider::TypeBump;
 #ifdef _DEBUG
-		// デバック用
-		m_pDebugWire->AddDebugSphere
-		(
-			sphereInfo.m_sphere.Center,
-			sphereInfo.m_sphere.Radius
-		);
+	// デバック用
+	m_pDebugWire->AddDebugSphere
+	(
+		sphereInfo.m_sphere.Center,
+		sphereInfo.m_sphere.Radius
+	);
 #endif
-		// 球の当たったオブジェクト情報
-		retSphereList.clear();
+	// 球の当たったオブジェクト情報
+	retSphereList.clear();
 
-		// 球と当たり判定 
+	// 球と当たり判定 
 
-		for (auto& enemyList : m_enemyList)
+	for (auto& enemyList : m_enemyList)
+	{
+		if (enemyList.expired())continue;
+		if (enemyList.lock()->GetBEnemyDeath())continue;
+
+		if (enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne)
 		{
-			if (enemyList.expired())continue;
-			if (enemyList.lock()->GetBEnemyDeath())continue;
+			sphereInfo.m_sphere.Radius = 1.2f;
+		}
+		else
+		{
+			sphereInfo.m_sphere.Radius = 0.3f;
+		}
 
-			if (enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne)
+		enemyList.lock()->Intersects
+		(
+			sphereInfo,
+			&retSphereList
+		);
+
+		// 球に当たったリスト情報から一番近いオブジェクトを検出
+		maxOverLap = kZero;
+		hit = false;
+		hitDir = {}; // 当たった方向
+		for (auto& ret : retSphereList)
+		{
+			// 一番近くで当たったものを探す
+			if (maxOverLap < ret.m_overlapDistance)
 			{
-				if (m_playerState & (grassHopperDash | grassHopperDashUp | step))
-				{
-					sphereInfo.m_sphere.Radius = 1.2f;
-				}
-				else
-				{
-					sphereInfo.m_sphere.Radius = 1.2f;
-				}
-				
-			}
-
-			enemyList.lock()->Intersects
-			(
-				sphereInfo,
-				&retSphereList
-			);
-
-			// 球に当たったリスト情報から一番近いオブジェクトを検出
-			maxOverLap = kZero;
-			hit = false;
-			hitDir = {}; // 当たった方向
-			for (auto& ret : retSphereList)
-			{
-				// 一番近くで当たったものを探す
-				if (maxOverLap < ret.m_overlapDistance)
-				{
-					maxOverLap = ret.m_overlapDistance;
-					hit = true;
-					hitDir = ret.m_hitDir;
-				}
-			}
-
-			if (hit)
-			{
-				if(!(enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne) || m_playerState & (grassHopperDash | grassHopperDashUp | step))
-				{
-					hitDir.y = kFZero;
-				}
-
-				hitDir.Normalize();
-				// 球とモデルが当たっている
-				m_pos += (hitDir * maxOverLap);
+				maxOverLap = ret.m_overlapDistance;
+				hit = true;
+				hitDir = ret.m_hitDir;
 			}
 		}
-	}
 
+		if (hit)
+		{
+			if(!(enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne) || m_playerState & (grassHopperDash | grassHopperDashUp | step))
+			{
+				hitDir.y = kFZero;
+			}
+
+			hitDir.Normalize();
+			// 球とモデルが当たっている
+			m_pos += (hitDir * maxOverLap);
+		}
+	}
+	
 	sphereInfo.m_sphere.Radius = 1.15f;
 
 	// 当たり判定をしたいタイプを設定
@@ -1787,17 +1774,24 @@ void Player::PostUpdate()
 		{
 			if (m_bPlayerLose)
 			{
-				SceneManager::Instance().SetBAddOrSubVal(false);
-				if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+				if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::training)
 				{
-					SceneManager::Instance().SetPointAddOrSubVal(kZero);
+					SceneManager::Instance().SetBAddOrSubVal(false);
+					if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+					{
+						SceneManager::Instance().SetPointAddOrSubVal(kZero);
+					}
+					else
+					{
+						SceneManager::Instance().SetPointAddOrSubVal(500);
+					}
+
+					SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
 				}
 				else
 				{
-					SceneManager::Instance().SetPointAddOrSubVal(500);
+					m_isExpired = true;
 				}
-
-				SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
 			}
 		}
 
@@ -2143,12 +2137,12 @@ void Player::DrawLit_SkinMesh()
 	if (m_bPlayerLose)return;
 	if (!m_spModel) return;
 
-	if (m_invincibilityTimeCnt <= 90 && m_invincibilityTimeCnt > 80 ||
-		m_invincibilityTimeCnt <= 70 && m_invincibilityTimeCnt > 60 ||
-		m_invincibilityTimeCnt <= 50 && m_invincibilityTimeCnt > 40 ||
-		m_invincibilityTimeCnt <= 30 && m_invincibilityTimeCnt > 20 ||
-		m_invincibilityTimeCnt <= 15 && m_invincibilityTimeCnt > 10 ||
-		m_invincibilityTimeCnt <= kFive && m_invincibilityTimeCnt > kThree ||
+	if (m_invincibilityTimeCnt <= kTen * kNine  && m_invincibilityTimeCnt > kTen * kEight ||
+		m_invincibilityTimeCnt <= kTen * kSeven && m_invincibilityTimeCnt > kTen * kSix   ||
+		m_invincibilityTimeCnt <= kTen * kFive  && m_invincibilityTimeCnt > kTen * kFour  ||
+		m_invincibilityTimeCnt <= kTen * kThree && m_invincibilityTimeCnt > kTen * kTwo   ||
+		m_invincibilityTimeCnt <= kTen + kFive  && m_invincibilityTimeCnt > kTen          ||
+		m_invincibilityTimeCnt <= kFive         && m_invincibilityTimeCnt > kThree        ||
 		m_invincibilityTimeCnt == kOne
 		)return;
 
@@ -2279,10 +2273,8 @@ void Player::GrassMoveVecDecision()
 				{
 					m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), m_wpCamera.lock()->GetRotationYMatrix());
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashF;
-					m_playerState &= ~grassHopperDashUp;
+					m_playerState &= grassHopperDashF;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_rGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_rGrassHopperTime = kNine * kTen;
@@ -2307,10 +2299,8 @@ void Player::GrassMoveVecDecision()
 				{
 					m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(-kOne, kZero, kZero), m_wpCamera.lock()->GetRotationYMatrix());
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashL;
-					m_playerState &= ~grassHopperDashUp;
+					m_playerState &= grassHopperDashL;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_rGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_rGrassHopperTime = 90;
@@ -2337,10 +2327,8 @@ void Player::GrassMoveVecDecision()
 				{
 					m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(kZero, kZero, -kOne), m_wpCamera.lock()->GetRotationYMatrix());
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashB;
-					m_playerState &= ~grassHopperDashUp;
+					m_playerState &= grassHopperDashB;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_rGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_rGrassHopperTime = 90;
@@ -2366,10 +2354,8 @@ void Player::GrassMoveVecDecision()
 				{
 					m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(kOne, kZero, kZero), m_wpCamera.lock()->GetRotationYMatrix());
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashR;
-					m_playerState &= ~grassHopperDashUp;
+					m_playerState &= grassHopperDashR;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_rGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_rGrassHopperTime = 90;
@@ -2397,8 +2383,7 @@ void Player::GrassMoveVecDecision()
 					m_grassHopperDashDir.Normalize();
 					m_bMove = true;
 					m_playerState |= grassHopperDashUp;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
+					m_playerState &= grassHopperDashUp;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_rGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_rGrassHopperTime = 90;
@@ -2425,8 +2410,8 @@ void Player::GrassMoveVecDecision()
 					m_grassHopperDashDir.Normalize();
 					m_bMove = true;
 					m_playerState |= grassHopperDashUp;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
+					m_playerState &= grassHopperDashUp;
+
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_rGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_rGrassHopperTime = 90;
@@ -2465,10 +2450,8 @@ void Player::GrassMoveVecDecision()
 				{
 					m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(kZero, kZero, kOne), m_wpCamera.lock()->GetRotationYMatrix());
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashF;
-					m_playerState &= ~grassHopperDashUp;
+					m_playerState &= grassHopperDashF;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_lGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_lGrassHopperTime = 90;
@@ -2493,10 +2476,8 @@ void Player::GrassMoveVecDecision()
 				{
 					m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(-kOne, kZero, kZero), m_wpCamera.lock()->GetRotationYMatrix());
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashL;
-					m_playerState &= ~grassHopperDashUp;
+					m_playerState &= grassHopperDashL;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_lGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_lGrassHopperTime = 90;
@@ -2523,10 +2504,8 @@ void Player::GrassMoveVecDecision()
 				{
 					m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(kZero, kZero, -kOne), m_wpCamera.lock()->GetRotationYMatrix());
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashB;
-					m_playerState &= ~grassHopperDashUp;
+					m_playerState &= grassHopperDashB;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_lGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_lGrassHopperTime = 90;
@@ -2552,10 +2531,8 @@ void Player::GrassMoveVecDecision()
 				{
 					m_grassHopperDashDir = Math::Vector3::TransformNormal(Math::Vector3(kOne, kZero, kZero), m_wpCamera.lock()->GetRotationYMatrix());
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashR;
-					m_playerState &= ~grassHopperDashUp;
+					m_playerState &= grassHopperDashR;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_lGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_lGrassHopperTime = 90;
@@ -2582,9 +2559,8 @@ void Player::GrassMoveVecDecision()
 					m_grassHopperDashDir = { kZero, kOne, kZero };
 					m_grassHopperDashDir.Normalize();
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashUp;
+					m_playerState &= grassHopperDashUp;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_lGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_lGrassHopperTime = 90;
@@ -2610,9 +2586,8 @@ void Player::GrassMoveVecDecision()
 					m_grassHopperDashDir = { kZero, kOne, kZero };
 					m_grassHopperDashDir.Normalize();
 					m_bMove = true;
-					m_playerState &= ~grassHopperDash;
-					m_playerState &= ~run;
 					m_playerState |= grassHopperDashUp;
+					m_playerState &= grassHopperDashUp;
 					m_grasRotYMat = m_wpCamera.lock()->GetRotationYMatrix();
 					m_lGrassHopperPauCnt = GRASSHOPPERPAUCNT;
 					m_lGrassHopperTime = 90;
