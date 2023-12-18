@@ -1,6 +1,6 @@
 #pragma once
-#define TORIONDOWNVALUE 1.0f
-#define  GRASSHOPPERPAUCNT 30
+#define TORIONDOWNVALUE 1.0f   // Vフォース消費量
+#define  GRASSHOPPERPAUCNT 30  // グラスホッパーが使えない時間
 
 class CameraBase;
 class WeaponBase;
@@ -135,6 +135,9 @@ private:
 	void ScorpionDefenseMove();
 	void HasDefenseMove();
 	void TutorialUpdate();
+
+	std::map<std::string,json11::Json>  m_mpObj;
+	std::shared_ptr<json11::Json> m_spJsonObj;
 
 	std::shared_ptr<KdModelWork> m_spModel;
 

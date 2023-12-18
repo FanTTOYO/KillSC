@@ -11,8 +11,6 @@ void Scopion::Update()
 
 		const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
 		if (!(player->GetWeaponType() & (scorpion | lScorpion)))return;
-		if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm || m_arrmType == rArrm && !(player->GetWeaponType() & scorpion))return;
-		if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm || m_arrmType == lArrm && !(player->GetWeaponType() & lScorpion))return;
 
 		const KdModelWork::Node* node = nullptr;
 
@@ -395,9 +393,13 @@ void Scopion::Init()
 
 void Scopion::PlayerHitAttackChaeck()
 {
+
 	const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
+
+	if ((player->GetPlayerState() & Player::PlayerState::rAttack) && m_arrmType == lArrm || m_arrmType == rArrm && !(player->GetWeaponType() & scorpion))return;
+	if ((player->GetPlayerState() & Player::PlayerState::lAttack) && m_arrmType == rArrm || m_arrmType == lArrm && !(player->GetWeaponType() & lScorpion))return;
 
 	for (auto& pTarget : m_pTargetList)
 	{

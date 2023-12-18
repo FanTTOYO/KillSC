@@ -4,12 +4,24 @@
     "Vforce": 300,
     "Position": [ 0, 0, -20 ],
     "AddCenterVal": [ 0, 1.5, 0 ],
+    "AddBottomYVal": 0.7,
+    "EnableStepHight": 0.2,
     "TutorialMinimumYPos": -10,
     "MinimumYPos": -1,
     "MinimumXPos": -62.5,
     "HightXPos": 62.5,
     "MinimumZPos": -62.5,
-    "HightZPos": 62.5
+    "HightZPos": 62.5,
+    "RightWeaponScopionNum": 1,
+    "RightWeaponGrassHopperNum": 2,
+    "LeftWeaponScopionNum": 1,
+    "LeftWeaponGrassHopperNum": 2,
+    "TypeGroundToHitSphereRadius": 0.3,
+    "TypeBuriedToHitSphereRadius": 0.4,
+    "TypeGroundToHitSphereRadiusIsGrassDash": 1.2,
+    "TypeBumpToHitSphereRadius": 0.3,
+    "TypeBumpToHitSphereRadiusIsGrassDash": 1.2,
+    "TypeAttackDec": 1.15
   },
   "MaxOverStageTime": 90,
   "CutRaiseHitGravityAcceleration": 0.0075,
@@ -36,5 +48,6 @@
   "LastRLAttackThreeAnimationMoment": 40,
 
   "RLAttackRushSoundMoment": [ 8, 21, 31, 49, 57, 74, 89 ],
-  "RLAttackRotationRushSoundMoment": [ 22, 33, 43, 53, 63, 73, 83, 93 ]
+  "RLAttackRotationRushSoundMoment": [ 22, 33, 43, 53, 63, 73, 83, 93 ],
+  "DeterminationInsideTheBuildingSphereRadius" :  0.4
 }

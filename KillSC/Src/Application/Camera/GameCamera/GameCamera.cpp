@@ -101,85 +101,18 @@ void GameCamera::Update()
 						m_startDelayFive = false;
 					}
 
-					endPos = spTarget->GetMatrix().Translation();
+					//endPos = spTarget->GetMatrix().Translation();
 
-					// ’†ŠÔ‚ð‹‚ß‚é
-					// üŒ`•âŠÔ
-					nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.5f);
-
-					targetMat = Math::Matrix::CreateTranslation(nowPos);
+					//// ’†ŠÔ‚ð‹‚ß‚é
+					//// üŒ`•âŠÔ
+					//nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.5f);
+					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
 				}
 
 				else
 				{
 					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
 				}
-				
-				//targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
-
-				//// ’n–ÊŠî€ –¢Š®
-				//if (spTarget->GetPos().y < m_stepOnPlayerPos.y + 5 && spTarget->GetPos().y > m_stepOnPlayerPos.y - 5 && !m_bCameraDown)
-				//{
-				//	m_cameracChasePower = 0;
-				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y, spTarget->GetPos().z);
-				//}
-				//else if (spTarget->GetPos().y >= m_stepOnPlayerPos.y + 5 && spTarget->GetPos().y > m_stepOnPlayerPos.y + m_cameracChasePower)
-				//{
-				//	float b = spTarget->GetPos().y - m_stepOnPlayerPos.y + m_cameracChasePower;
-				//	if (b >= 2.0f)
-				//	{
-				//		m_cameracChasePower += m_wpPlayer.lock()->GetDashSpd() * 1.10f;
-				//	}
-
-				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
-				//}
-				//else if(m_wpPlayer.lock()->GetGravity() < 0)
-				//{
-				//	m_cameracChasePower = m_wpPlayer.lock()->GetGravity() * 0.95f;
-				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
-				//}
-				//else
-				//{
-				//	float b = 0.0f;
-				//	b = spTarget->GetPos().y - m_stepOnPlayerPos.y;
-				//	m_bCameraDown = true;
-				//	if (m_cameracChasePower <= 0.0f)
-				//	{
-				//		m_bCameraDown = false;
-				//	}
-
-				//	if (m_wpPlayer.lock()->GetGravity() > 0)
-				//	{
-				//		m_cameracChasePower -= m_wpPlayer.lock()->GetGravity();
-				//	}
-
-				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
-				//}
-
-				//if (m_cameracChasePower > 0.0f && m_wpPlayer.lock()->GetGravity() == 0 && !(m_wpPlayer.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDash | Player::PlayerState::grassHopperDashUp)))
-				//{
-				//	m_cameracChasePower -= 0.15f;
-				//	m_bCameraDown = true;
-				//	if (m_cameracChasePower <= 0.0f)
-				//	{
-				//		m_bCameraDown = false;
-				//	}
-				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
-				//}
-
-				//if (spTarget->GetPos().y <= m_stepOnPlayerPos.y)
-				//{
-				//	if (m_wpPlayer.lock()->GetGravity() > 0)
-				//	{
-				//		m_cameracChasePower -= m_wpPlayer.lock()->GetGravity();
-				//	}
-				//	else
-				//	{
-				//		m_cameracChasePower = 0;
-				//	}
-
-				//	targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, m_stepOnPlayerPos.y + m_cameracChasePower, spTarget->GetPos().z);
-				//}
 			}
 		}
 

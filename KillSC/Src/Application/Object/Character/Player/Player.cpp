@@ -36,26 +36,14 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_weaponType |= scorpion;
 	m_weaponType |= lScorpion;
 
-	m_rightWeaponNumber = 1;
-	m_leftWeaponNumber = 1;
+	m_rightWeaponNumber = kOne;
+	m_leftWeaponNumber = kOne;
 
 	m_torion = (float)object["Vforce"].number_value();
 	m_endurance = (float)object["Endurance"].number_value();
 	m_addCenterVal = {(float)object["AddCenterVal"][kZero].number_value(),
 					  (float)object["AddCenterVal"][kOne].number_value(),
 					  (float)object["AddCenterVal"][kTwo].number_value()};
-
-
-	m_minimumYPos = (float)object["MinimumYPos"].number_value();
-	m_tutorialMinimumYPos = (float)object["TutorialMinimumYPos"].number_value();
-
-	m_minimumXPos = (float)object["MinimumXPos"].number_value();
-	m_hightXPos   = (float)object["HightXPos"].number_value();
-
-	m_minimumZPos = (float)object["MinimumZPos"].number_value();
-	m_hightZPos   = (float)object["HightZPos"].number_value();
-
-	m_maxOverStageTime = (*a_wpJsonObj.lock())["MaxOverStageTime"].int_value();
 
 	m_gravityAcceleration = (float)(*a_wpJsonObj.lock())["GravityAcceleration"].number_value();
 	m_cutRaiseHitGravityAcceleration = (float)(*a_wpJsonObj.lock())["CutRaiseHitGravityAcceleration"].number_value();
@@ -64,7 +52,7 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_moveSpeedStopsAbruptly                = (float)(*a_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value();
 	m_rushAttackMoveSpeedDecelerationamount = (float)(*a_wpJsonObj.lock())["RushAttackMoveSpeedDecelerationamount"].number_value();
 
-	for (int i = kZero; i < 2; i++)
+	for (int i = kZero; i < kTwo; i++)
 	{
 		m_footfallPointMoment[i] = (*a_wpJsonObj.lock())["FootfallPointMoment"][i].int_value();
 	}
@@ -87,13 +75,13 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_lastRLAttackAnimationdMoment = (*a_wpJsonObj.lock())["LastRLAttackAnimationdMoment"].int_value();
 	m_lastRLAttackThreeAnimationMoment = (*a_wpJsonObj.lock())["LastRLAttackThreeAnimationMoment"].int_value();
 
-	for (int i = kZero; i < 7; i++)
+	for (int i = kZero; i < kSeven; i++)
 	{
 		m_rlAttackRushSoundMoment[i] = (*a_wpJsonObj.lock())["RLAttackRushSoundMoment"][i].int_value();
 		m_rlAttackRotationRushSoundMoment[i] = (*a_wpJsonObj.lock())["RLAttackRotationRushSoundMoment"][i].int_value();
 	}
 
-	m_rlAttackRotationRushSoundMoment[7] = (*a_wpJsonObj.lock())["RLAttackRotationRushSoundMoment"][7].int_value();
+	m_rlAttackRotationRushSoundMoment[kSeven] = (*a_wpJsonObj.lock())["RLAttackRotationRushSoundMoment"][7].int_value();
 
 	m_graduallyTorionDecVal = kFZero;
 	m_bAttackAnimeCnt = true;
@@ -149,6 +137,8 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_bBlowingAwayHitB = false;
 	m_bAtttackMoveSpeedDec = false;
 	m_attackHit = false;
+	m_mpObj = object;
+	m_spJsonObj = a_wpJsonObj.lock();
 }
 
 void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_spEnemy)
@@ -166,18 +156,22 @@ void Player::Update()
 		float lowestYPos;
 		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial || SceneManager::Instance().GetSceneType() == SceneManager::SceneType::training)
 		{
-			lowestYPos = m_tutorialMinimumYPos;
+			lowestYPos = static_cast<float>(m_mpObj["TutorialMinimumYPos"].number_value());
 		}
 		else
 		{
-			lowestYPos = m_minimumYPos;
+			lowestYPos = static_cast<float>(m_mpObj["MinimumYPos"].number_value());
 		}
 
-		if (m_pos.x > m_hightXPos || m_pos.x < m_minimumXPos || m_pos.z > m_hightZPos || m_pos.z < m_minimumZPos || m_pos.y < lowestYPos)
-			//if(0)
+		if (m_pos.x > static_cast<float>(m_mpObj["HightXPos"].number_value())   ||
+			m_pos.x < static_cast<float>(m_mpObj["MinimumXPos"].number_value()) ||
+			m_pos.z > static_cast<float>(m_mpObj["HightZPos"].number_value())   ||
+			m_pos.z < static_cast<float>(m_mpObj["MinimumZPos"].number_value()) ||
+			m_pos.y < lowestYPos)
 		{
 			m_overStageTime++;
-			if (m_overStageTime >= m_maxOverStageTime)
+			int maxOverStageTime = (*m_spJsonObj)["MaxOverStageTime"].int_value();
+			if (m_overStageTime >= maxOverStageTime)
 			{
 				m_pos = Math::Vector3::Zero;
 				m_overStageTime = kZero;
@@ -185,7 +179,8 @@ void Player::Update()
 		}
 		else
 		{
-			if (m_overStageTime >= m_maxOverStageTime)
+			int maxOverStageTime = (*m_spJsonObj)["MaxOverStageTime"].int_value();
+			if (m_overStageTime >= maxOverStageTime)
 			{
 				m_pos = Math::Vector3::Zero;
 				m_overStageTime = kZero;
@@ -193,10 +188,14 @@ void Player::Update()
 
 			KdCollider::SphereInfo sphereInfo;
 			// 球の中心位置を設定
-			sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
+			Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][kZero].number_value()),
+										   static_cast<float>(m_mpObj["AddCenterVal"][kOne].number_value()),
+										   static_cast<float>(m_mpObj["AddCenterVal"][kTwo].number_value())};
+		
+			sphereInfo.m_sphere.Center = m_pos + addCenterVal;
 			// 球の半径を設定
 
-			sphereInfo.m_sphere.Radius = 0.4f;
+			sphereInfo.m_sphere.Radius = static_cast<float>((*m_spJsonObj)["DeterminationInsideTheBuildingSphereRadius"].number_value());
 
 			// 当たり判定をしたいタイプを設定
 			sphereInfo.m_type = KdCollider::TypeBuried;
@@ -373,28 +372,26 @@ void Player::Update()
 		}
 	}
 
-	switch (m_rightWeaponNumber) // 後に番号を自由に選べるようになるかも
+	if (m_mpObj["RightWeaponScopionNum"].int_value() == m_rightWeaponNumber)
 	{
-	case 1:
 		m_weaponType |= scorpion;
 		m_weaponType &= ~grassHopper;
-		break;
-	case 2:
+	}
+	else if (m_mpObj["RightWeaponGrassHopperNum"].int_value() == m_rightWeaponNumber)
+	{
 		m_weaponType |= grassHopper;
 		m_weaponType &= ~scorpion;
-		break;
 	}
 
-	switch (m_leftWeaponNumber) // 後に番号を自由に選べるようになるかも
+	if (m_mpObj["LeftWeaponScopionNum"].int_value() == m_leftWeaponNumber)
 	{
-	case 1:
 		m_weaponType |= lScorpion;
 		m_weaponType &= ~lGrassHopper;
-		break;
-	case 2:
+	}
+	else if (m_mpObj["LeftWeaponGrassHopperNum"].int_value() == m_leftWeaponNumber)
+	{
 		m_weaponType |= lGrassHopper;
 		m_weaponType &= ~lScorpion;
-		break;
 	}
 
 	if (!(m_playerState & (hit | rise)) && !m_bPlayerDeath)
@@ -535,11 +532,11 @@ void Player::Update()
 		m_pos.y -= m_gravity;
 		if (m_playerState & cutRaiseHit)
 		{
-			m_gravity += m_cutRaiseHitGravityAcceleration;
+			m_gravity += static_cast<float>((*m_spJsonObj)["CutRaiseHitGravityAcceleration"].number_value());
 		}
 		else
 		{
-			m_gravity += m_gravityAcceleration;
+			m_gravity += static_cast<float>((*m_spJsonObj)["GravityAcceleration"].number_value());
 		}
 
 		if (m_hitStopCnt <= kZero)
@@ -592,11 +589,11 @@ void Player::Update()
 				m_hitMoveSpd = kZero;
 			}
 
-			m_hitMoveSpd *= m_moveSpeedDecelerationamount;
+			m_hitMoveSpd *= static_cast<float>((*m_spJsonObj)["MoveSpeedDecelerationamount"].number_value());
 		}
 		else
 		{
-			m_hitMoveSpd *= m_moveSpeedDecelerationamount;
+			m_hitMoveSpd *= static_cast<float>((*m_spJsonObj)["MoveSpeedDecelerationamount"].number_value());
 		}
 
 		m_pos += m_knockBackVec * m_hitMoveSpd;
@@ -618,7 +615,7 @@ void Player::Update()
 	if (!(m_playerState & (grassHopperDash | grassHopperDashUp | hit | step)))
 	{
 		m_pos.y -= m_gravity;
-		m_gravity += m_gravityAcceleration;
+		m_gravity += static_cast<float>((*m_spJsonObj)["GravityAcceleration"].number_value());
 	}
 
 	if (!m_bMove && !m_bPlayerDeath)
@@ -642,12 +639,12 @@ void Player::Update()
 	KdCollider::RayInfo rayInfo;
 	//rayInfo.m_pos = m_pos;
 	rayInfo.m_pos = m_pos;
-	rayInfo.m_pos.y += 0.7f;
+	rayInfo.m_pos.y += static_cast<float>(m_mpObj["AddBottomYVal"].number_value());
 	if (!(m_playerState & (grassHopperDash | grassHopperDashUp)))
 	{
 		rayInfo.m_dir = { kZero,-kOne,kZero };
 		/*rayInfo.m_pos.y += 0.1f;*/
-		static float enableStepHight = 0.2f;
+		static float enableStepHight = static_cast<float>(m_mpObj["EnableStepHight"].number_value());
 		rayInfo.m_pos.y += enableStepHight;
 		rayInfo.m_range = m_gravity + enableStepHight;
 	}
@@ -695,7 +692,7 @@ void Player::Update()
 		if (!(m_playerState & (grassHopperDash | grassHopperDashUp)))
 		{
 			//m_pos = groundPos;
-			m_pos = groundPos + Math::Vector3(kZero, -0.7f, kZero);
+			m_pos = groundPos + Math::Vector3(kZero, -static_cast<float>(m_mpObj["AddBottomYVal"].number_value()), kZero);
 			m_gravity = kZero;
 			if (m_playerState & (fall | jump) && !m_bPlayerDeath)
 			{
@@ -762,7 +759,7 @@ void Player::Update()
 		if (!(m_playerState & (grassHopperDash | grassHopperDashUp)))
 		{
 			//m_pos = groundPos;
-			m_pos = groundPos + Math::Vector3(kZero, -0.7f, kZero);
+			m_pos = groundPos + Math::Vector3(kZero, -static_cast<float>(m_mpObj["AddBottomYVal"].number_value()), kZero);
 			m_gravity = kZero;
 			if (m_playerState & (fall | jump) && !m_bPlayerDeath)
 			{
@@ -791,16 +788,19 @@ void Player::Update()
 
 	KdCollider::SphereInfo sphereInfo;
 	// 球の中心位置を設定
-	sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
+	Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][kZero].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][kOne].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][kTwo].number_value()) };
+	sphereInfo.m_sphere.Center = m_pos + addCenterVal;
 	// 球の半径を設定
 
 	if (!(m_playerState & (grassHopperDash | grassHopperDashUp | step)))
 	{
-		sphereInfo.m_sphere.Radius = 0.3f;
+		sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeGroundToHitSphereRadius"].number_value());
 	}
 	else
 	{
-		sphereInfo.m_sphere.Radius = 1.2f;
+		sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeGroundToHitSphereRadiusIsGrassDash"].number_value());
 	}
 
 	// 当たり判定をしたいタイプを設定
@@ -915,10 +915,10 @@ void Player::Update()
 	{
 		sphereInfo;
 		// 球の中心位置を設定
-		sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
+		sphereInfo.m_sphere.Center = m_pos + addCenterVal;
 		// 球の半径を設定
 
-		sphereInfo.m_sphere.Radius = 0.4f;
+		sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeBuriedToHitSphereRadius"].number_value());
 
 		// 当たり判定をしたいタイプを設定
 		sphereInfo.m_type = KdCollider::TypeBuried;
@@ -992,11 +992,11 @@ void Player::Update()
 
 		if (enemyList.lock()->GetEnemyType() & Enemy::EnemyType::bossEnemyTypeOne)
 		{
-			sphereInfo.m_sphere.Radius = 1.2f;
+			sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeBumpToHitSphereRadiusIsGrassDash"].number_value());
 		}
 		else
 		{
-			sphereInfo.m_sphere.Radius = 0.3f;
+			sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeBumpToHitSphereRadius"].number_value());
 		}
 
 		enemyList.lock()->Intersects
@@ -1033,7 +1033,7 @@ void Player::Update()
 		}
 	}
 	
-	sphereInfo.m_sphere.Radius = 1.15f;
+	sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeAttackDec"].number_value());
 
 	// 当たり判定をしたいタイプを設定
 	sphereInfo.m_type = KdCollider::TypeAttackDec;
