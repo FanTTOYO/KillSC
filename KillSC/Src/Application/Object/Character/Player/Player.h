@@ -6,18 +6,17 @@ class WeaponBase;
 class Enemy;
 class Ui;
 
-enum WeaponType
-{
-	scorpion    = 1 << 0,				// 右短剣装備
-	grassHopper = 1 << 1,				// 右ホッパー装備
-
-	lGrassHopper = 1 << 5,				// 左短剣装備
-	lScorpion    = 1 << 4,				// 左ホッパー装備
-};
-
 class Player : public KdGameObject
 {
 public:
+	enum WeaponType
+	{
+		scorpion = 1 << 0,				// 右短剣装備
+		grassHopper = 1 << 1,				// 右ホッパー装備
+
+		lGrassHopper = 1 << 5,				// 左短剣装備
+		lScorpion = 1 << 4,				// 左ホッパー装備
+	};
 
 	enum PlayerState
 	{
@@ -117,6 +116,8 @@ public:
 	const float GetAngleY() { return m_mWorldRot.y;}															// プレイヤーの向いてる角度を渡す
 																												 
 	const bool GetBRushRp() {return m_bRushRp;}																	// 回転ラッシュかどうかを渡す
+
+	const Math::Vector3& GetAddCenterVal() { return m_addCenterVal; };											// 足すとcharacterの真ん中になる値 
 																												 
 private:
 
@@ -140,6 +141,9 @@ private:
 																													
 	const int MAXWEAPONTYPE = 2;																					// 武器の最大のナンバー
 	const int FIRSTWEAPONTYPENUMBER = 1;																			// 武器の最初のナンバー
+
+	Math::Vector3 m_addCenterVal;																					// 足したら中心になる値
+	Math::Vector3 m_addGrassDashEffectPosVal;																		// プレイヤーの座標に足すとエフェクトを出す位置になる
 
 	float m_gravity = 0;																							// 重力
 	int m_toleranceComboTime = 0;																					// コンボ許容時間

@@ -10,20 +10,20 @@
 class WeaponBase;
 class Player;
 
-enum eWeaponType
-{
-	eWeaponNone  = 1 << 0,
-	eScorpion    = 1 << 1,
-	eGrassHopper = 1 << 2,
-
-	eLWeaponNone   = 1 << 4,
-	eLScorpion    = 1 << 5,
-	eLGrassHopper = 1 << 6,
-};
-
 class Enemy : public KdGameObject
 {
 public:
+	enum WeaponType
+	{
+		weaponNone = 1 << 0,
+		scorpion = 1 << 1,
+		grassHopper = 1 << 2,
+
+		lWeaponNone = 1 << 4,
+		lScorpion = 1 << 5,
+		lGrassHopper = 1 << 6,
+	};
+
 	enum EnemyState
 	{
 		idle = 1 << 0,
@@ -114,7 +114,6 @@ public:
 	~Enemy() {}
 
 	void DrawLit()override;
-	void DrawUnLit()override;
 	void GenerateDepthMapFromLight_SkinMesh()	override;
 	void DrawLit_SkinMesh()						override;
 	void Init(std::weak_ptr<json11::Json> a_wpJsonObj);
@@ -184,6 +183,8 @@ public:
 
 	const bool GetBRangedAttack() { return m_bRangedAttack; }
 
+	const Math::Vector3& GetAddCenterVal(){return m_addCenterVal;};
+
 private:
 
 	void CollisionUpdate();
@@ -227,6 +228,9 @@ private:
 
 	const int MAXWEAPONTYPE = 2;
 	const int FIRSTWEAPONTYPENUMBER = 1;
+
+	Math::Vector3 m_addCenterVal;
+	Math::Vector3 m_addGrassDashEffectPosVal;
 
 	float m_gravity = 0;
 	int m_toleranceComboTime = 0; // ƒRƒ“ƒ{‹–—eŽžŠÔ

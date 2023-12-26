@@ -2018,7 +2018,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(350, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & grassHopper)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::grassHopper)
 			{
 				Math::Rectangle rc = { 0,0,120,50 };
 				color = { 1,1,1,0.6f };
@@ -2028,7 +2028,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(500, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & scorpion)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::scorpion)
 			{
 				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2036,7 +2036,7 @@ void Ui::DrawSprite()
 				color = { 1,1,1,0.6f };
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
 			}
-			else if (m_spPlayer->GetWeaponType() & grassHopper && m_spPlayer->GetRGrassHopperPauCnt() != 0)
+			else if (m_spPlayer->GetWeaponType() & Player::WeaponType::grassHopper && m_spPlayer->GetRGrassHopperPauCnt() != 0)
 			{
 				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2048,7 +2048,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(-500, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & lGrassHopper)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper)
 			{
 				Math::Rectangle rc = { 0,0,120,50 };
 				color = { 1,1,1,0.6f };
@@ -2058,7 +2058,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(-350, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & lScorpion)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::lScorpion)
 			{
 				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2066,7 +2066,7 @@ void Ui::DrawSprite()
 				color = { 1,1,1,0.6f };
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
 			}
-			else if (m_spPlayer->GetWeaponType() & lGrassHopper && m_spPlayer->GetLGrassHopperPauCnt() != 0)
+			else if (m_spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper && m_spPlayer->GetLGrassHopperPauCnt() != 0)
 			{
 				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2309,7 +2309,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(350, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & grassHopper)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::grassHopper)
 			{
 				Math::Rectangle rc = { 0,0,120,50 };
 				color = { 1,1,1,0.6f };
@@ -2319,7 +2319,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(500, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & scorpion)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::scorpion)
 			{
 				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2327,7 +2327,7 @@ void Ui::DrawSprite()
 				color = { 1,1,1,0.6f };
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
 			}
-			else if (m_spPlayer->GetWeaponType() & grassHopper && m_spPlayer->GetRGrassHopperPauCnt() != 0)
+			else if (m_spPlayer->GetWeaponType() & Player::WeaponType::grassHopper && m_spPlayer->GetRGrassHopperPauCnt() != 0)
 			{
 				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2339,7 +2339,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(-500, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & lGrassHopper)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper)
 			{
 				Math::Rectangle rc = { 0,0,120,50 };
 				color = { 1,1,1,0.6f };
@@ -2349,7 +2349,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(-350, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & lScorpion)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::lScorpion)
 			{
 				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2357,7 +2357,7 @@ void Ui::DrawSprite()
 				color = { 1,1,1,0.6f };
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
 			}
-			else if (m_spPlayer->GetWeaponType() & lGrassHopper && m_spPlayer->GetLGrassHopperPauCnt() != 0)
+			else if (m_spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper && m_spPlayer->GetLGrassHopperPauCnt() != 0)
 			{
 				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2964,7 +2964,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(350, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & grassHopper)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::grassHopper)
 			{
 				Math::Rectangle rc = { 0,0,120,50 };
 				color = { 1,1,1,0.6f };
@@ -2974,7 +2974,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(500, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & scorpion)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::scorpion)
 			{
 				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2982,7 +2982,7 @@ void Ui::DrawSprite()
 				color = { 1,1,1,0.6f };
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
 			}
-			else if (m_spPlayer->GetWeaponType() & grassHopper && m_spPlayer->GetRGrassHopperPauCnt() != 0)
+			else if (m_spPlayer->GetWeaponType() & Player::WeaponType::grassHopper && m_spPlayer->GetRGrassHopperPauCnt() != 0)
 			{
 				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -2994,7 +2994,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(-500, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & lGrassHopper)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper)
 			{
 				Math::Rectangle rc = { 0,0,120,50 };
 				color = { 1,1,1,0.6f };
@@ -3004,7 +3004,7 @@ void Ui::DrawSprite()
 			transMat = Math::Matrix::CreateTranslation(-350, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
-			if (m_spPlayer->GetWeaponType() & lScorpion)
+			if (m_spPlayer->GetWeaponType() & Player::WeaponType::lScorpion)
 			{
 				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -3012,7 +3012,7 @@ void Ui::DrawSprite()
 				color = { 1,1,1,0.6f };
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
 			}
-			else if (m_spPlayer->GetWeaponType() & lGrassHopper && m_spPlayer->GetLGrassHopperPauCnt() != 0)
+			else if (m_spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper && m_spPlayer->GetLGrassHopperPauCnt() != 0)
 			{
 				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);

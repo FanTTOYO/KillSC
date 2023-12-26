@@ -5,7 +5,10 @@
     "VforceDownValue": 1,
     "Position": [ 0, 0, -20 ],
     "AddCenterVal": [ 0, 1.5, 0 ],
+    "AddEffectPosVal": [ 0.8, 1.2, 0.8 ],
     "AddBottomYVal": 0.7,
+    "AddGrassDashEffectPosVal": [ 0.8, 1.2, 0.8 ],
+    "AddGrassDashUpEffectPosYVal": 2.9,
     "EnableStepHight": 0.2,
     "StepMaxTime": 60,
     "RunMoveSpeed": 0.25,
@@ -97,10 +100,22 @@
     "AddCenterVal": [ 0, 1.5, 0 ],
     "AddBottomYVal": 0.7,
     "Endurance": 100,
-    "Vforce": 50
+    "Vforce": 50,
+    "AttackMoveSpeed": 0.2,
+    "FootfallPointMoment": [ 16, 31 ],
+    "LastRunAnimationTime": 40,
+    "AttackPointMoment": 15,
+    "MaxAttackAnimeDelayCnt": 10,
+    "LastAttackAnimationMoment": 20,
+    "AttackOneOrTwoShakenMoment": 10,
+    "AttackThreeShakenMoment": 15,
+    "MaxCoarseFishEnemyAttackDelayCnt" :  120
   },
 
   "WimpEnemyTypeOne": {
+    "AddBottomYVal": 0.1,
+    "FootfallPointMoment": [ 16, 31 ],
+    "LastRunAnimationTime": 40,
     "WimpEnemyTypeOnePosF": [ -5, 0, 30 ],
     "WimpEnemyTypeOnePosR": [ 30, 0, -5 ],
     "WimpEnemyTypeOnePosB": [ -5, 0, -30 ],
@@ -139,15 +154,39 @@
     "TypeGardToHitSphereRadius": 0.3,
     "TypeGardToHitSphereRadiusIsGrassDash": 0.6,
     "AddCenterVal": [ 0, 1.5, 0 ],
+    "AddGrassDashEffectPosVal": [ 0.8, 1.2, 0.8 ],
+    "AddGrassDashUpEffectPosYVal": 2.9,
     "AddBottomYVal": 0.7,
-    "RushLastAttackPointTime": 107
+    "RushLastAttackPointTime": 107,
+    "AttackMoveSpeed": 0.8,
+
+    "FootfallPointMoment": [ 16, 31 ],
+    "LastRunAnimationTime": 40,
+    "AttackPointMoment": 15,
+    "MaxAttackAnimeDelayCnt": 10,
+    "LastAttackAnimationMoment": 20,
+    "AttackOneOrTwoShakenMoment": 10,
+    "AttackThreeShakenMoment": 15,
+    "RLAttackOneShakenFirstMoment": 13,
+    "RLAttackOneShakenSecondMoment": 17,
+    "RLAttackTwoShakenFirstMoment": 13,
+    "RLAttackTwoShakenSecondMoment": 16,
+    "RLAttackThreeShakenFirstMoment": 15,
+    "RLAttackThreeShakenSecondMoment": 23,
+    "LastRLAttackAnimationdMoment": 20,
+    "LastRLAttackThreeAnimationMoment": 40,
+    "RLAttackRushShakenMoment": [ 8, 21, 31, 49, 57, 74, 89 ],
+    "RLAttackRushOneAndTwoShakenMomentMoveSpeed": 0.2,
+    "RLAttackRushThreeAndFourShakenMomentMoveSpeed": 0.25,
+    "RLAttackRushFiveAndSixShakenMomentMoveSpeed": 0.1,
+    "RushLastAttackMoveSpeed": 0.05
   },
 
   "TutorialEnemy": {
     "BossEnemyAppearanceEffectScale": 1.5,
     "Endurance": 1,
     "Vforce": 1,
-    "InitWorldRotationY" :  180,
+    "InitWorldRotationY": 180,
     "EnableStepHight": 0.2,
     "TypeGroundToHitSphereRadius": 0.3,
     "TypeBuriedToHitSphereRadius": 0.4,
@@ -160,6 +199,8 @@
   },
 
   "BossEnemyTypeOne": {
+    "FootfallPointMoment": [ 16, 31 ],
+    "LastRunAnimationTime": 40,
     "BossEnemyTypeOneAppearanceEffectScale": 20,
     "Endurance": 1000,
     "Vforce": 10000,
@@ -170,8 +211,17 @@
     "TypeBumpToHitSphereRadius": 0.3,
     "TypeGardToHitSphereRadius": 0.3,
     "TypeGardToHitSphereRadiusIsGrassDash": 0.6,
-    "AddCenterVal": [ 0, 1.5, 0 ],
-    "EnergyBulletSpeed" :  1
+    "AddCenterVal": [ 0, 12, 0 ],
+    "AddBottomYVal": 0.1,
+    "EnergyBulletSpeed": 1,
+    "EnergyBeemSpeed": 2.25,
+    "EnergyBeemLongestVal": 45,
+    "MaxWeaknesSsuccessionHitCnt": 5,
+    "MaxWeaknesSsuccessionHitStopCnt": 80,
+    "RotationAttackHitChaeckSphereRadius" : 50,
+    "RotationAttackMoveSpeed" : 0.25,
+    "RotationAttackHitStart" : 17,
+    "RotationAttackHitEnd" : 73
   },
 
   "RockOn": {
@@ -207,5 +257,7 @@
   "GrassDashSteppingAwayMoment": 75,
   "GrassDashSteppingAwayJustBefore": 80,
   "GrassDashSpeed": [ 0, 0.8, 0.5, 0.4, 0.35, 0.3, 0.25, 0.2 ],
-  "SpeedSterGrassDashSpeed": [ 1.2, 0.4, 0.35, 0.3, 0.25, 0.2, 0.1 ]
+  "SpeedSterGrassDashSpeed": [ 1.2, 0.4, 0.35, 0.3, 0.25, 0.2, 0.1 ],
+  "FristWeaknessHitGraduallyTorionDecVal" : 0.1,
+  "AddWeaknessHitGraduallyTorionDecVal" : 1.5
 }

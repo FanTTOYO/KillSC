@@ -27,8 +27,8 @@ void Enemy::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 	m_EnemyState = idle;
 
-	m_weaponType |= eScorpion;
-	m_weaponType |= eLScorpion;
+	m_weaponType |= scorpion;
+	m_weaponType |= lScorpion;
 	m_wantToMoveState = wNone;
 	m_attackHitImmediatelyAfter = false;
 	m_rightWeaponNumber = 1;
@@ -95,6 +95,8 @@ void Enemy::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_bEnemy = true;
 	m_bLethalDamageToKickOrPantciOrDashAttackHit = false;
 
+	m_addCenterVal = {};
+
 	m_wpJsonObj = a_wpJsonObj;
 }
 
@@ -106,6 +108,10 @@ void Enemy::Update()
 		lowestYPos = static_cast<float>((*m_wpJsonObj.lock())["TutorialMinimumYPos"].number_value());
 		m_mpObj = (*m_wpJsonObj.lock())["TutorialEnemy"].object_items();
 		m_mWorldRot.y = (float)m_mpObj["InitWorldRotationY"].number_value();
+		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+		m_addCenterVal = addCenterVal;
 
 		if (m_bFirstUpdate)
 		{
@@ -134,13 +140,13 @@ void Enemy::Update()
 		{
 			m_pos = Math::Vector3::Zero;
 		}
+#endif
 
 		// debugキー
 		if (GetAsyncKeyState('K') & 0x8000)
 		{
 			m_vForce = 0;
 		}
-#endif
 		
 
 		m_vForce -= m_graduallyTorionDecVal;
@@ -225,12 +231,9 @@ void Enemy::Update()
 			m_overStageTime = 0;
 		}
 
-		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
 		KdCollider::SphereInfo sphereInfo;
 		// 球の中心位置を設定
-		sphereInfo.m_sphere.Center = m_pos + addCenterVal;
+		sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
 		// 球の半径を設定
 
 		sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeBuriedToHitSphereRadius"].number_value());
@@ -423,11 +426,11 @@ void Enemy::Update()
 	{
 		if (m_bBeamHitStart)
 		{
-			m_beamRange += 2.25f;
+			m_beamRange += static_cast<float>(m_mpObj["EnergyBeemSpeed"].number_value());
 
-			if (m_beamRange > 45)
+			if (m_beamRange > static_cast<float>(m_mpObj["EnergyBeemLongestVal"].int_value()))
 			{
-				m_beamRange = 45;
+				m_beamRange = static_cast<float>(m_mpObj["EnergyBeemLongestVal"].number_value());
 			}
 
 			EnemyBeamHitChaeck();
@@ -1017,12 +1020,9 @@ void Enemy::CollisionUpdate()
 			}
 		}
 
-		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
-									   static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
-									   static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
 		KdCollider::SphereInfo sphereInfo;
 		// 球の中心位置を設定
-		sphereInfo.m_sphere.Center = m_pos + addCenterVal;
+		sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
 		if (!(m_EnemyState & (grassHopperDash | grassHopperDashUp | step)))
 		{
 			sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeGroundToHitSphereRadius"].number_value());
@@ -1194,7 +1194,7 @@ void Enemy::CollisionUpdate()
 		if (!(m_EnemyState & cutRaiseHit))
 		{
 			// 仲間のリストをつくって仲間に重ならないようにする
-			sphereInfo.m_sphere.Center = m_pos + addCenterVal;
+			sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
 			sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeBumpToHitSphereRadius"].number_value());
 			// 当たり判定をしたいタイプを設定
 			sphereInfo.m_type = KdCollider::TypeBump;
@@ -1253,7 +1253,7 @@ void Enemy::CollisionUpdate()
 		{
 			sphereInfo;
 			// 球の中心位置を設定
-			sphereInfo.m_sphere.Center = m_pos + addCenterVal;
+			sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
 			// 球の半径を設定
 
 			sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeBuriedToHitSphereRadius"].number_value());
@@ -1310,8 +1310,8 @@ void Enemy::CollisionUpdate()
 
 		if (!m_target.expired())
 		{
-			rayInfo.m_pos = m_pos + addCenterVal;
-			rayInfo.m_dir = (m_target.lock()->GetPos() + Math::Vector3(0, 1.5f, 0)) - (m_pos + addCenterVal);
+			rayInfo.m_pos = m_pos + m_addCenterVal;
+			rayInfo.m_dir = (m_target.lock()->GetPos() + Math::Vector3(0, 1.5f, 0)) - (m_pos + m_addCenterVal);
 			rayInfo.m_range = rayInfo.m_dir.Length();
 			rayInfo.m_dir.Normalize();
 			/*rayInfo.m_range = 0.5f;
@@ -1392,6 +1392,16 @@ void Enemy::BossUpdate()
 		hopper->SetArrmType(lArrm);
 		hopper->SetbEnemyWeapon();
 		m_weaponList.push_back(hopper);
+
+		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+		m_addCenterVal = addCenterVal;
+
+		Math::Vector3 AddGrassDashEffectPosVal = { static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][0].number_value()),
+										           static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][1].number_value()),
+										           static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][2].number_value())};
+		m_addGrassDashEffectPosVal = AddGrassDashEffectPosVal;
 
 		for (auto& WeaList : m_weaponList)
 		{
@@ -1478,24 +1488,24 @@ void Enemy::BossUpdate()
 
 			if (m_mpObj["RightWeaponScopionNum"].int_value() == m_rightWeaponNumber)
 			{
-				m_weaponType |= eScorpion;
-				m_weaponType &= ~eGrassHopper;
+				m_weaponType |= scorpion;
+				m_weaponType &= ~grassHopper;
 			}
 			else if (m_mpObj["RightWeaponGrassHopperNum"].int_value() == m_rightWeaponNumber)
 			{
-				m_weaponType |= eGrassHopper;
-				m_weaponType &= ~eScorpion;
+				m_weaponType |= grassHopper;
+				m_weaponType &= ~scorpion;
 			}
 
 			if (m_mpObj["LeftWeaponScopionNum"].int_value() == m_leftWeaponNumber)
 			{
-				m_weaponType |= eLScorpion;
-				m_weaponType &= ~eLGrassHopper;
+				m_weaponType |= lScorpion;
+				m_weaponType &= ~lGrassHopper;
 			}
 			else if (m_mpObj["LeftWeaponGrassHopperNum"].int_value() == m_leftWeaponNumber)
 			{
-				m_weaponType |= eLGrassHopper;
-				m_weaponType &= ~eLScorpion;
+				m_weaponType |= lGrassHopper;
+				m_weaponType &= ~lScorpion;
 			}
 
 			if (!(m_wantToMoveState & WantToMoveState::wNone))
@@ -1529,7 +1539,7 @@ void Enemy::BossUpdate()
 							{
 								if (vTarget.Length() <= 15)
 								{
-									if (m_weaponType & eGrassHopper)
+									if (m_weaponType & grassHopper)
 									{
 										if (m_EnemyState & grassHopperDashF)
 										{
@@ -1540,7 +1550,7 @@ void Enemy::BossUpdate()
 											GrassMoveVecDecision();
 										}
 									}
-									else if (m_weaponType & eLGrassHopper)
+									else if (m_weaponType & lGrassHopper)
 									{
 										if (m_EnemyState & grassHopperDashF)
 										{
@@ -1561,7 +1571,7 @@ void Enemy::BossUpdate()
 							{
 								if (vTarget.Length() <= 9.25f)
 								{
-									if (m_weaponType & eGrassHopper)
+									if (m_weaponType & grassHopper)
 									{
 										if (m_EnemyState & grassHopperDashF)
 										{
@@ -1572,7 +1582,7 @@ void Enemy::BossUpdate()
 											GrassMoveVecDecision();
 										}
 									}
-									else if (m_weaponType & eLGrassHopper)
+									else if (m_weaponType & lGrassHopper)
 									{
 										if (m_EnemyState & grassHopperDashF)
 										{
@@ -1593,7 +1603,7 @@ void Enemy::BossUpdate()
 							{
 								if (vTarget.Length() <= 8.0f)
 								{
-									if (m_weaponType & eGrassHopper)
+									if (m_weaponType & grassHopper)
 									{
 										if (m_EnemyState & grassHopperDashF)
 										{
@@ -1604,7 +1614,7 @@ void Enemy::BossUpdate()
 											GrassMoveVecDecision();
 										}
 									}
-									else if (m_weaponType & eLGrassHopper)
+									else if (m_weaponType & lGrassHopper)
 									{
 										if (m_EnemyState & grassHopperDashF)
 										{
@@ -1625,7 +1635,7 @@ void Enemy::BossUpdate()
 							{
 								if (vTarget.Length() <= 4.0f)
 								{
-									if (m_weaponType & eGrassHopper)
+									if (m_weaponType & grassHopper)
 									{
 										if ((m_EnemyState & grassHopperDashF) && (m_rGrassHopperTime <= 80))
 										{
@@ -1636,7 +1646,7 @@ void Enemy::BossUpdate()
 											GrassMoveVecDecision();
 										}
 									}
-									else if (m_weaponType & eLGrassHopper)
+									else if (m_weaponType & lGrassHopper)
 									{
 										if ((m_EnemyState & grassHopperDashF) && (m_lGrassHopperTime <= 80))
 										{
@@ -1657,7 +1667,7 @@ void Enemy::BossUpdate()
 							{
 								if (vTarget.Length() <= 2.0f)
 								{
-									if (m_weaponType & eGrassHopper)
+									if (m_weaponType & grassHopper)
 									{
 										if (m_EnemyState & grassHopperDashF)
 										{
@@ -1668,7 +1678,7 @@ void Enemy::BossUpdate()
 											GrassMoveVecDecision();
 										}
 									}
-									else if (m_weaponType & eLGrassHopper)
+									else if (m_weaponType & lGrassHopper)
 									{
 										if (m_EnemyState & grassHopperDashF)
 										{
@@ -1759,8 +1769,8 @@ void Enemy::BossEnemyTyepOneUpdate()
 	{
 		m_mpObj = (*m_wpJsonObj.lock())["BossEnemyTypeOne"].object_items();
 		m_weaponList.clear();
-		m_weaponType |= eLWeaponNone | eWeaponNone;
-		m_weaponType &= eLWeaponNone | eWeaponNone;
+		m_weaponType |= lWeaponNone | weaponNone;
+		m_weaponType &= lWeaponNone | weaponNone;
 
 		m_leftWeaponNumber = 0;
 		m_rightWeaponNumber = 0;
@@ -1774,6 +1784,10 @@ void Enemy::BossEnemyTyepOneUpdate()
 		}
 		m_EnemyState = run;
 		m_addRotationAttackDistToPlayerRadius = 42.5f;
+		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+		m_addCenterVal = addCenterVal;
 		return;
 	}
 
@@ -1901,8 +1915,8 @@ void Enemy::CoarseFishEnemyUpdate()
 		sco->SetTarget(m_target.lock());
 		m_weaponList.push_back(sco);
 
-		m_weaponType |= eLWeaponNone | eScorpion;
-		m_weaponType &= eLWeaponNone | eScorpion;
+		m_weaponType |= lWeaponNone | scorpion;
+		m_weaponType &= lWeaponNone | scorpion;
 
 		m_leftWeaponNumber = 0;
 		m_rightWeaponNumber = 1;
@@ -1917,6 +1931,11 @@ void Enemy::CoarseFishEnemyUpdate()
 
 		m_enemyType = Enemy::EnemyType::coarseFishEnemy;
 		
+		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+		m_addCenterVal = addCenterVal;
+
 		return;
 	}
 
@@ -1999,8 +2018,8 @@ void Enemy::WimpEnemyTypeOneUpdate()
 		m_mpObj = (*m_wpJsonObj.lock())["WimpEnemyTypeOne"].object_items();
 
 		m_weaponList.clear();
-		m_weaponType |= eLWeaponNone | eWeaponNone;
-		m_weaponType &= eLWeaponNone | eWeaponNone;
+		m_weaponType |= lWeaponNone | weaponNone;
+		m_weaponType &= lWeaponNone | weaponNone;
 
 		m_leftWeaponNumber = 0;
 		m_rightWeaponNumber = 0;
@@ -2010,6 +2029,11 @@ void Enemy::WimpEnemyTypeOneUpdate()
 
 		m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
 		m_EnemyState = idle;
+
+		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+		m_addCenterVal = addCenterVal;
 
 		return;
 	}
@@ -2199,16 +2223,16 @@ void Enemy::PostUpdate()
 			if (m_EnemyState & run)
 			{
 				++m_runAnimeCnt;
-				if (m_runAnimeCnt == 16)
+				if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][0].int_value())
 				{
-					KdAudioManager::Instance().Play3D("Asset/Audio/SE/FootstepsConcrete2.wav", m_pos);
+					KdAudioManager::Instance().Play3D("Asset/Audio/SE/FootstepsConcrete2.wav", {m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddBottomYVal"].number_value()),m_pos.z});
 				}
-				else if (m_runAnimeCnt == 31)
+				else if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][1].int_value())
 				{
-					KdAudioManager::Instance().Play3D("Asset/Audio/SE/FootstepsConcrete2.wav", m_pos);
+					KdAudioManager::Instance().Play3D("Asset/Audio/SE/FootstepsConcrete2.wav", { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddBottomYVal"].number_value()),m_pos.z });
 				}
 
-				if (m_runAnimeCnt == 40)
+				if (m_runAnimeCnt == m_mpObj["LastRunAnimationTime"].int_value())
 				{
 					m_runAnimeCnt = 0;
 				}
@@ -2221,18 +2245,18 @@ void Enemy::PostUpdate()
 				m_attackAnimeCnt++;
 				if (m_EnemyState & (lAttackOne | lAttackTwo | rAttackOne | rAttackTwo))
 				{
-					if (m_attackAnimeCnt == 10)
+					if (m_attackAnimeCnt == m_mpObj["AttackOneOrTwoShakenMoment"].int_value())
 					{
-						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
 					}
 				}
 
-				if (m_attackAnimeCnt == 20)
+				if (m_attackAnimeCnt == m_mpObj["LastAttackAnimationMoment"].int_value())
 				{
 					m_bAttackAnimeDelay = true;
 					m_bAttackAnimeCnt = false;
 					m_attackAnimeCnt = 0;
-					m_attackAnimeDelayCnt = 10;
+					m_attackAnimeDelayCnt = m_mpObj["MaxAttackAnimeDelayCnt"].int_value();
 				}
 			}
 			else
@@ -2240,9 +2264,9 @@ void Enemy::PostUpdate()
 				m_attackAnimeCnt++;
 				if (m_EnemyState & (lAttackThree | rAttackThree))
 				{
-					if (m_attackAnimeCnt == 15)
+					if (m_attackAnimeCnt == m_mpObj["AttackThreeShakenMoment"].int_value())
 					{
-						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
 					}
 				}
 			}
@@ -2257,36 +2281,36 @@ void Enemy::PostUpdate()
 				m_attackAnimeCnt++;
 				if (m_EnemyState & rlAttackOne)
 				{
-					if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 17)
+					if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
 					{
-						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
 					}
 				}
 				else if (m_EnemyState & rlAttackTwo)
 				{
-					if (m_attackAnimeCnt == 13 || m_attackAnimeCnt == 16)
+					if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
 					{
-						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
 					}
 				}
 				else if (m_EnemyState & rlAttackThree)
 				{
-					if (m_attackAnimeCnt == 15 || m_attackAnimeCnt == 23)
+					if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
 					{
-						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav",m_pos + m_addCenterVal);
 					}
 				}
 				else if (m_EnemyState & rlAttackRush)
 				{
-					if (m_attackAnimeCnt == 8 ||
-						m_attackAnimeCnt == 21 ||
-						m_attackAnimeCnt == 31 ||
-						m_attackAnimeCnt == 49 ||
-						m_attackAnimeCnt == 57 ||
-						m_attackAnimeCnt == 74 ||
-						m_attackAnimeCnt == 89)
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][0].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value())
 					{
-						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav",m_pos + m_addCenterVal);
 					}
 				}
 
@@ -2739,6 +2763,17 @@ void Enemy::WeaknessOnHit()
 		}
 
 		m_addWeaknesSsuccessionHitCntTime = ADDWEAKNESSEUCCESSIONHITCNTTIMELIMIT;
+
+		if (m_weaknesSsuccessionHitCnt >= m_mpObj["MaxWeaknesSsuccessionHitCnt"].int_value())
+		{
+			m_weaknesSsuccessionHitCnt = 0;
+			m_addWeaknesSsuccessionHitCntTime = 0;
+			m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
+			m_hitStopCnt = m_mpObj["MaxWeaknesSsuccessionHitStopCnt"].int_value();
+			m_animator->SetAnimation(m_model->GetAnimation("SuccessionWeaknessOnHit"), false);
+		}
+
+		m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
 	}
 	else
 	{
@@ -2748,22 +2783,11 @@ void Enemy::WeaknessOnHit()
 
 	if (m_graduallyTorionDecVal == 0)
 	{
-		m_graduallyTorionDecVal = 0.1f;
+		m_graduallyTorionDecVal = static_cast<float>((*m_wpJsonObj.lock())["FristWeaknessHitGraduallyTorionDecVal"].number_value());
 	}
 	else
 	{
-		m_graduallyTorionDecVal *= 1.5f;
-	}
-
-	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
-
-	if (m_weaknesSsuccessionHitCnt >= 5)
-	{
-		m_weaknesSsuccessionHitCnt = 0;
-		m_addWeaknesSsuccessionHitCntTime = 0;
-		m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
-		m_hitStopCnt = 80;
-		m_animator->SetAnimation(m_model->GetAnimation("SuccessionWeaknessOnHit"), false);
+		m_graduallyTorionDecVal *= static_cast<float>((*m_wpJsonObj.lock())["AddWeaknessHitGraduallyTorionDecVal"].number_value());
 	}
 }
 
@@ -2840,12 +2864,11 @@ void Enemy::DrawLit_SkinMesh()
 	KdShaderManager::Instance().m_HD2DShader.SetOutLineColor({ 1,0,0 });
 	if (m_hitColorChangeTimeCnt == 0)
 	{
-		Math::Color color = { 1,1,1,1 };
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true, color);
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true);
 	}
 	else
 	{
-		Math::Color color = { 1,0,0,1 };
+		Math::Color color = kRedColor;
 		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true, color);
 	}
 }
@@ -2866,17 +2889,6 @@ void Enemy::DrawLit()
 			WeaList->DrawLit();
 		}
 	}
-}
-
-void Enemy::DrawUnLit()
-{
-	/*Math::Matrix mat = Math::Matrix::CreateScale(1.0f) * Math::Matrix::CreateTranslation(m_pos.x, m_pos.y + 3.0f, m_pos.z);
-
-	Math::Color color = { 1, 1, 1, 1 };
-	KdShaderManager::Instance().m_HD2DShader.DrawPolygon(m_endurancePoly, mat,color);
-
-	color = { 1, 1, 1, 1 };
-	KdShaderManager::Instance().m_HD2DShader.DrawPolygon(m_enduranceBarPoly, mat, color);*/
 }
 
 void Enemy::DrawBright()
@@ -3508,7 +3520,7 @@ void Enemy::GrassMoveVecDecision()
 
 	if (m_rGrassHopperPauCnt == 0)
 	{
-		if (m_weaponType & eGrassHopper)
+		if (m_weaponType & grassHopper)
 		{
 			std::random_device rnd;
 			std::mt19937 mt(rnd());
@@ -3670,9 +3682,9 @@ void Enemy::GrassMoveVecDecision()
 						m_weaponList[2]->GrassHopper({ m_pos.x + 0.65f * m_mWorldRot.x,m_pos.y + 0.9f,m_pos.z + 0.65f * m_mWorldRot.z }, m_mWorldRot.y);
 
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+							Play(fileName, { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					case 1:
@@ -3693,9 +3705,9 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Forward();
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+							Play(fileName, { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					case 2:
@@ -3716,9 +3728,9 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Right();
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+							Play(fileName, { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					case 3:
@@ -3739,9 +3751,9 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Left();
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+							Play(fileName, { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					case 4:
@@ -3761,9 +3773,9 @@ void Enemy::GrassMoveVecDecision()
 						m_weaponList[2]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x,m_pos.y + 2.9f,m_pos.z });
+							Play(fileName, { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					}
@@ -3777,7 +3789,7 @@ void Enemy::GrassMoveVecDecision()
 
 	if (m_lGrassHopperPauCnt == 0)
 	{
-		if (m_weaponType & eLGrassHopper)
+		if (m_weaponType & lGrassHopper)
 		{
 			std::random_device rnd;
 			std::mt19937 mt(rnd());
@@ -3945,9 +3957,9 @@ void Enemy::GrassMoveVecDecision()
 						m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+							Play(fileName, { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					case 1:
@@ -3968,9 +3980,9 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Forward();
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+							Play(fileName, { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					case 2:
@@ -3991,9 +4003,9 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Right();
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+							Play(fileName, { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					case 3:
@@ -4014,9 +4026,9 @@ void Enemy::GrassMoveVecDecision()
 
 						vec = m_mWorld.Left();
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+							Play(fileName, { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					case 4:
@@ -4036,9 +4048,9 @@ void Enemy::GrassMoveVecDecision()
 						m_weaponList[3]->GrassHopper({ mat._41,mat._42,mat._43 }, m_mWorldRot.y);
 
 						KdEffekseerManager::GetInstance().
-							Play(fileName, { m_pos.x,m_pos.y + 2.9f,m_pos.z });
+							Play(fileName, { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z});
 						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect(fileName); // これでループしない
-						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
+						efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
 						KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 						break;
 					}
@@ -4101,30 +4113,30 @@ void Enemy::GrassMove()
 		if (m_EnemyState & grassHopperDashF)
 		{
 			Math::Vector3 vec = m_mWorld.Backward();
-			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 			KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 		}
 		else if (m_EnemyState & grassHopperDashB)
 		{
 			Math::Vector3 vec = m_mWorld.Forward();
-			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 			KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 		}
 		else if (m_EnemyState & grassHopperDashR)
 		{
 			Math::Vector3 vec = m_mWorld.Right();
-			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 			KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 		}
 		else if (m_EnemyState & grassHopperDashL)
 		{
 			Math::Vector3 vec = m_mWorld.Left();
-			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + 0.8f * vec.x,m_pos.y + 1.2f,m_pos.z + 0.8f * vec.z });
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 			KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 		}
 		else if (m_EnemyState & grassHopperDashUp)
 		{
-			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 2.9f,m_pos.z });
+			Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
 			KdEffekseerManager::GetInstance().SetWorldMatrix(fileName, efcMat);
 		}
 
@@ -5762,7 +5774,7 @@ void Enemy::EnergyCharge(bool a_bBeem)
 	node = m_model->FindNode("HitPoint");
 	mat = node->m_worldTransform * m_mWorld;
 	m_rangedAttackShotPos = mat.Translation();
-	m_rangedAttackTargetPos = { m_target.lock()->GetPos().x, m_target.lock()->GetPos().y + 1.2f, m_target.lock()->GetPos().z };
+	m_rangedAttackTargetPos = { m_target.lock()->GetPos().x, m_target.lock()->GetPos().y + m_target.lock()->GetAddCenterVal().y, m_target.lock()->GetPos().z};
 
 	Math::Vector3 nowVec = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 	nowVec.x = 0;
@@ -5868,7 +5880,7 @@ void Enemy::EnergyCharge(bool a_bBeem)
 void Enemy::RotationAttackMove()
 {
 	Math::Vector3 moveVec;
-	float moveSpd = 0.25;
+	float moveSpd = static_cast<float>(m_mpObj["RotationAttackMoveSpeed"].number_value());
 	moveVec += Math::Vector3::TransformNormal({ 0, 0, 1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 	m_pos += moveVec * moveSpd;
 
@@ -5882,7 +5894,8 @@ void Enemy::RotationAttackMove()
 
 	if (!m_target.expired())
 	{
-		if (m_target.lock()->GetInvincibilityTimeCnt() == 0 && m_attackAnimeCnt >= 17 && m_attackAnimeCnt <= 73)
+		if (m_target.lock()->GetInvincibilityTimeCnt() == 0 && m_attackAnimeCnt >= m_mpObj["RotationAttackHitStart"].int_value()
+			                                                && m_attackAnimeCnt <= m_mpObj["RotationAttackHitEnd"].int_value())
 		{
 			m_target.lock()->SetAttackHit(false);
 			m_target.lock()->SetDefenseSuc(false);
@@ -5899,8 +5912,8 @@ void Enemy::RotationAttackChaeck()
 	// 球の当たったオブジェクト情報
 	std::list<KdCollider::CollisionResult> retSphereList;
 
-	sphereInfo.m_sphere.Center = m_pos + Math::Vector3(0, 12, 0);
-	sphereInfo.m_sphere.Radius = 50.0f;
+	sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
+	sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["RotationAttackHitChaeckSphereRadius"].number_value());
 	// 当たり判定をしたいタイプを設定
 	sphereInfo.m_type = KdCollider::TypeDamage;
 
@@ -5982,7 +5995,7 @@ void Enemy::ScorpionAttackMove()
 			{
 				if (!m_bBoss)
 				{
-					m_coarseFishEnemyAttackDelayCnt = 120;
+					m_coarseFishEnemyAttackDelayCnt = m_mpObj["MaxCoarseFishEnemyAttackDelayCnt"].int_value();
 				}
 
 				Brain();
@@ -6000,7 +6013,7 @@ void Enemy::ScorpionAttackMove()
 			{
 				if (!m_bBoss)
 				{
-					m_coarseFishEnemyAttackDelayCnt = 120;
+					m_coarseFishEnemyAttackDelayCnt = m_mpObj["MaxCoarseFishEnemyAttackDelayCnt"].int_value();
 				}
 				Brain();
 			}
@@ -6020,7 +6033,7 @@ void Enemy::ScorpionAttackMove()
 
 			if (m_EnemyState & (rAttackTwo | lAttackTwo))
 			{
-				if (m_attackAnimeCnt == 15)
+				if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
 				{
 					if (!m_target.expired())
 					{
@@ -6031,7 +6044,7 @@ void Enemy::ScorpionAttackMove()
 			}
 			else if (m_EnemyState & (rAttackThree | lAttackThree))
 			{
-				if (m_attackAnimeCnt == 15)
+				if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
 				{
 					if (!m_target.expired())
 					{
@@ -6043,7 +6056,7 @@ void Enemy::ScorpionAttackMove()
 		}
 		if (!(m_EnemyState & rlAttackRush))
 		{
-			if (m_attackAnimeCnt >= 15)
+			if (m_attackAnimeCnt >= m_mpObj["AttackPointMoment"].int_value())
 			{
 				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value());
 			}
@@ -6074,8 +6087,8 @@ void Enemy::ScorpionAttackMove()
 				switch (m_wantToMoveState)
 				{
 				case WantToMoveState::wAttack:
-					m_leftWeaponNumber = 1;
-					m_rightWeaponNumber = 1;
+					m_leftWeaponNumber  = m_mpObj["LeftWeaponScopionNum"].int_value();
+					m_rightWeaponNumber = m_mpObj["RightWeaponScopionNum"].int_value();
 					break;
 				}
 			}
@@ -6090,7 +6103,7 @@ void Enemy::ScorpionAttackMove()
 			if (m_EnemyState & rlAttackOne)
 			{
 				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == 17)
+				if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
 				{
 					if (!m_target.expired())
 					{
@@ -6102,7 +6115,7 @@ void Enemy::ScorpionAttackMove()
 			else if (m_EnemyState & rlAttackTwo)
 			{
 				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == 16)
+				if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
 				{
 					if (!m_target.expired())
 					{
@@ -6114,7 +6127,7 @@ void Enemy::ScorpionAttackMove()
 			else if (m_EnemyState & rlAttackThree)
 			{
 				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == 23)
+				if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
 				{
 					if (!m_target.expired())
 					{
@@ -6126,13 +6139,13 @@ void Enemy::ScorpionAttackMove()
 			else if (m_EnemyState & rlAttackRush)
 			{
 				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["RushAttackMoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == 21 ||
-					m_attackAnimeCnt == 31 ||
-					m_attackAnimeCnt == 49 ||
-					m_attackAnimeCnt == 57 ||
-					m_attackAnimeCnt == 74 ||
-					m_attackAnimeCnt == 89 ||
-					m_attackAnimeCnt == 107
+				if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RushLastAttackPointTime"].int_value()
 					)
 				{
 					if (!m_target.expired())
@@ -6141,23 +6154,30 @@ void Enemy::ScorpionAttackMove()
 						m_target.lock()->SetDefenseSuc(false);
 					}
 
-					switch (m_attackAnimeCnt)
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value()
+						)
 					{
-					case 21:
-					case 31:
-						m_attackMoveSpd = 0.2f;
-						break;
-					case 49:
-					case 57:
-						m_attackMoveSpd = 0.25f;
-						break;
-					case 74:
-					case 89:
-						m_attackMoveSpd = 0.1f;
-						break;
-					case 107:
-						m_attackMoveSpd = 0.05f;
-						break;
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushOneAndTwoShakenMomentMoveSpeed"].number_value());
+					}
+
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value()
+						)
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushThreeAndFourShakenMomentMoveSpeed"].number_value());
+					}
+
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value()
+						)
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushFiveAndSixShakenMomentMoveSpeed"].number_value());
+					}
+
+					if (m_attackAnimeCnt == (*m_wpJsonObj.lock())["RushLastAttackPointTime"].int_value())
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RushLastAttackMoveSpeed"].number_value());
 					}
 				}
 			}
@@ -6171,7 +6191,7 @@ void Enemy::ScorpionAttackDecision()
 {
 	if (!(m_EnemyState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
 	{
-		if ((m_weaponType & eScorpion) && (m_weaponType & eLScorpion))
+		if ((m_weaponType & scorpion) && (m_weaponType & lScorpion))
 		{
 			if (m_bMantisAttack && m_bMantisPossAng)
 			{
@@ -6210,7 +6230,7 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 				m_attackMoveDir.y = 0;
 				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = 0.8f;
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 
 				m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
 			}
@@ -6238,7 +6258,7 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 				m_attackMoveDir.y = 0;
 				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = 0.8f;
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 			}
 			else if (m_EnemyState & rAttackTwo)
 			{
@@ -6251,7 +6271,7 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 				m_attackMoveDir.y = 0;
 				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = 0.8f;
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 			}
 
 			if (m_EnemyState & lAttackOne)
@@ -6265,7 +6285,7 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 				m_attackMoveDir.y = 0;
 				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = 0.8f;
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 			}
 			else if (m_EnemyState & lAttackTwo)
 			{
@@ -6278,7 +6298,7 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 				m_attackMoveDir.y = 0;
 				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = 0.8f;
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 			}
 
 			if (m_EnemyState & rlAttackOne)
@@ -6293,7 +6313,7 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 				m_attackMoveDir.y = 0;
 				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = 0.8f;
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 				m_animator->SetAnimation(m_model->GetAnimation("RLAttackTwo"), false);
 				m_bMove = true;
 				if (!m_target.expired())
@@ -6314,7 +6334,7 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 				m_attackMoveDir.y = 0;
 				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = 0.8f;
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 				m_animator->SetAnimation(m_model->GetAnimation("RLAttackThree"), false);
 				m_bMove = true;
 				if (!m_target.expired())
@@ -6335,7 +6355,7 @@ void Enemy::ScorpionAttackDecision()
 				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 				m_attackMoveDir.y = 0;
 				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = 0.8f;
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 				m_animator->SetAnimation(m_model->GetAnimation("RLAttackRush"), false);
 				m_bMove = true;
 				if (!m_target.expired())
@@ -6350,7 +6370,7 @@ void Enemy::ScorpionAttackDecision()
 
 	if (!(m_EnemyState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
 	{
-		if (m_weaponType & eScorpion)
+		if (m_weaponType & scorpion)
 		{
 			m_EnemyState |= rAttackOne;
 			m_EnemyState &= ~lAttack;
@@ -6368,7 +6388,7 @@ void Enemy::ScorpionAttackDecision()
 				m_target.lock()->SetDefenseSuc(false);
 			}
 			
-			m_attackMoveSpd = 0.8f;
+			m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 
 			if (m_EnemyState & grassHopperDash && m_bBoss)
 			{
@@ -6379,7 +6399,7 @@ void Enemy::ScorpionAttackDecision()
 				m_animator->SetAnimation(m_model->GetAnimation("RAttack1"), false);
 			}
 		}
-		else if (m_weaponType & eLScorpion)
+		else if (m_weaponType & lScorpion)
 		{
 			m_EnemyState |= lAttackOne;
 			m_EnemyState &= ~rAttack;
@@ -6398,7 +6418,7 @@ void Enemy::ScorpionAttackDecision()
 				m_target.lock()->SetDefenseSuc(false);
 			}
 			
-			m_attackMoveSpd = 0.8f;
+			m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
 			if (m_EnemyState & grassHopperDash && m_bBoss)
 			{
 				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLAttack"), false);

@@ -7,15 +7,15 @@ void Hopper::Update()
 	if (m_bPlayerWeapon)
 	{
 		const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
-		if (!(player->GetWeaponType() & (grassHopper | lGrassHopper)))return;
+		if (!(player->GetWeaponType() & (Player::WeaponType::grassHopper | Player::WeaponType::lGrassHopper)))return;
 
 		const KdModelWork::Node* node = nullptr;
-		if (m_arrmType == rArrm && player->GetWeaponType() & grassHopper)
+		if (m_arrmType == rArrm && player->GetWeaponType() & Player::WeaponType::grassHopper)
 		{
 			node = player->GetModel()->FindNode("WeaponRPoint");
 		}
 
-		if (m_arrmType == lArrm && player->GetWeaponType() & lGrassHopper)
+		if (m_arrmType == lArrm && player->GetWeaponType() & Player::WeaponType::lGrassHopper)
 		{
 			node = player->GetModel()->FindNode("WeaponLPoint");
 		}
@@ -69,15 +69,15 @@ void Hopper::Update()
 	if (m_bEnemyWeapon)
 	{
 		const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-		if (!(enemy->GetWeaponType() & (eGrassHopper | eLGrassHopper)))return;
+		if (!(enemy->GetWeaponType() & (Enemy::WeaponType::grassHopper | Enemy::WeaponType::lGrassHopper)))return;
 
 		const KdModelWork::Node* node = nullptr;
-		if (m_arrmType == rArrm && enemy->GetWeaponType() & eGrassHopper)
+		if (m_arrmType == rArrm && enemy->GetWeaponType() & Enemy::WeaponType::grassHopper)
 		{
 			node = enemy->GetModel()->FindNode("WeaponRPoint");
 		}
 
-		if (m_arrmType == lArrm && enemy->GetWeaponType() & eLGrassHopper)
+		if (m_arrmType == lArrm && enemy->GetWeaponType() & Enemy::WeaponType::lGrassHopper)
 		{
 			node = enemy->GetModel()->FindNode("WeaponLPoint");
 		}
@@ -134,14 +134,14 @@ void Hopper::DrawBright()
 	if (m_bPlayerWeapon)
 	{
 		const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
-		if (!(player->GetWeaponType() & (grassHopper | lGrassHopper)))return;
+		if (!(player->GetWeaponType() & (Player::WeaponType::grassHopper | Player::WeaponType::lGrassHopper)))return;
 
-		if (m_arrmType == rArrm && player->GetWeaponType() & grassHopper)
+		if (m_arrmType == rArrm && player->GetWeaponType() & Player::WeaponType::grassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
 
-		if (m_arrmType == lArrm && player->GetWeaponType() & lGrassHopper)
+		if (m_arrmType == lArrm && player->GetWeaponType() & Player::WeaponType::lGrassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
@@ -160,14 +160,14 @@ void Hopper::DrawBright()
 	if (m_bEnemyWeapon)
 	{
 		const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-		if (!(enemy->GetWeaponType() & (eGrassHopper | eLGrassHopper)))return;
+		if (!(enemy->GetWeaponType() & (Enemy::WeaponType::grassHopper | Enemy::WeaponType::lGrassHopper)))return;
 
-		if (m_arrmType == rArrm && enemy->GetWeaponType() & eGrassHopper)
+		if (m_arrmType == rArrm && enemy->GetWeaponType() & Enemy::WeaponType::grassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
 
-		if (m_arrmType == lArrm && enemy->GetWeaponType() & eLGrassHopper)
+		if (m_arrmType == lArrm && enemy->GetWeaponType() & Enemy::WeaponType::lGrassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
@@ -189,14 +189,14 @@ void Hopper::GenerateDepthMapFromLight()
 	if (m_bPlayerWeapon)
 	{
 		const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
-		if (!(player->GetWeaponType() & (grassHopper | lGrassHopper)))return;
+		if (!(player->GetWeaponType() & (Player::WeaponType::grassHopper | Player::WeaponType::lGrassHopper)))return;
 
-		if (m_arrmType == rArrm && player->GetWeaponType() & grassHopper)
+		if (m_arrmType == rArrm && player->GetWeaponType() & Player::WeaponType::grassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
 
-		if (m_arrmType == lArrm && player->GetWeaponType() & lGrassHopper)
+		if (m_arrmType == lArrm && player->GetWeaponType() & Player::WeaponType::lGrassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
@@ -205,14 +205,14 @@ void Hopper::GenerateDepthMapFromLight()
 	if (m_bEnemyWeapon)
 	{
 		const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-		if (!(enemy->GetWeaponType() & (eGrassHopper | eLGrassHopper)))return;
+		if (!(enemy->GetWeaponType() & (Enemy::WeaponType::grassHopper | Enemy::WeaponType::lGrassHopper)))return;
 
-		if (m_arrmType == rArrm && enemy->GetWeaponType() & eGrassHopper)
+		if (m_arrmType == rArrm && enemy->GetWeaponType() & Enemy::WeaponType::grassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
 
-		if (m_arrmType == lArrm && enemy->GetWeaponType() & eLGrassHopper)
+		if (m_arrmType == lArrm && enemy->GetWeaponType() & Enemy::WeaponType::lGrassHopper)
 		{
 			KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 		}
