@@ -22,12 +22,6 @@
     <Filter Include="Library\tinygltf">
       <UniqueIdentifier>{307bfbcd-124f-4ad7-85f5-3fd94f814b1f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Src\Framework\Shader">
-      <UniqueIdentifier>{93543c0c-58fe-4a94-8279-7be3021b65b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Framework\Shader\SpriteShader">
-      <UniqueIdentifier>{2da4d471-f4e8-4b2d-bdef-b93f91523b8b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Src\Application">
       <UniqueIdentifier>{d0d0f9cf-dabd-4346-bc9a-d9c04cf42372}</UniqueIdentifier>
     </Filter>
@@ -37,14 +31,8 @@
     <Filter Include="Src\Framework\Audio">
       <UniqueIdentifier>{2a0de30f-d7e8-4517-a9a1-20de6e434592}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Src\Framework\Shader\HD2DShader">
-      <UniqueIdentifier>{857913be-4481-4606-9719-87518d4a6aeb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Src\System">
       <UniqueIdentifier>{256347e2-b865-40db-a803-ea2406075a10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Src\Framework\Shader\PostProcessShader">
-      <UniqueIdentifier>{bfef98c3-f0b2-41b1-b813-6f298072287b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Src\System">
       <UniqueIdentifier>{4bdc25a2-3137-4213-a263-36b8d2ec5162}</UniqueIdentifier>
@@ -129,6 +117,18 @@
     </Filter>
     <Filter Include="Src\Application\Scene\TrainingScene">
       <UniqueIdentifier>{afd8461c-def6-4898-ba43-b91a30ed44c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Framework\Shader">
+      <UniqueIdentifier>{93543c0c-58fe-4a94-8279-7be3021b65b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Framework\Shader\SpriteShader">
+      <UniqueIdentifier>{2da4d471-f4e8-4b2d-bdef-b93f91523b8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Framework\Shader\HD2DShader">
+      <UniqueIdentifier>{857913be-4481-4606-9719-87518d4a6aeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Framework\Shader\PostProcessShader">
+      <UniqueIdentifier>{bfef98c3-f0b2-41b1-b813-6f298072287b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

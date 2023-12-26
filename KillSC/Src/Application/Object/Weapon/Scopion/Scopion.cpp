@@ -615,11 +615,10 @@ void Scopion::PlayerHitAttackChaeck()
 				pTarget.lock()->WeaknessOnHit();
 
 				KdEffekseerManager::GetInstance().
-					Play("SwordHit3.efk", hitPos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
-				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Play("SwordHit.efk", hitPos);
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // これでループしない
 				Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
-				KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
+				KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 			}
 			else
 			{
@@ -662,11 +661,10 @@ void Scopion::PlayerHitAttackChaeck()
 					pTarget.lock()->WeaknessOnHit();
 
 					KdEffekseerManager::GetInstance().
-						Play("SwordHit3.efk", hitPos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
-					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+						Play("SwordHit.efk", hitPos);
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // これでループしない
 					Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
-					KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
+					KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 				}
 				else
 				{
@@ -709,11 +707,10 @@ void Scopion::PlayerHitAttackChaeck()
 						pTarget.lock()->WeaknessOnHit();
 
 						KdEffekseerManager::GetInstance().
-							Play("SwordHit3.efk", hitPos);
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
-						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+							Play("SwordHit.efk", hitPos);
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // これでループしない
 						Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
-						KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
+						KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 					}
 					else
 					{
@@ -804,11 +801,10 @@ void Scopion::PlayerHitAttackChaeck()
 							}
 
 							KdEffekseerManager::GetInstance().
-								Play("SwordHit3.efk", hitPos);
-							KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
-							//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+								Play("SwordHit.efk", hitPos);
+							KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // これでループしない
 							Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
-							KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
+							KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 						}
 						else
 						{
@@ -897,11 +893,10 @@ void Scopion::PlayerHitAttackChaeck()
 								}
 
 								KdEffekseerManager::GetInstance().
-									Play("SwordHit3.efk", hitPos);
-								KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
-								//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+									Play("SwordHit.efk", hitPos);
+								KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // これでループしない
 								Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
-								KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
+								KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 							}
 							else
 							{
@@ -990,11 +985,10 @@ void Scopion::PlayerHitAttackChaeck()
 									}
 
 									KdEffekseerManager::GetInstance().
-										Play("SwordHit3.efk", hitPos);
-									KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
-									//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+										Play("SwordHit.efk", hitPos);
+									KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // これでループしない
 									Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
-									KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", efcMat);
+									KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 								}
 							}
 						}
@@ -1792,11 +1786,10 @@ void Scopion::EnemyHitAttackChaeck()
 			}
 
 			KdEffekseerManager::GetInstance().
-				Play("SwordHit3.efk", hitPos);
-			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
-			//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+				Play("SwordHit.efk", hitPos);
+			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // これでループしない
 			Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-			KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", EnemyHitEffectMat(hitPos, m_eTarget));
+			KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", EnemyHitEffectMat(hitPos, m_eTarget));
 		}
 		else
 		{
@@ -1870,11 +1863,10 @@ void Scopion::EnemyHitAttackChaeck()
 				}
 
 				KdEffekseerManager::GetInstance().
-					Play("SwordHit3.efk", hitPos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
-				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+					Play("SwordHit.efk", hitPos);
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // これでループしない
 				Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-				KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", EnemyHitEffectMat(hitPos, m_eTarget));
+				KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", EnemyHitEffectMat(hitPos, m_eTarget));
 			}
 			else
 			{
@@ -1947,11 +1939,10 @@ void Scopion::EnemyHitAttackChaeck()
 					}
 
 					KdEffekseerManager::GetInstance().
-						Play("SwordHit3.efk", hitPos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit3.efk"); // これでループしない
-					//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(), DirectX::XMConvertToRadians(0));
+						Play("SwordHit.efk", hitPos);
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // これでループしない
 					Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
-					KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit3.efk", EnemyHitEffectMat(hitPos, m_eTarget));
+					KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", EnemyHitEffectMat(hitPos, m_eTarget));
 				}
 			}
 		}

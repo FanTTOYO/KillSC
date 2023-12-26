@@ -169,19 +169,23 @@ bool Application::Init(int w, int h)
 
 	KdInputCollector* keyboardCollector = new KdInputCollector();
 
-	KdInputButtonForWindows* pForward      = new KdInputButtonForWindows({ 'W' , VK_GAMEPAD_LEFT_THUMBSTICK_UP });
-	KdInputButtonForWindows* pLeft         = new KdInputButtonForWindows({ 'A' , VK_GAMEPAD_LEFT_THUMBSTICK_LEFT });
-	KdInputButtonForWindows* pBackWard     = new KdInputButtonForWindows({ 'S' , VK_GAMEPAD_LEFT_THUMBSTICK_DOWN });
-	KdInputButtonForWindows* pRight        = new KdInputButtonForWindows({ 'D' ,VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT });
-	KdInputButtonForWindows* pRAttack      = new KdInputButtonForWindows(VK_RBUTTON);
-	KdInputButtonForWindows* pLAttack      = new KdInputButtonForWindows(VK_LBUTTON);
-	KdInputButtonForWindows* pSelectButton = new KdInputButtonForWindows({ VK_LBUTTON , VK_RETURN });
-	KdInputButtonForWindows* pJump         = new KdInputButtonForWindows(VK_SPACE);
+	KdInputButtonForWindows* pForward       = new KdInputButtonForWindows({ 'W' , VK_GAMEPAD_LEFT_THUMBSTICK_UP });
+	KdInputButtonForWindows* pLeft          = new KdInputButtonForWindows({ 'A' , VK_GAMEPAD_LEFT_THUMBSTICK_LEFT });
+	KdInputButtonForWindows* pBackWard      = new KdInputButtonForWindows({ 'S' , VK_GAMEPAD_LEFT_THUMBSTICK_DOWN });
+	KdInputButtonForWindows* pRight         = new KdInputButtonForWindows({ 'D' ,VK_GAMEPAD_LEFT_THUMBSTICK_RIGHT });
+	KdInputButtonForWindows* pRAttack       = new KdInputButtonForWindows(VK_RBUTTON);
+	KdInputButtonForWindows* pLAttack       = new KdInputButtonForWindows(VK_LBUTTON);
+	KdInputButtonForWindows* pSelectButton  = new KdInputButtonForWindows({ VK_LBUTTON , VK_RETURN });
+	KdInputButtonForWindows* pJump          = new KdInputButtonForWindows(VK_SPACE);
+	KdInputButtonForWindows* pRWeaponChange = new KdInputButtonForWindows('E');
+	KdInputButtonForWindows* pLWeaponChange = new KdInputButtonForWindows('Q');
 
 	keyboardCollector->AddButton("forward", pForward);
 	keyboardCollector->AddButton("left", pLeft);
 	keyboardCollector->AddButton("backward", pBackWard);
 	keyboardCollector->AddButton("right", pRight);
+	keyboardCollector->AddButton("rWeaponChange", pRWeaponChange);
+	keyboardCollector->AddButton("lWeaponChange", pLWeaponChange);
 
 	KdInputAxisForWindows* pMove = new KdInputAxisForWindows(keyboardCollector->GetButton("forward"), keyboardCollector->GetButton("right"),
 		keyboardCollector->GetButton("backward"), keyboardCollector->GetButton("left"));

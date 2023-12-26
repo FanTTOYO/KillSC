@@ -5,7 +5,7 @@ class Ui;
 class GameCamera;
 class Enemy;
 
-class TrainingScene :public BaseScene
+class TrainingScene : public BaseScene
 {
 public:
 	TrainingScene() { Init(); }
@@ -20,4 +20,5 @@ private:
 	std::weak_ptr<Enemy> m_wpEnemy;
 	std::weak_ptr<Ui> m_wpUi;
 	std::weak_ptr<GameCamera> m_wpGameCamera;
+	std::shared_ptr<json11::Json> m_spJsonObj;
 };

@@ -78,9 +78,9 @@ void Ui::TitleUpdate()
 		if (m_bPushLClickAlphaAdd)
 		{
 			m_pushLClickAlpha += (0.8f / 30);
-			if (m_pushLClickAlpha >= kFOne)
+			if (m_pushLClickAlpha >= 1.0f)
 			{
-				m_pushLClickAlpha = kFOne;
+				m_pushLClickAlpha = 1.0f;
 				m_bPushLClickAlphaAdd = false;
 			}
 		}
@@ -96,10 +96,10 @@ void Ui::TitleUpdate()
 
 		if (m_addFadeAlpha)
 		{
-			m_fadeAlpha += (kFOne / 60.0f);
-			if (m_fadeAlpha >= kFOne)
+			m_fadeAlpha += (1.0f / 60.0f);
+			if (m_fadeAlpha >= 1.0f)
 			{
-				m_fadeAlpha = kFOne;
+				m_fadeAlpha = 1.0f;
 
 				if (m_uiType == UiType::title)
 				{
@@ -114,7 +114,7 @@ void Ui::TitleUpdate()
 
 	if (m_time >= 0 && m_time <= 120)
 	{
-		m_fadeAlpha -= (kFOne / 120.0f);
+		m_fadeAlpha -= (1.0f / 120.0f);
 		if (m_fadeAlpha <= 0.0f)
 		{
 			m_fadeAlpha = 0.0f;
@@ -122,15 +122,15 @@ void Ui::TitleUpdate()
 	}
 	else if (m_time >= 240 && m_time < 360)
 	{
-		m_fadeAlpha += (kFOne / 120.0f);
-		if (m_fadeAlpha >= kFOne)
+		m_fadeAlpha += (1.0f / 120.0f);
+		if (m_fadeAlpha >= 1.0f)
 		{
-			m_fadeAlpha = kFOne;
+			m_fadeAlpha = 1.0f;
 		}
 	}
 	else if (m_time >= 360 && m_time <= 480)
 	{
-		m_fadeAlpha -= (kFOne / 120.0f);
+		m_fadeAlpha -= (1.0f / 120.0f);
 		if (m_fadeAlpha <= 0.0f)
 		{
 			m_fadeAlpha = 0.0f;
@@ -142,7 +142,7 @@ void Ui::TitleUpdate()
 		if (m_time < 360)
 		{
 			m_time = 360;
-			m_fadeAlpha = kFOne;
+			m_fadeAlpha = 1.0f;
 		}
 	}
 }
@@ -151,8 +151,8 @@ void Ui::TrainingUpdate()
 {
 	if (m_time == 0)
 	{
-		m_exitScale = kFOne;
-		m_selectScale = kFOne;
+		m_exitScale = 1.0f;
+		m_selectScale = 1.0f;
 
 		m_selectPos = { 0,0,0 };
 		m_exitPos = { 0,-250,0 };
@@ -166,22 +166,22 @@ void Ui::TrainingUpdate()
 
 	if (m_time >= 0 && m_time < 30)
 	{
-		m_countThreeScale += (kFOne / 10.0f);
-		if (m_countThreeScale > kFOne)
+		m_countThreeScale += (1.0f / 10.0f);
+		if (m_countThreeScale > 1.0f)
 		{
-			m_countThreeScale = kFOne;
+			m_countThreeScale = 1.0f;
 		}
 
-		m_countThreeAlpha += (kFOne / 30.0f);
-		if (m_countThreeAlpha > kFOne)
+		m_countThreeAlpha += (1.0f / 30.0f);
+		if (m_countThreeAlpha > 1.0f)
 		{
-			m_countThreeAlpha = kFOne;
+			m_countThreeAlpha = 1.0f;
 		}
 	}
 	else if (m_time >= 30 && m_time < 60)
 	{
 
-		m_countThreeAlpha -= (kFOne / 30.0f);
+		m_countThreeAlpha -= (1.0f / 30.0f);
 		if (m_countThreeAlpha < 0.0f)
 		{
 			m_countThreeAlpha = 0.0f;
@@ -189,21 +189,21 @@ void Ui::TrainingUpdate()
 	}
 	else if (m_time >= 60 && m_time < 90)
 	{
-		m_countTwoScale += (kFOne / 10.0f);
-		if (m_countTwoScale > kFOne)
+		m_countTwoScale += (1.0f / 10.0f);
+		if (m_countTwoScale > 1.0f)
 		{
-			m_countTwoScale = kFOne;
+			m_countTwoScale = 1.0f;
 		}
 
-		m_countTwoAlpha += (kFOne / 30.0f);
-		if (m_countTwoAlpha > kFOne)
+		m_countTwoAlpha += (1.0f / 30.0f);
+		if (m_countTwoAlpha > 1.0f)
 		{
-			m_countTwoAlpha = kFOne;
+			m_countTwoAlpha = 1.0f;
 		}
 	}
 	else if (m_time >= 90 && m_time < 120)
 	{
-		m_countTwoAlpha -= (kFOne / 30.0f);
+		m_countTwoAlpha -= (1.0f / 30.0f);
 		if (m_countThreeAlpha < 0.0f)
 		{
 			m_countThreeAlpha = 0.0f;
@@ -211,21 +211,21 @@ void Ui::TrainingUpdate()
 	}
 	else if (m_time >= 120 && m_time < 150)
 	{
-		m_countOneScale += (kFOne / 10.0f);
-		if (m_countOneScale > kFOne)
+		m_countOneScale += (1.0f / 10.0f);
+		if (m_countOneScale > 1.0f)
 		{
-			m_countOneScale = kFOne;
+			m_countOneScale = 1.0f;
 		}
 
-		m_countOneAlpha += (kFOne / 30.0f);
-		if (m_countOneAlpha > kFOne)
+		m_countOneAlpha += (1.0f / 30.0f);
+		if (m_countOneAlpha > 1.0f)
 		{
-			m_countOneAlpha = kFOne;
+			m_countOneAlpha = 1.0f;
 		}
 	}
 	else if (m_time >= 150 && m_time < 180)
 	{
-		m_countOneAlpha -= (kFOne / 30.0f);
+		m_countOneAlpha -= (1.0f / 30.0f);
 		if (m_countOneAlpha < 0.0f)
 		{
 			m_countOneAlpha = 0.0f;
@@ -233,21 +233,21 @@ void Ui::TrainingUpdate()
 	}
 	else if (m_time >= 180 && m_time < 210)
 	{
-		m_countGoScale += (kFOne / 10.0f);
-		if (m_countGoScale > kFOne)
+		m_countGoScale += (1.0f / 10.0f);
+		if (m_countGoScale > 1.0f)
 		{
-			m_countGoScale = kFOne;
+			m_countGoScale = 1.0f;
 		}
 
-		m_countGoAlpha += (kFOne / 30.0f);
-		if (m_countGoAlpha > kFOne)
+		m_countGoAlpha += (1.0f / 30.0f);
+		if (m_countGoAlpha > 1.0f)
 		{
-			m_countGoAlpha = kFOne;
+			m_countGoAlpha = 1.0f;
 		}
 	}
 	else if (m_time >= 210 && m_time < 240)
 	{
-		m_countGoAlpha -= (kFOne / 30.0f);
+		m_countGoAlpha -= (1.0f / 30.0f);
 		if (m_countGoAlpha < 0.0f)
 		{
 			m_countGoAlpha = 0.0f;
@@ -267,7 +267,7 @@ void Ui::TrainingUpdate()
 			if (!m_bOption)
 			{
 				m_bOption = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
 				ShowCursor(true); // マウスカーソルを消す
 				KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
 			}
@@ -280,7 +280,7 @@ void Ui::TrainingUpdate()
 				m_bHowToPage = true;
 				m_bOperation = false;
 				SetCursorPos(640, 360);
-				KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
 				ShowCursor(false); // マウスカーソルを消す
 				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
 			}
@@ -303,8 +303,8 @@ void Ui::GameUpdate()
 {
 	if (m_time == 0)
 	{
-		m_exitScale = kFOne;
-		m_selectScale = kFOne;
+		m_exitScale = 1.0f;
+		m_selectScale = 1.0f;
 
 		m_selectPos = { 0,0,0 };
 		m_exitPos = { 0,-250,0 };
@@ -337,21 +337,21 @@ void Ui::GameUpdate()
 	{
 		if (m_time >= 0 && m_time < 90)
 		{
-			m_waveScale += (kFOne / 10.0f);
-			if (m_waveScale > kFOne)
+			m_waveScale += (1.0f / 10.0f);
+			if (m_waveScale > 1.0f)
 			{
-				m_waveScale = kFOne;
+				m_waveScale = 1.0f;
 			}
 
-			m_waveAlpha += (kFOne / 30.0f);
-			if (m_waveAlpha > kFOne)
+			m_waveAlpha += (1.0f / 30.0f);
+			if (m_waveAlpha > 1.0f)
 			{
-				m_waveAlpha = kFOne;
+				m_waveAlpha = 1.0f;
 			}
 		}
 		else if (m_time >= 90 && m_time < 180)
 		{
-			m_waveAlpha -= (kFOne / 60.0f);
+			m_waveAlpha -= (1.0f / 60.0f);
 			if (m_waveAlpha < 0.0f)
 			{
 				m_waveAlpha = 0.0f;
@@ -359,21 +359,21 @@ void Ui::GameUpdate()
 		}
 		else if (m_time >= 180 && m_time < 210)
 		{
-			m_countGoScale += (kFOne / 10.0f);
-			if (m_countGoScale > kFOne)
+			m_countGoScale += (1.0f / 10.0f);
+			if (m_countGoScale > 1.0f)
 			{
-				m_countGoScale = kFOne;
+				m_countGoScale = 1.0f;
 			}
 
-			m_countGoAlpha += (kFOne / 30.0f);
-			if (m_countGoAlpha > kFOne)
+			m_countGoAlpha += (1.0f / 30.0f);
+			if (m_countGoAlpha > 1.0f)
 			{
-				m_countGoAlpha = kFOne;
+				m_countGoAlpha = 1.0f;
 			}
 		}
 		else if (m_time >= 210 && m_time < 240)
 		{
-			m_countGoAlpha -= (kFOne / 30.0f);
+			m_countGoAlpha -= (1.0f / 30.0f);
 			if (m_countGoAlpha < 0.0f)
 			{
 				m_countGoAlpha = 0.0f;
@@ -386,22 +386,22 @@ void Ui::GameUpdate()
 	
 	if (m_time >= 0 && m_time < 30)
 	{
-		m_countThreeScale += (kFOne / 10.0f);
-		if (m_countThreeScale > kFOne)
+		m_countThreeScale += (1.0f / 10.0f);
+		if (m_countThreeScale > 1.0f)
 		{
-			m_countThreeScale = kFOne;
+			m_countThreeScale = 1.0f;
 		}
 
-		m_countThreeAlpha += (kFOne / 30.0f);
-		if (m_countThreeAlpha > kFOne)
+		m_countThreeAlpha += (1.0f / 30.0f);
+		if (m_countThreeAlpha > 1.0f)
 		{
-			m_countThreeAlpha = kFOne;
+			m_countThreeAlpha = 1.0f;
 		}
 	}
 	else if (m_time >= 30 && m_time < 60)
 	{
 
-		m_countThreeAlpha -= (kFOne / 30.0f);
+		m_countThreeAlpha -= (1.0f / 30.0f);
 		if (m_countThreeAlpha < 0.0f)
 		{
 			m_countThreeAlpha = 0.0f;
@@ -409,21 +409,21 @@ void Ui::GameUpdate()
 	}
 	else if (m_time >= 60 && m_time < 90)
 	{
-		m_countTwoScale += (kFOne / 10.0f);
-		if (m_countTwoScale > kFOne)
+		m_countTwoScale += (1.0f / 10.0f);
+		if (m_countTwoScale > 1.0f)
 		{
-			m_countTwoScale = kFOne;
+			m_countTwoScale = 1.0f;
 		}
 
-		m_countTwoAlpha += (kFOne / 30.0f);
-		if (m_countTwoAlpha > kFOne)
+		m_countTwoAlpha += (1.0f / 30.0f);
+		if (m_countTwoAlpha > 1.0f)
 		{
-			m_countTwoAlpha = kFOne;
+			m_countTwoAlpha = 1.0f;
 		}
 	}
 	else if (m_time >= 90 && m_time < 120)
 	{
-		m_countTwoAlpha -= (kFOne / 30.0f);
+		m_countTwoAlpha -= (1.0f / 30.0f);
 		if (m_countThreeAlpha < 0.0f)
 		{
 			m_countThreeAlpha = 0.0f;
@@ -431,21 +431,21 @@ void Ui::GameUpdate()
 	}
 	else if (m_time >= 120 && m_time < 150)
 	{
-		m_countOneScale += (kFOne / 10.0f);
-		if (m_countOneScale > kFOne)
+		m_countOneScale += (1.0f / 10.0f);
+		if (m_countOneScale > 1.0f)
 		{
-			m_countOneScale = kFOne;
+			m_countOneScale = 1.0f;
 		}
 
-		m_countOneAlpha += (kFOne / 30.0f);
-		if (m_countOneAlpha > kFOne)
+		m_countOneAlpha += (1.0f / 30.0f);
+		if (m_countOneAlpha > 1.0f)
 		{
-			m_countOneAlpha = kFOne;
+			m_countOneAlpha = 1.0f;
 		}
 	}
 	else if (m_time >= 150 && m_time < 180)
 	{
-		m_countOneAlpha -= (kFOne / 30.0f);
+		m_countOneAlpha -= (1.0f / 30.0f);
 		if (m_countOneAlpha < 0.0f)
 		{
 			m_countOneAlpha = 0.0f;
@@ -453,21 +453,21 @@ void Ui::GameUpdate()
 	}
 	else if (m_time >= 180 && m_time < 210)
 	{
-		m_countGoScale += (kFOne / 10.0f);
-		if (m_countGoScale > kFOne)
+		m_countGoScale += (1.0f / 10.0f);
+		if (m_countGoScale > 1.0f)
 		{
-			m_countGoScale = kFOne;
+			m_countGoScale = 1.0f;
 		}
 
-		m_countGoAlpha += (kFOne / 30.0f);
-		if (m_countGoAlpha > kFOne)
+		m_countGoAlpha += (1.0f / 30.0f);
+		if (m_countGoAlpha > 1.0f)
 		{
-			m_countGoAlpha = kFOne;
+			m_countGoAlpha = 1.0f;
 		}
 	}
 	else if (m_time >= 210 && m_time < 240)
 	{
-		m_countGoAlpha -= (kFOne / 30.0f);
+		m_countGoAlpha -= (1.0f / 30.0f);
 		if (m_countGoAlpha < 0.0f)
 		{
 			m_countGoAlpha = 0.0f;
@@ -486,21 +486,21 @@ void Ui::GameUpdate()
 				++m_waveTimeCnt;
 				if (m_waveTimeCnt >= 0 && m_waveTimeCnt < 90)
 				{
-					m_waveScale += (kFOne / 10.0f);
-					if (m_waveScale > kFOne)
+					m_waveScale += (1.0f / 10.0f);
+					if (m_waveScale > 1.0f)
 					{
-						m_waveScale = kFOne;
+						m_waveScale = 1.0f;
 					}
 
-					m_waveAlpha += (kFOne / 30.0f);
-					if (m_waveAlpha > kFOne)
+					m_waveAlpha += (1.0f / 30.0f);
+					if (m_waveAlpha > 1.0f)
 					{
-						m_waveAlpha = kFOne;
+						m_waveAlpha = 1.0f;
 					}
 				}
 				else if (m_waveTimeCnt >= 90 && m_waveTimeCnt < 180)
 				{
-					m_waveAlpha -= (kFOne / 60.0f);
+					m_waveAlpha -= (1.0f / 60.0f);
 					if (m_waveAlpha < 0.0f)
 					{
 						m_waveAlpha = 0.0f;
@@ -526,7 +526,7 @@ void Ui::GameUpdate()
 				if (!m_bOption)
 				{
 					m_bOption = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
 					ShowCursor(true); // マウスカーソルを消す
 					KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
 				}
@@ -539,7 +539,7 @@ void Ui::GameUpdate()
 					m_bHowToPage = true;
 					m_bOperation = false;
 					SetCursorPos(640, 360);
-					KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
 					ShowCursor(false); // マウスカーソルを消す
 					KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
 				}
@@ -605,8 +605,8 @@ void Ui::TutorialUpdate()
 {
 	if (m_time == 0)
 	{
-		m_exitScale = kFOne;
-		m_titleScale = kFOne;
+		m_exitScale = 1.0f;
+		m_titleScale = 1.0f;
 
 		m_titlePos = { 0,0,0 };
 		m_exitPos = { 0,-250,0 };
@@ -626,7 +626,7 @@ void Ui::TutorialUpdate()
 			if (!m_bOption)
 			{
 				m_bOption = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
 				ShowCursor(true); // マウスカーソルを消す
 			}
 			else if (m_bOption)
@@ -638,7 +638,7 @@ void Ui::TutorialUpdate()
 				m_bHowToPage = true;
 				m_bOperation = false;
 				SetCursorPos(640, 360);
-				KdAudioManager::Instance().Play("Asset/Audio/SE/メニューを開く1.wav");
+				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
 				ShowCursor(false); // マウスカーソルを消す
 			}
 		}
@@ -895,16 +895,16 @@ void Ui::ResultUpdate()
 	{
 		if (m_bPushLClickAlphaAdd)
 		{
-			m_pushLClickAlpha += (kFOne / 30);
-			if (m_pushLClickAlpha >= kFOne)
+			m_pushLClickAlpha += (1.0f / 30);
+			if (m_pushLClickAlpha >= 1.0f)
 			{
-				m_pushLClickAlpha = kFOne;
+				m_pushLClickAlpha = 1.0f;
 				m_bPushLClickAlphaAdd = false;
 			}
 		}
 		else
 		{
-			m_pushLClickAlpha -= (kFOne / 30);
+			m_pushLClickAlpha -= (1.0f / 30);
 			if (m_pushLClickAlpha <= 0.0f)
 			{
 				m_pushLClickAlpha = 0.0f;
@@ -915,10 +915,10 @@ void Ui::ResultUpdate()
 
 	if (m_addFadeAlpha)
 	{
-		m_fadeAlpha += (kFOne / 90);
-		if (m_fadeAlpha >= kFOne)
+		m_fadeAlpha += (1.0f / 90);
+		if (m_fadeAlpha >= 1.0f)
 		{
-			m_fadeAlpha = kFOne;
+			m_fadeAlpha = 1.0f;
 
 			if (m_uiType == UiType::result)
 			{
@@ -985,7 +985,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_clauseMkScale = kFOne;
+			m_clauseMkScale = 1.0f;
 		}
 	}
 	else
@@ -1024,14 +1024,14 @@ void Ui::SelectUpdate()
 				{
 					m_bTutorial = true;
 					m_addFadeAlpha = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 
 		}
 		else
 		{
-			m_tutorialScale = kFOne;
+			m_tutorialScale = 1.0f;
 		}
 
 		Math::Vector3 ExitPos;
@@ -1056,14 +1056,14 @@ void Ui::SelectUpdate()
 					m_bExit = true;
 					m_addFadeAlpha = true;
 					m_bFirstExit = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 
 		}
 		else
 		{
-			m_exitScale = kFOne;
+			m_exitScale = 1.0f;
 		}
 
 		Math::Vector3 GamePos;
@@ -1093,7 +1093,7 @@ void Ui::SelectUpdate()
 					}
 
 					m_bBattleSelect = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 			else
@@ -1104,7 +1104,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_battleCharaScale = kFOne;
+			m_battleCharaScale = 1.0f;
 		}
 
 		if (m_bBattleChara)
@@ -1130,14 +1130,14 @@ void Ui::SelectUpdate()
 						m_bEnemyBossTypeOneTotal = true;
 						m_bGame = true;
 						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 					}
 				}
 
 			}
 			else
 			{
-				m_enemyBossTypeOneScale = kFOne;
+				m_enemyBossTypeOneScale = 1.0f;
 			}
 
 			GamePos.x = m_enemyBossTypeTwoPos.x + (float)(pwi->rcWindow.left);
@@ -1161,14 +1161,14 @@ void Ui::SelectUpdate()
 						m_bEnemyBossTypeTwoTotal = true;
 						m_bGame = true;
 						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 					}
 				}
 
 			}
 			else
 			{
-				m_enemyBossTypeTwoScale = kFOne;
+				m_enemyBossTypeTwoScale = 1.0f;
 			}
 
 			GamePos.x = m_twoEnemyBossTypeOnePos.x + (float)(pwi->rcWindow.left);
@@ -1192,14 +1192,14 @@ void Ui::SelectUpdate()
 						m_bTwoEnemyBossTypeOneTotal = true;
 						m_bGame = true;
 						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 					}
 				}
 
 			}
 			else
 			{
-				m_twoEnemyBossTypeOneScale = kFOne;
+				m_twoEnemyBossTypeOneScale = 1.0f;
 			}
 		}
 
@@ -1230,7 +1230,7 @@ void Ui::SelectUpdate()
 					}
 
 					m_bChallengeSelect = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 			else
@@ -1241,7 +1241,7 @@ void Ui::SelectUpdate()
 		}
 		else
 		{
-			m_challengeCharaScale = kFOne;
+			m_challengeCharaScale = 1.0f;
 		}
 
 		if (m_bChallengeChara)
@@ -1266,14 +1266,14 @@ void Ui::SelectUpdate()
 					{
 						m_bChalenge50 = true;
 						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 					}
 				}
 
 			}
 			else
 			{
-				m_chalenge50Scale = kFOne;
+				m_chalenge50Scale = 1.0f;
 			}
 
 			ChallengePos;
@@ -1297,14 +1297,14 @@ void Ui::SelectUpdate()
 					{
 						m_bChalenge100 = true;
 						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 					}
 				}
 
 			}
 			else
 			{
-				m_chalenge100Scale = kFOne;
+				m_chalenge100Scale = 1.0f;
 			}
 		}
 
@@ -1329,14 +1329,14 @@ void Ui::SelectUpdate()
 				{
 					m_bTraining = true;
 					m_addFadeAlpha = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 
 		}
 		else
 		{
-			m_trainingScale = kFOne;
+			m_trainingScale = 1.0f;
 		}
 
 		Math::Vector3 TitlePos;
@@ -1360,14 +1360,14 @@ void Ui::SelectUpdate()
 				{
 					m_bTitle = true;
 					m_addFadeAlpha = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 
 		}
 		else
 		{
-			m_titleScale = kFOne;
+			m_titleScale = 1.0f;
 		}
 
 		Math::Vector3 helpMkPos;
@@ -1393,23 +1393,23 @@ void Ui::SelectUpdate()
 					{
 						m_bBattlehelp = true;
 					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 
 		}
 		else
 		{
-			m_helpMkScale = kFOne;
+			m_helpMkScale = 1.0f;
 		}
 	}
 
 	if (m_addFadeAlpha)
 	{
-		m_fadeAlpha += (kFOne / 90);
-		if (m_fadeAlpha >= kFOne)
+		m_fadeAlpha += (1.0f / 90);
+		if (m_fadeAlpha >= 1.0f)
 		{
-			m_fadeAlpha = kFOne;
+			m_fadeAlpha = 1.0f;
 
 			if (m_bTitle)
 			{
@@ -1551,7 +1551,7 @@ void Ui::OptionUpdate()
 			MouseTop > ExitBottom && ExitTop > MouseBottom)
 		{
 			m_exitScale = 1.2f;
-			m_titleScale = kFOne;
+			m_titleScale = 1.0f;
 
 			if (KdInputManager::Instance().IsPress("select"))
 			{
@@ -1560,14 +1560,14 @@ void Ui::OptionUpdate()
 					m_bExit = true;
 					m_addFadeAlpha = true;
 					m_bFirstExit = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 
 		}
 		else
 		{
-			m_exitScale = kFOne;
+			m_exitScale = 1.0f;
 		}
 
 		Math::Vector3 ModeSelectPos;
@@ -1583,7 +1583,7 @@ void Ui::OptionUpdate()
 		if (MouseRight > SelectLeft && SelectRight > MouseLeft &&
 			MouseTop > SelectBottom && SelectTop > MouseBottom)
 		{
-			m_exitScale = kFOne;
+			m_exitScale = 1.0f;
 			m_selectScale = 1.2f;
 
 			if (KdInputManager::Instance().IsPress("select"))
@@ -1593,14 +1593,14 @@ void Ui::OptionUpdate()
 					m_bSelect = true;
 					m_addFadeAlpha = true;
 					//KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
-					KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 
 		}
 		else
 		{
-			m_selectScale = kFOne;
+			m_selectScale = 1.0f;
 		}
 
 		Math::Vector3 InfoPos;
@@ -1616,20 +1616,20 @@ void Ui::OptionUpdate()
 		if (MouseRight > InfoLeft && InfoRight > MouseLeft &&
 			MouseTop > InfoBottom && InfoTop > MouseBottom)
 		{
-			m_exitScale = kFOne;
-			m_titleScale = kFOne;
+			m_exitScale = 1.0f;
+			m_titleScale = 1.0f;
 			m_operationScale = 1.2f;
 
 			if (KdInputManager::Instance().IsPress("select"))
 			{
 				m_bOperation = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/各ボタンを押したときの音.wav");
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 			}
 
 		}
 		else
 		{
-			m_operationScale = kFOne;
+			m_operationScale = 1.0f;
 		}
 
 		Math::Vector3 BackPos;
@@ -1639,7 +1639,7 @@ void Ui::OptionUpdate()
 		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
 		if (Dis.Length() <= 40)
 		{
-			m_backScale = kFOne;
+			m_backScale = 1.0f;
 			if (KdInputManager::Instance().IsPress("select"))
 			{
 				if (!bLButtonKey)
@@ -1665,10 +1665,10 @@ void Ui::OptionUpdate()
 
 		if (m_addFadeAlpha)
 		{
-			m_fadeAlpha += (kFOne / 90);
-			if (m_fadeAlpha >= kFOne)
+			m_fadeAlpha += (1.0f / 90);
+			if (m_fadeAlpha >= 1.0f)
 			{
-				m_fadeAlpha = kFOne;
+				m_fadeAlpha = 1.0f;
 
 				if (m_bSelect)
 				{
@@ -1708,7 +1708,7 @@ void Ui::OptionUpdate()
 		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
 		if (Dis.Length() <= 40)
 		{
-			m_backScale = kFOne;
+			m_backScale = 1.0f;
 			if (KdInputManager::Instance().IsPress("select"))
 			{
 				if (!bLButtonKey)
@@ -1742,7 +1742,7 @@ void Ui::OptionUpdate()
 		if (Dis.Length() <= 30)
 		{
 			m_weaOrHowLeftYaiScale = 1.5f;
-			m_weaOrHowRightYaiScale = kFOne;
+			m_weaOrHowRightYaiScale = 1.0f;
 
 			if (KdInputManager::Instance().IsPress("select"))
 			{
@@ -1759,7 +1759,7 @@ void Ui::OptionUpdate()
 						m_bHowToPage = false;
 						m_bWeaponDataPage = true;
 					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/矢印押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 				}
 			}
 			else
@@ -1770,7 +1770,7 @@ void Ui::OptionUpdate()
 		}
 		else
 		{
-			m_weaOrHowLeftYaiScale = kFOne;
+			m_weaOrHowLeftYaiScale = 1.0f;
 		}
 
 		Math::Vector3 WeaOrHowRightYaiPos;
@@ -1780,7 +1780,7 @@ void Ui::OptionUpdate()
 		Dis = m_weaOrHowRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 		if (Dis.Length() <= 30)
 		{
-			m_weaOrHowLeftYaiScale = kFOne;
+			m_weaOrHowLeftYaiScale = 1.0f;
 			m_weaOrHowRightYaiScale = 1.5f;
 
 			if (KdInputManager::Instance().IsPress("select"))
@@ -1798,7 +1798,7 @@ void Ui::OptionUpdate()
 						m_bHowToPage = false;
 						m_bWeaponDataPage = true;
 					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/矢印押したときの音.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 				}
 			}
 			else
@@ -1809,7 +1809,7 @@ void Ui::OptionUpdate()
 		}
 		else
 		{
-			m_weaOrHowRightYaiScale = kFOne;
+			m_weaOrHowRightYaiScale = 1.0f;
 		}
 
 		if (m_bWeaponDataPage)
@@ -1823,7 +1823,7 @@ void Ui::OptionUpdate()
 			if (Dis.Length() <= 30)
 			{
 				m_weaponLeftYaiScale = 1.5f;
-				m_weaponRightYaiScale = kFOne;
+				m_weaponRightYaiScale = 1.0f;
 
 				if (KdInputManager::Instance().IsPress("select"))
 				{
@@ -1840,7 +1840,7 @@ void Ui::OptionUpdate()
 							m_bWeaponDataScoPage = false;
 							m_bWeaponDataHopperPage = true;
 						}
-						KdAudioManager::Instance().Play("Asset/Audio/SE/矢印押したときの音.wav");
+						KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 					}
 				}
 				else
@@ -1851,7 +1851,7 @@ void Ui::OptionUpdate()
 			}
 			else
 			{
-				m_weaponLeftYaiScale = kFOne;
+				m_weaponLeftYaiScale = 1.0f;
 			}
 
 			Math::Vector3 WeaponRightYaiPos;
@@ -1862,7 +1862,7 @@ void Ui::OptionUpdate()
 			Dis = WeaponRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
 			if (Dis.Length() <= 30)
 			{
-				m_weaponLeftYaiScale = kFOne;
+				m_weaponLeftYaiScale = 1.0f;
 				m_weaponRightYaiScale = 1.5f;
 
 				if (KdInputManager::Instance().IsPress("select"))
@@ -1880,7 +1880,7 @@ void Ui::OptionUpdate()
 							m_bWeaponDataScoPage = false;
 							m_bWeaponDataHopperPage = true;
 						}
-						KdAudioManager::Instance().Play("Asset/Audio/SE/矢印押したときの音.wav");
+						KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 					}
 				}
 				else
@@ -1891,7 +1891,7 @@ void Ui::OptionUpdate()
 			}
 			else
 			{
-				m_weaponRightYaiScale = kFOne;
+				m_weaponRightYaiScale = 1.0f;
 			}
 		}
 	}
@@ -2095,9 +2095,9 @@ void Ui::DrawSprite()
 
 			transMat = Math::Matrix::CreateTranslation(-620, 255, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			rc = { 0,0,(int)(m_spPlayer->GetTorion()),30 };
+			rc = { 0,0,(int)(m_spPlayer->GetVForce()),30 };
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetTorion()), 30, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetVForce()), 30, &rc, &color, Math::Vector2(0, 0.5f));
 
 			int i = 0;
 			for (auto& list : m_wpEnemyList)
@@ -2386,9 +2386,9 @@ void Ui::DrawSprite()
 
 			transMat = Math::Matrix::CreateTranslation(-620, 255, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			rc = { 0,0,(int)(m_spPlayer->GetTorion()),30 };
+			rc = { 0,0,(int)(m_spPlayer->GetVForce()),30 };
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetTorion()), 30, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetVForce()), 30, &rc, &color, Math::Vector2(0, 0.5f));
 
 		}
 
@@ -2521,7 +2521,7 @@ void Ui::DrawSprite()
 		{
 			transMat = Math::Matrix::Identity;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			color = { 0.15f,0.15f,0.7f,kFOne };
+			color = { 0.15f,0.15f,0.7f,1.0f };
 			KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 
 		}
@@ -2529,7 +2529,7 @@ void Ui::DrawSprite()
 		{
 			transMat = Math::Matrix::Identity;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			color = { 0.4f,0.1f,0.1f,kFOne };
+			color = { 0.4f,0.1f,0.1f,1.0f };
 			KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 		}
 
@@ -3041,9 +3041,9 @@ void Ui::DrawSprite()
 
 			transMat = Math::Matrix::CreateTranslation(-620, 255, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			rc = { 0,0,(int)(m_spPlayer->GetTorion()),30 };
+			rc = { 0,0,(int)(m_spPlayer->GetVForce()),30 };
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetTorion()), 30, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetVForce()), 30, &rc, &color, Math::Vector2(0, 0.5f));
 
 			int i = 0;
 			for (auto& list : m_wpEnemyList)
@@ -3243,7 +3243,7 @@ void Ui::DrawUnLit()
 
 		Math::Vector3 pos = list.lock()->GetPos();
 		pos.y += 1.8f;
-		Math::Matrix scaleMat = Math::Matrix::CreateScale(kFOne);
+		Math::Matrix scaleMat = Math::Matrix::CreateScale(1.0f);
 		Math::Matrix mat = scaleMat * Math::Matrix::CreateTranslation(pos);
 		mat.Backward(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Backward());
 		mat.Up(m_wpCamera.lock()->WorkCamera()->GetCameraMatrix().Up());
@@ -3279,7 +3279,7 @@ void Ui::AddTutorialCnt()
 
 void Ui::Init()
 {
-	m_titleCharRogoTex.Load("Asset/Textures/Ui/Title/KillSC2.png");
+	m_titleCharRogoTex.Load("Asset/Textures/Ui/Title/KillSC.png");
 	m_FTtoyoRogoTex.Load("Asset/Textures/Ui/Title/FTtoyo.png");
 
 	m_weaponType1Tex.Load("Asset/Textures/Ui/Game/WeaponType1.png");
@@ -3393,21 +3393,21 @@ void Ui::Init()
 	m_bBattleSelect = false;
 	m_bChallengeSelect = false;
 
-	m_fadeAlpha = kFOne;
+	m_fadeAlpha = 1.0f;
 	m_addFadeAlpha = false;
 	m_bFirstInResult = true;
 	m_bSceneCangePossible = false;
-	m_pushLClickAlpha = kFOne;
+	m_pushLClickAlpha = 1.0f;
 	m_bPushLClickAlphaAdd = false;
 
-	m_tutorialScale = kFOne;
-	m_gameScale = kFOne;
+	m_tutorialScale = 1.0f;
+	m_gameScale = 1.0f;
 	m_challengeScale = 0;
 	m_trainingScale = 0;
 
-	m_titleScale = kFOne;
-	m_optionScale = kFOne;
-	m_exitScale = kFOne;
+	m_titleScale = 1.0f;
+	m_optionScale = 1.0f;
+	m_exitScale = 1.0f;
 
 	m_titlePos = { -555,-310,0 };
 	m_exitPos = { -420,-310,0 };
@@ -3429,10 +3429,10 @@ void Ui::Init()
 	m_trainingPos = { -205, -138, 0 };
 	m_selectBackPos = { 0,    0, 0 };
 
-	m_battleCharaScale = kFOne;
-	m_challengeCharaScale = kFOne;
-	m_chalenge50Scale = kFOne;
-	m_chalenge100Scale = kFOne;
+	m_battleCharaScale = 1.0f;
+	m_challengeCharaScale = 1.0f;
+	m_chalenge50Scale = 1.0f;
+	m_chalenge100Scale = 1.0f;
 
 	m_bChalenge50 = false;
 	m_bChalenge100 = false;
@@ -3474,19 +3474,19 @@ void Ui::Init()
 	m_bWeaponDataScoPage = true;
 	m_bHowToPage = true;
 
-	m_weaponLeftYaiScale = kFOne;
+	m_weaponLeftYaiScale = 1.0f;
 	m_weaponLeftYaiPos = { -500,250,0 };
 
-	m_weaponRightYaiScale = kFOne;
+	m_weaponRightYaiScale = 1.0f;
 	m_weaponRightYaiPos = { 500,250,0, };
 
-	m_weaOrHowLeftYaiScale = kFOne;
+	m_weaOrHowLeftYaiScale = 1.0f;
 	m_weaOrHowLeftYaiPos = { -600,0,0 };
 
-	m_weaOrHowRightYaiScale = kFOne;
+	m_weaOrHowRightYaiScale = 1.0f;
 	m_weaOrHowRightYaiPos = { 600,0,0 };
 
-	m_operationScale = kFOne;
+	m_operationScale = 1.0f;
 	m_operationPos = { 0,250,0 };
 	m_bOperation = false;
 	bLButtonKey = false;
@@ -3495,9 +3495,9 @@ void Ui::Init()
 	m_bTutorialView = true;
 	m_tutorialSwitchAfterTime = 120;
 
-	m_clauseMkScale = kOne;
+	m_clauseMkScale = 1;
 
-	m_helpMkScale = kFOne;
+	m_helpMkScale = 1.0f;
 	m_bBattlehelp = false;
 
 	m_bChalengehelp = false;

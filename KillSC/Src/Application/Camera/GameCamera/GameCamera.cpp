@@ -67,26 +67,28 @@ void GameCamera::Update()
 
 				if (m_wpPlayer.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDash | Player::PlayerState::grassHopperDashUp) && m_wpPlayer.lock()->GetLGrassHopperTime() <= 75 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 75)
 				{
+					m_startPos[0] = m_startPos[1];
+					m_startPos[1] = m_startPos[2];
+					m_startPos[2] = m_startPos[3];
+					m_startPos[3] = m_startPos[4];
+
+					m_startPos[4] = spTarget->GetMatrix().Translation();
 					if (m_startDelayFive)
 					{
-						m_startPos[0] = m_startPos[1];
-						m_startPos[1] = m_startPos[2];
-						m_startPos[2] = m_startPos[3];
-						m_startPos[3] = m_startPos[4];
-						m_startPos[4] = spTarget->GetMatrix().Translation();
+						endPos = spTarget->GetMatrix().Translation();
+
+						// ’†ŠÔ‚ğ‹‚ß‚é
+						// üŒ`•âŠÔ
+						nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.5f);
 					}
 					else
 					{
-						m_startPos[0] = m_startPos[1];
-						m_startPos[1] = m_startPos[2];
-						m_startPos[2] = spTarget->GetMatrix().Translation();
+						endPos = spTarget->GetMatrix().Translation();
+
+						// ’†ŠÔ‚ğ‹‚ß‚é
+						// üŒ`•âŠÔ
+						nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.65f);
 					}
-
-					endPos = spTarget->GetMatrix().Translation();
-
-					// ’†ŠÔ‚ğ‹‚ß‚é
-					// üŒ`•âŠÔ
-					nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.5f);
 
 					targetMat = Math::Matrix::CreateTranslation(nowPos);
 				}

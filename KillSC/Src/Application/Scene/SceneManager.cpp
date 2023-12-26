@@ -77,12 +77,12 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	case SceneType::challenge:
 		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_bPlayerWin = false;
-		m_pointAddOrSubVal = kZero;
+		m_pointAddOrSubVal = 0;
 		m_bAddOrSubVal = true;
 		m_bWinEnd = false;
-		m_updateStopCnt = kZero;
-		m_enemyDrawTotal = kZero;
-		m_screenVibFrames = kZero;
+		m_updateStopCnt = 0;
+		m_enemyDrawTotal = 0;
+		m_screenVibFrames = 0;
 		m_currentScene = std::make_shared<GameScene>();
 		break;
 	case SceneType::result:
@@ -99,8 +99,8 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 		break;
 	case SceneType::training:
 		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)
-		m_updateStopCnt = kZero;
-		m_enemyDrawTotal = kZero;
+		m_updateStopCnt = 0;
+		m_enemyDrawTotal = 0;
 		m_currentScene = std::make_shared<TrainingScene>();
 		break;
 	}

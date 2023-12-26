@@ -16,4 +16,5 @@ private:
 
 	std::weak_ptr<Player> m_wpPlayer;
 	std::weak_ptr<Ui> m_wpUi;
+	std::shared_ptr<json11::Json> m_spJsonObj;
 };

@@ -95,6 +95,7 @@ public:
 		defender = 1 << 1,
 		speedSter = 1 << 2,
 		allRounder = 1 << 3,
+		humanBossEnemy = allRounder | speedSter | defender | striker,
 		coarseFishEnemy = 1 << 4,
 		wimpEnemyTypeOne = 1 << 5,
 		bossEnemyTypeOne = 1 << 6,
@@ -116,7 +117,7 @@ public:
 	void DrawUnLit()override;
 	void GenerateDepthMapFromLight_SkinMesh()	override;
 	void DrawLit_SkinMesh()						override;
-	void Init()override;
+	void Init(std::weak_ptr<json11::Json> a_wpJsonObj);
 
 	void Update()override;
 	void PostUpdate()override;
@@ -219,6 +220,9 @@ private:
 	void RotationAttackMove();
 	void RotationAttackChaeck();
 
+	std::map<std::string, json11::Json>  m_mpObj;																	// JsonからEnemyオブジェクトの情報をもらうときに使用
+	std::weak_ptr<json11::Json> m_wpJsonObj;																		// Jsonファイル
+
 	std::shared_ptr<KdModelWork> m_model;
 
 	const int MAXWEAPONTYPE = 2;
@@ -238,30 +242,13 @@ private:
 	int m_leftWeaponNumber = 0;
 
 	bool m_bMove = false;
-	bool m_bStateUnChange = false; // 状態を変更できないときにtrue  もしかしたらここら辺ビット管理にするかも
-	bool m_bUnMove = false; // 動けないときにtrue
-	bool m_bJump = false;
-
-	bool m_bLeftWallHit = false;
-	bool m_bRightWallHit = false;
 
 	Math::Vector3    m_pos = {};
 	Math::Vector3    m_move = {};
 	Math::Vector3    m_scale = {};
 
-	Math::Matrix m_deathWorldMat;
-	int          m_isExpiredCnt = 0;
-	bool         m_firstUnLive = false;
-	int          m_dashDerayCnt = 0;
-	float        m_damageTotal = 0;
-	int          m_damageTotalAddTime = 0;
-	KdTexture m_hPTex;
-	KdTexture m_hPBarTex;
-	KdTexture m_mPTex;
+	Math::Vector3	 m_mWorldRot;
 
-	Math::Vector3					 m_mWorldRot;
-
-	bool m_bSpaceState;
 	int m_lGrassHopperPauCnt = 0; // 休止する時間
 	int m_rGrassHopperPauCnt = 0; // 休止する時間
 
@@ -291,27 +278,14 @@ private:
 	int m_runAnimeCnt = 0;
 	int   m_hitStopCnt = 0;
 	int   m_hitColorChangeTimeCnt = 0;
-	int   m_defenseKnockbackCnt = 0;
 	float m_hitMoveSpd = 0.0f;
 	float m_gardMoveSpd;           // 攻撃を防御した時のノックバック速度
 	bool  m_bTough;                // 高い攻撃力の攻撃をくらうORガードしたかどうか
 	Math::Vector3 m_knockBackVec;  // ノックバックする方向
-	float m_torion = 0.0f;
+	float m_vForce = 0.0f;
 	float m_endurance = 0.0f;    // トリオン体耐久力
 	float m_graduallyTorionDecVal; // 徐々に減ってくトリオン量
 	int m_delayTurnAroundTime; // 振り返りを遅らせる時間
-
-	//int m_reactionAttackOrDefenseDelayTime;                   //アタックかディフェンスを選ぶのにかかるまでの時間を記憶
-	//int m_reactionAttackOrDefenseDelayTimeVal;                //アタックかディフェンスを選ぶのにかかるまでの時間							
-	//int m_reactionRunDelayTime;					              //走るのにかかるまでの時間を記憶
-	//int m_reactionRunDelayTimeVal;				              //走るのにかかるまでの時間
-	//int m_reactionSwitchingDelayTime;			              //武器の切替にかかるまでの時間を記憶											
-	//int m_reactionSwitchingDelayTimeVal;		              //武器の切替にかかるまでの時間
-
-	int m_actionDelayTimeVal;
-	int m_actionDelayTime;
-	int m_thinkActionDelayTimeVal;
-	int m_thinkActionDelayTime;
 
 	bool m_bAttackOrDefense;
 	bool m_bEscape;
@@ -387,6 +361,9 @@ private:
 
 	int m_addRotationAttackDistToPlayerTime;	    // 回転攻撃範囲内にPlayerがいる時間を計る
 	int m_rotationAttackDistToPlayerTimeInitTime;	// 回転攻撃範囲内にPlayerがいない時間を計る
+	float m_addRotationAttackDistToPlayerRadius;    // 回転攻撃範囲の半径
 
 	int m_attackDelayTime;
+
+	bool m_bLethalDamageToKickOrPantciOrDashAttackHit; // 致死的なキックかパンチかダッシュアタックが当たった時　true
 };
