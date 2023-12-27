@@ -35,13 +35,13 @@ void Ui::PostUpdate()
 	if (m_uiType == UiType::game || m_uiType == UiType::training)
 	{
 		auto it = m_wpEnemyList.begin();
-		while (it != m_wpEnemyList.end()) // 数が変動するため範囲ベースForが使えない
+		while (it != m_wpEnemyList.end())
 		{
 			// 不要になったオブジェクトを消す
 			if ((*it).expired())
 			{
 				// 消す
-				it = m_wpEnemyList.erase(it); // 戻り値で次の場所を返してくれる
+				it = m_wpEnemyList.erase(it);
 			}
 			else
 			{
@@ -1914,19 +1914,19 @@ void Ui::DrawSprite()
 
 		if (m_time >= 0 && m_time < 360)
 		{
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_FTtoyoRogoTex, 0, 0, 500, 500);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_FTtoyoRogoTex, 0, 0, (int)m_FTtoyoRogoTex.GetWidth(), (int)m_FTtoyoRogoTex.GetHeight());
 		}
 		else if (m_time >= 360)
 		{
 			transMat = Math::Matrix::CreateTranslation(0, 200, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_titleCharRogoTex, 0, 0, 692, 172);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_titleCharRogoTex, 0, 0, (int)m_titleCharRogoTex.GetWidth(), (int)m_titleCharRogoTex.GetHeight());
 
 			transMat = Math::Matrix::CreateTranslation(0, -200, 0);
-			Math::Rectangle rc = { 0,0,894,114 };
+			Math::Rectangle rc = { 0,0,(int)m_pushLClickTex.GetWidth(),(int)m_pushLClickTex.GetHeight() };
 			color = { 1,1,1,m_pushLClickAlpha };
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_pushLClickTex, 0, 0, 894, 114, &rc, &color);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_pushLClickTex, 0, 0, (int)m_pushLClickTex.GetWidth(), (int)m_pushLClickTex.GetHeight(), &rc, &color);
 		}
 
 		transMat = Math::Matrix::Identity;
@@ -1943,16 +1943,16 @@ void Ui::DrawSprite()
 				transMat = Math::Matrix::CreateTranslation(-75, 200, 0);
 				mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				Math::Rectangle rc = { 0,0,354, 114 };
+				Math::Rectangle rc = { 0,0,(int)m_waveTex.GetWidth(), (int)m_waveTex.GetHeight() };
 				color = { 1,1,1,m_waveAlpha };
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_waveTex, 0, 0, 354, 114, &rc, &color);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_waveTex, 0, 0, (int)m_waveTex.GetWidth(), (int)m_waveTex.GetHeight(), &rc, &color);
 
 				transMat = Math::Matrix::CreateTranslation(175, 190, 0);
 				mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				rc = { 0,0,121, 136 };
+				rc = { 0,0,(int)m_PointTex[1].GetWidth(), (int)m_PointTex[1].GetHeight()};
 				color = { 1,1,1,m_waveAlpha };
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_PointTex[1], 0, 0, 121, 136, &rc, &color);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_PointTex[1], 0, 0, (int)m_PointTex[1].GetWidth(), (int)m_PointTex[1].GetHeight(), &rc, &color);
 
 			}
 
@@ -1963,16 +1963,16 @@ void Ui::DrawSprite()
 					transMat = Math::Matrix::CreateTranslation(-75, 200, 0);
 					mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-					Math::Rectangle rc = { 0,0,354, 114 };
+					Math::Rectangle rc = { 0,0,(int)m_waveTex.GetWidth(), (int)m_waveTex.GetHeight() };
 					color = { 1,1,1,m_waveAlpha };
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_waveTex, 0, 0, 354, 114, &rc, &color);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_waveTex, 0, 0, (int)m_waveTex.GetWidth(), (int)m_waveTex.GetHeight(), &rc, &color);
 
 					transMat = Math::Matrix::CreateTranslation(175, 190, 0);
 					mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-					rc = { 0,0,121, 136 };
+					rc = { 0,0,(int)m_PointTex[2].GetWidth(), (int)m_PointTex[2].GetHeight()};
 					color = { 1,1,1,m_waveAlpha };
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_PointTex[2], 0, 0, 121, 136, &rc, &color);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_PointTex[2], 0, 0, (int)m_PointTex[2].GetWidth(), (int)m_PointTex[2].GetHeight(), &rc, &color);
 				}
 			}
 		}
@@ -1983,33 +1983,33 @@ void Ui::DrawSprite()
 		{
 			mat = Math::Matrix::CreateScale(m_countThreeScale) * transMat;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			Math::Rectangle rc = { 0,0,121, 136 };
+			Math::Rectangle rc = { 0,0,(int)m_countThreeTex.GetWidth(), (int)m_countThreeTex .GetHeight()};
 			color = { 1,1,1,m_countThreeAlpha };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countThreeTex, 0, 0, 121, 136, &rc, &color);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countThreeTex, 0, 0, (int)m_countThreeTex.GetWidth(), (int)m_countThreeTex.GetHeight(), &rc, &color);
 		}
 		else if (m_time >= 60 && m_time < 120)
 		{
 			mat = Math::Matrix::CreateScale(m_countTwoScale) * transMat;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			Math::Rectangle rc = { 0,0,121, 136 };
+			Math::Rectangle rc = { 0,0,(int)m_countTwoTex.GetWidth(), (int)m_countTwoTex .GetHeight()};
 			color = { 1,1,1,m_countTwoAlpha };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countTwoTex, 0, 0, 121, 136, &rc, &color);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countTwoTex, 0, 0, (int)m_countTwoTex.GetWidth(), (int)m_countTwoTex.GetHeight(), &rc, &color);
 		}
 		else if (m_time >= 120 && m_time < 180)
 		{
 			mat = Math::Matrix::CreateScale(m_countOneScale) * transMat;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			Math::Rectangle rc = { 0,0,121, 136 };
+			Math::Rectangle rc = { 0,0,(int)m_countOneTex.GetWidth(), (int)m_countOneTex .GetHeight()};
 			color = { 1,1,1,m_countOneAlpha };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countOneTex, 0, 0, 121, 136, &rc, &color);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countOneTex, 0, 0, (int)m_countOneTex.GetWidth(), (int)m_countOneTex.GetHeight(), &rc, &color);
 		}
 		else if (m_time >= 180 && m_time < 240)
 		{
 			mat = Math::Matrix::CreateScale(m_countGoScale) * transMat;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			Math::Rectangle rc = { 0,0,211, 136 };
+			Math::Rectangle rc = { 0,0,(int)m_countGoTex.GetWidth(),(int)m_countGoTex.GetHeight()};
 			color = { 1,1,1,m_countGoAlpha };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countGoTex, 0, 0, 211, 136, &rc, &color);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countGoTex, 0, 0, (int)m_countGoTex.GetWidth(), (int)m_countGoTex.GetHeight(), &rc, &color);
 		}
 		
 
@@ -2017,87 +2017,87 @@ void Ui::DrawSprite()
 		{
 			transMat = Math::Matrix::CreateTranslation(350, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, m_weaponType1Tex.GetWidth(), m_weaponType1Tex.GetHeight());
 			if (m_spPlayer->GetWeaponType() & Player::WeaponType::grassHopper)
 			{
-				Math::Rectangle rc = { 0,0,120,50 };
+				Math::Rectangle rc = { 0,0,(int)m_weaponTypeOvreDarkTex.GetWidth(),(int)m_weaponTypeOvreDarkTex.GetHeight()};
 				color = { 1,1,1,0.6f };
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, (int)m_weaponTypeOvreDarkTex.GetWidth(), (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color);
 			}
 
 			transMat = Math::Matrix::CreateTranslation(500, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, (int)m_weaponType2Tex.GetWidth(), (int)m_weaponType2Tex.GetHeight());
 			if (m_spPlayer->GetWeaponType() & Player::WeaponType::scorpion)
 			{
 				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-				Math::Rectangle rc = { 0,0,120,50 };
+				Math::Rectangle rc = { 0,0,(int)m_weaponTypeOvreDarkTex.GetWidth(),(int)m_weaponTypeOvreDarkTex .GetHeight()};
 				color = { 1,1,1,0.6f };
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, (int)m_weaponTypeOvreDarkTex.GetWidth(), (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 			}
 			else if (m_spPlayer->GetWeaponType() & Player::WeaponType::grassHopper && m_spPlayer->GetRGrassHopperPauCnt() != 0)
 			{
 				transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-				Math::Rectangle rc = { 0,0,m_spPlayer->GetRGrassHopperPauCnt() * 4,50 };
+				Math::Rectangle rc = { 0,0,m_spPlayer->GetRGrassHopperPauCnt() * 4,(int)m_weaponTypeOvreDarkTex.GetHeight()};
 				color = { 1,1,1,0.6f };
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, m_spPlayer->GetRGrassHopperPauCnt() * 4, 50, &rc, &color, Math::Vector2(0, 0.5f));
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, m_spPlayer->GetRGrassHopperPauCnt() * 4, (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 			}
 
 			transMat = Math::Matrix::CreateTranslation(-500, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, (int)m_weaponType1Tex.GetWidth(), (int)m_weaponType1Tex.GetHeight());
 			if (m_spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper)
 			{
-				Math::Rectangle rc = { 0,0,120,50 };
+				Math::Rectangle rc = { 0,0,(int)m_weaponTypeOvreDarkTex.GetWidth(),(int)m_weaponTypeOvreDarkTex .GetHeight()};
 				color = { 1,1,1,0.6f };
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, (int)m_weaponTypeOvreDarkTex.GetWidth(), (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color);
 			}
 
 			transMat = Math::Matrix::CreateTranslation(-350, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, 120, 50);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, (int)m_weaponType2Tex.GetWidth(), (int)m_weaponType2Tex.GetHeight());
 			if (m_spPlayer->GetWeaponType() & Player::WeaponType::lScorpion)
 			{
 				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-				Math::Rectangle rc = { 0,0,120,50 };
+				Math::Rectangle rc = { 0,0,(int)m_weaponTypeOvreDarkTex.GetWidth(),(int)m_weaponTypeOvreDarkTex .GetHeight()};
 				color = { 1,1,1,0.6f };
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, (int)m_weaponTypeOvreDarkTex.GetWidth(), (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 			}
 			else if (m_spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper && m_spPlayer->GetLGrassHopperPauCnt() != 0)
 			{
 				transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-				Math::Rectangle rc = { 0,0,m_spPlayer->GetLGrassHopperPauCnt() * 4,50 };
+				Math::Rectangle rc = { 0,0,m_spPlayer->GetLGrassHopperPauCnt() * 4,(int)m_weaponTypeOvreDarkTex.GetHeight()};
 				color = { 1,1,1,0.6f };
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, m_spPlayer->GetLGrassHopperPauCnt() * 4, 50, &rc, &color, Math::Vector2(0, 0.5f));
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, m_spPlayer->GetLGrassHopperPauCnt() * 4, (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 			}
 
 			transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			Math::Rectangle rc = { 0,0,400,50 };
+			Math::Rectangle rc = { 0,0,(int)m_enduranceBarTex.GetWidth(),(int)m_enduranceBarTex.GetHeight()};
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, (int)m_enduranceBarTex.GetWidth(), (int)m_enduranceBarTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 
 			transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			rc = { 0,0,(int)(m_spPlayer->GetEndurance()),50 };
+			rc = { 0,0,(int)(m_spPlayer->GetEndurance()),(int)m_enduranceTex.GetHeight()};
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(m_spPlayer->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(m_spPlayer->GetEndurance()), (int)m_enduranceTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 
 			transMat = Math::Matrix::CreateTranslation(-630, 255, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			rc = { 0,0,320,40 };
+			rc = { 0,0,(int)m_torionBarTex.GetWidth(),(int)m_torionBarTex .GetHeight()};
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionBarTex, 0, 0, 320, 40, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionBarTex, 0, 0, (int)m_torionBarTex.GetWidth(), (int)m_torionBarTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 
 			transMat = Math::Matrix::CreateTranslation(-620, 255, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			rc = { 0,0,(int)(m_spPlayer->GetVForce()),30 };
+			rc = { 0,0,(int)(m_spPlayer->GetVForce()),(int)m_torionTex.GetHeight()};
 			color = { 1, 1, 1, 1 };
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetVForce()), 30, &rc, &color, Math::Vector2(0, 0.5f));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, (int)(m_spPlayer->GetVForce()), (int)m_torionTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 
 			int i = 0;
 			for (auto& list : m_wpEnemyList)
@@ -2134,27 +2134,27 @@ void Ui::DrawSprite()
 					mat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation(m_enemyScPosList[i].x, m_enemyScPosList[i].y, 0.0f);
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-					rc = { 0,0,(int)(list.lock()->GetEndurance()),50 };
+					rc = { 0,0,(int)(list.lock()->GetEndurance()),(int)m_enduranceTex.GetHeight()};
 					color = { 1, 1, 1, 1 };
 					if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
 					{
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 2.6f), 50, &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 2.6f), (int)m_enduranceTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 					else
 					{
 						if (list.lock()->GetBBoss())
 						{
-							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), 50, &rc, &color, Math::Vector2(0, 0.5f));
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance()), (int)m_enduranceTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 						}
 						else
 						{
-							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 4.0f), 50, &rc, &color, Math::Vector2(0, 0.5f));
+							KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(list.lock()->GetEndurance() * 4.0f), (int)m_enduranceTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 						}
 					}
 
 					rc = { 0,0,400,50 };
 					color = { 1, 1, 1, 1 };
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, (int)m_enduranceBarTex.GetWidth(), (int)m_enduranceBarTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 				}
 
 				if (ang >= 45)
@@ -2165,17 +2165,17 @@ void Ui::DrawSprite()
 					{
 						mat = Math::Matrix::CreateTranslation(-25, 225.0f, 0.0f);
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-						rc = { 0,0,100,125 };
+						rc = { 0,0,(int)m_EnemyDirectionArrowUTex.GetWidth(),(int)m_EnemyDirectionArrowUTex .GetHeight()};
 						color = { 1, 1, 1, 1 };
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowUTex, 0, 0, 100, 125, &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowUTex, 0, 0, (int)m_EnemyDirectionArrowUTex.GetWidth(), (int)m_EnemyDirectionArrowUTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 					else if (m_heightDifference <= -2.0f)
 					{
 						mat = Math::Matrix::CreateTranslation(-25, -225.0f, 0.0f);
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-						rc = { 0,0,100,125 };
+						rc = { 0,0,(int)m_EnemyDirectionArrowBTex.GetWidth(),(int)m_EnemyDirectionArrowBTex .GetHeight()};
 						color = { 1, 1, 1, 1 };
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowBTex, 0, 0, 100, 125, &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowBTex, 0, 0, (int)m_EnemyDirectionArrowBTex.GetWidth(), (int)m_EnemyDirectionArrowBTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 
 					
@@ -2185,25 +2185,22 @@ void Ui::DrawSprite()
 					{
 						mat = Math::Matrix::CreateTranslation(-500, 0.0f, 0.0f);
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-						rc = { 0,0,125,100 };
+						rc = { 0,0,(int)m_EnemyDirectionArrowLTex.GetWidth(),(int)m_EnemyDirectionArrowLTex .GetHeight()};
 						color = { 1, 1, 1, 1 };
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowLTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowLTex, 0, 0, (int)m_EnemyDirectionArrowLTex.GetWidth(), (int)m_EnemyDirectionArrowLTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 					else if (cross.y >= 0)
 					{
 						mat = Math::Matrix::CreateTranslation(500, 0.0f, 0.0f);
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-						rc = { 0,0,125,100 };
+						rc = { 0,0,(int)m_EnemyDirectionArrowRTex.GetWidth(),(int)m_EnemyDirectionArrowRTex .GetHeight()};
 						color = { 1, 1, 1, 1 };
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowRTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowRTex, 0, 0, (int)m_EnemyDirectionArrowRTex.GetWidth(), (int)m_EnemyDirectionArrowRTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 					
 				}
 				++i;
 			}
-
-
-
 		}
 
 		if (m_bOption)
@@ -2217,15 +2214,15 @@ void Ui::DrawSprite()
 			{
 				mat = Math::Matrix::CreateScale(m_operationScale) * Math::Matrix::CreateTranslation(m_operationPos);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_operationTex, 0, 0, 700, 120);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_operationTex, 0, 0, (int)m_operationTex.GetWidth(), (int)m_operationTex.GetHeight());
 
 				mat = Math::Matrix::CreateScale(m_selectScale) * Math::Matrix::CreateTranslation(m_selectPos);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectTex, 0, 0, 700, 120);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectTex, 0, 0, (int)m_selectTex.GetWidth(), (int)m_selectTex.GetHeight());
 
 				mat = Math::Matrix::CreateScale(m_exitScale) * Math::Matrix::CreateTranslation(m_exitPos);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_exitTex, 0, 0, 700, 120);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_exitTex, 0, 0, (int)m_exitTex.GetWidth(), (int)m_exitTex.GetHeight());
 			}
 			else if (m_bOperation)
 			{
@@ -2233,7 +2230,7 @@ void Ui::DrawSprite()
 				{
 					transMat = Math::Matrix::Identity;
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_howToTex, 0, 0, 1250, 500);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_howToTex, 0, 0, (int)m_howToTex.GetWidth(), (int)m_howToTex.GetHeight());
 				}
 
 				if (m_bWeaponDataPage)
@@ -2242,31 +2239,31 @@ void Ui::DrawSprite()
 					{
 						transMat = Math::Matrix::Identity;
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_hopperDataTex, 0, 0, 1156, 260);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_hopperDataTex, 0, 0, (int)m_hopperDataTex.GetWidth(), (int)m_hopperDataTex.GetHeight());
 					}
 					else if (m_bWeaponDataScoPage)
 					{
 						transMat = Math::Matrix::Identity;
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponInfoTex, 0, 0, 1151, 431);
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponInfoTex, 0, 0, (int)m_weaponInfoTex.GetWidth(), (int)m_weaponInfoTex.GetHeight());
 					}
 
 					mat = Math::Matrix::CreateScale(m_weaponRightYaiScale) * Math::Matrix::CreateTranslation(m_weaponRightYaiPos);
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, 70, 55);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, (int)m_rightYaiTex.GetWidth(), (int)m_rightYaiTex.GetHeight());
 
 					mat = Math::Matrix::CreateScale(m_weaponLeftYaiScale) * Math::Matrix::CreateTranslation(m_weaponLeftYaiPos);
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, 70, 55);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, (int)m_leftYaiTex.GetWidth(), (int)m_leftYaiTex.GetHeight());
 				}
 
 				mat = Math::Matrix::CreateScale(m_weaOrHowRightYaiScale) * Math::Matrix::CreateTranslation(m_weaOrHowRightYaiPos);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, 70, 55);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, (int)m_rightYaiTex.GetWidth(), (int)m_rightYaiTex.GetHeight());
 
 				mat = Math::Matrix::CreateScale(m_weaOrHowLeftYaiScale) * Math::Matrix::CreateTranslation(m_weaOrHowLeftYaiPos);
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, 70, 55);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, (int)m_leftYaiTex.GetWidth(), (int)m_leftYaiTex.GetHeight());
 
 			}
 
@@ -2278,24 +2275,24 @@ void Ui::DrawSprite()
 		mat = Math::Matrix::CreateTranslation(-50, 325, 0);
 		
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeM10], 0, 0, 28, 40);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeM10], 0, 0, (int)m_timeTex[m_gameTimeM10].GetWidth(), (int)m_timeTex[m_gameTimeM10].GetHeight());
 
 		mat = Math::Matrix::CreateTranslation(-20, 325, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeM1], 0, 0, 28, 40);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeM1], 0, 0, (int)m_timeTex[m_gameTimeM1].GetWidth(), (int)m_timeTex[m_gameTimeM1].GetHeight());
 
 		mat = Math::Matrix::CreateTranslation(0, 325, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_conmaTex, 0, 0, 28, 40);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_conmaTex, 0, 0, (int)m_conmaTex.GetWidth(), (int)m_conmaTex.GetHeight());
 
 		mat = Math::Matrix::CreateTranslation(20, 325, 0);
 	
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeS10], 0, 0, 28, 40);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeS10], 0, 0, (int)m_timeTex[m_gameTimeS10].GetWidth(), (int)m_timeTex[m_gameTimeS10].GetHeight());
 
 		mat = Math::Matrix::CreateTranslation(50, 325, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeS1], 0, 0, 28, 40);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeS1], 0, 0, (int)m_timeTex[m_gameTimeS1].GetWidth(), (int)m_timeTex[m_gameTimeS1].GetHeight());
 
 		transMat = Math::Matrix::Identity;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -3113,7 +3110,7 @@ void Ui::DrawSprite()
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 						rc = { 0,0,100,125 };
 						color = { 1, 1, 1, 1 };
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowUTex, 0, 0, 100, 125, &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowUTex, 0, 0, m_EnemyDirectionArrowUTex.GetWidth(), m_EnemyDirectionArrowUTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 					else if (m_heightDifference <= -2.0f)
 					{
@@ -3121,7 +3118,7 @@ void Ui::DrawSprite()
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 						rc = { 0,0,100,125 };
 						color = { 1, 1, 1, 1 };
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowBTex, 0, 0, 100, 125, &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowBTex, 0, 0, m_EnemyDirectionArrowBTex.GetWidth(), m_EnemyDirectionArrowBTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 
 
@@ -3133,7 +3130,7 @@ void Ui::DrawSprite()
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 						rc = { 0,0,125,100 };
 						color = { 1, 1, 1, 1 };
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowLTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowLTex, 0, 0, m_EnemyDirectionArrowLTex.GetWidth(), m_EnemyDirectionArrowLTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 					else if (cross.y >= 0)
 					{
@@ -3141,7 +3138,7 @@ void Ui::DrawSprite()
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 						rc = { 0,0,125,100 };
 						color = { 1, 1, 1, 1 };
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowRTex, 0, 0, 125, 100, &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowRTex, 0, 0, m_EnemyDirectionArrowRTex.GetWidth(), m_EnemyDirectionArrowRTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 
 				}

@@ -5798,24 +5798,22 @@ void Enemy::EnergyCharge(bool a_bBeem)
 
 	float Xang = DirectX::XMConvertToDegrees(acos(dot.x));
 
-	Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, targetVec);
-
 	if (m_enemyType & wimpEnemyTypeOne)
 	{
-		if (m_rangedAttackShotPos.y >= m_rangedAttackTargetPos.y)
+		if (m_rangedAttackShotPos.y <= m_rangedAttackTargetPos.y)
 		{
-			if (Xang >= 3)
+			if (Xang >= 45)
 			{
-				Xang = 3;
+				Xang = 45;
 			}
 
 			Xang *= -1;
 		}
 		else
 		{
-			if (Xang >= 45)
+			if (Xang >= 3)
 			{
-				Xang = 45;
+				Xang = 3;
 			}
 		}
 	}
@@ -5827,7 +5825,7 @@ void Enemy::EnergyCharge(bool a_bBeem)
 			Xang = 45;
 		}
 
-		if (m_rangedAttackShotPos.y >= m_rangedAttackTargetPos.y)
+		if (m_rangedAttackShotPos.y <= m_rangedAttackTargetPos.y)
 		{
 			Xang *= -1;
 		}
@@ -5839,10 +5837,10 @@ void Enemy::EnergyCharge(bool a_bBeem)
 		KdEffekseerManager::GetInstance().
 			Play("Beem.efk", m_rangedAttackShotPos);
 		KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Beem.efk"); // これでループしない
-		Math::Matrix efcMat = Math::Matrix::CreateScale(1.0f) * Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y + 180), DirectX::XMConvertToRadians(Xang), 0) * Math::Matrix::CreateTranslation(m_rangedAttackShotPos);
+		Math::Matrix efcMat = Math::Matrix::CreateScale(1.0f) * Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y + 180), DirectX::XMConvertToRadians(-Xang), 0) * Math::Matrix::CreateTranslation(m_rangedAttackShotPos);
 		KdEffekseerManager::GetInstance().SetWorldMatrix("Beem.efk", efcMat);
 
-		m_rangedAttackDir = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y), DirectX::XMConvertToRadians(-Xang), 0));
+		m_rangedAttackDir = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y), DirectX::XMConvertToRadians(Xang), 0));
 		m_rangedAttackDir.Normalize();
 	}
 	else
@@ -5857,7 +5855,7 @@ void Enemy::EnergyCharge(bool a_bBeem)
 				Play("BossEnergyBullet.efk", m_rangedAttackShotPos);
 			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BossEnergyBullet.efk"); // これでループしない
 			scaleMat = Math::Matrix::CreateScale(2.5f);
-			Math::Matrix efcMat = scaleMat * Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y + 180), DirectX::XMConvertToRadians(Xang), 0) * Math::Matrix::CreateTranslation(m_rangedAttackShotPos);
+			Math::Matrix efcMat = scaleMat * Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y + 180), DirectX::XMConvertToRadians(-Xang), 0) * Math::Matrix::CreateTranslation(m_rangedAttackShotPos);
 			KdEffekseerManager::GetInstance().SetWorldMatrix("BossEnergyBullet.efk", efcMat);
 		}
 		else
@@ -5866,11 +5864,11 @@ void Enemy::EnergyCharge(bool a_bBeem)
 				Play("EnergyBullet.efk", m_rangedAttackShotPos);
 			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnergyBullet.efk"); // これでループしない
 			scaleMat = Math::Matrix::CreateScale(0.5f);
-			Math::Matrix efcMat = scaleMat * Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y + 180), DirectX::XMConvertToRadians(Xang), 0) * Math::Matrix::CreateTranslation(m_rangedAttackShotPos);
+			Math::Matrix efcMat = scaleMat * Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y + 180), DirectX::XMConvertToRadians(-Xang), 0) * Math::Matrix::CreateTranslation(m_rangedAttackShotPos);
 			KdEffekseerManager::GetInstance().SetWorldMatrix("EnergyBullet.efk", efcMat);
 		}
 
-		m_energyBulletDir = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y), DirectX::XMConvertToRadians(-Xang), 0));
+		m_energyBulletDir = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_mWorldRot.y), DirectX::XMConvertToRadians(Xang), 0));
 		m_energyBulletDir.Normalize();
 	}
 

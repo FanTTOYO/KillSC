@@ -180,61 +180,6 @@ void Scopion::PostUpdate()
 	}
 }
 
-void Scopion::DrawBright()
-{
-	/*if (m_bPlayerWeapon)
-	{
-		if (!m_bMantis)
-		{
-			const std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(m_owner.lock());
-			if (!(player->GetWeaponType() & (scorpion | lScorpion)))return;
-
-			if (m_arrmType == rArrm && player->GetWeaponType() & scorpion)
-			{
-				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
-			}
-
-			if (m_arrmType == lArrm && player->GetWeaponType() & lScorpion)
-			{
-				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
-			}
-		}
-		else
-		{
-			if (m_arrmType == rArrm)
-			{
-				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_manModel, m_mWorld);
-			}
-		}
-	}
-
-	if (m_bEnemyWeapon)
-	{
-		if (!m_bMantis)
-		{
-			const std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(m_owner.lock());
-			if (!(enemy->GetWeaponType() & (eScorpion | eLScorpion)))return;
-
-			if (m_arrmType == rArrm && enemy->GetWeaponType() & eScorpion)
-			{
-				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
-			}
-
-			if (m_arrmType == lArrm && enemy->GetWeaponType() & eLScorpion)
-			{
-				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
-			}
-		}
-		else
-		{
-			if (m_arrmType == rArrm)
-			{
-				KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_manModel, m_mWorld);
-			}
-		}
-	}*/
-}
-
 void Scopion::DrawLit()
 {
 	if (m_bPlayerWeapon)

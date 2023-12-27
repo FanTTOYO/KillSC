@@ -454,6 +454,8 @@ void GameScene::Event()
 						m_wpEnemyList.push_back(enemy);
 					}
 
+					total = 1;
+
 					// Œã‚ë•ûŒü
 					for (int i = 0; i < total; ++i)
 					{
@@ -470,7 +472,7 @@ void GameScene::Event()
 							                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosB"][1].number_value(),
 							                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosB"][2].number_value());
 
-						enemy->SetPos(Math::Vector3(pos.x + 10.0f * i, pos.y, pos.z));
+						enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z));
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceBWorldRotationY"].number_value());
 						enemy->SetMatrix();
 						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
@@ -495,7 +497,7 @@ void GameScene::Event()
 						pos = Math::Vector3((float)wimpEnemyTypeOne["WimpEnemyTypeOnePosR"][0].number_value(),
 							                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosR"][1].number_value(),
 							                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosR"][2].number_value());
-						enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z + 10.0f * i));
+						enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z));
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceRWorldRotationY"].number_value());
 						enemy->SetMatrix();
 						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);
@@ -519,7 +521,7 @@ void GameScene::Event()
 						pos = Math::Vector3((float)wimpEnemyTypeOne["WimpEnemyTypeOnePosL"][0].number_value(),
 							                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosL"][1].number_value(),
 							                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosL"][2].number_value());
-						enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z + 10.0f * i));
+						enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z));
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceLWorldRotationY"].number_value());
 						enemy->SetMatrix();
 						enemy->SetModelAndType(Enemy::EnemyType::wimpEnemyTypeOne);

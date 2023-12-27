@@ -68,8 +68,7 @@ public:
 	void PostUpdate()							override;														
 	void DrawLit()								override;														
 	void DrawUnLit()							override;														
-	void DrawBright()							override;														
-	void DrawSprite()							override;														
+	void DrawBright()							override;																										
 	void GenerateDepthMapFromLight()			override;														
 	void GenerateDepthMapFromLight_SkinMesh()	override;														
 	void DrawLit_SkinMesh()						override;
@@ -132,8 +131,12 @@ private:
 	void ScorpionAttackMove();																						// 短剣での攻撃を扱う
 	void ScorpionDefenseMove();																						// 短剣での防御を扱う
 	void HasDefenseMove();																							// 防御された時の動きを扱う
-	void TutorialUpdate();																							// チュートリアル時のアップデート
-																													
+	void TutorialUpdate();																							// チュートリアル時のみ行う処理
+	void OverStageChaeck();																							// ステージから出たかどうかを確認
+	void EnemyRockOn();																								// 敵をロックオンする処理
+	void HitStateUpdate();																							// Hit状態の時の処理
+	void CollisionUpdate();																							// 当たり判定処理
+
 	std::map<std::string,json11::Json>  m_mpObj;																	// JsonからPlayerオブジェクトの情報をもらうときに使用
 	std::weak_ptr<json11::Json> m_wpJsonObj;																		// Playerオブジェクト以外の情報をもらうときに使用
 																													
