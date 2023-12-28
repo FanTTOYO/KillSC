@@ -11,6 +11,7 @@ void SelectScene::Init()
 {
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
 	ui->SetUiType(Ui::UiType::select);
+	ui->Init();
 	m_objList.push_back(ui);
 	m_wpUi = ui;
 }

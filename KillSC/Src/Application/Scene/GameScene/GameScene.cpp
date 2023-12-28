@@ -740,10 +740,10 @@ void GameScene::Init()
 	m_wpPlayer = player;
 
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
-	ui->SetPlayer(player);
 
-	ui->SetPlayer(player);
 	ui->SetUiType(Ui::UiType::game);
+	ui->Init();
+	ui->SetPlayer(player);
 	ui->SetWaveCnt(m_waveCnt);
 	m_objList.push_back(ui);
 	m_wpUi = ui;

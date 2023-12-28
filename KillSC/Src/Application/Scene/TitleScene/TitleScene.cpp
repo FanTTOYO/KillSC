@@ -27,6 +27,7 @@ void TitleScene::Init()
 {
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
 	ui->SetUiType(Ui::UiType::title);
+	ui->Init();
 	m_objList.push_back(ui);
 	m_wpUi = ui;
 	m_bReturn = false;

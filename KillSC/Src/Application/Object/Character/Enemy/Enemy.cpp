@@ -140,13 +140,14 @@ void Enemy::Update()
 		{
 			m_pos = Math::Vector3::Zero;
 		}
-#endif
 
 		// debugÉLÅ[
 		if (GetAsyncKeyState('K') & 0x8000)
 		{
 			m_vForce = 0;
 		}
+#endif
+
 		
 
 		m_vForce -= m_graduallyTorionDecVal;

@@ -71,9 +71,10 @@ void TutorialScene::Init()
 	KdEffekseerManager::GetInstance().SetCamera(camera);
 
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
-	ui->SetPlayer(player);
 	player->SetUi(ui);
 	ui->SetUiType(Ui::UiType::tutorial);
+	ui->SetPlayer(player);
+	ui->Init();
 	m_objList.push_back(ui);
 	m_wpUi = ui;
 

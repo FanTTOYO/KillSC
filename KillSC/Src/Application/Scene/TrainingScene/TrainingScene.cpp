@@ -37,7 +37,7 @@ void TrainingScene::Event()
 		m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
 		enemy->Init(m_spJsonObj);
 		enemy->SetBBoss(true);
-		m_wpUi.lock()->AddEnemy(enemy);
+		m_wpUi.lock()->SetEnemy(enemy);
 		enemy->SetEnemyNumber(1);
 		enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceFWorldRotationY"].number_value());
 		m_objList.push_back(enemy);
@@ -112,11 +112,10 @@ void TrainingScene::Init()
 	m_wpEnemy = enemy;
 
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
-	ui->SetPlayer(player);
-
-	ui->SetPlayer(player);
-	ui->AddEnemy(enemy);
 	ui->SetUiType(Ui::UiType::training);
+	ui->Init();
+	ui->SetPlayer(player);
+	ui->SetEnemy(enemy);
 	m_objList.push_back(ui);
 	m_wpUi = ui;
 
