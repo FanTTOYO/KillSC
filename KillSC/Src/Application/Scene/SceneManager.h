@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 
 class BaseScene;
 
 class SceneManager
 {
 public:
-	// ƒV[ƒ“î•ñ
+	// ã‚·ãƒ¼ãƒ³æƒ…å ±
 	enum class SceneType
 	{
 		title,
@@ -26,7 +26,7 @@ public:
 	void DrawSprite();
 	void DrawDebug();
 
-	// ƒ}ƒl[ƒWƒƒ[‚Ì‰Šú‰»ŠÖ”
+	// ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®åˆæœŸåŒ–é–¢æ•°
 	void Init()
 	{
 		ChangeScene(SceneType::title);
@@ -34,8 +34,8 @@ public:
 
 	//void Release();
 
-	// ‚±‚ÌŠÖ”‚Å‚ÍƒV[ƒ“‚Í•Ï‚í‚ç‚È‚¢
-	// ‚ ‚­‚Ü‚Å—\–ñ
+	// ã“ã®é–¢æ•°ã§ã¯ã‚·ãƒ¼ãƒ³ã¯å¤‰ã‚ã‚‰ãªã„
+	// ã‚ãã¾ã§äºˆç´„
 	void SetNextScene(SceneType _nextScene)
 	{
 		m_nextSceneType = _nextScene;
@@ -83,29 +83,29 @@ private:
 
 	void ChangeScene(SceneType _sceneType);
 
-	// Œ»İ‚ÌƒV[ƒ“‚ğŠÇ—‚µ‚Ä‚¢‚éƒ|ƒCƒ“ƒ^
+	// ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³ã‚’ç®¡ç†ã—ã¦ã„ã‚‹ãƒã‚¤ãƒ³ã‚¿
 	std::shared_ptr<BaseScene> m_currentScene = nullptr;
 
-	// Œ»İ‚ÌƒV[ƒ“‚ğŠÇ—‚µ‚Ä‚¢‚éƒf[ƒ^i•Ï”j
+	// ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³ã‚’ç®¡ç†ã—ã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿ï¼ˆå¤‰æ•°ï¼‰
 	SceneType m_currentSceneType = SceneType::title;
-	// Ÿ‚ÌƒV[ƒ“‚ğŠÇ—‚µ‚Ä‚¢‚éƒf[ƒ^i•Ï”j
+	// æ¬¡ã®ã‚·ãƒ¼ãƒ³ã‚’ç®¡ç†ã—ã¦ã„ã‚‹ãƒ‡ãƒ¼ã‚¿ï¼ˆå¤‰æ•°ï¼‰
 	SceneType m_nextSceneType = m_currentSceneType;
 
-	bool m_bPlayerWin;           // player‚ªŸ‚Á‚Ä‚é
-	int  m_pointAddOrSubVal;     // ‰ÁZ’l‚©Œ¸Z’l
-	bool m_bAddOrSubVal = true;  // true ‰ÁZ’l  false Œ¸Z’l
-	bool m_bWinEnd;				 // game‚ªI—¹‚µ‚Äwindow‚ª•Â‚¶‚é‚Æ‚«
-	int  m_updateStopCnt;        // HitStop‚Ég—p‚·‚é
-	int  m_enemyTotal;           // “G‚Ì‘”
-	int  m_enemyIeftover;        // “G‚ÌŒ»İ‚Ì”
-	int  m_enemyDrawTotal;       // “G‚Ì•`‰æ‚µ‚Ä‚¢‚é‘”
-	int  m_screenVibFrames;      // ‰æ–Ê‚ÌU“®ƒtƒŒ[ƒ€”
-	bool m_bHumanoidEnemy;       // “G‚ªlŒ^‚©‚Ç‚¤‚©‚ğ”»’f‚µ‚Ä‚¢‚é lŒ^:true lŒ^‚Å‚Í‚È‚¢ : faslse —¼•û‚¢‚é : true
+	bool m_bPlayerWin;           // playerãŒå‹ã£ã¦ã‚‹
+	int  m_pointAddOrSubVal;     // åŠ ç®—å€¤ã‹æ¸›ç®—å€¤
+	bool m_bAddOrSubVal = true;  // true åŠ ç®—å€¤  false æ¸›ç®—å€¤
+	bool m_bWinEnd;				 // gameãŒçµ‚äº†ã—ã¦windowãŒé–‰ã˜ã‚‹ã¨ã
+	int  m_updateStopCnt;        // HitStopæ™‚ã«ä½¿ç”¨ã™ã‚‹
+	int  m_enemyTotal;           // æ•µã®ç·æ•°
+	int  m_enemyIeftover;        // æ•µã®ç¾åœ¨ã®æ•°
+	int  m_enemyDrawTotal;       // æ•µã®æç”»ã—ã¦ã„ã‚‹ç·æ•°
+	int  m_screenVibFrames;      // ç”»é¢ã®æŒ¯å‹•ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+	bool m_bHumanoidEnemy;       // æ•µãŒäººå‹ã‹ã©ã†ã‹ã‚’åˆ¤æ–­ã—ã¦ã„ã‚‹ äººå‹:true äººå‹ã§ã¯ãªã„ : faslse ä¸¡æ–¹ã„ã‚‹ : true
 
-// ƒVƒ“ƒOƒ‹ƒgƒ“ƒpƒ^[ƒ“
-	// ¶¬‚·‚éƒCƒ“ƒXƒ^ƒ“ƒX‚Ì”‚ğ1‚Â‚É§ŒÀ‚·‚é
-	// •Ö—˜‚·‚¬‚é
-	// ‚È‚ñ‚Å‚à‚©‚ñ‚Å‚àƒVƒ“ƒOƒ‹ƒgƒ“‚É‚·‚ñ‚ÈI
+// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³
+	// ç”Ÿæˆã™ã‚‹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®æ•°ã‚’1ã¤ã«åˆ¶é™ã™ã‚‹
+	// ä¾¿åˆ©ã™ãã‚‹
+	// ãªã‚“ã§ã‚‚ã‹ã‚“ã§ã‚‚ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã«ã™ã‚“ãªï¼
 
 private:
 	SceneManager() { Init(); }

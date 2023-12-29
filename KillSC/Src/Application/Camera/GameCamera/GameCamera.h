@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../CameraBase.h"
 #define CAMERAZ -3.65f 
 #define CAMERAY  2.65f
@@ -42,8 +42,8 @@ private:
 
 	float m_cameracChasePower = 0;
 	bool m_bCameraDown;
-	bool m_bRotateEnemy; // ƒGƒlƒ~[‚É‚æ‚Á‚ÄƒJƒƒ‰‚Ì‰ñ“]‚ª‚©‚í‚é
+	bool m_bRotateEnemy; // ã‚¨ãƒãƒŸãƒ¼ã«ã‚ˆã£ã¦ã‚«ãƒ¡ãƒ©ã®å›è»¢ãŒã‹ã‚ã‚‹
 	Math::Vector3 m_startPos[5] = {};
-	bool m_startDelayFive = false; // s—ñ‚ğ5ŒÂg‚¤ true ‚»‚Ì‘¼ false
-	std::list<std::weak_ptr<KdGameObject>> m_hitObjList; //	“–‚½‚è”»’è‚·‚éƒIƒuƒWƒFƒNƒg
+	bool m_startDelayFive = false; // è¡Œåˆ—ã‚’5å€‹ä½¿ã† true ãã®ä»– false
+	std::list<std::weak_ptr<KdGameObject>> m_hitObjList; //	å½“ãŸã‚Šåˆ¤å®šã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 };

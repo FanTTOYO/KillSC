@@ -1,4 +1,4 @@
-#include "SceneManager.h"
+ï»¿#include "SceneManager.h"
 
 #include "BaseScene/BaseScene.h"
 #include "GameScene/GameScene.h"
@@ -10,13 +10,13 @@
 
 void SceneManager::PreUpdate()
 {
-	// ƒV[ƒ“Ø‘Ö
+	// ã‚·ãƒ¼ãƒ³åˆ‡æ›¿
 	if (m_currentSceneType != m_nextSceneType)
 	{
 		ChangeScene(m_nextSceneType);
 	}
 
-	// Œ»İ‚ÌƒV[ƒ“ˆ—
+	// ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³å‡¦ç†
 	m_currentScene->PreUpdate();
 }
 
@@ -65,17 +65,17 @@ void SceneManager::AddObject(const std::shared_ptr<KdGameObject>& _obj)
 
 void SceneManager::ChangeScene(SceneType _sceneType)
 {
-	// Ÿ‚ÌƒV[ƒ“‚ğì¬‚µAŒ»İ‚ÌƒV[ƒ“‚É‚·‚é
+	// æ¬¡ã®ã‚·ãƒ¼ãƒ³ã‚’ä½œæˆã—ã€ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³ã«ã™ã‚‹
 	switch (_sceneType)
 	{
 	case SceneType::title:
-		ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·)
+		ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™)
 		m_bPlayerWin = false;
 		m_currentScene = std::make_shared<TitleScene>();
 		break;
 	case SceneType::battle:
 	case SceneType::challenge:
-		ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·)
+		ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™)
 		m_bPlayerWin = false;
 		m_pointAddOrSubVal = 0;
 		m_bAddOrSubVal = true;
@@ -86,19 +86,19 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 		m_currentScene = std::make_shared<GameScene>();
 		break;
 	case SceneType::result:
-		ShowCursor(true); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·)
+		ShowCursor(true); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™)
 		m_currentScene = std::make_shared<ResultScene>();
 		break;
 	case SceneType::select:
-		ShowCursor(true); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·)
+		ShowCursor(true); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™)
 		m_currentScene = std::make_shared<SelectScene>();
 		break;
 	case SceneType::tutorial:
-		ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·)
+		ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™)
 		m_currentScene = std::make_shared<TutorialScene>();
 		break;
 	case SceneType::training:
-		ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·)
+		ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™)
 		m_updateStopCnt = 0;
 		m_enemyDrawTotal = 0;
 		m_currentScene = std::make_shared<TrainingScene>();

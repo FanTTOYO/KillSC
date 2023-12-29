@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class GameCamera;
 
@@ -31,7 +31,7 @@ protected:
 	virtual void Event();
 	virtual void Init();
 
-	// ‘SƒIƒuƒWƒFƒNƒg‚ÌƒAƒhƒŒƒX‚ğŠÇ—
+	// å…¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ç®¡ç†
 	std::list<std::shared_ptr<KdGameObject>> m_objList;
 	bool m_bCountDown = false;
 };

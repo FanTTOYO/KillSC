@@ -1,14 +1,14 @@
-#include "GameCamera.h"
+ï»¿#include "GameCamera.h"
 #include "../../Object/Character/Player/Player.h"
 #include "../../Object/Character/Enemy/Enemy.h"
 #include "../../Scene/SceneManager.h"
 
 void GameCamera::Init()
 {
-	// ’‹“_
+	// æ³¨è¦–ç‚¹
 	m_LocalPos = Math::Matrix::CreateTranslation(0, CAMERAY, CAMERAZ);
 
-	// «‰æ–Ê’†‰›
+	// â†“ç”»é¢ä¸­å¤®
 	m_FixMousePos.x = 640;
 	m_FixMousePos.y = 360;
 
@@ -34,7 +34,7 @@ void GameCamera::Update()
 			const std::shared_ptr<const KdGameObject> spTarget = m_wpTarget.lock();
 			if (spTarget)
 			{
-				// PlayerŠî€
+				// PlayeråŸºæº–
 				if (m_stepOnPlayerPos.y + 0.2f < spTarget->GetPos().y)
 				{
 					if (m_wpPlayer.lock()->GetGravity() > 0.0f)
@@ -60,7 +60,7 @@ void GameCamera::Update()
 				}
 
 				//===========================================================
-				// À•W‚Ì•âŠÔ
+				// åº§æ¨™ã®è£œé–“
 
 				Math::Vector3 endPos;
 				Math::Vector3 nowPos;
@@ -77,16 +77,16 @@ void GameCamera::Update()
 					{
 						endPos = spTarget->GetMatrix().Translation();
 
-						// ’†ŠÔ‚ğ‹‚ß‚é
-						// üŒ`•âŠÔ
+						// ä¸­é–“ã‚’æ±‚ã‚ã‚‹
+						// ç·šå½¢è£œé–“
 						nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.5f);
 					}
 					else
 					{
 						endPos = spTarget->GetMatrix().Translation();
 
-						// ’†ŠÔ‚ğ‹‚ß‚é
-						// üŒ`•âŠÔ
+						// ä¸­é–“ã‚’æ±‚ã‚ã‚‹
+						// ç·šå½¢è£œé–“
 						nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.65f);
 					}
 
@@ -105,8 +105,8 @@ void GameCamera::Update()
 
 					//endPos = spTarget->GetMatrix().Translation();
 
-					//// ’†ŠÔ‚ğ‹‚ß‚é
-					//// üŒ`•âŠÔ
+					//// ä¸­é–“ã‚’æ±‚ã‚ã‚‹
+					//// ç·šå½¢è£œé–“
 					//nowPos = Math::Vector3::Lerp(m_startPos[0], endPos, 0.5f);
 					targetMat = Math::Matrix::CreateTranslation(spTarget->GetPos().x, spTarget->GetPos().y, spTarget->GetPos().z);
 				}
@@ -216,7 +216,7 @@ void GameCamera::Update()
 	Math::Matrix rotMatX = Math::Matrix::Identity;
 	if (!m_bRotateEnemy)
 	{
-		// ƒJƒƒ‰‚Ì‰ñ“]
+		// ã‚«ãƒ¡ãƒ©ã®å›è»¢
 		UpdateRotateByMouse();
 	}
 	else
@@ -259,7 +259,7 @@ void GameCamera::SetEnemy(std::shared_ptr<Enemy> a_enemy)
 
 void GameCamera::UpdateRotateByMouse()
 {
-	// ƒ}ƒEƒX‚ÅƒJƒƒ‰‚ğ‰ñ“]‚³‚¹‚éˆ—
+	// ãƒã‚¦ã‚¹ã§ã‚«ãƒ¡ãƒ©ã‚’å›è»¢ã•ã›ã‚‹å‡¦ç†
 	POINT nowPos;
 	GetCursorPos(&nowPos);
 
@@ -268,12 +268,12 @@ void GameCamera::UpdateRotateByMouse()
 	mouseMove.y = nowPos.y - m_FixMousePos.y;
 
 	SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
-	// ƒ}ƒEƒXŠ´“x
-// ƒJƒƒ‰‚ğ‰ñ“]‚³‚¹‚éˆ—  // «
-	m_DegAng.x += mouseMove.y * 0.15f;// ƒ}ƒEƒX‚ğã‰º‚µ‚½‰ñ‚µ‚½‚¢²‚ÍX
-	m_DegAng.y += mouseMove.x * 0.15f;// ƒ}ƒEƒX‚ğ¶‰E‚É‚µ‚½‰ñ‚µ‚½‚¢²‚ÍY
+	// ãƒã‚¦ã‚¹æ„Ÿåº¦
+// ã‚«ãƒ¡ãƒ©ã‚’å›è»¢ã•ã›ã‚‹å‡¦ç†  // â†“
+	m_DegAng.x += mouseMove.y * 0.15f;// ãƒã‚¦ã‚¹ã‚’ä¸Šä¸‹ã—ãŸæ™‚å›ã—ãŸã„è»¸ã¯X
+	m_DegAng.y += mouseMove.x * 0.15f;// ãƒã‚¦ã‚¹ã‚’å·¦å³ã«ã—ãŸæ™‚å›ã—ãŸã„è»¸ã¯Y
 
-	// ‰ñ“]§Œä
+	// å›è»¢åˆ¶å¾¡
 	m_DegAng.x = std::clamp(m_DegAng.x, -FLT_MAX, FLT_MAX);
 }
 
@@ -283,7 +283,7 @@ void GameCamera::UpdateRotateByEnemy()
 	nowVec.y = 0.0f;
 	nowVec.Normalize();
 
-	// Œü‚«‚½‚¢•ûŒü
+	// å‘ããŸã„æ–¹å‘
 	Math::Vector3 toVec = m_wpEnemy.lock()->GetPos() - GetPos();
 	toVec.y = 0.0f;
 	toVec.Normalize();
@@ -298,10 +298,10 @@ void GameCamera::UpdateRotateByEnemy()
 		dot.x = -1;
 	}
 
-	// Šp“x‚ğæ“¾
+	// è§’åº¦ã‚’å–å¾—
 	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
-	//// Šp“x§ŒÀ
+	//// è§’åº¦åˆ¶é™
 	//if (ang > 5)
 	//{
 	//	ang = 5.0f;
@@ -346,7 +346,7 @@ void GameCamera::UpdateRotateByEnemy()
 	}
 
 
-	// Šp“x‚ğæ“¾
+	// è§’åº¦ã‚’å–å¾—
 	ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
 	if (ang >= 15)
@@ -428,7 +428,7 @@ void GameCamera::UpdateRotateByEnemy()
 
 void GameCamera::CameraSetUpdate()
 {
-	// ˆÚ“®•ûŒü‚ÌƒxƒNƒgƒ‹
+	// ç§»å‹•æ–¹å‘ã®ãƒ™ã‚¯ãƒˆãƒ«
 	Math::Vector3 targetDir = m_cameraSetVec;
 
 	targetDir.Normalize();
@@ -436,7 +436,7 @@ void GameCamera::CameraSetUpdate()
 	float targetAng = atan2(targetDir.x, targetDir.z);
 	targetAng = DirectX::XMConvertToDegrees(targetAng);
 
-	// Šp“x‚Ì·•ª
+	// è§’åº¦ã®å·®åˆ†
 	float betweenAng = targetAng - m_DegAng.y;
 	if (betweenAng > 180)
 	{
@@ -463,24 +463,24 @@ void GameCamera::UpdateCollision()
 	const std::shared_ptr<const KdGameObject>spTarget = m_wpTarget.lock();
 	if (!spTarget)return;
 
-	// ‡@“–‚½‚è”»’è(ƒŒƒC”»’è)—p‚Ìî•ñì¬
+	// â‘ å½“ãŸã‚Šåˆ¤å®š(ãƒ¬ã‚¤åˆ¤å®š)ç”¨ã®æƒ…å ±ä½œæˆ
 	KdCollider::RayInfo rayInfo;
-	// ƒŒƒC‚Ì”­ËˆÊ’u‚ğİ’è
+	// ãƒ¬ã‚¤ã®ç™ºå°„ä½ç½®ã‚’è¨­å®š
 	rayInfo.m_pos = spTarget->GetPos();
 	rayInfo.m_pos.y += 1.5f;
 
-	// ƒŒƒC‚Ì”­Ë•ûŒü‚ğİ’è
+	// ãƒ¬ã‚¤ã®ç™ºå°„æ–¹å‘ã‚’è¨­å®š
 	Math::Vector3 dir = GetPos() - rayInfo.m_pos;
 	dir.Normalize();
 	rayInfo.m_dir = dir;
 
-	// ƒŒƒC‚Ì’·‚³
+	// ãƒ¬ã‚¤ã®é•·ã•
 	rayInfo.m_range = (GetPos() - rayInfo.m_pos).Length();
 
-	// “–‚½‚è”»’è‚ğ‚µ‚½‚¢ƒ^ƒCƒv‚ğİ’è
+	// å½“ãŸã‚Šåˆ¤å®šã‚’ã—ãŸã„ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
 	rayInfo.m_type = KdCollider::TypeGround;
 
-	// ‡AHIT”»’è‘ÎÛƒIƒuƒWƒFƒNƒg‚É‘“–‚½‚è
+	// â‘¡HITåˆ¤å®šå¯¾è±¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ç·å½“ãŸã‚Š
 	std::list<KdCollider::CollisionResult> retRayList;
 
 	float maxOverLap = 0;
@@ -491,14 +491,14 @@ void GameCamera::UpdateCollision()
 		{
 			spGameObj->Intersects(rayInfo, &retRayList);
 
-			// ‡BŒ‹‰Ê‚ğg‚Á‚ÄÀ•W‚ğ•âŠ®‚·‚é
-			// ƒŒƒC‚É“–‚½‚Á‚½ƒŠƒXƒg‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+			// â‘¢çµæœã‚’ä½¿ã£ã¦åº§æ¨™ã‚’è£œå®Œã™ã‚‹
+			// ãƒ¬ã‚¤ã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 			Math::Vector3 hitPos = Math::Vector3::Zero;
 			bool hit = false;
 			for (auto& ret : retRayList)
 			{
-				// ƒŒƒC‚ğÕ’f‚µƒI[ƒo[‚µ‚½’·‚³‚ª
-				// ˆê”Ô’·‚¢‚à‚Ì‚ğ’T‚·
+				// ãƒ¬ã‚¤ã‚’é®æ–­ã—ã‚ªãƒ¼ãƒãƒ¼ã—ãŸé•·ã•ãŒ
+				// ä¸€ç•ªé•·ã„ã‚‚ã®ã‚’æ¢ã™
 				if (maxOverLap < ret.m_overlapDistance)
 				{
 					maxOverLap = ret.m_overlapDistance;
@@ -506,7 +506,7 @@ void GameCamera::UpdateCollision()
 					hit = true;
 				}
 			}
-			// ‰½‚©‚µ‚ç‚Ìã‚Éæ‚Á‚Ä‚é
+			// ä½•ã‹ã—ã‚‰ã®ä¸Šã«ä¹—ã£ã¦ã‚‹
 
 			if (hit)
 			{

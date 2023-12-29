@@ -1,5 +1,5 @@
-#pragma once
-#define GRASS_HOPPER_PAUCNT 30  // ƒOƒ‰ƒXƒzƒbƒp[‚ªg‚¦‚È‚¢ŠÔ
+ï»¿#pragma once
+#define GRASS_HOPPER_PAUCNT 30  // ã‚°ãƒ©ã‚¹ãƒ›ãƒƒãƒ‘ãƒ¼ãŒä½¿ãˆãªã„æ™‚é–“
 
 class CameraBase;
 class WeaponBase;
@@ -11,54 +11,54 @@ class Player : public KdGameObject
 public:
 	enum WeaponType
 	{
-		scorpion = 1 << 0,				// ‰E’ZŒ•‘•”õ
-		grassHopper = 1 << 1,				// ‰Eƒzƒbƒp[‘•”õ
+		scorpion = 1 << 0,				// å³çŸ­å‰£è£…å‚™
+		grassHopper = 1 << 1,				// å³ãƒ›ãƒƒãƒ‘ãƒ¼è£…å‚™
 
-		lGrassHopper = 1 << 5,				// ¶’ZŒ•‘•”õ
-		lScorpion = 1 << 4,				// ¶ƒzƒbƒp[‘•”õ
+		lGrassHopper = 1 << 5,				// å·¦çŸ­å‰£è£…å‚™
+		lScorpion = 1 << 4,				// å·¦ãƒ›ãƒƒãƒ‘ãƒ¼è£…å‚™
 	};
 
 	enum PlayerState
 	{
-		idle = 1 << 0,																							// ’Êíó‘Ô
-		jump = 1 << 1,																							// ƒWƒƒƒ“ƒv
-		fall = 1 << 2,																							// ~‰º
-		run  = 1 << 3,																							// ‘–‚è
-		grassHopperDashF = 1 << 4,																				// ƒzƒbƒp[‚Å‚Ì‚‘¬ˆÚ“®i‘Oj
-		grassHopperDashB = 1 << 5,																				// ƒzƒbƒp[‚Å‚Ì‚‘¬ˆÚ“®iŒã‚ëj
-		grassHopperDashR = 1 << 6,																				// ƒzƒbƒp[‚Å‚Ì‚‘¬ˆÚ“®i‰Ej
-		grassHopperDashL = 1 << 7,																				// ƒzƒbƒp[‚Å‚Ì‚‘¬ˆÚ“®i¶j
-		grassHopperDash = grassHopperDashF | grassHopperDashB | grassHopperDashR | grassHopperDashL,			// ƒzƒbƒp[‚Å‚Ì‚‘¬ˆÚ“®
-		grassHopperDashUp = 1 << 8,																				// ƒzƒbƒp[‚Å‚Ì‚‘¬ˆÚ“®iãj
-		lAttackOne = 1 << 9,																					// ¶UŒ‚1’i–Ú
-		lAttackTwo = 1 << 10,																					// ¶UŒ‚2’i–Ú
-		lAttackThree = 1 << 11,																					// ¶UŒ‚3’i–Ú
-		lAttack = lAttackOne | lAttackTwo | lAttackThree,														// ¶UŒ‚
-		rAttackOne = 1 << 12,																					// ‰EUŒ‚1’i–Ú
-		rAttackTwo = 1 << 13,																					// ‰EUŒ‚2’i–Ú
-		rAttackThree = 1 << 14,																					// ‰EUŒ‚3’i–Ú
-		rAttack = rAttackOne | rAttackTwo | rAttackThree,														// ‰EUŒ‚
-		defense = 1 << 15,																						// –hŒä
-		mantis = 1 << 16,																						// –hŒä•s‰ÂUŒ‚
-		hasDefense = 1 << 17,																					// UŒ‚‚ğ–h‚ª‚ê‚½
-		blowingAwayHit = 1 << 18,																				// ‚«”ò‚Î‚µUŒ‚‚ğó‚¯‚½
-		iaiKiriHit = 1 << 19,																					// ‹‡Ø‚è‚ğ‚³‚ê‚½
-		nomalHit = 1 << 20,																						// ’Êí‚ÌUŒ‚‚ğó‚¯‚½
-		cutRaiseHit = 1 << 21,																					// Ø‚èã‚°UŒ‚‚ğ‚³‚ê‚½
-		hit = nomalHit | iaiKiriHit | blowingAwayHit | cutRaiseHit,												// UŒ‚‚ğó‚¯‚½
-		stepF = 1 << 22,																						// ƒXƒeƒbƒvi‘Oj
-		stepR = 1 << 23,																						// ƒXƒeƒbƒvi‰Ej
-		stepL = 1 << 24,																						// ƒXƒeƒbƒvi¶j
-		stepB = 1 << 25,																						// ƒXƒeƒbƒviŒã‚ëj
-		step  = stepF | stepB | stepR | stepL,																	// ƒXƒeƒbƒv
-		blowingAwayRise  = 1 << 26,																				// ‚«”ò‚Î‚³‚ê‚½‚ ‚Æ‚Ì‹N‚«ã‚ª‚è
-		iaiKiriRise      = 1 << 27,																				// ‹‡Ø‚è‚³‚ê‚½‚ ‚Æ‚Ì‹N‚«ã‚ª‚è
-		rise             = iaiKiriRise | blowingAwayRise,														// ‹N‚«ã‚ª‚è
-		rlAttackOne      = 1 << 28,																				// —¼èUŒ‚1’i–Ú
-		rlAttackTwo      = 1 << 29,																				// —¼èUŒ‚2’i–Ú
-		rlAttackThree    = 1 << 30,																				// —¼èUŒ‚3’i–Ú
-		rlAttack         = rlAttackOne | rlAttackTwo | rlAttackThree,											// —¼èUŒ‚
-		rlAttackRush     = 1 << 31,																				// ƒ‰ƒbƒVƒ…
+		idle = 1 << 0,																							// é€šå¸¸çŠ¶æ…‹
+		jump = 1 << 1,																							// ã‚¸ãƒ£ãƒ³ãƒ—
+		fall = 1 << 2,																							// é™ä¸‹
+		run  = 1 << 3,																							// èµ°ã‚Š
+		grassHopperDashF = 1 << 4,																				// ãƒ›ãƒƒãƒ‘ãƒ¼ã§ã®é«˜é€Ÿç§»å‹•ï¼ˆå‰ï¼‰
+		grassHopperDashB = 1 << 5,																				// ãƒ›ãƒƒãƒ‘ãƒ¼ã§ã®é«˜é€Ÿç§»å‹•ï¼ˆå¾Œã‚ï¼‰
+		grassHopperDashR = 1 << 6,																				// ãƒ›ãƒƒãƒ‘ãƒ¼ã§ã®é«˜é€Ÿç§»å‹•ï¼ˆå³ï¼‰
+		grassHopperDashL = 1 << 7,																				// ãƒ›ãƒƒãƒ‘ãƒ¼ã§ã®é«˜é€Ÿç§»å‹•ï¼ˆå·¦ï¼‰
+		grassHopperDash = grassHopperDashF | grassHopperDashB | grassHopperDashR | grassHopperDashL,			// ãƒ›ãƒƒãƒ‘ãƒ¼ã§ã®é«˜é€Ÿç§»å‹•
+		grassHopperDashUp = 1 << 8,																				// ãƒ›ãƒƒãƒ‘ãƒ¼ã§ã®é«˜é€Ÿç§»å‹•ï¼ˆä¸Šï¼‰
+		lAttackOne = 1 << 9,																					// å·¦æ”»æ’ƒ1æ®µç›®
+		lAttackTwo = 1 << 10,																					// å·¦æ”»æ’ƒ2æ®µç›®
+		lAttackThree = 1 << 11,																					// å·¦æ”»æ’ƒ3æ®µç›®
+		lAttack = lAttackOne | lAttackTwo | lAttackThree,														// å·¦æ”»æ’ƒ
+		rAttackOne = 1 << 12,																					// å³æ”»æ’ƒ1æ®µç›®
+		rAttackTwo = 1 << 13,																					// å³æ”»æ’ƒ2æ®µç›®
+		rAttackThree = 1 << 14,																					// å³æ”»æ’ƒ3æ®µç›®
+		rAttack = rAttackOne | rAttackTwo | rAttackThree,														// å³æ”»æ’ƒ
+		defense = 1 << 15,																						// é˜²å¾¡
+		mantis = 1 << 16,																						// é˜²å¾¡ä¸å¯æ”»æ’ƒ
+		hasDefense = 1 << 17,																					// æ”»æ’ƒã‚’é˜²ãŒã‚ŒãŸ
+		blowingAwayHit = 1 << 18,																				// å¹ãé£›ã°ã—æ”»æ’ƒã‚’å—ã‘ãŸ
+		iaiKiriHit = 1 << 19,																					// å±…åˆåˆ‡ã‚Šã‚’ã•ã‚ŒãŸ
+		nomalHit = 1 << 20,																						// é€šå¸¸ã®æ”»æ’ƒã‚’å—ã‘ãŸ
+		cutRaiseHit = 1 << 21,																					// åˆ‡ã‚Šä¸Šã’æ”»æ’ƒã‚’ã•ã‚ŒãŸ
+		hit = nomalHit | iaiKiriHit | blowingAwayHit | cutRaiseHit,												// æ”»æ’ƒã‚’å—ã‘ãŸ
+		stepF = 1 << 22,																						// ã‚¹ãƒ†ãƒƒãƒ—ï¼ˆå‰ï¼‰
+		stepR = 1 << 23,																						// ã‚¹ãƒ†ãƒƒãƒ—ï¼ˆå³ï¼‰
+		stepL = 1 << 24,																						// ã‚¹ãƒ†ãƒƒãƒ—ï¼ˆå·¦ï¼‰
+		stepB = 1 << 25,																						// ã‚¹ãƒ†ãƒƒãƒ—ï¼ˆå¾Œã‚ï¼‰
+		step  = stepF | stepB | stepR | stepL,																	// ã‚¹ãƒ†ãƒƒãƒ—
+		blowingAwayRise  = 1 << 26,																				// å¹ãé£›ã°ã•ã‚ŒãŸã‚ã¨ã®èµ·ãä¸ŠãŒã‚Š
+		iaiKiriRise      = 1 << 27,																				// å±…åˆåˆ‡ã‚Šã•ã‚ŒãŸã‚ã¨ã®èµ·ãä¸ŠãŒã‚Š
+		rise             = iaiKiriRise | blowingAwayRise,														// èµ·ãä¸ŠãŒã‚Š
+		rlAttackOne      = 1 << 28,																				// ä¸¡æ‰‹æ”»æ’ƒ1æ®µç›®
+		rlAttackTwo      = 1 << 29,																				// ä¸¡æ‰‹æ”»æ’ƒ2æ®µç›®
+		rlAttackThree    = 1 << 30,																				// ä¸¡æ‰‹æ”»æ’ƒ3æ®µç›®
+		rlAttack         = rlAttackOne | rlAttackTwo | rlAttackThree,											// ä¸¡æ‰‹æ”»æ’ƒ
+		rlAttackRush     = 1 << 31,																				// ãƒ©ãƒƒã‚·ãƒ¥
 	};
 
 	Player() {}
@@ -76,160 +76,160 @@ public:
 	void Init(std::weak_ptr<json11::Json> a_wpJsonObj);
 	void Release() {};
 																												
-	void SetCamera(std::shared_ptr<CameraBase> a_spCcamera) { m_wpCamera = a_spCcamera; }						// ƒJƒƒ‰ƒNƒ‰ƒX‚Ì‚ğ‚à‚ç‚¤
-	void AddEnemy(std::shared_ptr<Enemy> a_spEnemy) { m_enemyList.push_back(a_spEnemy); }						// “G‚ğ‘‚â‚·
-	void AddWeaponToEnemy(std::shared_ptr<Enemy> a_spEnemy);													// •Ší‚É–¢“o˜^‚Ì“G‚Ìî•ñ‚ğ‚¢‚ê‚é
-	void SetUi(std::shared_ptr<Ui> a_spUi) { m_wpUi = a_spUi; }													// UIƒNƒ‰ƒX‚ğ‚à‚ç‚¤
+	void SetCamera(std::shared_ptr<CameraBase> a_spCcamera) { m_wpCamera = a_spCcamera; }						// ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹ã®ã‚’ã‚‚ã‚‰ã†
+	void AddEnemy(std::shared_ptr<Enemy> a_spEnemy) { m_enemyList.push_back(a_spEnemy); }						// æ•µã‚’å¢—ã‚„ã™
+	void AddWeaponToEnemy(std::shared_ptr<Enemy> a_spEnemy);													// æ­¦å™¨ã«æœªç™»éŒ²ã®æ•µã®æƒ…å ±ã‚’ã„ã‚Œã‚‹
+	void SetUi(std::shared_ptr<Ui> a_spUi) { m_wpUi = a_spUi; }													// UIã‚¯ãƒ©ã‚¹ã‚’ã‚‚ã‚‰ã†
 																												
-	const UINT& GetPlayerState() { return m_playerState; }														// ƒvƒŒƒCƒ„[‚Ìó‘Ô‚ğ“n‚·
-	const UINT& GetWeaponType() { return m_weaponType; }														// ¡‘•”õ‚µ‚Ä‚¢‚é‘•”õ‚Ìî•ñ‚ğ“n‚·
+	const UINT& GetPlayerState() { return m_playerState; }														// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®çŠ¶æ…‹ã‚’æ¸¡ã™
+	const UINT& GetWeaponType() { return m_weaponType; }														// ä»Šè£…å‚™ã—ã¦ã„ã‚‹è£…å‚™ã®æƒ…å ±ã‚’æ¸¡ã™
 																												
-	const int& GetLGrassHopperTime() { return m_lGrassHopperTime; }												// ¶‚Ìƒzƒbƒp[‚Ìg—pŠÔ‚ğ“n‚·
-	const int& GetRGrassHopperTime() { return m_rGrassHopperTime; }												// ‰E‚Ìƒzƒbƒp[‚Ìg—pŠÔ‚ğ“n‚·
+	const int& GetLGrassHopperTime() { return m_lGrassHopperTime; }												// å·¦ã®ãƒ›ãƒƒãƒ‘ãƒ¼ã®ä½¿ç”¨æ™‚é–“ã‚’æ¸¡ã™
+	const int& GetRGrassHopperTime() { return m_rGrassHopperTime; }												// å³ã®ãƒ›ãƒƒãƒ‘ãƒ¼ã®ä½¿ç”¨æ™‚é–“ã‚’æ¸¡ã™
 																												
-	const int& GetLGrassHopperPauCnt() { return m_lGrassHopperPauCnt; }											// ¶‚Ìƒzƒbƒp[‚Ìg—p•s‰ÂŠÔ‚ğ“n‚·
-	const int& GetRGrassHopperPauCnt() { return m_rGrassHopperPauCnt; }											// ‰E‚Ìƒzƒbƒp[‚Ìg—p•s‰ÂŠÔ‚ğ“n‚·
+	const int& GetLGrassHopperPauCnt() { return m_lGrassHopperPauCnt; }											// å·¦ã®ãƒ›ãƒƒãƒ‘ãƒ¼ã®ä½¿ç”¨ä¸å¯æ™‚é–“ã‚’æ¸¡ã™
+	const int& GetRGrassHopperPauCnt() { return m_rGrassHopperPauCnt; }											// å³ã®ãƒ›ãƒƒãƒ‘ãƒ¼ã®ä½¿ç”¨ä¸å¯æ™‚é–“ã‚’æ¸¡ã™
 																												 
 																												 
-	const float& GetGravity() { return m_gravity; }																// ‚©‚©‚Á‚Ä‚éd—Í‚ğ“n‚·
-	const float& GetDashSpd() { return m_dashSpd;}																// ‚‘¬ˆÚ“®‚Ì‘¬‚³‚ğ“n‚·
-	const float& GetVForce()  { return m_vForce; }																// Œ»İ‚ÌƒGƒlƒ‹ƒM[—Ê‚ğ“n‚·
-	const float& GetEndurance()  { return m_endurance; }														// í“¬‘Ì‚Ì‘Ï‹v—Í‚ğ“n‚·
-	const std::shared_ptr<KdModelWork>& GetModel() { return m_spModel; }										// ƒ‚ƒfƒ‹‚Ìî•ñ‚ğ“n‚·
-	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }										// Œ»İ‚Ì–³“GŠÔ‚ğ“n‚·
-	const bool GetBRushAttackPossible() { return m_bRushAttackPossible; }										// ƒ‰ƒbƒVƒ…ƒAƒ^ƒbƒN‚ª‰Â”\‚©‚Ç‚¤‚©‚ğ“n‚·
-	void SetBRushAttackPossible(bool a_bRushAttackPossible) { m_bRushAttackPossible = a_bRushAttackPossible; }	// ƒ‰ƒbƒVƒ…ƒAƒ^ƒbƒN‚ª‰Â”\‚©‚Ç‚¤‚©‚ª“n‚³‚ê‚é
+	const float& GetGravity() { return m_gravity; }																// ã‹ã‹ã£ã¦ã‚‹é‡åŠ›ã‚’æ¸¡ã™
+	const float& GetDashSpd() { return m_dashSpd;}																// é«˜é€Ÿç§»å‹•ã®é€Ÿã•ã‚’æ¸¡ã™
+	const float& GetVForce()  { return m_vForce; }																// ç¾åœ¨ã®ã‚¨ãƒãƒ«ã‚®ãƒ¼é‡ã‚’æ¸¡ã™
+	const float& GetEndurance()  { return m_endurance; }														// æˆ¦é—˜ä½“ã®è€ä¹…åŠ›ã‚’æ¸¡ã™
+	const std::shared_ptr<KdModelWork>& GetModel() { return m_spModel; }										// ãƒ¢ãƒ‡ãƒ«ã®æƒ…å ±ã‚’æ¸¡ã™
+	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }										// ç¾åœ¨ã®ç„¡æ•µæ™‚é–“ã‚’æ¸¡ã™
+	const bool GetBRushAttackPossible() { return m_bRushAttackPossible; }										// ãƒ©ãƒƒã‚·ãƒ¥ã‚¢ã‚¿ãƒƒã‚¯ãŒå¯èƒ½ã‹ã©ã†ã‹ã‚’æ¸¡ã™
+	void SetBRushAttackPossible(bool a_bRushAttackPossible) { m_bRushAttackPossible = a_bRushAttackPossible; }	// ãƒ©ãƒƒã‚·ãƒ¥ã‚¢ã‚¿ãƒƒã‚¯ãŒå¯èƒ½ã‹ã©ã†ã‹ãŒæ¸¡ã•ã‚Œã‚‹
 																												
-	const int GetAnimationCnt() { return m_attackAnimeCnt; }													// UŒ‚‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒtƒŒ[ƒ€”“n‚·
-	std::vector<std::shared_ptr<WeaponBase>> GetWeaponList() { return m_weaponList; }							// •Ší‚ÌƒŠƒXƒg‚ğ“n‚·
+	const int GetAnimationCnt() { return m_attackAnimeCnt; }													// æ”»æ’ƒã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ•ãƒ¬ãƒ¼ãƒ æ•°æ¸¡ã™
+	std::vector<std::shared_ptr<WeaponBase>> GetWeaponList() { return m_weaponList; }							// æ­¦å™¨ã®ãƒªã‚¹ãƒˆã‚’æ¸¡ã™
 																												
-	void OnHit(Math::Vector3 a_KnocBackvec);																	// ’ÊíUŒ‚‚ª“–‚½‚Á‚½
-	void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec);													// ‚«”ò‚Î‚µUŒ‚‚ª“–‚½‚Á‚½
-	void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec);														// ‹‡Ø‚èŒn“‚ÌUŒ‚‚ª“–‚½‚Á‚½
-	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec);															// Ø‚èã‚°UŒ‚‚ª“–‚½‚Á‚½
-	void HasDefense();																							// UŒ‚‚ª–hŒä‚³‚ê‚½
+	void OnHit(Math::Vector3 a_KnocBackvec);																	// é€šå¸¸æ”»æ’ƒãŒå½“ãŸã£ãŸ
+	void BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec);													// å¹ãé£›ã°ã—æ”»æ’ƒãŒå½“ãŸã£ãŸ
+	void IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec);														// å±…åˆåˆ‡ã‚Šç³»çµ±ã®æ”»æ’ƒãŒå½“ãŸã£ãŸ
+	void CutRaiseOnHit(Math::Vector3 a_KnocBackvec);															// åˆ‡ã‚Šä¸Šã’æ”»æ’ƒãŒå½“ãŸã£ãŸ
+	void HasDefense();																							// æ”»æ’ƒãŒé˜²å¾¡ã•ã‚ŒãŸ
 																												
-	const bool GetBPlayerDeath() { return m_bPlayerDeath; }														// ƒvƒŒƒCƒ„[‚ªDeath‚µ‚½‚©‚Ç‚¤‚©‚ğ“n‚·
-	const bool GetBPlayerLose() { return m_bPlayerLose; }														// ƒvƒŒƒCƒ„[‚ª•‰‚¯‚½‚©‚Ç‚¤‚©‚ğ“n‚·
+	const bool GetBPlayerDeath() { return m_bPlayerDeath; }														// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒDeathã—ãŸã‹ã©ã†ã‹ã‚’æ¸¡ã™
+	const bool GetBPlayerLose() { return m_bPlayerLose; }														// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒè² ã‘ãŸã‹ã©ã†ã‹ã‚’æ¸¡ã™
 																												
-	const float GetAngleY() { return m_mWorldRot.y;}															// ƒvƒŒƒCƒ„[‚ÌŒü‚¢‚Ä‚éŠp“x‚ğ“n‚·
+	const float GetAngleY() { return m_mWorldRot.y;}															// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‘ã„ã¦ã‚‹è§’åº¦ã‚’æ¸¡ã™
 																												 
-	const bool GetBRushRp() {return m_bRushRp;}																	// ‰ñ“]ƒ‰ƒbƒVƒ…‚©‚Ç‚¤‚©‚ğ“n‚·
+	const bool GetBRushRp() {return m_bRushRp;}																	// å›è»¢ãƒ©ãƒƒã‚·ãƒ¥ã‹ã©ã†ã‹ã‚’æ¸¡ã™
 
-	const Math::Vector3& GetAddCenterVal() { return m_addCenterVal; };											// ‘«‚·‚Æcharacter‚Ì^‚ñ’†‚É‚È‚é’l 
+	const Math::Vector3& GetAddCenterVal() { return m_addCenterVal; };											// è¶³ã™ã¨characterã®çœŸã‚“ä¸­ã«ãªã‚‹å€¤ 
 																												 
 private:
 
-	void PlayerKickHitAttackChaeck();																				// ƒvƒŒƒCƒ„[‚ÌƒLƒbƒN“–‚½‚è”»’è
-	void PlayerPanchiHitAttackChaeck();																				// ƒvƒŒƒCƒ„[‚Ìƒpƒ“ƒ`“–‚½‚è”»’è
-	void UpdateRotate(Math::Vector3& a_srcMoveVec);																	// ƒvƒŒƒCƒ„[‚Ì‰ñ“]‚ğXV
-	void GrassMoveVecDecision();																					// ƒzƒbƒp[‚Åi‚Ş•ûŒü‚ğŒˆ‚ß‚é
-	void ScorpionActionDecision();																					// ’ZŒ•‚Å‰½‚ğ‚·‚é‚©‚ğŒˆ‚ß‚é
-	void GrassMove();																								// ‚‘¬ˆÚ“®‚Ì“®‚«‚ğˆµ‚¤
-	void StepMove();																								// ƒXƒeƒbƒv‚Ì“®‚«‚ğˆµ‚¤																						
-	void NormalMove();																								// •à‚«‚È‚Ç‚Ì“®‚«‚ğˆµ‚¤
-	void ScorpionAttackMove();																						// ’ZŒ•‚Å‚ÌUŒ‚‚ğˆµ‚¤
-	void ScorpionDefenseMove();																						// ’ZŒ•‚Å‚Ì–hŒä‚ğˆµ‚¤
-	void HasDefenseMove();																							// –hŒä‚³‚ê‚½‚Ì“®‚«‚ğˆµ‚¤
-	void TutorialUpdate();																							// ƒ`ƒ…[ƒgƒŠƒAƒ‹‚Ì‚İs‚¤ˆ—
-	void OverStageChaeck();																							// ƒXƒe[ƒW‚©‚ço‚½‚©‚Ç‚¤‚©‚ğŠm”F
-	void EnemyRockOn();																								// “G‚ğƒƒbƒNƒIƒ“‚·‚éˆ—
-	void HitStateUpdate();																							// Hitó‘Ô‚Ì‚Ìˆ—
-	void CollisionUpdate();																							// “–‚½‚è”»’èˆ—
+	void PlayerKickHitAttackChaeck();																				// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚­ãƒƒã‚¯å½“ãŸã‚Šåˆ¤å®š
+	void PlayerPanchiHitAttackChaeck();																				// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ãƒ‘ãƒ³ãƒå½“ãŸã‚Šåˆ¤å®š
+	void UpdateRotate(Math::Vector3& a_srcMoveVec);																	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å›è»¢ã‚’æ›´æ–°
+	void GrassMoveVecDecision();																					// ãƒ›ãƒƒãƒ‘ãƒ¼ã§é€²ã‚€æ–¹å‘ã‚’æ±ºã‚ã‚‹
+	void ScorpionActionDecision();																					// çŸ­å‰£ã§ä½•ã‚’ã™ã‚‹ã‹ã‚’æ±ºã‚ã‚‹
+	void GrassMove();																								// é«˜é€Ÿç§»å‹•æ™‚ã®å‹•ãã‚’æ‰±ã†
+	void StepMove();																								// ã‚¹ãƒ†ãƒƒãƒ—æ™‚ã®å‹•ãã‚’æ‰±ã†																						
+	void NormalMove();																								// æ­©ããªã©ã®å‹•ãã‚’æ‰±ã†
+	void ScorpionAttackMove();																						// çŸ­å‰£ã§ã®æ”»æ’ƒã‚’æ‰±ã†
+	void ScorpionDefenseMove();																						// çŸ­å‰£ã§ã®é˜²å¾¡ã‚’æ‰±ã†
+	void HasDefenseMove();																							// é˜²å¾¡ã•ã‚ŒãŸæ™‚ã®å‹•ãã‚’æ‰±ã†
+	void TutorialUpdate();																							// ãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«æ™‚ã®ã¿è¡Œã†å‡¦ç†
+	void OverStageChaeck();																							// ã‚¹ãƒ†ãƒ¼ã‚¸ã‹ã‚‰å‡ºãŸã‹ã©ã†ã‹ã‚’ç¢ºèª
+	void EnemyRockOn();																								// æ•µã‚’ãƒ­ãƒƒã‚¯ã‚ªãƒ³ã™ã‚‹å‡¦ç†
+	void HitStateUpdate();																							// HitçŠ¶æ…‹ã®æ™‚ã®å‡¦ç†
+	void CollisionUpdate();																							// å½“ãŸã‚Šåˆ¤å®šå‡¦ç†
 
-	std::map<std::string,json11::Json>  m_mpObj;																	// Json‚©‚çPlayerƒIƒuƒWƒFƒNƒg‚Ìî•ñ‚ğ‚à‚ç‚¤‚Æ‚«‚Ég—p
-	std::weak_ptr<json11::Json> m_wpJsonObj;																		// PlayerƒIƒuƒWƒFƒNƒgˆÈŠO‚Ìî•ñ‚ğ‚à‚ç‚¤‚Æ‚«‚Ég—p
+	std::map<std::string,json11::Json>  m_mpObj;																	// Jsonã‹ã‚‰Playerã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æƒ…å ±ã‚’ã‚‚ã‚‰ã†ã¨ãã«ä½¿ç”¨
+	std::weak_ptr<json11::Json> m_wpJsonObj;																		// Playerã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆä»¥å¤–ã®æƒ…å ±ã‚’ã‚‚ã‚‰ã†ã¨ãã«ä½¿ç”¨
 																													
-	std::shared_ptr<KdModelWork> m_spModel;																			// ƒ‚ƒfƒ‹
+	std::shared_ptr<KdModelWork> m_spModel;																			// ãƒ¢ãƒ‡ãƒ«
 																													
-	const int MAXWEAPONTYPE = 2;																					// •Ší‚ÌÅ‘å‚Ìƒiƒ“ƒo[
-	const int FIRSTWEAPONTYPENUMBER = 1;																			// •Ší‚ÌÅ‰‚Ìƒiƒ“ƒo[
+	const int MAXWEAPONTYPE = 2;																					// æ­¦å™¨ã®æœ€å¤§ã®ãƒŠãƒ³ãƒãƒ¼
+	const int FIRSTWEAPONTYPENUMBER = 1;																			// æ­¦å™¨ã®æœ€åˆã®ãƒŠãƒ³ãƒãƒ¼
 
-	Math::Vector3 m_addCenterVal;																					// ‘«‚µ‚½‚ç’†S‚É‚È‚é’l
-	Math::Vector3 m_addGrassDashEffectPosVal;																		// ƒvƒŒƒCƒ„[‚ÌÀ•W‚É‘«‚·‚ÆƒGƒtƒFƒNƒg‚ğo‚·ˆÊ’u‚É‚È‚é
+	Math::Vector3 m_addCenterVal;																					// è¶³ã—ãŸã‚‰ä¸­å¿ƒã«ãªã‚‹å€¤
+	Math::Vector3 m_addGrassDashEffectPosVal;																		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åº§æ¨™ã«è¶³ã™ã¨ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å‡ºã™ä½ç½®ã«ãªã‚‹
 
-	float m_gravity = 0;																							// d—Í
-	int m_toleranceComboTime = 0;																					// ƒRƒ“ƒ{‹–—eŠÔ
-	int m_m_toleranceAttackTime = 0;																				// ÄUŒ‚ŠÔŠu
-	UINT m_playerState;																								// ƒvƒŒƒCƒ„[‚Ìó‘Ô
-	UINT m_weaponType;																								// ¡Œ»İ‘•”õ‚µ‚Ä‚¢‚é•Ší
+	float m_gravity = 0;																							// é‡åŠ›
+	int m_toleranceComboTime = 0;																					// ã‚³ãƒ³ãƒœè¨±å®¹æ™‚é–“
+	int m_m_toleranceAttackTime = 0;																				// å†æ”»æ’ƒé–“éš”
+	UINT m_playerState;																								// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®çŠ¶æ…‹
+	UINT m_weaponType;																								// ä»Šç¾åœ¨è£…å‚™ã—ã¦ã„ã‚‹æ­¦å™¨
 
-	int m_rightWeaponNumber = 0;                                                                                    // ¡Œ»İ‰E‚É‘•”õ‚µ‚Ä‚¢‚é•Šíƒiƒ“ƒo[
-	int m_leftWeaponNumber = 0;																						// ¡Œ»İ¶‚É‘•”õ‚µ‚Ä‚¢‚é•Šíƒiƒ“ƒo[
+	int m_rightWeaponNumber = 0;                                                                                    // ä»Šç¾åœ¨å³ã«è£…å‚™ã—ã¦ã„ã‚‹æ­¦å™¨ãƒŠãƒ³ãƒãƒ¼
+	int m_leftWeaponNumber = 0;																						// ä»Šç¾åœ¨å·¦ã«è£…å‚™ã—ã¦ã„ã‚‹æ­¦å™¨ãƒŠãƒ³ãƒãƒ¼
 
-	bool m_bMove = false;																							// “®‚¢‚Ä‚é true
+	bool m_bMove = false;																							// å‹•ã„ã¦ã‚‹ true
 
-	bool m_bMButtonState;																							// ƒzƒC[ƒ‹‚ğƒNƒŠƒbƒN‚µ‚Ä‚é true
+	bool m_bMButtonState;																							// ãƒ›ã‚¤ãƒ¼ãƒ«ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ã‚‹ true
 
-	Math::Vector3    m_pos = {};																					// À•W
-	Math::Vector3    m_move = {};																					// “®‚­•ûŒü
-	Math::Vector3    m_scale = {};																					// ƒfƒJ‚³
+	Math::Vector3    m_pos = {};																					// åº§æ¨™
+	Math::Vector3    m_move = {};																					// å‹•ãæ–¹å‘
+	Math::Vector3    m_scale = {};																					// ãƒ‡ã‚«ã•
 
 	std::weak_ptr<CameraBase>        m_wpCamera;
 	Math::Vector3					 m_mWorldRot;
 
-	int m_lGrassHopperPauCnt = 0;																					// ‹x~‚·‚éŠÔ
-	int m_rGrassHopperPauCnt = 0;																					// ‹x~‚·‚éŠÔ
+	int m_lGrassHopperPauCnt = 0;																					// ä¼‘æ­¢ã™ã‚‹æ™‚é–“
+	int m_rGrassHopperPauCnt = 0;																					// ä¼‘æ­¢ã™ã‚‹æ™‚é–“
 
-	int m_lGrassHopperTime = 0;																						// ¶ƒzƒbƒp[‚Å‚Ì‚‘¬ˆÚ“®ŠÔ
-	int m_rGrassHopperTime = 0;																						// ‰Eƒzƒbƒp[‚Å‚Ì‚‘¬ˆÚ“®ŠÔ
-	Math::Matrix m_grasRotYMat;																						// ‚‘¬ˆÚ“®‚·‚é•ûŒü
+	int m_lGrassHopperTime = 0;																						// å·¦ãƒ›ãƒƒãƒ‘ãƒ¼ã§ã®é«˜é€Ÿç§»å‹•æ™‚é–“
+	int m_rGrassHopperTime = 0;																						// å³ãƒ›ãƒƒãƒ‘ãƒ¼ã§ã®é«˜é€Ÿç§»å‹•æ™‚é–“
+	Math::Matrix m_grasRotYMat;																						// é«˜é€Ÿç§»å‹•ã™ã‚‹æ–¹å‘
 
-	Math::Vector3 m_grassHopperDashDir = {};                                                                        // ‚‘¬ˆÚ“®‚·‚é•ûŒüƒxƒNƒgƒ‹
-	float m_dashSpd = 0;                                                                                            // ‚‘¬ˆÚ“®‚Ì‘¬‚³
+	Math::Vector3 m_grassHopperDashDir = {};                                                                        // é«˜é€Ÿç§»å‹•ã™ã‚‹æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+	float m_dashSpd = 0;                                                                                            // é«˜é€Ÿç§»å‹•ã®é€Ÿã•
 
-	std::shared_ptr<KdAnimator> m_spAnimator;																		// ƒAƒjƒ[ƒVƒ‡ƒ“‚³‚¹‚éˆ×‚Ì•Ï”
+	std::shared_ptr<KdAnimator> m_spAnimator;																		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã•ã›ã‚‹ç‚ºã®å¤‰æ•°
 
-	std::vector<std::shared_ptr<WeaponBase>> m_weaponList;															// •ŠíƒŠƒXƒg
+	std::vector<std::shared_ptr<WeaponBase>> m_weaponList;															// æ­¦å™¨ãƒªã‚¹ãƒˆ
 
-	bool m_bFirstUpdate = false;																					// ‰‚ß‚Ä‚ÌXV
-	bool m_bEwaponDrawPosible = false;                                                                              // •Ší‚ğ•`‰æ‚Å‚«‚é@true
+	bool m_bFirstUpdate = false;																					// åˆã‚ã¦ã®æ›´æ–°
+	bool m_bEwaponDrawPosible = false;                                                                              // æ­¦å™¨ã‚’æç”»ã§ãã‚‹ã€€true
 
 
-	std::weak_ptr<Enemy> m_wpEnemy;																					// ƒƒbƒNƒIƒ“‚µ‚Ä‚é“G
-	std::list<std::weak_ptr<Enemy>> m_enemyList;																	// “G‚ÌƒŠƒXƒg
+	std::weak_ptr<Enemy> m_wpEnemy;																					// ãƒ­ãƒƒã‚¯ã‚ªãƒ³ã—ã¦ã‚‹æ•µ
+	std::list<std::weak_ptr<Enemy>> m_enemyList;																	// æ•µã®ãƒªã‚¹ãƒˆ
 
-	int m_attackAnimeCnt = 0;																						// UŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌƒtƒŒ[ƒ€”
-	int m_runAnimeCnt = 0;																							// ‘–‚èƒAƒjƒ[ƒVƒ‡ƒ“‚ÌƒtƒŒ[ƒ€”
-	int m_attackAnimeDelayCnt = 0;																					// UŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’x‚ç‚¹‚éŠÔ
-	bool m_bAttackAnimeDelay = false;																				// UŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’x‚ê‚Ä‚é true
-	bool m_bAttackAnimeCnt = false;																					// UŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌƒtƒŒ[ƒ€”‚ğ‰ÁZ‚µ‚Ä‚à‚¢‚¢@true
+	int m_attackAnimeCnt = 0;																						// æ”»æ’ƒã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+	int m_runAnimeCnt = 0;																							// èµ°ã‚Šã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+	int m_attackAnimeDelayCnt = 0;																					// æ”»æ’ƒã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é…ã‚‰ã›ã‚‹æ™‚é–“
+	bool m_bAttackAnimeDelay = false;																				// æ”»æ’ƒã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é…ã‚Œã¦ã‚‹ true
+	bool m_bAttackAnimeCnt = false;																					// æ”»æ’ƒã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã‚’åŠ ç®—ã—ã¦ã‚‚ã„ã„ã€€true
 
-	int   m_hitStopCnt = 0;																							// UŒ‚‚ğó‚¯‚Ä‚Æ‚È‚éŠÔ
-	int   m_hitColorChangeTimeCnt = 0;																				// UŒ‚‚ğó‚¯Ô‚­‚È‚éŠÔ
-	float m_hitMoveSpd = 0.0f;																						// ƒmƒbƒNƒoƒbƒN‚·‚é‘¬‚³
-	float m_gardMoveSpd;																							// UŒ‚‚ğ–hŒä‚µ‚½‚ÌƒmƒbƒNƒoƒbƒN‘¬“x
-	bool  m_bTough;																									// ‚‚¢UŒ‚—Í‚ÌUŒ‚‚ğ‚­‚ç‚¤ORƒK[ƒh‚µ‚½‚©‚Ç‚¤‚©
-	Math::Vector3 m_knockBackVec;																					// ƒmƒbƒNƒoƒbƒN‚·‚é•ûŒü
-	float m_vForce = 0.0f;																							// VƒtƒH[ƒXc—Ê
-	float m_endurance = 0.0f;																						// VƒtƒH[ƒX‘Ì‘Ï‹v—Í
-	float m_vForceDownValue = 0.0f;																					// VƒtƒH[ƒXÁ”ï—Ê
-	float m_graduallyTorionDecVal;																					// ™X‚ÉŒ¸‚Á‚Ä‚­VƒtƒH[ƒX—Ê
-	int m_delayTurnAroundTime;																						// U‚è•Ô‚è‚ğ’x‚ç‚¹‚éŠÔ
+	int   m_hitStopCnt = 0;																							// æ”»æ’ƒã‚’å—ã‘ã¦ã¨ãªã‚‹æ™‚é–“
+	int   m_hitColorChangeTimeCnt = 0;																				// æ”»æ’ƒã‚’å—ã‘èµ¤ããªã‚‹æ™‚é–“
+	float m_hitMoveSpd = 0.0f;																						// ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã™ã‚‹é€Ÿã•
+	float m_gardMoveSpd;																							// æ”»æ’ƒã‚’é˜²å¾¡ã—ãŸæ™‚ã®ãƒãƒƒã‚¯ãƒãƒƒã‚¯é€Ÿåº¦
+	bool  m_bTough;																									// é«˜ã„æ”»æ’ƒåŠ›ã®æ”»æ’ƒã‚’ãã‚‰ã†ORã‚¬ãƒ¼ãƒ‰ã—ãŸã‹ã©ã†ã‹
+	Math::Vector3 m_knockBackVec;																					// ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã™ã‚‹æ–¹å‘
+	float m_vForce = 0.0f;																							// Vãƒ•ã‚©ãƒ¼ã‚¹æ®‹é‡
+	float m_endurance = 0.0f;																						// Vãƒ•ã‚©ãƒ¼ã‚¹ä½“è€ä¹…åŠ›
+	float m_vForceDownValue = 0.0f;																					// Vãƒ•ã‚©ãƒ¼ã‚¹æ¶ˆè²»é‡
+	float m_graduallyTorionDecVal;																					// å¾ã€…ã«æ¸›ã£ã¦ãVãƒ•ã‚©ãƒ¼ã‚¹é‡
+	int m_delayTurnAroundTime;																						// æŒ¯ã‚Šè¿”ã‚Šã‚’é…ã‚‰ã›ã‚‹æ™‚é–“
 
-	int m_stepCnt;																									// ƒXƒeƒbƒv‚ğ‚·‚éŠÔ															
-	Math::Vector3 m_stepDashDir;																					// ƒXƒeƒbƒv‚·‚é•ûŒüƒxƒNƒgƒ‹
+	int m_stepCnt;																									// ã‚¹ãƒ†ãƒƒãƒ—ã‚’ã™ã‚‹æ™‚é–“															
+	Math::Vector3 m_stepDashDir;																					// ã‚¹ãƒ†ãƒƒãƒ—ã™ã‚‹æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 
-	Math::Vector3 m_attackMoveDir;																					// UŒ‚‚µ‚½‚ÉˆÚ“®‚·‚é•ûŒü
-	float         m_attackMoveSpd;																					// UŒ‚‚µ‚½‚ÉˆÚ“®‚·‚é•ûŒü
+	Math::Vector3 m_attackMoveDir;																					// æ”»æ’ƒã—ãŸæ™‚ã«ç§»å‹•ã™ã‚‹æ–¹å‘
+	float         m_attackMoveSpd;																					// æ”»æ’ƒã—ãŸæ™‚ã«ç§»å‹•ã™ã‚‹æ–¹å‘
 
-	int m_invincibilityTimeCnt;																						// –³“GŠÔ
+	int m_invincibilityTimeCnt;																						// ç„¡æ•µæ™‚é–“
 
-	bool m_bRushAttackPossible = false;																				// ƒ‰ƒbƒVƒ…ƒAƒ^ƒbƒN‚Å‚«‚é true													
-	std::weak_ptr<Ui> m_wpUi;																						// UIƒNƒ‰ƒX‚Ìî•ñ‚ğ‚Á‚Ä‚é
-	int m_tuGardTime;																								// ƒ`ƒ…[ƒgƒŠƒAƒ‹‚ÌÛ‚Ì–hŒä‚µ‚Ä‚éŠÔ‚ğ”‚¦‚Ä‚é
+	bool m_bRushAttackPossible = false;																				// ãƒ©ãƒƒã‚·ãƒ¥ã‚¢ã‚¿ãƒƒã‚¯ã§ãã‚‹ true													
+	std::weak_ptr<Ui> m_wpUi;																						// UIã‚¯ãƒ©ã‚¹ã®æƒ…å ±ã‚’æŒã£ã¦ã‚‹
+	int m_tuGardTime;																								// ãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«ã®éš›ã®é˜²å¾¡ã—ã¦ã‚‹æ™‚é–“ã‚’æ•°ãˆã¦ã‚‹
 
-	int m_overStageTime;																							// ƒXƒe[ƒWŠO‚Éo‚½ŠÔ
+	int m_overStageTime;																							// ã‚¹ãƒ†ãƒ¼ã‚¸å¤–ã«å‡ºãŸæ™‚é–“
 
-	bool m_bPlayerDeath;																							// ƒvƒŒƒCƒ„[‚ª‚â‚ç‚ê‚½ true
-	bool m_bPlayerLose;																								// ƒvƒŒƒCƒ„[‚ª•‰‚¯‚½ true
+	bool m_bPlayerDeath;																							// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã‚„ã‚‰ã‚ŒãŸ true
+	bool m_bPlayerLose;																								// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒè² ã‘ãŸ true
 
-	KdSquarePolygon m_rocKOnPolygon;																				// ƒƒbƒNƒIƒ“—pƒ|ƒŠƒSƒ“
+	KdSquarePolygon m_rocKOnPolygon;																				// ãƒ­ãƒƒã‚¯ã‚ªãƒ³ç”¨ãƒãƒªã‚´ãƒ³
 
-	Math::Matrix m_rockOnPolyMat;																					// ƒƒbƒNƒIƒ“—ps—ñ
+	Math::Matrix m_rockOnPolyMat;																					// ãƒ­ãƒƒã‚¯ã‚ªãƒ³ç”¨è¡Œåˆ—
 
-	bool m_bRushRp;																									// ‰ñ“]ƒ‰ƒbƒVƒ…UŒ‚ true	
-	bool m_bBlowingAwayHitB;																						// Œã‚ë‚©‚ç‚«”ò‚Î‚µUŒ‚‚ğó‚¯‚½ true1
+	bool m_bRushRp;																									// å›è»¢ãƒ©ãƒƒã‚·ãƒ¥æ”»æ’ƒ true	
+	bool m_bBlowingAwayHitB;																						// å¾Œã‚ã‹ã‚‰å¹ãé£›ã°ã—æ”»æ’ƒã‚’å—ã‘ãŸ true1
 
-	bool m_bAtttackMoveSpeedDec;																					// Œ¸‘¬‚³‚¹‚é : true
+	bool m_bAtttackMoveSpeedDec;																					// æ¸›é€Ÿã•ã›ã‚‹ : true
 };

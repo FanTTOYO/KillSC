@@ -1,4 +1,4 @@
-#include "ResultScene.h"
+﻿#include "ResultScene.h"
 #include "../SceneManager.h"
 #include "../../Object/Ui/Ui.h"
 

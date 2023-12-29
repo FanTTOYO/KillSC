@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class KdEffekseerObject;
 class CameraBase;
@@ -21,8 +21,8 @@ public:
 		bool IsLoop = false;
 	};
 
-	// Jsonƒtƒ@ƒCƒ‹‚©‚çƒf[ƒ^‚ğæ“¾‚µAEffekseerƒGƒtƒFƒNƒg‚ğÄ¶‚·‚é
-	// ¦ ƒLƒƒƒ‰ƒNƒ^[‚ÌˆÊ’u‚ÉƒGƒtƒFƒNƒg‚ğÄ¶‚·‚éê‡‚È‚Ç‚ª‚ ‚é‚½‚ßAÀ•Wî•ñ‚ğ“n‚µ‚Ä‚¢‚é
+	// Jsonãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã—ã€Effekseerã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å†ç”Ÿã™ã‚‹
+	// â€» ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ä½ç½®ã«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å†ç”Ÿã™ã‚‹å ´åˆãªã©ãŒã‚ã‚‹ãŸã‚ã€åº§æ¨™æƒ…å ±ã‚’æ¸¡ã—ã¦ã„ã‚‹
 	std::shared_ptr<KdEffekseerObject> Play(const std::string& effName, const DirectX::SimpleMath::Vector3& pos);
 
 	void StopAllEffect();
@@ -52,7 +52,7 @@ public:
 
 	void SetPause(const std::string& name, const bool isPause);
 
-	// Ä¶’†‚©‚Ç‚¤‚©
+	// å†ç”Ÿä¸­ã‹ã©ã†ã‹
 	const bool IsPlaying(const std::string& name) const;
 
 	void SetCamera(const std::shared_ptr<CameraBase>& camera);
@@ -66,23 +66,23 @@ private:
 		return Effekseer::Vector3D(vec.x, vec.y, vec.z);
 	}
 
-	// EffekseerƒGƒtƒFƒNƒg‚ÌÄ¶
+	// Effekseerã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®å†ç”Ÿ
 	std::shared_ptr<KdEffekseerObject> Play(const PlayEfkInfo& info);
 	std::shared_ptr<KdEffekseerObject> Play(const std::shared_ptr<KdEffekseerObject> spObject);
 
 	void UpdateEffekseerEffect();
 	void UpdateEkfCameraMatrix();
 
-	// ƒGƒtƒFƒNƒg‚ÌƒŒƒ“ƒ_ƒ‰[
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼
 	EffekseerRendererDX11::RendererRef m_efkRenderer = nullptr;
 
-	// ƒGƒtƒFƒNƒg‚Ìƒ}ƒl[ƒWƒƒ[
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼
 	Effekseer::ManagerRef m_efkManager = nullptr;
 
-	// ƒGƒtƒFƒNƒgƒŠƒXƒg
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒªã‚¹ãƒˆ
 	std::unordered_map<std::string, std::shared_ptr<KdEffekseerObject>> m_effectMap;
 
-	// ƒJƒƒ‰
+	// ã‚«ãƒ¡ãƒ©
 	std::weak_ptr<CameraBase> m_wpCamera;
 
 	bool m_isPause = false;
@@ -106,58 +106,58 @@ class KdEffekseerObject
 {
 public:
 
-	// Ä¶’†‚©
+	// å†ç”Ÿä¸­ã‹
 	bool IsPlaying();
 
-	// Ä¶“o˜^‚µ‚½ƒ}ƒl[ƒWƒƒ[İ’è
+	// å†ç”Ÿç™»éŒ²ã—ãŸãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼è¨­å®š
 	void SetParentManager(Effekseer::ManagerRef& parentManager)
 	{
 		m_parentManager = parentManager;
 	}
 
-	// Ä¶‚·‚éƒGƒtƒFƒNƒgİ’è
+	// å†ç”Ÿã™ã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆè¨­å®š
 	void SetEffect(Effekseer::EffectRef& effect) { m_effect = effect; }
 
-	// ƒnƒ“ƒhƒ‹İ’è
+	// ãƒãƒ³ãƒ‰ãƒ«è¨­å®š
 	void SetHandle(Effekseer::Handle& handle) { m_handle = handle; }
 
-	// À•Wİ’è
+	// åº§æ¨™è¨­å®š
 	void SetPos(const Math::Vector3& pos);
 
-	// ƒTƒCƒYİ’è
+	// ã‚µã‚¤ã‚ºè¨­å®š
 	void SetScale(const float scale = 1.0f);
 
-	// ‘¬“xİ’è
+	// é€Ÿåº¦è¨­å®š
 	void SetSpeed(const float speed = 1.0f);
 
-	// ƒ[ƒ‹ƒhs—ñİ’è
+	// ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—è¨­å®š
 	void SetWorldMatrix(const Math::Matrix& mWorld);
 
-	// ƒ‹[ƒvİ’è
+	// ãƒ«ãƒ¼ãƒ—è¨­å®š
 	void SetLoop(const bool isLoop = false) { m_info.IsLoop = isLoop; }
 
-	// Ä¶‚·‚éƒGƒtƒFƒNƒg‚ÌŠeíî•ñİ’è
+	// å†ç”Ÿã™ã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®å„ç¨®æƒ…å ±è¨­å®š
 	void SetPlayEfkInfo(const KdEffekseerManager::PlayEfkInfo& info) { m_info = info; }
 
-	// ƒGƒtƒFƒNƒgæ“¾
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå–å¾—
 	const Effekseer::EffectRef& GetEffect() const { return m_effect; }
 
-	// ƒnƒ“ƒhƒ‹æ“¾
+	// ãƒãƒ³ãƒ‰ãƒ«å–å¾—
 	const Effekseer::Handle& GetHandle() const { return m_handle; }
 
-	// À•Wæ“¾
+	// åº§æ¨™å–å¾—
 	const Math::Vector3 GetPos() { return m_info.Pos; }
 
-	// ƒTƒCƒYæ“¾
+	// ã‚µã‚¤ã‚ºå–å¾—
 	const float GetSize() const { return m_info.Size; }
 
-	// ‘¬“xæ“¾
+	// é€Ÿåº¦å–å¾—
 	const float GetSpeed() const { return m_info.Speed; }
 
-	// ƒ‹[ƒv‚·‚é‚©‚Ç‚¤‚©
+	// ãƒ«ãƒ¼ãƒ—ã™ã‚‹ã‹ã©ã†ã‹
 	const bool IsLoop() const { return m_info.IsLoop; }
 
-	// ƒGƒtƒFƒNƒg‚ÌŠeíî•ñæ“¾
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®å„ç¨®æƒ…å ±å–å¾—
 	KdEffekseerManager::PlayEfkInfo& WorkPlayEfkInfo() { return m_info; }
 	const KdEffekseerManager::PlayEfkInfo& GetPlayEfkInfo() const { return m_info; }
 

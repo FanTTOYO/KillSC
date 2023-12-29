@@ -1,4 +1,4 @@
-#include "GameScene.h"
+ï»¿#include "GameScene.h"
 #include "../../Object/Character/Player/Player.h"
 #include "../../Object/Character/Enemy/Enemy.h"
 #include "../../Object/invisibleWall/InvisibleWall.h"
@@ -194,28 +194,28 @@ void GameScene::Event()
 								    (float)(*m_spJsonObj)["EnemyAppearanceF"][2].number_value());
 				KdEffekseerManager::GetInstance().
 					Play("EnemyAppearance.efk", pos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 
 				pos = Math::Vector3((float)(*m_spJsonObj)["EnemyAppearanceB"][0].number_value(),
 					                (float)(*m_spJsonObj)["EnemyAppearanceB"][1].number_value(),
 					                (float)(*m_spJsonObj)["EnemyAppearanceB"][2].number_value());
 				KdEffekseerManager::GetInstance().
 					Play("EnemyAppearance.efk", pos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 
 				pos = Math::Vector3((float)(*m_spJsonObj)["EnemyAppearanceR"][0].number_value(),
 					                (float)(*m_spJsonObj)["EnemyAppearanceR"][1].number_value(),
 					                (float)(*m_spJsonObj)["EnemyAppearanceR"][2].number_value());
 				KdEffekseerManager::GetInstance().
 					Play("EnemyAppearance.efk", pos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 
 				pos = Math::Vector3((float)(*m_spJsonObj)["EnemyAppearanceL"][0].number_value(),
 					                (float)(*m_spJsonObj)["EnemyAppearanceL"][1].number_value(),
 					                (float)(*m_spJsonObj)["EnemyAppearanceL"][2].number_value());
 				KdEffekseerManager::GetInstance().
 					Play("EnemyAppearance.efk", pos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 
 			}
 
@@ -245,7 +245,7 @@ void GameScene::Event()
 					if (SceneManager::Instance().GetEnemyTotal() == MAX_BOSS_ENEMY_CNT)
 					{
 						auto& enemyTotalTwoWimpEnemyObj = (*m_spJsonObj)["EnemyTotalTwoWimpEnemy"].object_items();
-						// ƒ‚ƒ“ƒXƒ^[Œ^EnemyƒCƒ“ƒXƒ^ƒ“ƒX‰»==========================================================================================================
+						// ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼å‹Enemyã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–==========================================================================================================
 						SceneManager::Instance().AddEnemyDrawTotal();
 						enemy = std::make_shared<Enemy>();
 						enemy->SetTarget(m_wpPlayer.lock());
@@ -324,8 +324,8 @@ void GameScene::Event()
 						// ===============================================================================================================================================
 					}
 
-					// lŒ^EnemyƒCƒ“ƒXƒ^ƒ“ƒX‰»========================================================================================================================
-					// ‘O•ûŒü
+					// äººå‹Enemyã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–========================================================================================================================
+					// å‰æ–¹å‘
 					for (int i = 0; i < total; ++i)
 					{
 						SceneManager::Instance().AddEnemyDrawTotal();
@@ -349,7 +349,7 @@ void GameScene::Event()
 						m_wpEnemyList.push_back(enemy);
 					}
 
-					// Œã‚ë•ûŒü
+					// å¾Œã‚æ–¹å‘
 					for (int i = 0; i < total; ++i)
 					{
 						SceneManager::Instance().AddEnemyDrawTotal();
@@ -374,7 +374,7 @@ void GameScene::Event()
 						m_wpEnemyList.push_back(enemy);
 					}
 
-					// ‰E•ûŒü
+					// å³æ–¹å‘
 					for (int i = 0; i < total; ++i)
 					{
 						SceneManager::Instance().AddEnemyDrawTotal();
@@ -398,7 +398,7 @@ void GameScene::Event()
 						m_wpEnemyList.push_back(enemy);
 					}
 
-					// ¶•ûŒü
+					// å·¦æ–¹å‘
 					for (int i = 0; i < total; ++i)
 					{
 						SceneManager::Instance().AddEnemyDrawTotal();
@@ -425,11 +425,11 @@ void GameScene::Event()
 					}
 					//========================================================================================================================================================
 				}   
-				else // ƒ‚ƒ“ƒXƒ^[Œ^EnemyƒCƒ“ƒXƒ^ƒ“ƒX‰»==========================================================================================================
+				else // ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼å‹Enemyã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–==========================================================================================================
 				{
 					auto& wimpEnemyTypeOne = (*m_spJsonObj)["WimpEnemyTypeOne"].object_items();
 
-					// ‘O•ûŒü
+					// å‰æ–¹å‘
 					for (int i = 0; i < total; ++i)
 					{
 						SceneManager::Instance().AddEnemyDrawTotal();
@@ -456,7 +456,7 @@ void GameScene::Event()
 
 					total = 1;
 
-					// Œã‚ë•ûŒü
+					// å¾Œã‚æ–¹å‘
 					for (int i = 0; i < total; ++i)
 					{
 						SceneManager::Instance().AddEnemyDrawTotal();
@@ -482,7 +482,7 @@ void GameScene::Event()
 						m_wpEnemyList.push_back(enemy);
 					}
 
-					// ‰E•ûŒü
+					// å³æ–¹å‘
 					for (int i = 0; i < total; ++i)
 					{
 						SceneManager::Instance().AddEnemyDrawTotal();
@@ -506,7 +506,7 @@ void GameScene::Event()
 						m_wpEnemyList.push_back(enemy);
 					}
 
-					// ¶•ûŒü
+					// å·¦æ–¹å‘
 					for (int i = 0; i < total; ++i)
 					{
 						SceneManager::Instance().AddEnemyDrawTotal();
@@ -547,10 +547,10 @@ void GameScene::Event()
 
 				if (!SceneManager::Instance().GetBHumanoidEnemy())
 				{
-					// ƒ‚ƒ“ƒXƒ^[Œ^ƒ{ƒXoŒ»ƒQ[ƒgƒGƒtƒFƒNƒg==================================================================================================
+					// ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼å‹ãƒœã‚¹å‡ºç¾ã‚²ãƒ¼ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆ==================================================================================================
 					KdEffekseerManager::GetInstance().
 						Play("EnemyAppearance.efk", pos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 
 					Math::Matrix efcMat = Math::Matrix::CreateScale((float)bossEnemyTypeOneObj["BossEnemyTypeOneAppearanceEffectScale"].number_value()) * Math::Matrix::CreateTranslation(pos);
 					KdEffekseerManager::GetInstance().SetWorldMatrix("EnemyAppearance.efk", efcMat);
@@ -558,10 +558,10 @@ void GameScene::Event()
 				}
 				else
 				{
-					// lŒ^ƒ{ƒXoŒ»ƒQ[ƒgƒGƒtƒFƒNƒg========================================================================================================
+					// äººå‹ãƒœã‚¹å‡ºç¾ã‚²ãƒ¼ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆ========================================================================================================
 					KdEffekseerManager::GetInstance().
 						Play("EnemyAppearance.efk", pos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 
 					Math::Matrix efcMat = Math::Matrix::CreateScale((float)bossEnemyObj["BossEnemyAppearanceEffectScale"].number_value()) * Math::Matrix::CreateTranslation(pos);
 					KdEffekseerManager::GetInstance().SetWorldMatrix("EnemyAppearance.efk", efcMat);
@@ -575,12 +575,12 @@ void GameScene::Event()
 				++m_appearanceEffectCnt;
 			}
 
-			// ƒ{ƒXEnemy‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‰»================================================================================================================
+			// ãƒœã‚¹Enemyã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–================================================================================================================
 			if (m_appearanceEffectCnt == ENEMY_APPEARANCE_MOMENT)
 			{
 				int total = SceneManager::Instance().GetEnemyTotal();
 				std::shared_ptr<Enemy> enemy;
-				// ‘O•ûŒü
+				// å‰æ–¹å‘
 				for (int i = 0; i < total; ++i)
 				{
 					m_bossAppearanceCnt++;
@@ -610,20 +610,20 @@ void GameScene::Event()
 
 					if (!SceneManager::Instance().GetBHumanoidEnemy())
 					{
-						enemy->SetModelAndType(Enemy::EnemyType::bossEnemyTypeOne); // ƒ‚ƒ“ƒXƒ^[Œ^‚Ìƒ{ƒX‚ğ‚±‚±‚ÅƒZƒbƒg
+						enemy->SetModelAndType(Enemy::EnemyType::bossEnemyTypeOne); // ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼å‹ã®ãƒœã‚¹ã‚’ã“ã“ã§ã‚»ãƒƒãƒˆ
 						m_wpGameCamera.lock()->SetHitObj(enemy);
 						auto it = m_objList.begin();
 						while (it != m_objList.end())
 						{
-							// •s—v‚É‚È‚Á‚½ƒIƒuƒWƒFƒNƒg‚ğÁ‚·
+							// ä¸è¦ã«ãªã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¶ˆã™
 							if ((*it)->GetBBldg())
 							{
-								// Á‚·
-								it = m_objList.erase(it); // –ß‚è’l‚ÅŸ‚ÌêŠ‚ğ•Ô‚µ‚Ä‚­‚ê‚é
+								// æ¶ˆã™
+								it = m_objList.erase(it); // æˆ»ã‚Šå€¤ã§æ¬¡ã®å ´æ‰€ã‚’è¿”ã—ã¦ãã‚Œã‚‹
 							}
 							else
 							{
-								++it; // Ÿ‚Ö
+								++it; // æ¬¡ã¸
 							}
 						}
 
@@ -676,17 +676,17 @@ void GameScene::Init()
 
 	m_spJsonObj = std::make_shared<json11::Json>();
 	{
-		// jsonƒtƒ@ƒCƒ‹‚ğŠJ‚­
+		// jsonãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 		std::ifstream ifs("Asset/Data/objectVal.json");
-		if (ifs.fail()) { assert(0 && "Json ƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·III"); };
+		if (ifs.fail()) { assert(0 && "Json ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ãŒé–“é•ã£ã¦ã„ã¾ã™ï¼ï¼ï¼"); };
 
-		// •¶š—ñ‚Æ‚µ‚Ä‘S“Ç‚İ‚İ
+		// æ–‡å­—åˆ—ã¨ã—ã¦å…¨èª­ã¿è¾¼ã¿
 		std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
 		std::string err;
 		*m_spJsonObj = json11::Json::parse(strJson, err);
 
-		if (err.size() > 0) { assert(0 && "“Ç‚İ‚ñ‚¾ƒtƒ@ƒCƒ‹‚Ìjson•ÏŠ·‚É¸”s"); };
+		if (err.size() > 0) { assert(0 && "èª­ã¿è¾¼ã‚“ã ãƒ•ã‚¡ã‚¤ãƒ«ã®jsonå¤‰æ›ã«å¤±æ•—"); };
 	}
 
 	KdAudioManager::Instance().StopAllSound();

@@ -1,4 +1,4 @@
-#include "TrainingScene.h"
+ï»¿#include "TrainingScene.h"
 #include "../../Object/Character/Player/Player.h"
 #include "../../Object/Character/Enemy/Enemy.h"
 #include "../../Object/invisibleWall/InvisibleWall.h"
@@ -68,17 +68,17 @@ void TrainingScene::Init()
 {
 	m_spJsonObj = std::make_shared<json11::Json>();
 	{
-		// jsonƒtƒ@ƒCƒ‹‚ğŠJ‚­
+		// jsonãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 		std::ifstream ifs("Asset/Data/objectVal.json");
-		if (ifs.fail()) { assert(0 && "Json ƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ªŠÔˆá‚Á‚Ä‚¢‚Ü‚·III"); };
+		if (ifs.fail()) { assert(0 && "Json ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ãŒé–“é•ã£ã¦ã„ã¾ã™ï¼ï¼ï¼"); };
 
-		// •¶š—ñ‚Æ‚µ‚Ä‘S“Ç‚İ‚İ
+		// æ–‡å­—åˆ—ã¨ã—ã¦å…¨èª­ã¿è¾¼ã¿
 		std::string strJson((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
 		std::string err;
 		*m_spJsonObj = json11::Json::parse(strJson, err);
 
-		if (err.size() > 0) { assert(0 && "“Ç‚İ‚ñ‚¾ƒtƒ@ƒCƒ‹‚Ìjson•ÏŠ·‚É¸”s"); };
+		if (err.size() > 0) { assert(0 && "èª­ã¿è¾¼ã‚“ã ãƒ•ã‚¡ã‚¤ãƒ«ã®jsonå¤‰æ›ã«å¤±æ•—"); };
 	}
 	auto& enemySharedObj = (*m_spJsonObj)["EnemyShared"].object_items();
 

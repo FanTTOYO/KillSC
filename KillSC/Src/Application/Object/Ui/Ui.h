@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 class Player;
 class Enemy;
 class GameCamera;
@@ -172,8 +172,8 @@ private:
 	float m_waveAlpha;
 	KdTexture m_waveTex;
 	int m_waveCnt;
-	int m_waveTimeCnt; // 2ƒEƒF[ƒu‚©‚ç‚Í‚±‚ÌƒJƒEƒ“ƒg‚ğg‚Á‚ÄƒtƒF[ƒhƒCƒ“EƒtƒF[ƒhƒAƒEƒg‚·‚é
-	bool m_bWaveChange; // ƒEƒF[ƒu”‚ª•Ï‰»‚µ‚½@true
+	int m_waveTimeCnt; // 2ã‚¦ã‚§ãƒ¼ãƒ–ã‹ã‚‰ã¯ã“ã®ã‚«ã‚¦ãƒ³ãƒˆã‚’ä½¿ã£ã¦ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ»ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆã™ã‚‹
+	bool m_bWaveChange; // ã‚¦ã‚§ãƒ¼ãƒ–æ•°ãŒå¤‰åŒ–ã—ãŸæ™‚ã€€true
 
 	bool m_bExit = false;
 	bool m_bFirstExit = false;
@@ -578,8 +578,8 @@ private:
 	float m_waveAlpha;
 	KdTexture m_waveTex;
 	int m_waveCnt;
-	int m_waveTimeCnt; // 2ƒEƒF[ƒu‚©‚ç‚Í‚±‚ÌƒJƒEƒ“ƒg‚ğg‚Á‚ÄƒtƒF[ƒhƒCƒ“EƒtƒF[ƒhƒAƒEƒg‚·‚é
-	bool m_bWaveChange; // ƒEƒF[ƒu”‚ª•Ï‰»‚µ‚½@true
+	int m_waveTimeCnt; // 2ã‚¦ã‚§ãƒ¼ãƒ–ã‹ã‚‰ã¯ã“ã®ã‚«ã‚¦ãƒ³ãƒˆã‚’ä½¿ã£ã¦ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ»ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆã™ã‚‹
+	bool m_bWaveChange; // ã‚¦ã‚§ãƒ¼ãƒ–æ•°ãŒå¤‰åŒ–ã—ãŸæ™‚ã€€true
 
 	bool m_bExit = false;
 	bool m_bFirstExit = false;

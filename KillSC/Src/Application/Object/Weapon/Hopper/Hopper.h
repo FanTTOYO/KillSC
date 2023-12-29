@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../WeaponBase.h"
 
 class Player;

@@ -1,4 +1,4 @@
-#include "Scopion.h"
+ï»¿#include "Scopion.h"
 #include "../../../Scene/SceneManager.h"
 #include "../../Character/Player/Player.h"
 #include "../../Character/Enemy/Enemy.h"
@@ -41,7 +41,7 @@ void Scopion::Update()
 		}
 
 #ifdef _DEBUG
-		// ƒK[ƒh‚Ì“–‚½‚è”»’è‚ğ‰Â‹‰»
+		// ã‚¬ãƒ¼ãƒ‰ã®å½“ãŸã‚Šåˆ¤å®šã‚’å¯è¦–åŒ–
 		node = m_model->FindNode("AttackPointTwo");
 		Math::Matrix mat = node->m_worldTransform * m_mWorld;
 		m_pDebugWire->AddDebugSphere
@@ -113,7 +113,7 @@ void Scopion::Update()
 		}
 
 #ifdef _DEBUG
-		// ƒK[ƒh‚Ì“–‚½‚è”»’è‚ğ‰Â‹‰»
+		// ã‚¬ãƒ¼ãƒ‰ã®å½“ãŸã‚Šåˆ¤å®šã‚’å¯è¦–åŒ–
 		node = m_model->FindNode("AttackPointTwo");
 		Math::Matrix mat = node->m_worldTransform * m_mWorld;
 		m_pDebugWire->AddDebugSphere
@@ -165,17 +165,17 @@ void Scopion::Update()
 void Scopion::PostUpdate()
 {
 	auto it = m_pTargetList.begin();
-	while (it != m_pTargetList.end()) // ”‚ª•Ï“®‚·‚é‚½‚ß”ÍˆÍƒx[ƒXFor‚ªg‚¦‚È‚¢
+	while (it != m_pTargetList.end()) // æ•°ãŒå¤‰å‹•ã™ã‚‹ãŸã‚ç¯„å›²ãƒ™ãƒ¼ã‚¹ForãŒä½¿ãˆãªã„
 	{
-		// •s—v‚É‚È‚Á‚½ƒIƒuƒWƒFƒNƒg‚ğÁ‚·
+		// ä¸è¦ã«ãªã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¶ˆã™
 		if ((*it).expired())
 		{
-			// Á‚·
-			it = m_pTargetList.erase(it); // –ß‚è’l‚ÅŸ‚ÌêŠ‚ğ•Ô‚µ‚Ä‚­‚ê‚é
+			// æ¶ˆã™
+			it = m_pTargetList.erase(it); // æˆ»ã‚Šå€¤ã§æ¬¡ã®å ´æ‰€ã‚’è¿”ã—ã¦ãã‚Œã‚‹
 		}
 		else
 		{
-			++it; // Ÿ‚Ö
+			++it; // æ¬¡ã¸
 		}
 	}
 }
@@ -313,7 +313,7 @@ void Scopion::Init()
 
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 	m_animator = std::make_shared<KdAnimator>();
-	// “–‚½‚è”»’è‰Šú‰»
+	// å½“ãŸã‚Šåˆ¤å®šåˆæœŸåŒ–
 	m_pCollider = std::make_unique<KdCollider>();
 
 
@@ -351,10 +351,10 @@ void Scopion::PlayerHitAttackChaeck()
 		if (pTarget.expired())continue;
 
 		if (pTarget.lock()->IsExpired())continue;
-		// UŒ‚‚Ì“–‚½‚è”»’è
+		// æ”»æ’ƒã®å½“ãŸã‚Šåˆ¤å®š
 		for (auto& wepLis : pTarget.lock()->GetWeaponList())
 		{
-			// •Ší‚Æ‚Ì“–‚½‚è”»’è
+			// æ­¦å™¨ã¨ã®å½“ãŸã‚Šåˆ¤å®šï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 			if (pTarget.lock()->GetEnemyState() & Enemy::EnemyState::defense && !pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetBEnemyDeath() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush))
 			{
 				node = m_model->FindNode("AttackPointOne");
@@ -514,7 +514,7 @@ void Scopion::PlayerHitAttackChaeck()
 			}
 		}
 
-		// “G‚Æ‚Ì“–‚½‚è”»’è
+		// æ•µã¨ã®å½“ãŸã‚Šåˆ¤å®šï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 		if (!pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && player->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack | Player::PlayerState::rlAttackRush) && pTarget.lock()->GetInvincibilityTimeCnt() == 0 && !pTarget.lock()->GetBEnemyDeath())
 		{
 			if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
@@ -561,7 +561,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 				KdEffekseerManager::GetInstance().
 					Play("SwordHit.efk", hitPos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 				Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
 				KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 			}
@@ -607,7 +607,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 					KdEffekseerManager::GetInstance().
 						Play("SwordHit.efk", hitPos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
 					KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 				}
@@ -653,7 +653,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 						KdEffekseerManager::GetInstance().
 							Play("SwordHit.efk", hitPos);
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 						Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
 						KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 					}
@@ -747,7 +747,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 							KdEffekseerManager::GetInstance().
 								Play("SwordHit.efk", hitPos);
-							KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+							KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 							Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
 							KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 						}
@@ -839,7 +839,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 								KdEffekseerManager::GetInstance().
 									Play("SwordHit.efk", hitPos);
-								KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+								KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 								Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
 								KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 							}
@@ -931,7 +931,7 @@ void Scopion::PlayerHitAttackChaeck()
 
 									KdEffekseerManager::GetInstance().
 										Play("SwordHit.efk", hitPos);
-									KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+									KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 									Math::Matrix efcMat = PlayerHitEffectMat(hitPos, pTarget);
 									KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", efcMat);
 								}
@@ -1176,7 +1176,7 @@ void Scopion::PlayerManAttackChaeck()
 	{
 		if (pTarget.expired())continue;
 
-		// “G‚Æ‚Ì“–‚½‚è”»’è
+		// æ•µã¨ã®å½“ãŸã‚Šåˆ¤å®šï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 		if (!pTarget.lock()->GetAttackHit() && !pTarget.lock()->GetDefenseSuc() && !pTarget.lock()->GetBEnemyDeath() && player->GetPlayerState() & Player::PlayerState::mantis && pTarget.lock()->GetInvincibilityTimeCnt() == 0)
 		{
 			if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
@@ -1470,10 +1470,10 @@ void Scopion::EnemyHitAttackChaeck()
 
 	/*for (auto& obj : m_eTargetList)
 {*/
-// UŒ‚‚Ì“–‚½‚è”»’è
+// æ”»æ’ƒã®å½“ãŸã‚Šåˆ¤å®š
 	for (auto& wepLis : m_eTarget.lock()->GetWeaponList())
 	{
-		// •Ší‚Æ‚Ì“–‚½‚è”»’è
+		// æ­¦å™¨ã¨ã®å½“ãŸã‚Šåˆ¤å®šï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 		if (m_eTarget.lock()->GetPlayerState() & Player::PlayerState::defense && 
 			!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && 
 			enemy->GetEnemyState() & (Enemy::EnemyState::rAttack | Enemy::EnemyState::lAttack | Enemy::EnemyState::rlAttack) && 
@@ -1640,7 +1640,7 @@ void Scopion::EnemyHitAttackChaeck()
 				}
 	//}
 
-	// Player‚Æ‚Ì“–‚½‚è”»’è
+	// Playerã¨ã®å½“ãŸã‚Šåˆ¤å®šï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && 
 		enemy->GetEnemyState() & (Enemy::EnemyState::rAttack | Enemy::EnemyState::lAttack | Enemy::EnemyState::rlAttack | Enemy::EnemyState::rlAttackRush) &&
 		m_eTarget.lock()->GetInvincibilityTimeCnt() == 0 && !m_eTarget.lock()->GetBPlayerDeath())
@@ -1722,7 +1722,7 @@ void Scopion::EnemyHitAttackChaeck()
 
 			KdEffekseerManager::GetInstance().
 				Play("SwordHit.efk", hitPos);
-			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+			KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 			Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
 			KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", EnemyHitEffectMat(hitPos, m_eTarget));
 		}
@@ -1799,7 +1799,7 @@ void Scopion::EnemyHitAttackChaeck()
 
 				KdEffekseerManager::GetInstance().
 					Play("SwordHit.efk", hitPos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 				Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
 				KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", EnemyHitEffectMat(hitPos, m_eTarget));
 			}
@@ -1875,7 +1875,7 @@ void Scopion::EnemyHitAttackChaeck()
 
 					KdEffekseerManager::GetInstance().
 						Play("SwordHit.efk", hitPos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("SwordHit.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(enemy->GetAngleY())) * Math::Matrix::CreateTranslation(hitPos);
 					KdEffekseerManager::GetInstance().SetWorldMatrix("SwordHit.efk", EnemyHitEffectMat(hitPos, m_eTarget));
 				}
@@ -1894,7 +1894,7 @@ void Scopion::EnemyManAttackChaeck()
 	const KdModelWork::Node* node = nullptr;
 	Math::Matrix mat = Math::Matrix::Identity;
 
-	// Player‚Æ‚Ì“–‚½‚è”»’è
+	// Playerã¨ã®å½“ãŸã‚Šåˆ¤å®šï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 	if (!m_eTarget.lock()->GetAttackHit() && !m_eTarget.lock()->GetDefenseSuc() && enemy->GetEnemyState() & Enemy::EnemyState::mantis && m_eTarget.lock()->GetInvincibilityTimeCnt() == 0 && !m_eTarget.lock()->GetBPlayerDeath())
 	{
 		if (enemy->GetEnemyState() & Enemy::EnemyState::rAttack && m_arrmType == lArrm)return;

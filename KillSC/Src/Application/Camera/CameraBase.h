@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CameraBase : public KdGameObject
 {
@@ -14,19 +14,19 @@ public:
 
 	void SetStepOnPlayerPos(Math::Vector3 a_stepOnPlayerPos) { m_stepOnPlayerPos = a_stepOnPlayerPos; }
 
-	const std::shared_ptr<const KdCamera>& GetCamera() const // Œ©‚é‚¾‚¯i•ÏX‚Å‚«‚È‚¢j
+	const std::shared_ptr<const KdCamera>& GetCamera() const // è¦‹ã‚‹ã ã‘ï¼ˆå¤‰æ›´ã§ããªã„ï¼‰
 	{
 		return m_spCamera;
 	}
 
-	std::shared_ptr<KdCamera> WorkCamera() const            // m_spCamera‚Ì‰½‚©‚ğ•ÏX‚µ‚½‚¢‚Æ‚«
+	std::shared_ptr<KdCamera> WorkCamera() const            // m_spCameraã®ä½•ã‹ã‚’å¤‰æ›´ã—ãŸã„ã¨ã
 	{
 		return m_spCamera;
 	}
 
 	const Math::Matrix GetRotationMatrix() const
 	{
-		                            // Yaw Y²‰ñ“] Pitch X²‰ñ“] Roll Z²‰ñ“] 
+		                            // Yaw Yè»¸å›è»¢ Pitch Xè»¸å›è»¢ Roll Zè»¸å›è»¢ 
 		return Math::Matrix::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(m_DegAng.y),
 			                                        DirectX::XMConvertToRadians(m_DegAng.x),
 			                                        DirectX::XMConvertToRadians(m_DegAng.z));
@@ -51,7 +51,7 @@ protected:
 	Math::Matrix						m_LocalPos;
 	Math::Matrix						m_Rotation;
 
-	// ƒJƒƒ‰‰ñ“]—pŠp“x
+	// ã‚«ãƒ¡ãƒ©å›è»¢ç”¨è§’åº¦
 	Math::Vector3                       m_DegAng;
 
 	Math::Vector3 m_stepOnPlayerPos;

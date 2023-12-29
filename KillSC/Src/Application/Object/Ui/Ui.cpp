@@ -1,4 +1,4 @@
-#include "Ui.h"
+ï»¿#include "Ui.h"
 #include "../../main.h"
 #include "../../Scene/SceneManager.h"
 #include "../Character/Player/Player.h"
@@ -71,7 +71,7 @@ void Ui::Init()
 	m_currentUiClassId->Init();
 }
 
-// ƒ^ƒCƒgƒ‹‚ÌUIŠÖ˜A‚Ìˆ—
+// ã‚¿ã‚¤ãƒˆãƒ«ã®UIé–¢é€£ã®å‡¦ç†ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 void TitleUi::Init()
 {
 	m_pushLClickTex.Load("Asset/Textures/Ui/shared/PUSHTLCLICK.png");
@@ -197,9 +197,9 @@ void TitleUi::DrawSprite()
 	color = { 0,0,0,m_fadeAlpha };
 	KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 }
-// 
+// ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 
-// ƒQ[ƒ€ƒ‚[ƒh‚ÌUIŠÖ˜A‚Ìˆ—
+// ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰ã®UIé–¢é€£ã®å‡¦ç†ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 void GameUi::Init()
 {
 	m_exitTex.Load("Asset/Textures/Ui/OPTION/EXIT.png");
@@ -529,7 +529,7 @@ void GameUi::Update()
 				{
 					m_bOption = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-					ShowCursor(true); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+					ShowCursor(true); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 					KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
 				}
 				else if (m_bOption)
@@ -542,7 +542,7 @@ void GameUi::Update()
 					m_bOperation = false;
 					SetCursorPos(640, 360);
 					KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-					ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+					ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 					KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
 				}
 			}
@@ -608,15 +608,15 @@ void GameUi::PostUpdate()
 	auto it = m_wpEnemyList.begin();
 	while (it != m_wpEnemyList.end())
 	{
-		// •s—v‚É‚È‚Á‚½ƒIƒuƒWƒFƒNƒg‚ğÁ‚·
+		// ä¸è¦ã«ãªã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¶ˆã™
 		if ((*it).expired())
 		{
-			// Á‚·
+			// æ¶ˆã™
 			it = m_wpEnemyList.erase(it);
 		}
 		else
 		{
-			++it; // Ÿ‚Ö
+			++it; // æ¬¡ã¸
 		}
 	}
 
@@ -821,7 +821,7 @@ void GameUi::DrawSprite()
 			Math::Vector3 nowVec = m_wpCamera.lock()->GetMatrix().Backward();
 			nowVec.Normalize();
 
-			// Œü‚«‚½‚¢•ûŒü
+			// å‘ããŸã„æ–¹å‘
 			Math::Vector3 toVec = list.lock()->GetPos() - m_wpCamera.lock()->GetPos();
 			toVec.Normalize();
 
@@ -835,7 +835,7 @@ void GameUi::DrawSprite()
 				dot.x = -1;
 			}
 
-			// Šp“x‚ğæ“¾
+			// è§’åº¦ã‚’å–å¾—
 			float ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
 			if (ang <= 85)
@@ -1141,7 +1141,7 @@ void GameUi::OptionUpdate()
 			if (KdInputManager::Instance().IsPress("select"))
 			{
 				m_bOption = false;
-				ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+				ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 				SetCursorPos(640, 360);
 				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
 				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
@@ -1161,7 +1161,7 @@ void GameUi::OptionUpdate()
 
 				if (m_bSelect)
 				{
-					ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+					ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 					KdEffekseerManager::GetInstance().Reset();
 					SceneManager::Instance().SetNextScene
 					(
@@ -1340,9 +1340,9 @@ void GameUi::OptionUpdate()
 		}
 	}
 }
-// 
+// ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 
-// ƒŠƒUƒ‹ƒg‚ÌUIŠÖ˜A‚Ìˆ—
+// ãƒªã‚¶ãƒ«ãƒˆã®UIé–¢é€£ã®å‡¦ç†ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 void ResultUi::Init()
 {
 	m_addFadeAlpha = false;
@@ -1439,7 +1439,7 @@ void ResultUi::Update()
 					KdAudioManager::Instance().Play("Asset/Audio/BGM/8 Defeat loop.wav", true);
 				}
 				KdAudioManager::Instance().Play("Asset/Audio/SE/asCompletion.wav");
-				std::ofstream ofs("Asset/Data/PointAndRank.csv"); // ‘‚«‚İ
+				std::ofstream ofs("Asset/Data/PointAndRank.csv"); // æ›¸ãè¾¼ã¿
 				if (!ofs) { return; }
 				if (m_weaponPoint < 4000)
 				{
@@ -1451,11 +1451,11 @@ void ResultUi::Update()
 				}
 				else if (m_weaponPoint >= 8000 && m_weaponPoint < 1200)
 				{
-					ofs << "point" << ',' << m_weaponPoint << ',' << '\n' << "rank" << ',' << "A" << ',' << '\n' << "Skill" << ',' << "ƒ}ƒXƒ^[" << '\n';
+					ofs << "point" << ',' << m_weaponPoint << ',' << '\n' << "rank" << ',' << "A" << ',' << '\n' << "Skill" << ',' << "ãƒã‚¹ã‚¿ãƒ¼" << '\n';
 				}
 				else
 				{
-					ofs << "point" << ',' << m_weaponPoint << ',' << '\n' << "rank" << ',' << "A" << ',' << '\n' << "Skill" << ',' << "ƒ}ƒXƒ^[" << '\n';
+					ofs << "point" << ',' << m_weaponPoint << ',' << '\n' << "rank" << ',' << "A" << ',' << '\n' << "Skill" << ',' << "ãƒã‚¹ã‚¿ãƒ¼" << '\n';
 				}
 				ofs.close();
 				m_bSceneCangePossible = true;
@@ -1489,7 +1489,7 @@ void ResultUi::Update()
 					KdAudioManager::Instance().Play("Asset/Audio/BGM/8 Defeat loop.wav", true);
 				}
 				KdAudioManager::Instance().Play("Asset/Audio/SE/asCompletion.wav");
-				std::ofstream ofs("Asset/Data/PointAndRank.csv"); // ‘‚«‚İ
+				std::ofstream ofs("Asset/Data/PointAndRank.csv"); // æ›¸ãè¾¼ã¿
 				if (!ofs) { return; }
 				if (m_weaponPoint < 4000)
 				{
@@ -1501,11 +1501,11 @@ void ResultUi::Update()
 				}
 				else if (m_weaponPoint >= 8000 && m_weaponPoint < 1200)
 				{
-					ofs << "point" << ',' << m_weaponPoint << ',' << '\n' << "rank" << ',' << "A" << ',' << '\n' << "Skill" << ',' << "ƒ}ƒXƒ^[" << '\n';
+					ofs << "point" << ',' << m_weaponPoint << ',' << '\n' << "rank" << ',' << "A" << ',' << '\n' << "Skill" << ',' << "ãƒã‚¹ã‚¿ãƒ¼" << '\n';
 				}
 				else
 				{
-					ofs << "point" << ',' << m_weaponPoint << ',' << '\n' << "rank" << ',' << "A" << ',' << '\n' << "Skill" << ',' << "ƒ}ƒXƒ^[" << '\n';
+					ofs << "point" << ',' << m_weaponPoint << ',' << '\n' << "rank" << ',' << "A" << ',' << '\n' << "Skill" << ',' << "ãƒã‚¹ã‚¿ãƒ¼" << '\n';
 				}
 				ofs.close();
 				m_bSceneCangePossible = true;
@@ -1883,9 +1883,9 @@ void ResultUi::DrawSprite()
 	color = { 0,0,0,m_fadeAlpha };
 	KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 }
-// 
+// ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 
-// ƒ‚[ƒhƒZƒŒƒNƒg‚ÌUIŠÖ˜A‚Ìˆ—
+// ãƒ¢ãƒ¼ãƒ‰ã‚»ãƒ¬ã‚¯ãƒˆã®UIé–¢é€£ã®å‡¦ç†ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 void ModeSelectUi::Init()
 {
 	m_modeSelectTex.Load("Asset/Textures/Ui/Select/ModeSelect.png");
@@ -2659,9 +2659,9 @@ void ModeSelectUi::DrawSprite()
 	}*/
 
 }
-// 
+// ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 
-// ƒ`ƒ…[ƒgƒŠƒAƒ‹ƒ‚[ƒh‚ÌUIŠÖ˜A‚Ìˆ—
+// ãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«ãƒ¢ãƒ¼ãƒ‰ã®UIé–¢é€£ã®å‡¦ç†ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 void TutorialUi::Init()
 {
 	m_exitTex.Load("Asset/Textures/Ui/OPTION/EXIT.png");
@@ -2747,7 +2747,7 @@ void TutorialUi::Update()
 			{
 				m_bOption = true;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-				ShowCursor(true); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+				ShowCursor(true); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 			}
 			else if (m_bOption)
 			{
@@ -2759,7 +2759,7 @@ void TutorialUi::Update()
 				m_bOperation = false;
 				SetCursorPos(640, 360);
 				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-				ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+				ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 			}
 		}
 	}
@@ -3189,7 +3189,7 @@ void TutorialUi::OptionUpdate()
 			if (KdInputManager::Instance().IsPress("select"))
 			{
 				m_bOption = false;
-				ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+				ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 				SetCursorPos(640, 360);
 				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
 				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
@@ -3209,7 +3209,7 @@ void TutorialUi::OptionUpdate()
 
 				if (m_bSelect)
 				{
-					ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+					ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 					KdEffekseerManager::GetInstance().Reset();
 					SceneManager::Instance().SetNextScene
 					(
@@ -3388,9 +3388,9 @@ void TutorialUi::OptionUpdate()
 		}
 	}
 }
-// 
+// ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 
-// ƒgƒŒ[ƒjƒ“ƒOƒ‚[ƒh‚ÌUIŠÖ˜A‚Ìˆ—
+// ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã®UIé–¢é€£ã®å‡¦ç†ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
 void TrainingUi::Init()
 {
 	m_exitTex.Load("Asset/Textures/Ui/OPTION/EXIT.png");
@@ -3610,7 +3610,7 @@ void TrainingUi::Update()
 			{
 				m_bOption = true;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-				ShowCursor(true); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+				ShowCursor(true); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 				KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
 			}
 			else if (m_bOption)
@@ -3623,7 +3623,7 @@ void TrainingUi::Update()
 				m_bOperation = false;
 				SetCursorPos(640, 360);
 				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-				ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+				ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
 			}
 		}
@@ -3792,7 +3792,7 @@ void TrainingUi::DrawSprite()
 			Math::Vector3 nowVec = m_wpCamera.lock()->GetMatrix().Backward();
 			nowVec.Normalize();
 
-			// Œü‚«‚½‚¢•ûŒü
+			// å‘ããŸã„æ–¹å‘
 			Math::Vector3 toVec = m_wpEnemy.lock()->GetPos() - m_wpCamera.lock()->GetPos();
 			toVec.Normalize();
 
@@ -3806,7 +3806,7 @@ void TrainingUi::DrawSprite()
 				dot.x = -1;
 			}
 
-			// Šp“x‚ğæ“¾
+			// è§’åº¦ã‚’å–å¾—
 			float ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
 			if (ang <= 85)
@@ -4075,7 +4075,7 @@ void TrainingUi::OptionUpdate()
 			if (KdInputManager::Instance().IsPress("select"))
 			{
 				m_bOption = false;
-				ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+				ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 				SetCursorPos(640, 360);
 				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
 				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
@@ -4095,7 +4095,7 @@ void TrainingUi::OptionUpdate()
 
 				if (m_bSelect)
 				{
-					ShowCursor(false); // ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·
+					ShowCursor(false); // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™
 					KdEffekseerManager::GetInstance().Reset();
 					SceneManager::Instance().SetNextScene
 					(
@@ -4274,4 +4274,4 @@ void TrainingUi::OptionUpdate()
 		}
 	}
 }
-// 
+// ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼

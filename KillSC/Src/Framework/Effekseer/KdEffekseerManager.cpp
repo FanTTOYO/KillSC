@@ -1,29 +1,29 @@
-#include "KdEffekseerManager.h"
+ï»¿#include "KdEffekseerManager.h"
 #include "../../Application/Camera/CameraBase.h"
 
 void KdEffekseerManager::Create(int w, int h)
 {
-	// ƒGƒtƒFƒNƒg‚ÌƒŒƒ“ƒ_ƒ‰[‚Ìì¬
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼ã®ä½œæˆ
 	m_efkRenderer = ::EffekseerRendererDX11::Renderer::Create(KdDirect3D::Instance().WorkDev(), KdDirect3D::Instance().WorkDevContext(), 8000);
 
-	// ƒGƒtƒFƒNƒg‚Ìƒ}ƒl[ƒWƒƒ[‚Ìì¬
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒžãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã®ä½œæˆ
 	m_efkManager = ::Effekseer::Manager::Create(8000);
 
-	// ¶ŽèÀ•WŒn‚É•ÏŠ·
+	// å·¦æ‰‹åº§æ¨™ç³»ã«å¤‰æ›
 	m_efkManager->SetCoordinateSystem(Effekseer::CoordinateSystem::LH);
 
-	// •`‰æ—pƒCƒ“ƒXƒ^ƒ“ƒX‚©‚ç•`‰æ‹@”\‚ðÝ’è
+	// æç”»ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‹ã‚‰æç”»æ©Ÿèƒ½ã‚’è¨­å®š
 	m_efkManager->SetSpriteRenderer(m_efkRenderer->CreateSpriteRenderer());
 	m_efkManager->SetRibbonRenderer(m_efkRenderer->CreateRibbonRenderer());
 	m_efkManager->SetRingRenderer(m_efkRenderer->CreateRingRenderer());
 	m_efkManager->SetTrackRenderer(m_efkRenderer->CreateTrackRenderer());
 	m_efkManager->SetModelRenderer(m_efkRenderer->CreateModelRenderer());
 
-	// •`‰æ—pƒCƒ“ƒXƒ^ƒ“ƒX‚©‚çƒeƒNƒXƒ`ƒƒ‚Ì“Ç‚Ýž‚Ý‹@”\‚ðÝ’è
+	// æç”»ç”¨ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‹ã‚‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®èª­ã¿è¾¼ã¿æ©Ÿèƒ½ã‚’è¨­å®š
 	m_efkManager->SetTextureLoader(m_efkRenderer->CreateTextureLoader());
 	m_efkManager->SetModelLoader(m_efkRenderer->CreateModelLoader());
 
-	// “Š‰es—ñ‚ðÝ’è
+	// æŠ•å½±è¡Œåˆ—ã‚’è¨­å®š
 	m_efkRenderer->SetProjectionMatrix(
 		::Effekseer::Matrix44().PerspectiveFovLH(
 			90.0f / 180.0f * 3.14f, (float)w / (float)h, 1.0f, 500.0f));
@@ -211,14 +211,14 @@ const bool KdEffekseerManager::IsPlaying(const std::string& name) const
 
 std::shared_ptr<KdEffekseerObject> KdEffekseerManager::Play(const PlayEfkInfo& info)
 {
-	// “n‚³‚ê‚½À•W‚ðEffekseer‚ÌÀ•W‚É’u‚«Š·‚¦
+	// æ¸¡ã•ã‚ŒãŸåº§æ¨™ã‚’Effekseerã®åº§æ¨™ã«ç½®ãæ›ãˆ
 	Effekseer::Vector3D efkPos = GetEfkVec3D(info.Pos);
 
 	Effekseer::Handle handle = 0;
 
 	auto efkFoundItr = m_effectMap.find(info.FileName);
 
-	// Šù‚É¶¬‚³‚ê‚½‚±‚Æ‚ª‚ ‚é
+	// æ—¢ã«ç”Ÿæˆã•ã‚ŒãŸã“ã¨ãŒã‚ã‚‹
 	if (efkFoundItr != m_effectMap.end())
 	{
 		handle = m_efkManager->Play(efkFoundItr->second->GetEffect(), efkPos);
@@ -232,14 +232,14 @@ std::shared_ptr<KdEffekseerObject> KdEffekseerManager::Play(const PlayEfkInfo& i
 
 	std::string loadFileName = EffekseerPath + info.FileName;
 
-	// ƒGƒtƒFƒNƒgV‹K¶¬
+	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆæ–°è¦ç”Ÿæˆ
 	auto effect = Effekseer::Effect::Create(m_efkManager,
 		(const EFK_CHAR*)sjis_to_wide(loadFileName).c_str(), info.Size);
 
 	if (effect == nullptr)
 	{
 #ifdef _DEBUG
-		assert(0 && "Effekseer‚ÌƒGƒtƒFƒNƒgì¬Ž¸”s");
+		assert(0 && "Effekseerã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆä½œæˆå¤±æ•—");
 #endif
 		return nullptr;
 	}
@@ -336,8 +336,8 @@ bool KdEffekseerObject::IsPlaying()
 {
 	if (m_parentManager == nullptr) { return false; }
 
-	// ƒnƒ“ƒhƒ‹‚ª0( –¢Ä¶ or Ä¶I—¹ )‚Å‚È‚¢ê‡‚ÍTrue, 
-	// ‚»‚¤‚Å‚È‚¯‚ê‚ÎFalse
+	// ãƒãƒ³ãƒ‰ãƒ«ãŒ0( æœªå†ç”Ÿ or å†ç”Ÿçµ‚äº† )ã§ãªã„å ´åˆã¯True, 
+	// ãã†ã§ãªã‘ã‚Œã°False
 	return m_parentManager->GetInstanceCount(m_handle) != 0;
 }
 

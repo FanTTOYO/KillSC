@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class Player;
 class Enemy;
@@ -39,7 +39,7 @@ protected:
 	Math::Vector3 m_pos = {};
 	float m_yAng = 0;
 
-	std::weak_ptr<Enemy> m_pTarget; // Player‚Ìƒ^[ƒQƒbƒg
-	std::list<std::weak_ptr<Enemy>> m_pTargetList; // Player‚Ìƒ^[ƒQƒbƒg
-	std::weak_ptr<Player>  m_eTarget; // Enemy‚Ìƒ^[ƒQƒbƒg
+	std::weak_ptr<Enemy> m_pTarget; // Playerã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
+	std::list<std::weak_ptr<Enemy>> m_pTargetList; // Playerã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
+	std::weak_ptr<Player>  m_eTarget; // Enemyã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 };

@@ -1,4 +1,4 @@
-#include "Player.h"
+ï»¿#include "Player.h"
 #include "../../../Camera/GameCamera/GameCamera.h"
 #include "../../../Scene/SceneManager.h"
 #include "../../Weapon/Hopper/Hopper.h"
@@ -10,21 +10,21 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
 	auto& object = (*a_wpJsonObj.lock())["Player"].object_items();
 
-	// À•Ws—ñ
+	// åº§æ¨™è¡Œåˆ—
 	Math::Matrix transMat;
 	transMat = Math::Matrix::CreateTranslation((float)object["Position"][0].number_value(), 
 											   (float)object["Position"][1].number_value(), 
 											   (float)object["Position"][2].number_value());
 	m_pos = transMat.Translation();
 
-	// s—ñ‡¬
+	// è¡Œåˆ—åˆæˆ
 	m_mWorld = transMat;
 
 	m_spModel = std::make_shared<KdModelWork>();
 	m_spModel->SetModelData
 	(KdAssets::Instance().m_modeldatas.GetData
 	("Asset/Models/Player/Player.gltf"));
-	// “–‚½‚è”»’è‰Šú‰»
+	// å½“ãŸã‚Šåˆ¤å®šåˆæœŸåŒ–
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape
 	("PlayerModel", m_spModel, KdCollider::TypeBump | KdCollider::TypeDamage);
@@ -88,7 +88,7 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_bPlayerDeath = false;
 	m_bPlayerLose = false;
 
-	m_rocKOnPolygon.SetMaterial("Asset/Textures/Ui/Game/ƒ^[ƒQƒbƒg N ”’.png");
+	m_rocKOnPolygon.SetMaterial("Asset/Textures/Ui/Game/ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ N ç™½.png");
 
 	m_hitColorChangeTimeCnt = 0;
 
@@ -189,7 +189,7 @@ void Player::Update()
 #ifdef _DEBUG
  // _DEBUG
 
-		// debugƒL[
+		// debugã‚­ãƒ¼
 		if (GetAsyncKeyState('L') & 0x8000)
 		{
 			m_vForce = 0;
@@ -352,7 +352,7 @@ void Player::Update()
 	}
 
 	// ========================================
-	// “–‚½‚è”»’è
+	// å½“ãŸã‚Šåˆ¤å®š
 	// ========================================
 	CollisionUpdate();
 
@@ -439,7 +439,7 @@ void Player::PlayerKickHitAttackChaeck()
 	{
 		if (enemyList.expired())continue;
 
-		if (!enemyList.lock()->GetAttackHit() && !enemyList.lock()->GetDefenseSuc() && enemyList.lock()->GetInvincibilityTimeCnt() == 0 && !enemyList.lock()->GetBEnemyDeath()) // ‚±‚±‚É‚Í‚È‚­‚Ä‚à‚¢‚¢‚©‚à
+		if (!enemyList.lock()->GetAttackHit() && !enemyList.lock()->GetDefenseSuc() && enemyList.lock()->GetInvincibilityTimeCnt() == 0 && !enemyList.lock()->GetBEnemyDeath()) // ã“ã“ã«ã¯ãªãã¦ã‚‚ã„ã„ã‹ã‚‚
 		{
 			/*if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
 			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;*/
@@ -486,7 +486,7 @@ void Player::PlayerKickHitAttackChaeck()
 				hitPos.y += 0.35f;
 				KdEffekseerManager::GetInstance().
 					Play("Hit3.efk", hitPos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 				Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
 				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
 			}
@@ -533,7 +533,7 @@ void Player::PlayerKickHitAttackChaeck()
 					hitPos.y += 0.35f;
 					KdEffekseerManager::GetInstance().
 						Play("Hit3.efk", hitPos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
 					KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
 
@@ -582,7 +582,7 @@ void Player::PlayerKickHitAttackChaeck()
 						hitPos.y += 0.35f;
 						KdEffekseerManager::GetInstance().
 							Play("Hit3.efk", hitPos);
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
 						Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
 						KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
@@ -602,7 +602,7 @@ void Player::PlayerPanchiHitAttackChaeck()
 	{
 		if (enemyList.expired())continue;
 
-		if (!enemyList.lock()->GetAttackHit() && !enemyList.lock()->GetDefenseSuc() && enemyList.lock()->GetInvincibilityTimeCnt() == 0 && !enemyList.lock()->GetBEnemyDeath()) // ‚±‚±‚É‚Í‚È‚­‚Ä‚à‚¢‚¢‚©‚à
+		if (!enemyList.lock()->GetAttackHit() && !enemyList.lock()->GetDefenseSuc() && enemyList.lock()->GetInvincibilityTimeCnt() == 0 && !enemyList.lock()->GetBEnemyDeath()) // ã“ã“ã«ã¯ãªãã¦ã‚‚ã„ã„ã‹ã‚‚
 		{
 			/*if (player->GetPlayerState() & Player::PlayerState::rAttack && m_arrmType == lArrm)return;
 			if (player->GetPlayerState() & Player::PlayerState::lAttack && m_arrmType == rArrm)return;*/
@@ -649,7 +649,7 @@ void Player::PlayerPanchiHitAttackChaeck()
 				hitPos.y += 0.35f;
 				KdEffekseerManager::GetInstance().
 					Play("Hit3.efk", hitPos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 				Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
 				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
 			}
@@ -696,7 +696,7 @@ void Player::PlayerPanchiHitAttackChaeck()
 					hitPos.y += 0.35f;
 					KdEffekseerManager::GetInstance().
 						Play("Hit3.efk", hitPos);
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
 					KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
 
@@ -745,7 +745,7 @@ void Player::PlayerPanchiHitAttackChaeck()
 						hitPos.y += 0.35f;
 						KdEffekseerManager::GetInstance().
 							Play("Hit3.efk", hitPos);
-						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+						KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 						//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
 						Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
 						KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
@@ -761,17 +761,17 @@ void Player::PostUpdate()
 	if (!m_bPlayerDeath)
 	{
 		auto it = m_enemyList.begin();
-		while (it != m_enemyList.end()) // ”‚ª•Ï“®‚·‚é‚½‚ß”ÍˆÍƒx[ƒXFor‚ªg‚¦‚È‚¢
+		while (it != m_enemyList.end()) // æ•°ãŒå¤‰å‹•ã™ã‚‹ãŸã‚ç¯„å›²ãƒ™ãƒ¼ã‚¹ForãŒä½¿ãˆãªã„
 		{
-			// •s—v‚É‚È‚Á‚½ƒIƒuƒWƒFƒNƒg‚ğÁ‚·
+			// ä¸è¦ã«ãªã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¶ˆã™
 			if ((*it).expired())
 			{
-				// Á‚·
-				it = m_enemyList.erase(it); // –ß‚è’l‚ÅŸ‚ÌêŠ‚ğ•Ô‚µ‚Ä‚­‚ê‚é
+				// æ¶ˆã™
+				it = m_enemyList.erase(it); // æˆ»ã‚Šå€¤ã§æ¬¡ã®å ´æ‰€ã‚’è¿”ã—ã¦ãã‚Œã‚‹
 			}
 			else
 			{
-				++it; // Ÿ‚Ö
+				++it; // æ¬¡ã¸
 			}
 		}
 
@@ -1000,7 +1000,7 @@ void Player::PostUpdate()
 			{
 				KdEffekseerManager::GetInstance().
 					Play("BailOutPlayer.efk", { m_pos.x,m_pos.y + 0.3f,m_pos.z });
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 				m_bPlayerLose = true;
 			}
 
@@ -1053,7 +1053,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit1"), false);
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
-				SceneManager::Instance().SetUpdateStopCnt(5); // ‚±‚ê‚ÅƒAƒbƒvƒf[ƒg‚ğˆê~‚ß‚é
+				SceneManager::Instance().SetUpdateStopCnt(5); // ã“ã‚Œã§ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã‚’ä¸€æ™‚æ­¢ã‚ã‚‹
 			}
 		}
 		else if (enemyList.lock()->GetEnemyState() & (Enemy::EnemyState::rAttackTwo | Enemy::EnemyState::rlAttackTwo))
@@ -1061,7 +1061,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit2"), false);
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
-				SceneManager::Instance().SetUpdateStopCnt(5); // ‚±‚ê‚ÅƒAƒbƒvƒf[ƒg‚ğˆê~‚ß‚é
+				SceneManager::Instance().SetUpdateStopCnt(5); // ã“ã‚Œã§ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã‚’ä¸€æ™‚æ­¢ã‚ã‚‹
 			}
 		}
 
@@ -1072,7 +1072,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
-				SceneManager::Instance().SetUpdateStopCnt(2); // ‚±‚ê‚ÅƒAƒbƒvƒf[ƒg‚ğˆê~‚ß‚é
+				SceneManager::Instance().SetUpdateStopCnt(2); // ã“ã‚Œã§ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã‚’ä¸€æ™‚æ­¢ã‚ã‚‹
 			}
 		}
 		else if (enemyList.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackRush && 
@@ -1082,7 +1082,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
-				SceneManager::Instance().SetUpdateStopCnt(2); // ‚±‚ê‚ÅƒAƒbƒvƒf[ƒg‚ğˆê~‚ß‚é
+				SceneManager::Instance().SetUpdateStopCnt(2); // ã“ã‚Œã§ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã‚’ä¸€æ™‚æ­¢ã‚ã‚‹
 			}
 		}
 	}
@@ -1128,7 +1128,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 			cnt++;
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
-				SceneManager::Instance().SetUpdateStopCnt(15); // ‚±‚ê‚ÅƒAƒbƒvƒf[ƒg‚ğˆê~‚ß‚é
+				SceneManager::Instance().SetUpdateStopCnt(15); // ã“ã‚Œã§ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã‚’ä¸€æ™‚æ­¢ã‚ã‚‹
 			}
 			break;
 		}
@@ -1138,7 +1138,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 			cnt++;
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
-				SceneManager::Instance().SetUpdateStopCnt(15); // ‚±‚ê‚ÅƒAƒbƒvƒf[ƒg‚ğˆê~‚ß‚é
+				SceneManager::Instance().SetUpdateStopCnt(15); // ã“ã‚Œã§ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã‚’ä¸€æ™‚æ­¢ã‚ã‚‹
 			}
 			break;
 		}
@@ -1146,7 +1146,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 		{
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
-				SceneManager::Instance().SetUpdateStopCnt(8); // ‚±‚ê‚ÅƒAƒbƒvƒf[ƒg‚ğˆê~‚ß‚é
+				SceneManager::Instance().SetUpdateStopCnt(8); // ã“ã‚Œã§ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã‚’ä¸€æ™‚æ­¢ã‚ã‚‹
 			}
 			break;
 		}
@@ -1229,7 +1229,7 @@ void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 	m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
 	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 	{
-		SceneManager::Instance().SetUpdateStopCnt(8); // ‚±‚ê‚ÅƒAƒbƒvƒf[ƒg‚ğˆê~‚ß‚é
+		SceneManager::Instance().SetUpdateStopCnt(8); // ã“ã‚Œã§ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã‚’ä¸€æ™‚æ­¢ã‚ã‚‹
 	}
 
 	if (m_endurance < 0)
@@ -1281,7 +1281,7 @@ void Player::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 	m_spAnimator->SetAnimation(m_spModel->GetAnimation("CutRaiseHit"), false);
 	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 	{
-		SceneManager::Instance().SetUpdateStopCnt(8); // ‚±‚ê‚ÅƒAƒbƒvƒf[ƒg‚ğˆê~‚ß‚é
+		SceneManager::Instance().SetUpdateStopCnt(8); // ã“ã‚Œã§ã‚¢ãƒƒãƒ—ãƒ‡ãƒ¼ãƒˆã‚’ä¸€æ™‚æ­¢ã‚ã‚‹
 	}
 
 	if (m_endurance <= 0)
@@ -1411,10 +1411,10 @@ void Player::UpdateRotate(Math::Vector3& a_srcMoveVec)
 {
 	if (a_srcMoveVec.Length() == 0)return;
 
-	// ¡Œü‚¢‚Ä‚é•ûŒü‚ÌƒxƒNƒgƒ‹
+	// ä»Šå‘ã„ã¦ã‚‹æ–¹å‘ã®ãƒ™ã‚¯ãƒˆãƒ«
 	Math::Vector3 nowDir = m_mWorld.Backward();
 
-	// ˆÚ“®•ûŒü‚ÌƒxƒNƒgƒ‹
+	// ç§»å‹•æ–¹å‘ã®ãƒ™ã‚¯ãƒˆãƒ«
 	Math::Vector3 targetDir = a_srcMoveVec;
 
 	nowDir.Normalize();
@@ -1484,7 +1484,7 @@ void Player::GrassMoveVecDecision()
 
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1510,7 +1510,7 @@ void Player::GrassMoveVecDecision()
 					vec = m_mWorld.Left();
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1537,7 +1537,7 @@ void Player::GrassMoveVecDecision()
 					vec = m_mWorld.Forward();
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1563,7 +1563,7 @@ void Player::GrassMoveVecDecision()
 					vec = m_mWorld.Right();
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1589,7 +1589,7 @@ void Player::GrassMoveVecDecision()
 
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1616,7 +1616,7 @@ void Player::GrassMoveVecDecision()
 
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1655,7 +1655,7 @@ void Player::GrassMoveVecDecision()
 
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1681,7 +1681,7 @@ void Player::GrassMoveVecDecision()
 					vec = m_mWorld.Left();
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 90.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1708,7 +1708,7 @@ void Player::GrassMoveVecDecision()
 					vec = m_mWorld.Forward();
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 180.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1734,7 +1734,7 @@ void Player::GrassMoveVecDecision()
 					vec = m_mWorld.Right();
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y + 270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x + m_addGrassDashEffectPosVal.x * vec.x,m_pos.y + m_addGrassDashEffectPosVal.y,m_pos.z + m_addGrassDashEffectPosVal.z * vec.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1760,7 +1760,7 @@ void Player::GrassMoveVecDecision()
 
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -1786,7 +1786,7 @@ void Player::GrassMoveVecDecision()
 
 					KdEffekseerManager::GetInstance().
 						Play("GrassDashBlurPlayer.efk", { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
-					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ‚±‚ê‚Åƒ‹[ƒv‚µ‚È‚¢
+					KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("GrassDashBlurPlayer.efk"); // ã“ã‚Œã§ãƒ«ãƒ¼ãƒ—ã—ãªã„
 					Math::Matrix efcMat = Math::Matrix::CreateScale(1) * Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(270.0f)) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddGrassDashUpEffectPosYVal"].number_value()),m_pos.z });
 					KdEffekseerManager::GetInstance().SetWorldMatrix("GrassDashBlurPlayer.efk", efcMat);
 				}
@@ -2667,26 +2667,26 @@ void Player::OverStageChaeck()
 		}
 
 		KdCollider::SphereInfo sphereInfo;
-		// ‹…‚Ì’†SˆÊ’u‚ğİ’è
+		// çƒã®ä¸­å¿ƒä½ç½®ã‚’è¨­å®š
 		sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
-		// ‹…‚Ì”¼Œa‚ğİ’è
+		// çƒã®åŠå¾„ã‚’è¨­å®š
 
 		sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["DeterminationInsideTheBuildingSphereRadius"].number_value());
 
-		// “–‚½‚è”»’è‚ğ‚µ‚½‚¢ƒ^ƒCƒv‚ğİ’è
+		// å½“ãŸã‚Šåˆ¤å®šã‚’ã—ãŸã„ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
 		sphereInfo.m_type = KdCollider::TypeBuried;
 #ifdef _DEBUG
-		// ƒfƒoƒbƒN—p
+		// ãƒ‡ãƒãƒƒã‚¯ç”¨
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius
 		);
 #endif
-		// ‹…‚Ì“–‚½‚Á‚½ƒIƒuƒWƒFƒNƒgî•ñ
+		// çƒã®å½“ãŸã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæƒ…å ±
 		std::list<KdCollider::CollisionResult> retSphereList;
 
-		// ‹…‚Æ“–‚½‚è”»’è 
+		// çƒã¨å½“ãŸã‚Šåˆ¤å®š 
 		for (auto& obj : SceneManager::Instance().GetObjList())
 		{
 			obj->Intersects
@@ -2696,12 +2696,12 @@ void Player::OverStageChaeck()
 			);
 		}
 
-		// ‹…‚É“–‚½‚Á‚½ƒŠƒXƒgî•ñ‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+		// çƒã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆæƒ…å ±ã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 		float maxOverLap = 0;
 		bool hit = false;
 		for (auto& ret : retSphereList)
 		{
-			// ˆê”Ô‹ß‚­‚Å“–‚½‚Á‚½‚à‚Ì‚ğ’T‚·
+			// ä¸€ç•ªè¿‘ãã§å½“ãŸã£ãŸã‚‚ã®ã‚’æ¢ã™
 			if (maxOverLap < ret.m_overlapDistance)
 			{
 				maxOverLap = ret.m_overlapDistance;
@@ -2748,7 +2748,7 @@ void Player::EnemyRockOn()
 					nowVec.y = 0.0f;
 					nowVec.Normalize();
 
-					// Œü‚«‚½‚¢•ûŒü
+					// å‘ããŸã„æ–¹å‘
 					Math::Vector3 toVec = enemyList.lock()->GetPos() - GetPos();
 					toVec.y = 0.0f;
 					toVec.Normalize();
@@ -2763,7 +2763,7 @@ void Player::EnemyRockOn()
 						dot.x = -1;
 					}
 
-					// Šp“x‚ğæ“¾
+					// è§’åº¦ã‚’å–å¾—
 					float ang = DirectX::XMConvertToDegrees(acos(dot.x));
 					if (i == 0)
 					{
@@ -2880,7 +2880,7 @@ void Player::HitStateUpdate()
 
 void Player::CollisionUpdate()
 {
-	// ƒŒƒC”»’è—p‚É•Ï”‚ğì¬
+	// ãƒ¬ã‚¤åˆ¤å®šç”¨ã«å¤‰æ•°ã‚’ä½œæˆ
 	KdCollider::RayInfo rayInfo;
 	//rayInfo.m_pos = m_pos;
 	rayInfo.m_pos = m_pos;
@@ -2916,14 +2916,14 @@ void Player::CollisionUpdate()
 		);
 	}
 
-	// ƒŒƒC‚É“–‚½‚Á‚½ƒŠƒXƒg‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+	// ãƒ¬ã‚¤ã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 	float maxOverLap = 0;
 	Math::Vector3 groundPos = {};
 	bool hit = false;
 	for (auto& ret : retRayList)
 	{
-		// ƒŒƒC‚ğÕ’f‚µƒI[ƒo[‚µ‚½’·‚³
-		// ˆê”Ô’·‚¢‚à‚Ì‚ğ’T‚·
+		// ãƒ¬ã‚¤ã‚’é®æ–­ã—ã‚ªãƒ¼ãƒãƒ¼ã—ãŸé•·ã•
+		// ä¸€ç•ªé•·ã„ã‚‚ã®ã‚’æ¢ã™
 		if (maxOverLap < ret.m_overlapDistance)
 		{
 			maxOverLap = ret.m_overlapDistance;
@@ -2983,14 +2983,14 @@ void Player::CollisionUpdate()
 		);
 	}
 
-	// ƒŒƒC‚É“–‚½‚Á‚½ƒŠƒXƒg‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+	// ãƒ¬ã‚¤ã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 	maxOverLap = 0;
 	groundPos = {};
 	hit = false;
 	for (auto& ret : retRayList)
 	{
-		// ƒŒƒC‚ğÕ’f‚µƒI[ƒo[‚µ‚½’·‚³
-		// ˆê”Ô’·‚¢‚à‚Ì‚ğ’T‚·
+		// ãƒ¬ã‚¤ã‚’é®æ–­ã—ã‚ªãƒ¼ãƒãƒ¼ã—ãŸé•·ã•
+		// ä¸€ç•ªé•·ã„ã‚‚ã®ã‚’æ¢ã™
 		if (maxOverLap < ret.m_overlapDistance)
 		{
 			maxOverLap = ret.m_overlapDistance;
@@ -3032,9 +3032,9 @@ void Player::CollisionUpdate()
 	}
 
 	KdCollider::SphereInfo sphereInfo;
-	// ‹…‚Ì’†SˆÊ’u‚ğİ’è
+	// çƒã®ä¸­å¿ƒä½ç½®ã‚’è¨­å®š
 	sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
-	// ‹…‚Ì”¼Œa‚ğİ’è
+	// çƒã®åŠå¾„ã‚’è¨­å®š
 
 	if (!(m_playerState & (grassHopperDash | grassHopperDashUp | step)))
 	{
@@ -3045,20 +3045,20 @@ void Player::CollisionUpdate()
 		sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeGroundToHitSphereRadiusIsGrassDash"].number_value());
 	}
 
-	// “–‚½‚è”»’è‚ğ‚µ‚½‚¢ƒ^ƒCƒv‚ğİ’è
+	// å½“ãŸã‚Šåˆ¤å®šã‚’ã—ãŸã„ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
 	sphereInfo.m_type = KdCollider::TypeGround /*| KdCollider::TypeBump*/;
 #ifdef _DEBUG
-	// ƒfƒoƒbƒN—p
+	// ãƒ‡ãƒãƒƒã‚¯ç”¨
 	m_pDebugWire->AddDebugSphere
 	(
 		sphereInfo.m_sphere.Center,
 		sphereInfo.m_sphere.Radius
 	);
 #endif
-	// ‹…‚Ì“–‚½‚Á‚½ƒIƒuƒWƒFƒNƒgî•ñ
+	// çƒã®å½“ãŸã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæƒ…å ±
 	std::list<KdCollider::CollisionResult> retSphereList;
 
-	// ‹…‚Æ“–‚½‚è”»’è 
+	// çƒã¨å½“ãŸã‚Šåˆ¤å®š 
 	for (auto& obj : SceneManager::Instance().GetObjList())
 	{
 		obj->Intersects
@@ -3068,13 +3068,13 @@ void Player::CollisionUpdate()
 		);
 	}
 
-	// ‹…‚É“–‚½‚Á‚½ƒŠƒXƒgî•ñ‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+	// çƒã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆæƒ…å ±ã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 	maxOverLap = 0;
 	hit = false;
-	Math::Vector3 hitDir = {}; // “–‚½‚Á‚½•ûŒü
+	Math::Vector3 hitDir = {}; // å½“ãŸã£ãŸæ–¹å‘
 	for (auto& ret : retSphereList)
 	{
-		// ˆê”Ô‹ß‚­‚Å“–‚½‚Á‚½‚à‚Ì‚ğ’T‚·
+		// ä¸€ç•ªè¿‘ãã§å½“ãŸã£ãŸã‚‚ã®ã‚’æ¢ã™
 		if (maxOverLap < ret.m_overlapDistance)
 		{
 			maxOverLap = ret.m_overlapDistance;
@@ -3085,7 +3085,7 @@ void Player::CollisionUpdate()
 
 	if (hit)
 	{
-		// ‹…‚Æƒ‚ƒfƒ‹‚ª“–‚½‚Á‚Ä‚¢‚é
+		// çƒã¨ãƒ¢ãƒ‡ãƒ«ãŒå½“ãŸã£ã¦ã„ã‚‹
 		m_pos += (hitDir * maxOverLap);
 	}
 
@@ -3104,20 +3104,20 @@ void Player::CollisionUpdate()
 				sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeGardToHitSphereRadiusIsGrassDash"].number_value());
 			}
 
-			// “–‚½‚è”»’è‚ğ‚µ‚½‚¢ƒ^ƒCƒv‚ğİ’è
+			// å½“ãŸã‚Šåˆ¤å®šã‚’ã—ãŸã„ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
 			sphereInfo.m_type = KdCollider::TypeGard /*| KdCollider::TypeBump*/;
 #ifdef _DEBUG
-			// ƒfƒoƒbƒN—p
+			// ãƒ‡ãƒãƒƒã‚¯ç”¨
 			m_pDebugWire->AddDebugSphere
 			(
 				sphereInfo.m_sphere.Center,
 				sphereInfo.m_sphere.Radius
 			);
 #endif
-			// ‹…‚Ì“–‚½‚Á‚½ƒIƒuƒWƒFƒNƒgî•ñ
+			// çƒã®å½“ãŸã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæƒ…å ±
 			retSphereList.clear();
 
-			// ‹…‚Æ“–‚½‚è”»’è 
+			// çƒã¨å½“ãŸã‚Šåˆ¤å®š 
 			for (auto& obj : enemyList.lock()->GetWeaponList())
 			{
 				obj->Intersects
@@ -3127,13 +3127,13 @@ void Player::CollisionUpdate()
 				);
 
 
-				// ‹…‚É“–‚½‚Á‚½ƒŠƒXƒgî•ñ‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+				// çƒã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆæƒ…å ±ã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 				maxOverLap = 0;
 				hit = false;
-				hitDir = {}; // “–‚½‚Á‚½•ûŒü
+				hitDir = {}; // å½“ãŸã£ãŸæ–¹å‘
 				for (auto& ret : retSphereList)
 				{
-					// ˆê”Ô‹ß‚­‚Å“–‚½‚Á‚½‚à‚Ì‚ğ’T‚·
+					// ä¸€ç•ªè¿‘ãã§å½“ãŸã£ãŸã‚‚ã®ã‚’æ¢ã™
 					if (maxOverLap < ret.m_overlapDistance)
 					{
 						maxOverLap = ret.m_overlapDistance;
@@ -3146,7 +3146,7 @@ void Player::CollisionUpdate()
 				{
 					hitDir.y = 0.0f;
 					hitDir.Normalize();
-					// ‹…‚Æƒ‚ƒfƒ‹‚ª“–‚½‚Á‚Ä‚¢‚é
+					// çƒã¨ãƒ¢ãƒ‡ãƒ«ãŒå½“ãŸã£ã¦ã„ã‚‹
 					m_pos += (hitDir * maxOverLap);
 				}
 			}
@@ -3156,26 +3156,26 @@ void Player::CollisionUpdate()
 	if (m_playerState & (rlAttack | rlAttackRush | PlayerState::hit))
 	{
 		sphereInfo;
-		// ‹…‚Ì’†SˆÊ’u‚ğİ’è
+		// çƒã®ä¸­å¿ƒä½ç½®ã‚’è¨­å®š
 		sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
-		// ‹…‚Ì”¼Œa‚ğİ’è
+		// çƒã®åŠå¾„ã‚’è¨­å®š
 
 		sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeBuriedToHitSphereRadius"].number_value());
 
-		// “–‚½‚è”»’è‚ğ‚µ‚½‚¢ƒ^ƒCƒv‚ğİ’è
+		// å½“ãŸã‚Šåˆ¤å®šã‚’ã—ãŸã„ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
 		sphereInfo.m_type = KdCollider::TypeBuried;
 #ifdef _DEBUG
-		// ƒfƒoƒbƒN—p
+		// ãƒ‡ãƒãƒƒã‚¯ç”¨
 		m_pDebugWire->AddDebugSphere
 		(
 			sphereInfo.m_sphere.Center,
 			sphereInfo.m_sphere.Radius
 		);
 #endif
-		// ‹…‚Ì“–‚½‚Á‚½ƒIƒuƒWƒFƒNƒgî•ñ
+		// çƒã®å½“ãŸã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæƒ…å ±
 		retSphereList.clear();
 
-		// ‹…‚Æ“–‚½‚è”»’è 
+		// çƒã¨å½“ãŸã‚Šåˆ¤å®š 
 		for (auto& obj : SceneManager::Instance().GetObjList())
 		{
 			obj->Intersects
@@ -3185,13 +3185,13 @@ void Player::CollisionUpdate()
 			);
 		}
 
-		// ‹…‚É“–‚½‚Á‚½ƒŠƒXƒgî•ñ‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+		// çƒã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆæƒ…å ±ã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 		maxOverLap = 0;
 		hit = false;
-		hitDir = {}; // “–‚½‚Á‚½•ûŒü
+		hitDir = {}; // å½“ãŸã£ãŸæ–¹å‘
 		for (auto& ret : retSphereList)
 		{
-			// ˆê”Ô‹ß‚­‚Å“–‚½‚Á‚½‚à‚Ì‚ğ’T‚·
+			// ä¸€ç•ªè¿‘ãã§å½“ãŸã£ãŸã‚‚ã®ã‚’æ¢ã™
 			if (maxOverLap < ret.m_overlapDistance)
 			{
 				maxOverLap = ret.m_overlapDistance;
@@ -3204,7 +3204,7 @@ void Player::CollisionUpdate()
 		{
 			hitDir.y = 0.0f;
 			hitDir.Normalize();
-			// ‹…‚Æƒ‚ƒfƒ‹‚ª“–‚½‚Á‚Ä‚¢‚é
+			// çƒã¨ãƒ¢ãƒ‡ãƒ«ãŒå½“ãŸã£ã¦ã„ã‚‹
 			m_pos += (hitDir * maxOverLap);
 
 			m_attackMoveSpd = 0.0f;
@@ -3212,20 +3212,20 @@ void Player::CollisionUpdate()
 		}
 	}
 
-	// “–‚½‚è”»’è‚ğ‚µ‚½‚¢ƒ^ƒCƒv‚ğİ’è
+	// å½“ãŸã‚Šåˆ¤å®šã‚’ã—ãŸã„ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
 	sphereInfo.m_type = KdCollider::TypeBump;
 #ifdef _DEBUG
-	// ƒfƒoƒbƒN—p
+	// ãƒ‡ãƒãƒƒã‚¯ç”¨
 	m_pDebugWire->AddDebugSphere
 	(
 		sphereInfo.m_sphere.Center,
 		sphereInfo.m_sphere.Radius
 	);
 #endif
-	// ‹…‚Ì“–‚½‚Á‚½ƒIƒuƒWƒFƒNƒgî•ñ
+	// çƒã®å½“ãŸã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæƒ…å ±
 	retSphereList.clear();
 
-	// ‹…‚Æ“–‚½‚è”»’è 
+	// çƒã¨å½“ãŸã‚Šåˆ¤å®š 
 
 	for (auto& enemyList : m_enemyList)
 	{
@@ -3247,13 +3247,13 @@ void Player::CollisionUpdate()
 			&retSphereList
 		);
 
-		// ‹…‚É“–‚½‚Á‚½ƒŠƒXƒgî•ñ‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+		// çƒã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆæƒ…å ±ã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 		maxOverLap = 0;
 		hit = false;
-		hitDir = {}; // “–‚½‚Á‚½•ûŒü
+		hitDir = {}; // å½“ãŸã£ãŸæ–¹å‘
 		for (auto& ret : retSphereList)
 		{
-			// ˆê”Ô‹ß‚­‚Å“–‚½‚Á‚½‚à‚Ì‚ğ’T‚·
+			// ä¸€ç•ªè¿‘ãã§å½“ãŸã£ãŸã‚‚ã®ã‚’æ¢ã™
 			if (maxOverLap < ret.m_overlapDistance)
 			{
 				maxOverLap = ret.m_overlapDistance;
@@ -3270,27 +3270,27 @@ void Player::CollisionUpdate()
 			}
 
 			hitDir.Normalize();
-			// ‹…‚Æƒ‚ƒfƒ‹‚ª“–‚½‚Á‚Ä‚¢‚é
+			// çƒã¨ãƒ¢ãƒ‡ãƒ«ãŒå½“ãŸã£ã¦ã„ã‚‹
 			m_pos += (hitDir * maxOverLap);
 		}
 	}
 
 	sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["TypeAttackDecSphereRadius"].number_value());
 
-	// “–‚½‚è”»’è‚ğ‚µ‚½‚¢ƒ^ƒCƒv‚ğİ’è
+	// å½“ãŸã‚Šåˆ¤å®šã‚’ã—ãŸã„ã‚¿ã‚¤ãƒ—ã‚’è¨­å®š
 	sphereInfo.m_type = KdCollider::TypeAttackDec;
 #ifdef _DEBUG
-	// ƒfƒoƒbƒN—p
+	// ãƒ‡ãƒãƒƒã‚¯ç”¨
 	m_pDebugWire->AddDebugSphere
 	(
 		sphereInfo.m_sphere.Center,
 		sphereInfo.m_sphere.Radius
 	);
 #endif
-	// ‹…‚Ì“–‚½‚Á‚½ƒIƒuƒWƒFƒNƒgî•ñ
+	// çƒã®å½“ãŸã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæƒ…å ±
 	retSphereList.clear();
 
-	// ‹…‚Æ“–‚½‚è”»’è 
+	// çƒã¨å½“ãŸã‚Šåˆ¤å®š 
 
 	if (!m_wpEnemy.expired())
 	{
@@ -3302,10 +3302,10 @@ void Player::CollisionUpdate()
 
 		maxOverLap = 0;
 		hit = false;
-		hitDir = {}; // “–‚½‚Á‚½•ûŒü
+		hitDir = {}; // å½“ãŸã£ãŸæ–¹å‘
 		for (auto& ret : retSphereList)
 		{
-			// ˆê”Ô‹ß‚­‚Å“–‚½‚Á‚½‚à‚Ì‚ğ’T‚·
+			// ä¸€ç•ªè¿‘ãã§å½“ãŸã£ãŸã‚‚ã®ã‚’æ¢ã™
 			if (maxOverLap < ret.m_overlapDistance)
 			{
 				maxOverLap = ret.m_overlapDistance;
@@ -3332,13 +3332,13 @@ void Player::CollisionUpdate()
 				);
 			}
 
-			// ‹…‚É“–‚½‚Á‚½ƒŠƒXƒgî•ñ‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+			// çƒã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆæƒ…å ±ã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 			maxOverLap = 0;
 			hit = false;
-			hitDir = {}; // “–‚½‚Á‚½•ûŒü
+			hitDir = {}; // å½“ãŸã£ãŸæ–¹å‘
 			for (auto& ret : retSphereList)
 			{
-				// ˆê”Ô‹ß‚­‚Å“–‚½‚Á‚½‚à‚Ì‚ğ’T‚·
+				// ä¸€ç•ªè¿‘ãã§å½“ãŸã£ãŸã‚‚ã®ã‚’æ¢ã™
 				if (maxOverLap < ret.m_overlapDistance)
 				{
 					maxOverLap = ret.m_overlapDistance;
@@ -3371,13 +3371,13 @@ void Player::CollisionUpdate()
 			);
 		}
 
-		// ‹…‚É“–‚½‚Á‚½ƒŠƒXƒgî•ñ‚©‚çˆê”Ô‹ß‚¢ƒIƒuƒWƒFƒNƒg‚ğŒŸo
+		// çƒã«å½“ãŸã£ãŸãƒªã‚¹ãƒˆæƒ…å ±ã‹ã‚‰ä¸€ç•ªè¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¤œå‡º
 		maxOverLap = 0;
 		hit = false;
-		hitDir = {}; // “–‚½‚Á‚½•ûŒü
+		hitDir = {}; // å½“ãŸã£ãŸæ–¹å‘
 		for (auto& ret : retSphereList)
 		{
-			// ˆê”Ô‹ß‚­‚Å“–‚½‚Á‚½‚à‚Ì‚ğ’T‚·
+			// ä¸€ç•ªè¿‘ãã§å½“ãŸã£ãŸã‚‚ã®ã‚’æ¢ã™
 			if (maxOverLap < ret.m_overlapDistance)
 			{
 				maxOverLap = ret.m_overlapDistance;

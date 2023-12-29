@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../BaseScene/BaseScene.h"
 class Player;
 class Ui;

@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 #define ENEMYAIRBORNETIMETOBECNTVAL			180
 #define INITIALPOSZ							 10
 #define INITIALROTATIONY					180
-#define ADDWEAKNESSEUCCESSIONHITCNTTIMELIMIT 90 // ˜A‘±UŒ‚‚Æ”F‚ß‚ç‚ê‚éŠÔ
-#define ADDROTAYIONATTACKDISTTOPLAYERTIME   120 // UŒ‚ŠJn‚·‚éŠÔ
-#define ROTAYIONATTACKDISTTOPLAYERINITTIME   60 // UŒ‚ŠJnŠÔ‚ğ‰Šú‰»‚·‚éŠÔ
-#define ATTACKDELAYTIME						120 // UŒ‚‚Å‚«‚È‚¢ŠÔ
+#define ADDWEAKNESSEUCCESSIONHITCNTTIMELIMIT 90 // é€£ç¶šæ”»æ’ƒã¨èªã‚ã‚‰ã‚Œã‚‹æ™‚é–“
+#define ADDROTAYIONATTACKDISTTOPLAYERTIME   120 // æ”»æ’ƒé–‹å§‹ã™ã‚‹æ™‚é–“
+#define ROTAYIONATTACKDISTTOPLAYERINITTIME   60 // æ”»æ’ƒé–‹å§‹æ™‚é–“ã‚’åˆæœŸåŒ–ã™ã‚‹æ™‚é–“
+#define ATTACKDELAYTIME						120 // æ”»æ’ƒã§ããªã„æ™‚é–“
 
 class WeaponBase;
 class Player;
@@ -130,7 +130,7 @@ public:
 	void SetPos(Math::Vector3 a_pos) { m_pos = a_pos;}
 	void SetMatrix();
 	void SetWorldRotationY(float a_mWorldRotY) { m_mWorldRot.y = a_mWorldRotY; }
-	void SetModelAndType(EnemyType a_enemyType); // ‚±‚Ì“G‚ªG‹›“GilŒ^j‚©G‹›“Giƒ‚ƒ“ƒXƒ^[j‚©‚ğ‚¢‚ê‚é@ƒ{ƒX‚Ìê‡‚Í‚Â‚©‚í‚È‚¢
+	void SetModelAndType(EnemyType a_enemyType); // ã“ã®æ•µãŒé›‘é­šæ•µï¼ˆäººå‹ï¼‰ã‹é›‘é­šæ•µï¼ˆãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ï¼‰ã‹ã‚’ã„ã‚Œã‚‹ã€€ãƒœã‚¹ã®å ´åˆã¯ã¤ã‹ã‚ãªã„
 	//void Release() {};
 
 	const UINT& GetEnemyState() { return m_EnemyState; }
@@ -221,8 +221,8 @@ private:
 	void RotationAttackMove();
 	void RotationAttackChaeck();
 
-	std::map<std::string, json11::Json>  m_mpObj;																	// Json‚©‚çEnemyƒIƒuƒWƒFƒNƒg‚Ìî•ñ‚ğ‚à‚ç‚¤‚Æ‚«‚Ég—p
-	std::weak_ptr<json11::Json> m_wpJsonObj;																		// Jsonƒtƒ@ƒCƒ‹
+	std::map<std::string, json11::Json>  m_mpObj;																	// Jsonã‹ã‚‰Enemyã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æƒ…å ±ã‚’ã‚‚ã‚‰ã†ã¨ãã«ä½¿ç”¨
+	std::weak_ptr<json11::Json> m_wpJsonObj;																		// Jsonãƒ•ã‚¡ã‚¤ãƒ«
 
 	std::shared_ptr<KdModelWork> m_model;
 
@@ -233,8 +233,8 @@ private:
 	Math::Vector3 m_addGrassDashEffectPosVal;
 
 	float m_gravity = 0;
-	int m_toleranceComboTime = 0; // ƒRƒ“ƒ{‹–—eŠÔ
-	int m_m_toleranceAttackTime = 0; // ÄUŒ‚ŠÔŠu
+	int m_toleranceComboTime = 0; // ã‚³ãƒ³ãƒœè¨±å®¹æ™‚é–“
+	int m_m_toleranceAttackTime = 0; // å†æ”»æ’ƒé–“éš”
 	UINT m_EnemyState;
 	UINT m_weaponType;
 	UINT m_wantToMoveState;
@@ -253,8 +253,8 @@ private:
 
 	Math::Vector3	 m_mWorldRot;
 
-	int m_lGrassHopperPauCnt = 0; // ‹x~‚·‚éŠÔ
-	int m_rGrassHopperPauCnt = 0; // ‹x~‚·‚éŠÔ
+	int m_lGrassHopperPauCnt = 0; // ä¼‘æ­¢ã™ã‚‹æ™‚é–“
+	int m_rGrassHopperPauCnt = 0; // ä¼‘æ­¢ã™ã‚‹æ™‚é–“
 
 	int m_lGrassHopperTime = 0;
 	int m_rGrassHopperTime = 0;
@@ -281,36 +281,38 @@ private:
 
 	int m_runAnimeCnt = 0;
 	int   m_hitStopCnt = 0;
+
 	int   m_hitColorChangeTimeCnt = 0;
+
 	float m_hitMoveSpd = 0.0f;
-	float m_gardMoveSpd;           // UŒ‚‚ğ–hŒä‚µ‚½‚ÌƒmƒbƒNƒoƒbƒN‘¬“x
-	bool  m_bTough;                // ‚‚¢UŒ‚—Í‚ÌUŒ‚‚ğ‚­‚ç‚¤ORƒK[ƒh‚µ‚½‚©‚Ç‚¤‚©
-	Math::Vector3 m_knockBackVec;  // ƒmƒbƒNƒoƒbƒN‚·‚é•ûŒü
+	float m_gardMoveSpd;           // æ”»æ’ƒã‚’é˜²å¾¡ã—ãŸæ™‚ã®ãƒãƒƒã‚¯ãƒãƒƒã‚¯é€Ÿåº¦
+	bool  m_bTough;                // é«˜ã„æ”»æ’ƒåŠ›ã®æ”»æ’ƒã‚’ãã‚‰ã†ORã‚¬ãƒ¼ãƒ‰ã—ãŸã‹ã©ã†ã‹
+	Math::Vector3 m_knockBackVec;  // ãƒãƒƒã‚¯ãƒãƒƒã‚¯ã™ã‚‹æ–¹å‘
 	float m_vForce = 0.0f;
-	float m_endurance = 0.0f;    // ƒgƒŠƒIƒ“‘Ì‘Ï‹v—Í
-	float m_graduallyTorionDecVal; // ™X‚ÉŒ¸‚Á‚Ä‚­ƒgƒŠƒIƒ“—Ê
-	int m_delayTurnAroundTime; // U‚è•Ô‚è‚ğ’x‚ç‚¹‚éŠÔ
+	float m_endurance = 0.0f;    // ãƒˆãƒªã‚ªãƒ³ä½“è€ä¹…åŠ›
+	float m_graduallyTorionDecVal; // å¾ã€…ã«æ¸›ã£ã¦ããƒˆãƒªã‚ªãƒ³é‡
+	int m_delayTurnAroundTime; // æŒ¯ã‚Šè¿”ã‚Šã‚’é…ã‚‰ã›ã‚‹æ™‚é–“
 
 	bool m_bAttackOrDefense;
 	bool m_bEscape;
 	bool m_bDashAttack;
 
-	bool m_attackHitImmediatelyAfter; // UŒ‚‚­‚ç‚Á‚½’¼Œã
+	bool m_attackHitImmediatelyAfter; // æ”»æ’ƒãã‚‰ã£ãŸç›´å¾Œ
 	int m_grassSuccessionDelayCnt;
 	int m_enemyAirborneTimetoBeCnt;
-	Math::Vector3 m_attackMoveDir; // UŒ‚‚µ‚½‚ÉˆÚ“®‚·‚é•ûŒü
-	float         m_attackMoveSpd; // UŒ‚‚µ‚½‚ÉˆÚ“®‚·‚é•ûŒü
-	int m_invincibilityTimeCnt;  // –³“GŠÔ
+	Math::Vector3 m_attackMoveDir; // æ”»æ’ƒã—ãŸæ™‚ã«ç§»å‹•ã™ã‚‹æ–¹å‘
+	float         m_attackMoveSpd; // æ”»æ’ƒã—ãŸæ™‚ã«ç§»å‹•ã™ã‚‹æ–¹å‘
+	int m_invincibilityTimeCnt;  // ç„¡æ•µæ™‚é–“
 
 	bool m_bRushAttackPossible = false;
 
 	int m_disturbanceCnt = 0;
 
-	bool m_bMantisAttack = false; // ƒ}ƒ“ƒeƒBƒXƒAƒ^ƒbƒN‚ğ‚µ‚Ä‚Ù‚µ‚¢‚Étrue	‰Šú’l‚Ífalse
+	bool m_bMantisAttack = false; // ãƒãƒ³ãƒ†ã‚£ã‚¹ã‚¢ã‚¿ãƒƒã‚¯ã‚’ã—ã¦ã»ã—ã„æ™‚ã«true	åˆæœŸå€¤ã¯false
 
 	int m_stepCnt;
 	Math::Vector3 m_stepDashDir;
-	bool m_bMantisPossAng; // ƒ}ƒ“ƒeƒBƒX‚ª‚ ‚½‚éŠp“x true
+	bool m_bMantisPossAng; // ãƒãƒ³ãƒ†ã‚£ã‚¹ãŒã‚ãŸã‚‹è§’åº¦ true
 	int m_hasDeTime;
 
 	KdPolygon m_enduranceBarPoly;
@@ -325,49 +327,49 @@ private:
 
 	int m_enemyNumber;
 
-	bool m_bBlowingAwayHitB; // Œã‚ë‚©‚ç‚«”ò‚Î‚³‚ê‚½
+	bool m_bBlowingAwayHitB; // å¾Œã‚ã‹ã‚‰å¹ãé£›ã°ã•ã‚ŒãŸ
 
-	bool m_bBoss = false; // true ƒ{ƒX@false G‹›“G
+	bool m_bBoss = false; // true ãƒœã‚¹ã€€false é›‘é­šæ•µ
 
 	int m_coarseFishEnemyAttackDelayCnt;
 
-	int m_idleCnt; // ‚È‚É‚à‚µ‚Ä‚ÈŠÔ‚ğŒv‚é
+	int m_idleCnt; // ãªã«ã‚‚ã—ã¦ãªæ™‚é–“ã‚’è¨ˆã‚‹
 
-	bool  m_bShotBeam;			// ‘Å‚Á‚½ : true
-	bool  m_bShotEnergyBullet;	// ‘Å‚Á‚½ : true
-	float m_beamRange;			// ƒr[ƒ€‚Ì“–‚½‚è”»’è‚Ì’·‚³
-	Math::Vector3 m_beamCollisionPos = {}; // ƒGƒlƒ‹ƒM[’e‚ª“–‚½‚è”»’è‚·‚éêŠ
-	Math::Vector3 m_energyBulletDir = {}; // ƒGƒlƒ‹ƒM[’e‚ª”ò‚ñ‚Å‚­•ûŒü
+	bool  m_bShotBeam;			// æ‰“ã£ãŸæ™‚ : true
+	bool  m_bShotEnergyBullet;	// æ‰“ã£ãŸæ™‚ : true
+	float m_beamRange;			// ãƒ“ãƒ¼ãƒ ã®å½“ãŸã‚Šåˆ¤å®šã®é•·ã•
+	Math::Vector3 m_beamCollisionPos = {}; // ã‚¨ãƒãƒ«ã‚®ãƒ¼å¼¾ãŒå½“ãŸã‚Šåˆ¤å®šã™ã‚‹å ´æ‰€
+	Math::Vector3 m_energyBulletDir = {}; // ã‚¨ãƒãƒ«ã‚®ãƒ¼å¼¾ãŒé£›ã‚“ã§ãæ–¹å‘
 
-	Math::Vector3 m_rangedAttackDir = {}; // ‰“‹——£UŒ‚‚ª”ò‚ñ‚Å‚¢‚­•ûŒü
-	//Math::Vector3 m_rangedAttackDir = {}; // ‰“‹——£UŒ‚‚ª”ò‚ñ‚Å‚¢‚­•ûŒü
+	Math::Vector3 m_rangedAttackDir = {}; // é è·é›¢æ”»æ’ƒãŒé£›ã‚“ã§ã„ãæ–¹å‘
+	//Math::Vector3 m_rangedAttackDir = {}; // é è·é›¢æ”»æ’ƒãŒé£›ã‚“ã§ã„ãæ–¹å‘
 
-	int   m_rangedAttackAnimeCnt; // ‰“‹——£UŒ‚Œn‚ÌƒGƒtƒFƒNƒg‚ÌƒAƒjƒ[ƒVƒ‡ƒ“ƒJƒEƒ“ƒg
-	bool  m_bRangedAttack; // ‰“‹——£UŒ‚‚ğ‚µ‚Ä‚é true;
-	Math::Vector3 m_rangedAttackTargetPos; // ‰“‹——£UŒ‚Œn‚Ì‘_‚Á‚Ä‚¢‚éêŠ
-	Math::Vector3 m_rangedAttackShotPos; // ‰“‹——£UŒ‚ŒnUŒ‚‚ğ”­Ë‚µ‚½’n“_
+	int   m_rangedAttackAnimeCnt; // é è·é›¢æ”»æ’ƒç³»ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚«ã‚¦ãƒ³ãƒˆ
+	bool  m_bRangedAttack; // é è·é›¢æ”»æ’ƒã‚’ã—ã¦ã‚‹ true;
+	Math::Vector3 m_rangedAttackTargetPos; // é è·é›¢æ”»æ’ƒç³»ã®ç‹™ã£ã¦ã„ã‚‹å ´æ‰€
+	Math::Vector3 m_rangedAttackShotPos; // é è·é›¢æ”»æ’ƒç³»æ”»æ’ƒã‚’ç™ºå°„ã—ãŸåœ°ç‚¹
 
 
-	bool  m_bBeamHitStart;	        // “–‚½‚è”»’è‚µ‚Ä‚é : true
-	bool  m_bEnergyBulletHitStart;	// “–‚½‚è”»’è‚µ‚Ä‚é : true
+	bool  m_bBeamHitStart;	        // å½“ãŸã‚Šåˆ¤å®šã—ã¦ã‚‹æ™‚ : true
+	bool  m_bEnergyBulletHitStart;	// å½“ãŸã‚Šåˆ¤å®šã—ã¦ã‚‹æ™‚ : true
 
 	Math::Vector3 m_hitpos;
 
 	int m_enemyAttackTotal;
 	int m_enemyAttackMaxTotal;
 
-	bool m_bAttackEnd; // UŒ‚‚ªI—¹‚µ‚½ : true
+	bool m_bAttackEnd; // æ”»æ’ƒãŒçµ‚äº†ã—ãŸæ™‚ : true
 
-	bool  m_bRangedAttackCapableOfFiring; // ‰“‹——£UŒ‚‚ğ‘Å‚Ä‚é‚© : true;
+	bool  m_bRangedAttackCapableOfFiring; // é è·é›¢æ”»æ’ƒã‚’æ‰“ã¦ã‚‹ã‹ : true;
 
-	int m_weaknesSsuccessionHitCnt;             // ˜A‘±‚Åã“_‚É“–‚½‚Á‚½‰ñ”
-	int m_addWeaknesSsuccessionHitCntTime;      // ã“_Hit‚©‚ç‰½•bŒo‰ß‚µ‚½‚©Œv‚é
+	int m_weaknesSsuccessionHitCnt;             // é€£ç¶šã§å¼±ç‚¹ã«å½“ãŸã£ãŸå›æ•°
+	int m_addWeaknesSsuccessionHitCntTime;      // å¼±ç‚¹Hitã‹ã‚‰ä½•ç§’çµŒéã—ãŸã‹è¨ˆã‚‹
 
-	int m_addRotationAttackDistToPlayerTime;	    // ‰ñ“]UŒ‚”ÍˆÍ“à‚ÉPlayer‚ª‚¢‚éŠÔ‚ğŒv‚é
-	int m_rotationAttackDistToPlayerTimeInitTime;	// ‰ñ“]UŒ‚”ÍˆÍ“à‚ÉPlayer‚ª‚¢‚È‚¢ŠÔ‚ğŒv‚é
-	float m_addRotationAttackDistToPlayerRadius;    // ‰ñ“]UŒ‚”ÍˆÍ‚Ì”¼Œa
+	int m_addRotationAttackDistToPlayerTime;	    // å›è»¢æ”»æ’ƒç¯„å›²å†…ã«PlayerãŒã„ã‚‹æ™‚é–“ã‚’è¨ˆã‚‹
+	int m_rotationAttackDistToPlayerTimeInitTime;	// å›è»¢æ”»æ’ƒç¯„å›²å†…ã«PlayerãŒã„ãªã„æ™‚é–“ã‚’è¨ˆã‚‹
+	float m_addRotationAttackDistToPlayerRadius;    // å›è»¢æ”»æ’ƒç¯„å›²ã®åŠå¾„
 
 	int m_attackDelayTime;
 
-	bool m_bLethalDamageToKickOrPantciOrDashAttackHit; // ’v€“I‚ÈƒLƒbƒN‚©ƒpƒ“ƒ`‚©ƒ_ƒbƒVƒ…ƒAƒ^ƒbƒN‚ª“–‚½‚Á‚½@true
+	bool m_bLethalDamageToKickOrPantciOrDashAttackHit; // è‡´æ­»çš„ãªã‚­ãƒƒã‚¯ã‹ãƒ‘ãƒ³ãƒã‹ãƒ€ãƒƒã‚·ãƒ¥ã‚¢ã‚¿ãƒƒã‚¯ãŒå½“ãŸã£ãŸæ™‚ã€€true
 };

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../BaseScene/BaseScene.h"
 #define MAX_WAVE_CNT 2
 #define MAX_BOSS_ENEMY_CNT 2

@@ -1,4 +1,4 @@
-#include "Sky.h"
+ï»¿#include "Sky.h"
 
 void Sky::Update()
 {
@@ -7,16 +7,16 @@ void Sky::Update()
 
 void Sky::Init()
 {
-	// À•Ws—ñ
+	// åº§æ¨™è¡Œåˆ—
 	Math::Matrix transMat;
 	transMat = Math::Matrix::CreateTranslation(0, 0, 0);
 
-	// Šgks—ñ
+	// æ‹¡ç¸®è¡Œåˆ—
 	Math::Matrix scaleMat;
 	scaleMat = Math::Matrix::CreateScale(6.5, 10.0f, 6.5);
 //	scaleMat = Math::Matrix::CreateScale(15, 10.0f, 15);
 
-	// s—ñ‡¬
+	// è¡Œåˆ—åˆæˆ
 	m_mWorld = scaleMat * transMat;
 
 	m_model = std::make_shared<KdModelWork>();

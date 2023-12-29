@@ -1,22 +1,22 @@
-#include "InvisibleWall.h"
+ï»¿#include "InvisibleWall.h"
 #include "../../Scene/SceneManager.h"
 
 void InvisibleWall::Init()
 {
-	// À•Ws—ñ
+	// åº§æ¨™è¡Œåˆ—
 	Math::Matrix transMat;
 	transMat = Math::Matrix::CreateTranslation(0,-5,0);
 
-	// Šgks—ñ
+	// æ‹¡ç¸®è¡Œåˆ—
 	Math::Matrix scaleMat;
 	scaleMat = Math::Matrix::CreateScale(25.0f,25.0f,25.0f);
 
-	// s—ñ‡¬
+	// è¡Œåˆ—åˆæˆ
 	m_mWorld = scaleMat * transMat;
 
 	m_model = std::make_shared<KdModelData>();
 	m_model->Load("Asset/Models/Stage/Stage.gltf");
-	// “–‚½‚è”»’è‰Šú‰»
+	// å½“ãŸã‚Šåˆ¤å®šåˆæœŸåŒ–
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape
 	("StageModel" ,m_model,KdCollider::TypeGround);
@@ -29,11 +29,11 @@ void InvisibleWall::DrawUnLit()
 		Math::Matrix transMat;
 		transMat = Math::Matrix::CreateTranslation(0, -5, 0);
 
-		// Šgks—ñ
+		// æ‹¡ç¸®è¡Œåˆ—
 		Math::Matrix scaleMat;
 		scaleMat = Math::Matrix::CreateScale(25.0f, 25.0f, 25.0f);
 
-		// s—ñ‡¬
+		// è¡Œåˆ—åˆæˆ
 		m_mWorld = scaleMat * transMat;
 		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
 	}
