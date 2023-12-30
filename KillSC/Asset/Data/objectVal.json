@@ -109,7 +109,8 @@
     "LastAttackAnimationMoment": 20,
     "AttackOneOrTwoShakenMoment": 10,
     "AttackThreeShakenMoment": 15,
-    "MaxCoarseFishEnemyAttackDelayCnt" :  120
+    "MaxCoarseFishEnemyAttackDelayCnt": 120,
+    "PlayerIsDistToBackMove": 2.25
   },
 
   "WimpEnemyTypeOne": {
@@ -130,7 +131,8 @@
     "AddCenterVal": [ 0, 1.5, 0 ],
     "Endurance": 200,
     "Vforce": 300,
-    "EnergyBulletSpeed": 0.45
+    "EnergyBulletSpeed": 0.45,
+    "PlayerIsDistToBackMove" : 20
   },
 
   "BossEnemy": {

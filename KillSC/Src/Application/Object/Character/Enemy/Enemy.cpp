@@ -4468,30 +4468,25 @@ void Enemy::NormalMove()
 	Math::Vector3 moveVec = {};
 
 	float moveSpd = 0.0f;
-	if (m_bBoss && !(m_enemyType & bossEnemyTypeOne))
+	moveSpd = 0.25f;
+	switch(m_enemyType)
 	{
-		moveSpd = 0.25f;
+	case coarseFishEnemy:
+		moveSpd = 0.15f;
+		break;
+	case wimpEnemyTypeOne:
+		moveSpd = 0.15f;
+		break;
+	case bossEnemyTypeOne:
+		moveSpd = 0.1f;
+		break;
 	}
-	else
-	{
-		switch(m_enemyType)
-		{
-		case coarseFishEnemy:
-			moveSpd = 0.15f;
-			break;
-		case wimpEnemyTypeOne:
-			moveSpd = 0.15f;
-			break;
-		case bossEnemyTypeOne:
-			moveSpd = 0.1f;
-			break;
-		}
-	}
+	
 
 
 	if (m_EnemyState & run)
 	{
-		if (m_enemyType & wimpEnemyTypeOne)
+		if (m_enemyType == wimpEnemyTypeOne)
 		{
 			Math::Vector3 src;
 			std::shared_ptr<Player> spTarget = m_target.lock();
@@ -4500,7 +4495,7 @@ void Enemy::NormalMove()
 				src = spTarget->GetPos() - m_pos;
 			}
 
-			if (src.Length() <= 20.0f)
+			if (src.Length() <= static_cast<float>(m_mpObj["PlayerIsDistToBackMove"].number_value()))
 			{
 				moveVec += Math::Vector3::TransformNormal({ 0, 0, -1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
 			}

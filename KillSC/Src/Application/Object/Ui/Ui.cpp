@@ -1391,13 +1391,9 @@ void ResultUi::Init()
 	m_winPlayerCharaTex.Load("Asset/Textures/Ui/Result/winPlayerChara.png");
 	m_loseCharaTex.Load("Asset/Textures/Ui/Result/loseChara.png");
 
-	m_pointAddOrSubVal = 0;
-	m_weaponPoint = 0;
-
-	m_addFadeAlpha = false;
 	m_time = 0;
 	m_bSceneCangePossible = false;
-	m_pushLClickAlpha = 1.0f;
+	m_pushLClickAlpha = 0.0f;
 	m_bPushLClickAlphaAdd = false;
 }
 
@@ -1567,13 +1563,10 @@ void ResultUi::Update()
 		{
 			m_fadeAlpha = 1.0f;
 
-			if (m_uiType == UiType::result)
-			{
-				SceneManager::Instance().SetNextScene
-				(
-					SceneManager::SceneType::title
-				);
-			}
+			SceneManager::Instance().SetNextScene
+			(
+				SceneManager::SceneType::title
+			);
 		}
 	}
 }
