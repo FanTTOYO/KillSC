@@ -71,6 +71,60 @@ void Ui::Init()
 	m_currentUiClassId->Init();
 }
 
+bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_scale)
+{
+	PWINDOWINFO pwi = new WINDOWINFO;
+	pwi->cbSize = sizeof(WINDOWINFO);
+	GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
+
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+
+	mousePos.x -= 640;
+	mousePos.y = mousePos.y * -1 + 360;
+	Math::Vector3 Dis;
+	float mouseX = (float)mousePos.x;
+	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
+
+	float MouseLeft = mouseX - 2.0f;
+	float MouseRight = mouseX + 2.0f;
+	float MouseTop = mouseY + 2.0f;
+	float MouseBottom = mouseY - 2.0f;
+
+	Math::Vector3 ButtomPos;
+	ButtomPos.x = a_pos.x + (float)(pwi->rcWindow.left);
+	ButtomPos.y = a_pos.y;
+
+	float TextureWidth  = static_cast<float>(a_tex.GetWidth())  / 2.0f;
+	float TextureHeight = static_cast<float>(a_tex.GetHeight()) / 2.0f;
+
+	float ButtomLeft = ButtomPos.x - TextureWidth;
+	float ButtomRight = ButtomPos.x + TextureWidth;
+	float ButtomTop = ButtomPos.y + TextureHeight;
+	float ButtomBottom = ButtomPos.y - TextureHeight;
+
+	if (MouseRight > ButtomLeft && ButtomRight > MouseLeft &&
+		MouseTop > ButtomBottom && ButtomTop > MouseBottom)
+	{
+		a_scale = 1.2f;
+
+		if (KdInputManager::Instance().IsPress("select"))
+		{
+			KdSafeDelete(pwi);
+			return true;
+		}
+
+	}
+	else
+	{
+		a_scale = 1.0f;
+	}
+
+	return false;
+
+	KdSafeDelete(pwi);
+}
+
 // タイトルのUI関連の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 void TitleUi::Init()
 {
@@ -306,6 +360,7 @@ void GameUi::Init()
 	m_operationScale = 1.0f;
 	m_operationPos = { 0,250,0 };
 	m_bOperation = false;
+	m_bFirstExit = true;
 }
 
 void GameUi::Update()
@@ -516,10 +571,6 @@ void GameUi::Update()
 			}
 		}
 
-		PWINDOWINFO pwi = new WINDOWINFO;
-		pwi->cbSize = sizeof(WINDOWINFO);
-		GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
-
 		if (GetAsyncKeyState(VK_TAB) & 0x8000)
 		{
 			if (!m_bTABKey)
@@ -598,8 +649,6 @@ void GameUi::Update()
 				++m_gameTimeCntDeray;
 			}
 		}
-
-		KdSafeDelete(pwi);
 	}
 }
 
@@ -1017,139 +1066,39 @@ void GameUi::AddEnemy(std::shared_ptr<Enemy> a_spEnemy)
 
 void GameUi::OptionUpdate()
 {
-	PWINDOWINFO pwi = new WINDOWINFO;
-	pwi->cbSize = sizeof(WINDOWINFO);
-	GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
-
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-
-	mousePos.x -= 640;
-	mousePos.y = mousePos.y * -1 + 360;
-	Math::Vector3 Dis;
-	float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
-	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
-
-	float MouseLeft = mouseX - 2.0f;
-	float MouseRight = mouseX + 2.0f;
-	float MouseTop = mouseY + 2.0f;
-	float MouseBottom = mouseY - 2.0f;
-
 	if (!m_bOperation)
 	{
-		Math::Vector3 ExitPos;
-		ExitPos.x = m_exitPos.x + (float)(pwi->rcWindow.left);
-		ExitPos.y = m_exitPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ExitPos.z = m_exitPos.z;
-
-		float ExitLeft = ExitPos.x - 350;
-		float ExitRight = ExitPos.x + 350;
-		float ExitTop = ExitPos.y + 60;
-		float ExitBottom = ExitPos.y - 60;
-
-		if (MouseRight > ExitLeft && ExitRight > MouseLeft &&
-			MouseTop > ExitBottom && ExitTop > MouseBottom)
+		if (ButtomProcessing({ m_exitPos.x,m_exitPos.y }, m_exitTex, m_exitScale))
 		{
-			m_exitScale = 1.2f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (!m_addFadeAlpha)
 			{
-				if (!m_addFadeAlpha)
-				{
-					m_bExit = true;
-					m_addFadeAlpha = true;
-					m_bFirstExit = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-				}
-			}
-
-		}
-		else
-		{
-			m_exitScale = 1.0f;
-		}
-
-		Math::Vector3 ModeSelectPos;
-		ModeSelectPos.x = m_selectPos.x + (float)(pwi->rcWindow.left);
-		ModeSelectPos.y = m_selectPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ModeSelectPos.z = m_selectPos.z;
-
-		float SelectLeft = ModeSelectPos.x - 350;
-		float SelectRight = ModeSelectPos.x + 350;
-		float SelectTop = ModeSelectPos.y + 60;
-		float SelectBottom = ModeSelectPos.y - 60;
-
-		if (MouseRight > SelectLeft && SelectRight > MouseLeft &&
-			MouseTop > SelectBottom && SelectTop > MouseBottom)
-		{
-			m_exitScale = 1.0f;
-			m_selectScale = 1.2f;
-
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				if (!m_addFadeAlpha)
-				{
-					m_bSelect = true;
-					m_addFadeAlpha = true;
-					//KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-				}
-			}
-
-		}
-		else
-		{
-			m_selectScale = 1.0f;
-		}
-
-		Math::Vector3 InfoPos;
-		InfoPos.x = m_operationPos.x + (float)(pwi->rcWindow.left);
-		InfoPos.y = m_operationPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		InfoPos.z = m_operationPos.z;
-
-		float InfoLeft = InfoPos.x - 350;
-		float InfoRight = InfoPos.x + 350;
-		float InfoTop = InfoPos.y + 60;
-		float InfoBottom = InfoPos.y - 60;
-
-		if (MouseRight > InfoLeft && InfoRight > MouseLeft &&
-			MouseTop > InfoBottom && InfoTop > MouseBottom)
-		{
-			m_exitScale = 1.0f;
-			m_operationScale = 1.2f;
-
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				m_bOperation = true;
+				m_bExit = true;
+				m_addFadeAlpha = true;
+				m_bFirstExit = true;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 			}
-
-		}
-		else
-		{
-			m_operationScale = 1.0f;
 		}
 
-		Math::Vector3 BackPos;
-		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
-		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		BackPos.z = m_backPos.z;
-		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 40)
+		if (ButtomProcessing({ m_selectPos.x,m_selectPos.y }, m_selectTex, m_selectScale))
 		{
-			m_backScale = 1.0f;
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				m_bOption = false;
-				ShowCursor(false); // マウスカーソルを消す
-				SetCursorPos(640, 360);
-				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
-				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
-			}
+			m_bSelect = true;
+			m_addFadeAlpha = true;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 		}
-		else
+
+		if (ButtomProcessing({ m_operationPos.x,m_operationPos.y }, m_operationTex, m_operationScale))
 		{
-			m_backScale = 0.8f;
+			m_bOperation = true;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+		}
+
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
+		{
+			m_bOption = false;
+			ShowCursor(false); // マウスカーソルを消す
+			SetCursorPos(640, 360);
+			KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+			KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
 		}
 
 		if (m_addFadeAlpha)
@@ -1158,16 +1107,6 @@ void GameUi::OptionUpdate()
 			if (m_fadeAlpha >= 1.0f)
 			{
 				m_fadeAlpha = 1.0f;
-
-				if (m_bSelect)
-				{
-					ShowCursor(false); // マウスカーソルを消す
-					KdEffekseerManager::GetInstance().Reset();
-					SceneManager::Instance().SetNextScene
-					(
-						SceneManager::SceneType::select
-					);
-				}
 
 				if (m_bExit)
 				{
@@ -1180,162 +1119,95 @@ void GameUi::OptionUpdate()
 					{
 						m_bExit = false;
 						m_addFadeAlpha = false;
+						m_bFirstExit = true;
 						m_fadeAlpha = 0.0f;
 					}
 				}
+
+				if (m_bSelect)
+				{
+					ShowCursor(false); // マウスカーソルを消す
+					KdEffekseerManager::GetInstance().Reset();
+					SceneManager::Instance().SetNextScene
+					(
+						SceneManager::SceneType::select
+					);
+				}
 			}
 		}
-
 	}
 	else
 	{
-
-		Math::Vector3 BackPos;
-		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
-		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		BackPos.z = m_backPos.z;
-		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 40)
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
 		{
-			m_backScale = 1.0f;
-			if (KdInputManager::Instance().IsPress("select"))
+			m_bWeaponDataPage = false;
+			m_bWeaponDataHopperPage = false;
+			m_bWeaponDataScoPage = true;
+			m_bHowToPage = true;
+			m_bOperation = false;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+		}
+
+		if (ButtomProcessing({ m_weaOrHowLeftYaiPos.x,m_weaOrHowLeftYaiPos.y }, m_leftYaiTex, m_weaOrHowLeftYaiScale))
+		{
+			if (m_bWeaponDataPage)
 			{
-				m_bWeaponDataPage = false;
-				m_bWeaponDataHopperPage = false;
-				m_bWeaponDataScoPage = true;
 				m_bHowToPage = true;
-				m_bOperation = false;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+				m_bWeaponDataPage = false;
 			}
-		}
-		else
-		{
-			m_backScale = 0.8f;
-		}
-
-		Math::Vector3 WeaOrHowLeftYaiPos;
-		WeaOrHowLeftYaiPos.x = m_weaOrHowLeftYaiPos.x + (float)(pwi->rcWindow.left);
-		WeaOrHowLeftYaiPos.y = m_weaOrHowLeftYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		WeaOrHowLeftYaiPos.z = m_weaOrHowLeftYaiPos.z;
-		Dis = WeaOrHowLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
-		{
-			m_weaOrHowLeftYaiScale = 1.5f;
-			m_weaOrHowRightYaiScale = 1.0f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			else
 			{
-				if (m_bWeaponDataPage)
-				{
-					m_bHowToPage = true;
-					m_bWeaponDataPage = false;
-				}
-				else
-				{
-					m_bHowToPage = false;
-					m_bWeaponDataPage = true;
-				}
-				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+				m_bHowToPage = false;
+				m_bWeaponDataPage = true;
 			}
-		}
-		else
-		{
-			m_weaOrHowLeftYaiScale = 1.0f;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 		}
 
-		Math::Vector3 WeaOrHowRightYaiPos;
-		WeaOrHowRightYaiPos.x = m_weaOrHowRightYaiPos.x + (float)(pwi->rcWindow.left);
-		WeaOrHowRightYaiPos.y = m_weaOrHowRightYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		WeaOrHowRightYaiPos.z = m_weaOrHowRightYaiPos.z;
-		Dis = m_weaOrHowRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
+		if (ButtomProcessing({ m_weaOrHowRightYaiPos.x,m_weaOrHowRightYaiPos.y }, m_rightYaiTex, m_weaOrHowRightYaiScale))
 		{
-			m_weaOrHowLeftYaiScale = 1.0f;
-			m_weaOrHowRightYaiScale = 1.5f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (m_bWeaponDataPage)
 			{
-				if (m_bWeaponDataPage)
-				{
-					m_bHowToPage = true;
-					m_bWeaponDataPage = false;
-				}
-				else
-				{
-					m_bHowToPage = false;
-					m_bWeaponDataPage = true;
-				}
-				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+				m_bHowToPage = true;
+				m_bWeaponDataPage = false;
 			}
-		}
-		else
-		{
-			m_weaOrHowRightYaiScale = 1.0f;
+			else
+			{
+				m_bHowToPage = false;
+				m_bWeaponDataPage = true;
+			}
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 		}
 
 		if (m_bWeaponDataPage)
 		{
-			Math::Vector3 WeaponLeftYaiPos;
-			WeaponLeftYaiPos.x = m_weaponLeftYaiPos.x + (float)(pwi->rcWindow.left);
-			WeaponLeftYaiPos.y = m_weaponLeftYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			WeaponLeftYaiPos.z = m_weaponLeftYaiPos.z;
-
-			Dis = WeaponLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
+			if (ButtomProcessing({m_weaponLeftYaiPos.x,m_weaponLeftYaiPos.y }, m_leftYaiTex, m_weaponLeftYaiScale))
 			{
-				m_weaponLeftYaiScale = 1.5f;
-				m_weaponRightYaiScale = 1.0f;
-
-				if (KdInputManager::Instance().IsPress("select"))
+				if (m_bWeaponDataHopperPage)
 				{
-					if (m_bWeaponDataHopperPage)
-					{
-						m_bWeaponDataScoPage = true;
-						m_bWeaponDataHopperPage = false;
-					}
-					else
-					{
-						m_bWeaponDataScoPage = false;
-						m_bWeaponDataHopperPage = true;
-					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+					m_bWeaponDataScoPage = true;
+					m_bWeaponDataHopperPage = false;
 				}
-
-			}
-			else
-			{
-				m_weaponLeftYaiScale = 1.0f;
-			}
-
-			Math::Vector3 WeaponRightYaiPos;
-			WeaponRightYaiPos.x = m_weaponRightYaiPos.x + (float)(pwi->rcWindow.left);
-			WeaponRightYaiPos.y = m_weaponRightYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			WeaponRightYaiPos.z = m_weaponRightYaiPos.z;
-
-			Dis = WeaponRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
-			{
-				m_weaponLeftYaiScale = 1.0f;
-				m_weaponRightYaiScale = 1.5f;
-
-				if (KdInputManager::Instance().IsPress("select"))
+				else
 				{
-					if (m_bWeaponDataHopperPage)
-					{
-						m_bWeaponDataScoPage = true;
-						m_bWeaponDataHopperPage = false;
-					}
-					else
-					{
-						m_bWeaponDataScoPage = false;
-						m_bWeaponDataHopperPage = true;
-					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+					m_bWeaponDataScoPage = false;
+					m_bWeaponDataHopperPage = true;
 				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 			}
-			else
+
+			if (ButtomProcessing({ m_weaponRightYaiPos.x,m_weaponRightYaiPos.y }, m_rightYaiTex, m_weaponRightYaiScale))
 			{
-				m_weaponRightYaiScale = 1.0f;
+				if (m_bWeaponDataHopperPage)
+				{
+					m_bWeaponDataScoPage = true;
+					m_bWeaponDataHopperPage = false;
+				}
+				else
+				{
+					m_bWeaponDataScoPage = false;
+					m_bWeaponDataHopperPage = true;
+				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 			}
 		}
 	}
@@ -2685,6 +2557,7 @@ void TutorialUi::Init()
 	m_PointTex[2].Load("Asset/Textures/Ui/Result/p2.png");
 	m_PointTex[3].Load("Asset/Textures/Ui/Result/p3.png");
 	m_PointTex[4].Load("Asset/Textures/Ui/Result/p4.png");
+	m_PointTex[5].Load("Asset/Textures/Ui/Result/p5.png");
 
 	m_addFadeAlpha = false;
 	m_time = 0;
@@ -2727,10 +2600,6 @@ void TutorialUi::Init()
 
 void TutorialUi::Update()
 {
-	PWINDOWINFO pwi = new WINDOWINFO;
-	pwi->cbSize = sizeof(WINDOWINFO);
-	GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
-
 	if (GetAsyncKeyState(VK_TAB) & 0x8000)
 	{
 		if (!m_bTABKey)
@@ -2824,8 +2693,6 @@ void TutorialUi::Update()
 			}
 		}
 	}
-
-	KdSafeDelete(pwi);
 }
 
 void TutorialUi::DrawSprite()
@@ -2835,6 +2702,7 @@ void TutorialUi::DrawSprite()
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 	Math::Color color = {};
 	std::shared_ptr<Player> spPlayer = m_wpPlayer.lock();
+	Math::Rectangle rc;
 
 	if (spPlayer)
 	{
@@ -2843,7 +2711,7 @@ void TutorialUi::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
 		if (spPlayer->GetWeaponType() & Player::WeaponType::grassHopper)
 		{
-			Math::Rectangle rc = { 0,0,120,50 };
+			rc = { 0,0,120,50 };
 			color = { 1,1,1,0.6f };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color);
 		}
@@ -2855,7 +2723,7 @@ void TutorialUi::DrawSprite()
 		{
 			transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			Math::Rectangle rc = { 0,0,120,50 };
+			rc = { 0,0,120,50 };
 			color = { 1,1,1,0.6f };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
 		}
@@ -2863,7 +2731,7 @@ void TutorialUi::DrawSprite()
 		{
 			transMat = Math::Matrix::CreateTranslation(440, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			Math::Rectangle rc = { 0,0,spPlayer->GetRGrassHopperPauCnt() * 4,50 };
+			rc = { 0,0,spPlayer->GetRGrassHopperPauCnt() * 4,50 };
 			color = { 1,1,1,0.6f };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, spPlayer->GetRGrassHopperPauCnt() * 4, 50, &rc, &color, Math::Vector2(0, 0.5f));
 		}
@@ -2873,7 +2741,7 @@ void TutorialUi::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, 120, 50);
 		if (spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper)
 		{
-			Math::Rectangle rc = { 0,0,120,50 };
+			rc = { 0,0,120,50 };
 			color = { 1,1,1,0.6f };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color);
 		}
@@ -2885,7 +2753,7 @@ void TutorialUi::DrawSprite()
 		{
 			transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			Math::Rectangle rc = { 0,0,120,50 };
+			rc = { 0,0,120,50 };
 			color = { 1,1,1,0.6f };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, 120, 50, &rc, &color, Math::Vector2(0, 0.5f));
 		}
@@ -2893,14 +2761,14 @@ void TutorialUi::DrawSprite()
 		{
 			transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			Math::Rectangle rc = { 0,0,spPlayer->GetLGrassHopperPauCnt() * 4,50 };
+			rc = { 0,0,spPlayer->GetLGrassHopperPauCnt() * 4,50 };
 			color = { 1,1,1,0.6f };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, spPlayer->GetLGrassHopperPauCnt() * 4, 50, &rc, &color, Math::Vector2(0, 0.5f));
 		}
 
 		transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		Math::Rectangle rc = { 0,0,400,50 };
+		rc = { 0,0,400,50 };
 		color = { 1, 1, 1, 1 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, 400, 50, &rc, &color, Math::Vector2(0, 0.5f));
 
@@ -3009,7 +2877,7 @@ void TutorialUi::DrawSprite()
 	{
 		transMat = Math::Matrix::Identity;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		color = { 0,0.,0,0.4f };
+		color = { 0,0,0,0.4f };
 		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 
 		switch (m_tutorialType)
@@ -3058,139 +2926,39 @@ void TutorialUi::AddTutorialCnt()
 
 void TutorialUi::OptionUpdate()
 {
-	PWINDOWINFO pwi = new WINDOWINFO;
-	pwi->cbSize = sizeof(WINDOWINFO);
-	GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
-
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-
-	mousePos.x -= 640;
-	mousePos.y = mousePos.y * -1 + 360;
-	Math::Vector3 Dis;
-	float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
-	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
-
-	float MouseLeft = mouseX - 2.0f;
-	float MouseRight = mouseX + 2.0f;
-	float MouseTop = mouseY + 2.0f;
-	float MouseBottom = mouseY - 2.0f;
-
 	if (!m_bOperation)
 	{
-		Math::Vector3 ExitPos;
-		ExitPos.x = m_exitPos.x + (float)(pwi->rcWindow.left);
-		ExitPos.y = m_exitPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ExitPos.z = m_exitPos.z;
-
-		float ExitLeft = ExitPos.x - 350;
-		float ExitRight = ExitPos.x + 350;
-		float ExitTop = ExitPos.y + 60;
-		float ExitBottom = ExitPos.y - 60;
-
-		if (MouseRight > ExitLeft && ExitRight > MouseLeft &&
-			MouseTop > ExitBottom && ExitTop > MouseBottom)
+		if (ButtomProcessing({ m_exitPos.x,m_exitPos.y }, m_exitTex, m_exitScale))
 		{
-			m_exitScale = 1.2f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (!m_addFadeAlpha)
 			{
-				if (!m_addFadeAlpha)
-				{
-					m_bExit = true;
-					m_addFadeAlpha = true;
-					m_bFirstExit = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-				}
-			}
-
-		}
-		else
-		{
-			m_exitScale = 1.0f;
-		}
-
-		Math::Vector3 ModeSelectPos;
-		ModeSelectPos.x = m_selectPos.x + (float)(pwi->rcWindow.left);
-		ModeSelectPos.y = m_selectPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ModeSelectPos.z = m_selectPos.z;
-
-		float SelectLeft = ModeSelectPos.x - 350;
-		float SelectRight = ModeSelectPos.x + 350;
-		float SelectTop = ModeSelectPos.y + 60;
-		float SelectBottom = ModeSelectPos.y - 60;
-
-		if (MouseRight > SelectLeft && SelectRight > MouseLeft &&
-			MouseTop > SelectBottom && SelectTop > MouseBottom)
-		{
-			m_exitScale = 1.0f;
-			m_selectScale = 1.2f;
-
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				if (!m_addFadeAlpha)
-				{
-					m_bSelect = true;
-					m_addFadeAlpha = true;
-					//KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-				}
-			}
-
-		}
-		else
-		{
-			m_selectScale = 1.0f;
-		}
-
-		Math::Vector3 InfoPos;
-		InfoPos.x = m_operationPos.x + (float)(pwi->rcWindow.left);
-		InfoPos.y = m_operationPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		InfoPos.z = m_operationPos.z;
-
-		float InfoLeft = InfoPos.x - 350;
-		float InfoRight = InfoPos.x + 350;
-		float InfoTop = InfoPos.y + 60;
-		float InfoBottom = InfoPos.y - 60;
-
-		if (MouseRight > InfoLeft && InfoRight > MouseLeft &&
-			MouseTop > InfoBottom && InfoTop > MouseBottom)
-		{
-			m_exitScale = 1.0f;
-			m_operationScale = 1.2f;
-
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				m_bOperation = true;
+				m_bExit = true;
+				m_addFadeAlpha = true;
+				m_bFirstExit = true;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 			}
-
-		}
-		else
-		{
-			m_operationScale = 1.0f;
 		}
 
-		Math::Vector3 BackPos;
-		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
-		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		BackPos.z = m_backPos.z;
-		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 40)
+		if (ButtomProcessing({ m_selectPos.x,m_selectPos.y }, m_selectTex, m_selectScale))
 		{
-			m_backScale = 1.0f;
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				m_bOption = false;
-				ShowCursor(false); // マウスカーソルを消す
-				SetCursorPos(640, 360);
-				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
-				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
-			}
+			m_bSelect = true;
+			m_addFadeAlpha = true;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 		}
-		else
+
+		if (ButtomProcessing({ m_operationPos.x,m_operationPos.y }, m_operationTex, m_operationScale))
 		{
-			m_backScale = 0.8f;
+			m_bOperation = true;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+		}
+
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
+		{
+			m_bOption = false;
+			ShowCursor(false); // マウスカーソルを消す
+			SetCursorPos(640, 360);
+			KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+			KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
 		}
 
 		if (m_addFadeAlpha)
@@ -3199,16 +2967,6 @@ void TutorialUi::OptionUpdate()
 			if (m_fadeAlpha >= 1.0f)
 			{
 				m_fadeAlpha = 1.0f;
-
-				if (m_bSelect)
-				{
-					ShowCursor(false); // マウスカーソルを消す
-					KdEffekseerManager::GetInstance().Reset();
-					SceneManager::Instance().SetNextScene
-					(
-						SceneManager::SceneType::select
-					);
-				}
 
 				if (m_bExit)
 				{
@@ -3221,162 +2979,95 @@ void TutorialUi::OptionUpdate()
 					{
 						m_bExit = false;
 						m_addFadeAlpha = false;
+						m_bFirstExit = true;
 						m_fadeAlpha = 0.0f;
 					}
 				}
+
+				if (m_bSelect)
+				{
+					ShowCursor(false); // マウスカーソルを消す
+					KdEffekseerManager::GetInstance().Reset();
+					SceneManager::Instance().SetNextScene
+					(
+						SceneManager::SceneType::select
+					);
+				}
 			}
 		}
-
 	}
 	else
 	{
-
-		Math::Vector3 BackPos;
-		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
-		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		BackPos.z = m_backPos.z;
-		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 40)
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
 		{
-			m_backScale = 1.0f;
-			if (KdInputManager::Instance().IsPress("select"))
+			m_bWeaponDataPage = false;
+			m_bWeaponDataHopperPage = false;
+			m_bWeaponDataScoPage = true;
+			m_bHowToPage = true;
+			m_bOperation = false;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+		}
+
+		if (ButtomProcessing({ m_weaOrHowLeftYaiPos.x,m_weaOrHowLeftYaiPos.y }, m_leftYaiTex, m_weaOrHowLeftYaiScale))
+		{
+			if (m_bWeaponDataPage)
 			{
-				m_bWeaponDataPage = false;
-				m_bWeaponDataHopperPage = false;
-				m_bWeaponDataScoPage = true;
 				m_bHowToPage = true;
-				m_bOperation = false;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+				m_bWeaponDataPage = false;
 			}
-		}
-		else
-		{
-			m_backScale = 0.8f;
-		}
-
-		Math::Vector3 WeaOrHowLeftYaiPos;
-		WeaOrHowLeftYaiPos.x = m_weaOrHowLeftYaiPos.x + (float)(pwi->rcWindow.left);
-		WeaOrHowLeftYaiPos.y = m_weaOrHowLeftYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		WeaOrHowLeftYaiPos.z = m_weaOrHowLeftYaiPos.z;
-		Dis = WeaOrHowLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
-		{
-			m_weaOrHowLeftYaiScale = 1.5f;
-			m_weaOrHowRightYaiScale = 1.0f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			else
 			{
-				if (m_bWeaponDataPage)
-				{
-					m_bHowToPage = true;
-					m_bWeaponDataPage = false;
-				}
-				else
-				{
-					m_bHowToPage = false;
-					m_bWeaponDataPage = true;
-				}
-				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+				m_bHowToPage = false;
+				m_bWeaponDataPage = true;
 			}
-		}
-		else
-		{
-			m_weaOrHowLeftYaiScale = 1.0f;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 		}
 
-		Math::Vector3 WeaOrHowRightYaiPos;
-		WeaOrHowRightYaiPos.x = m_weaOrHowRightYaiPos.x + (float)(pwi->rcWindow.left);
-		WeaOrHowRightYaiPos.y = m_weaOrHowRightYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		WeaOrHowRightYaiPos.z = m_weaOrHowRightYaiPos.z;
-		Dis = m_weaOrHowRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
+		if (ButtomProcessing({ m_weaOrHowRightYaiPos.x,m_weaOrHowRightYaiPos.y }, m_rightYaiTex, m_weaOrHowRightYaiScale))
 		{
-			m_weaOrHowLeftYaiScale = 1.0f;
-			m_weaOrHowRightYaiScale = 1.5f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (m_bWeaponDataPage)
 			{
-				if (m_bWeaponDataPage)
-				{
-					m_bHowToPage = true;
-					m_bWeaponDataPage = false;
-				}
-				else
-				{
-					m_bHowToPage = false;
-					m_bWeaponDataPage = true;
-				}
-				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+				m_bHowToPage = true;
+				m_bWeaponDataPage = false;
 			}
-		}
-		else
-		{
-			m_weaOrHowRightYaiScale = 1.0f;
+			else
+			{
+				m_bHowToPage = false;
+				m_bWeaponDataPage = true;
+			}
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 		}
 
 		if (m_bWeaponDataPage)
 		{
-			Math::Vector3 WeaponLeftYaiPos;
-			WeaponLeftYaiPos.x = m_weaponLeftYaiPos.x + (float)(pwi->rcWindow.left);
-			WeaponLeftYaiPos.y = m_weaponLeftYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			WeaponLeftYaiPos.z = m_weaponLeftYaiPos.z;
-
-			Dis = WeaponLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
+			if (ButtomProcessing({ m_weaponLeftYaiPos.x,m_weaponLeftYaiPos.y }, m_leftYaiTex, m_weaponLeftYaiScale))
 			{
-				m_weaponLeftYaiScale = 1.5f;
-				m_weaponRightYaiScale = 1.0f;
-
-				if (KdInputManager::Instance().IsPress("select"))
+				if (m_bWeaponDataHopperPage)
 				{
-					if (m_bWeaponDataHopperPage)
-					{
-						m_bWeaponDataScoPage = true;
-						m_bWeaponDataHopperPage = false;
-					}
-					else
-					{
-						m_bWeaponDataScoPage = false;
-						m_bWeaponDataHopperPage = true;
-					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+					m_bWeaponDataScoPage = true;
+					m_bWeaponDataHopperPage = false;
 				}
-
-			}
-			else
-			{
-				m_weaponLeftYaiScale = 1.0f;
-			}
-
-			Math::Vector3 WeaponRightYaiPos;
-			WeaponRightYaiPos.x = m_weaponRightYaiPos.x + (float)(pwi->rcWindow.left);
-			WeaponRightYaiPos.y = m_weaponRightYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			WeaponRightYaiPos.z = m_weaponRightYaiPos.z;
-
-			Dis = WeaponRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
-			{
-				m_weaponLeftYaiScale = 1.0f;
-				m_weaponRightYaiScale = 1.5f;
-
-				if (KdInputManager::Instance().IsPress("select"))
+				else
 				{
-					if (m_bWeaponDataHopperPage)
-					{
-						m_bWeaponDataScoPage = true;
-						m_bWeaponDataHopperPage = false;
-					}
-					else
-					{
-						m_bWeaponDataScoPage = false;
-						m_bWeaponDataHopperPage = true;
-					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+					m_bWeaponDataScoPage = false;
+					m_bWeaponDataHopperPage = true;
 				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 			}
-			else
+
+			if (ButtomProcessing({ m_weaponRightYaiPos.x,m_weaponRightYaiPos.y }, m_rightYaiTex, m_weaponRightYaiScale))
 			{
-				m_weaponRightYaiScale = 1.0f;
+				if (m_bWeaponDataHopperPage)
+				{
+					m_bWeaponDataScoPage = true;
+					m_bWeaponDataHopperPage = false;
+				}
+				else
+				{
+					m_bWeaponDataScoPage = false;
+					m_bWeaponDataHopperPage = true;
+				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 			}
 		}
 	}
@@ -3944,139 +3635,39 @@ void TrainingUi::SetEnemy(std::shared_ptr<Enemy> a_spEnemy)
 
 void TrainingUi::OptionUpdate()
 {
-	PWINDOWINFO pwi = new WINDOWINFO;
-	pwi->cbSize = sizeof(WINDOWINFO);
-	GetWindowInfo(Application::Instance().GetWindowHandle(), pwi);
-
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-
-	mousePos.x -= 640;
-	mousePos.y = mousePos.y * -1 + 360;
-	Math::Vector3 Dis;
-	float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
-	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
-
-	float MouseLeft = mouseX - 2.0f;
-	float MouseRight = mouseX + 2.0f;
-	float MouseTop = mouseY + 2.0f;
-	float MouseBottom = mouseY - 2.0f;
-
 	if (!m_bOperation)
 	{
-		Math::Vector3 ExitPos;
-		ExitPos.x = m_exitPos.x + (float)(pwi->rcWindow.left);
-		ExitPos.y = m_exitPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ExitPos.z = m_exitPos.z;
-
-		float ExitLeft = ExitPos.x - 350;
-		float ExitRight = ExitPos.x + 350;
-		float ExitTop = ExitPos.y + 60;
-		float ExitBottom = ExitPos.y - 60;
-
-		if (MouseRight > ExitLeft && ExitRight > MouseLeft &&
-			MouseTop > ExitBottom && ExitTop > MouseBottom)
+		if (ButtomProcessing({ m_exitPos.x,m_exitPos.y }, m_exitTex, m_exitScale))
 		{
-			m_exitScale = 1.2f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (!m_addFadeAlpha)
 			{
-				if (!m_addFadeAlpha)
-				{
-					m_bExit = true;
-					m_addFadeAlpha = true;
-					m_bFirstExit = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-				}
-			}
-
-		}
-		else
-		{
-			m_exitScale = 1.0f;
-		}
-
-		Math::Vector3 ModeSelectPos;
-		ModeSelectPos.x = m_selectPos.x + (float)(pwi->rcWindow.left);
-		ModeSelectPos.y = m_selectPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ModeSelectPos.z = m_selectPos.z;
-
-		float SelectLeft = ModeSelectPos.x - 350;
-		float SelectRight = ModeSelectPos.x + 350;
-		float SelectTop = ModeSelectPos.y + 60;
-		float SelectBottom = ModeSelectPos.y - 60;
-
-		if (MouseRight > SelectLeft && SelectRight > MouseLeft &&
-			MouseTop > SelectBottom && SelectTop > MouseBottom)
-		{
-			m_exitScale = 1.0f;
-			m_selectScale = 1.2f;
-
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				if (!m_addFadeAlpha)
-				{
-					m_bSelect = true;
-					m_addFadeAlpha = true;
-					//KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-				}
-			}
-
-		}
-		else
-		{
-			m_selectScale = 1.0f;
-		}
-
-		Math::Vector3 InfoPos;
-		InfoPos.x = m_operationPos.x + (float)(pwi->rcWindow.left);
-		InfoPos.y = m_operationPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		InfoPos.z = m_operationPos.z;
-
-		float InfoLeft = InfoPos.x - 350;
-		float InfoRight = InfoPos.x + 350;
-		float InfoTop = InfoPos.y + 60;
-		float InfoBottom = InfoPos.y - 60;
-
-		if (MouseRight > InfoLeft && InfoRight > MouseLeft &&
-			MouseTop > InfoBottom && InfoTop > MouseBottom)
-		{
-			m_exitScale = 1.0f;
-			m_operationScale = 1.2f;
-
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				m_bOperation = true;
+				m_bExit = true;
+				m_addFadeAlpha = true;
+				m_bFirstExit = true;
 				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 			}
-
-		}
-		else
-		{
-			m_operationScale = 1.0f;
 		}
 
-		Math::Vector3 BackPos;
-		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
-		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		BackPos.z = m_backPos.z;
-		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 40)
+		if (ButtomProcessing({ m_selectPos.x,m_selectPos.y }, m_selectTex, m_selectScale))
 		{
-			m_backScale = 1.0f;
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				m_bOption = false;
-				ShowCursor(false); // マウスカーソルを消す
-				SetCursorPos(640, 360);
-				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
-				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
-			}
+			m_bSelect = true;
+			m_addFadeAlpha = true;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 		}
-		else
+
+		if (ButtomProcessing({ m_operationPos.x,m_operationPos.y }, m_operationTex, m_operationScale))
 		{
-			m_backScale = 0.8f;
+			m_bOperation = true;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+		}
+
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
+		{
+			m_bOption = false;
+			ShowCursor(false); // マウスカーソルを消す
+			SetCursorPos(640, 360);
+			KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+			KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
 		}
 
 		if (m_addFadeAlpha)
@@ -4085,16 +3676,6 @@ void TrainingUi::OptionUpdate()
 			if (m_fadeAlpha >= 1.0f)
 			{
 				m_fadeAlpha = 1.0f;
-
-				if (m_bSelect)
-				{
-					ShowCursor(false); // マウスカーソルを消す
-					KdEffekseerManager::GetInstance().Reset();
-					SceneManager::Instance().SetNextScene
-					(
-						SceneManager::SceneType::select
-					);
-				}
 
 				if (m_bExit)
 				{
@@ -4107,162 +3688,95 @@ void TrainingUi::OptionUpdate()
 					{
 						m_bExit = false;
 						m_addFadeAlpha = false;
+						m_bFirstExit = true;
 						m_fadeAlpha = 0.0f;
 					}
 				}
+
+				if (m_bSelect)
+				{
+					ShowCursor(false); // マウスカーソルを消す
+					KdEffekseerManager::GetInstance().Reset();
+					SceneManager::Instance().SetNextScene
+					(
+						SceneManager::SceneType::select
+					);
+				}
 			}
 		}
-
 	}
 	else
 	{
-
-		Math::Vector3 BackPos;
-		BackPos.x = m_backPos.x + (float)(pwi->rcWindow.left);
-		BackPos.y = m_backPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		BackPos.z = m_backPos.z;
-		Dis = BackPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 40)
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
 		{
-			m_backScale = 1.0f;
-			if (KdInputManager::Instance().IsPress("select"))
+			m_bWeaponDataPage = false;
+			m_bWeaponDataHopperPage = false;
+			m_bWeaponDataScoPage = true;
+			m_bHowToPage = true;
+			m_bOperation = false;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+		}
+
+		if (ButtomProcessing({ m_weaOrHowLeftYaiPos.x,m_weaOrHowLeftYaiPos.y }, m_leftYaiTex, m_weaOrHowLeftYaiScale))
+		{
+			if (m_bWeaponDataPage)
 			{
-				m_bWeaponDataPage = false;
-				m_bWeaponDataHopperPage = false;
-				m_bWeaponDataScoPage = true;
 				m_bHowToPage = true;
-				m_bOperation = false;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+				m_bWeaponDataPage = false;
 			}
-		}
-		else
-		{
-			m_backScale = 0.8f;
-		}
-
-		Math::Vector3 WeaOrHowLeftYaiPos;
-		WeaOrHowLeftYaiPos.x = m_weaOrHowLeftYaiPos.x + (float)(pwi->rcWindow.left);
-		WeaOrHowLeftYaiPos.y = m_weaOrHowLeftYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		WeaOrHowLeftYaiPos.z = m_weaOrHowLeftYaiPos.z;
-		Dis = WeaOrHowLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
-		{
-			m_weaOrHowLeftYaiScale = 1.5f;
-			m_weaOrHowRightYaiScale = 1.0f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			else
 			{
-				if (m_bWeaponDataPage)
-				{
-					m_bHowToPage = true;
-					m_bWeaponDataPage = false;
-				}
-				else
-				{
-					m_bHowToPage = false;
-					m_bWeaponDataPage = true;
-				}
-				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+				m_bHowToPage = false;
+				m_bWeaponDataPage = true;
 			}
-		}
-		else
-		{
-			m_weaOrHowLeftYaiScale = 1.0f;
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 		}
 
-		Math::Vector3 WeaOrHowRightYaiPos;
-		WeaOrHowRightYaiPos.x = m_weaOrHowRightYaiPos.x + (float)(pwi->rcWindow.left);
-		WeaOrHowRightYaiPos.y = m_weaOrHowRightYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		WeaOrHowRightYaiPos.z = m_weaOrHowRightYaiPos.z;
-		Dis = m_weaOrHowRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-		if (Dis.Length() <= 30)
+		if (ButtomProcessing({ m_weaOrHowRightYaiPos.x,m_weaOrHowRightYaiPos.y }, m_rightYaiTex, m_weaOrHowRightYaiScale))
 		{
-			m_weaOrHowLeftYaiScale = 1.0f;
-			m_weaOrHowRightYaiScale = 1.5f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (m_bWeaponDataPage)
 			{
-				if (m_bWeaponDataPage)
-				{
-					m_bHowToPage = true;
-					m_bWeaponDataPage = false;
-				}
-				else
-				{
-					m_bHowToPage = false;
-					m_bWeaponDataPage = true;
-				}
-				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+				m_bHowToPage = true;
+				m_bWeaponDataPage = false;
 			}
-		}
-		else
-		{
-			m_weaOrHowRightYaiScale = 1.0f;
+			else
+			{
+				m_bHowToPage = false;
+				m_bWeaponDataPage = true;
+			}
+			KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 		}
 
 		if (m_bWeaponDataPage)
 		{
-			Math::Vector3 WeaponLeftYaiPos;
-			WeaponLeftYaiPos.x = m_weaponLeftYaiPos.x + (float)(pwi->rcWindow.left);
-			WeaponLeftYaiPos.y = m_weaponLeftYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			WeaponLeftYaiPos.z = m_weaponLeftYaiPos.z;
-
-			Dis = WeaponLeftYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
+			if (ButtomProcessing({ m_weaponLeftYaiPos.x,m_weaponLeftYaiPos.y }, m_leftYaiTex, m_weaponLeftYaiScale))
 			{
-				m_weaponLeftYaiScale = 1.5f;
-				m_weaponRightYaiScale = 1.0f;
-
-				if (KdInputManager::Instance().IsPress("select"))
+				if (m_bWeaponDataHopperPage)
 				{
-					if (m_bWeaponDataHopperPage)
-					{
-						m_bWeaponDataScoPage = true;
-						m_bWeaponDataHopperPage = false;
-					}
-					else
-					{
-						m_bWeaponDataScoPage = false;
-						m_bWeaponDataHopperPage = true;
-					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+					m_bWeaponDataScoPage = true;
+					m_bWeaponDataHopperPage = false;
 				}
-
-			}
-			else
-			{
-				m_weaponLeftYaiScale = 1.0f;
-			}
-
-			Math::Vector3 WeaponRightYaiPos;
-			WeaponRightYaiPos.x = m_weaponRightYaiPos.x + (float)(pwi->rcWindow.left);
-			WeaponRightYaiPos.y = m_weaponRightYaiPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			WeaponRightYaiPos.z = m_weaponRightYaiPos.z;
-
-			Dis = WeaponRightYaiPos - Math::Vector3(mouseX, mouseY, 0.0f);
-			if (Dis.Length() <= 30)
-			{
-				m_weaponLeftYaiScale = 1.0f;
-				m_weaponRightYaiScale = 1.5f;
-
-				if (KdInputManager::Instance().IsPress("select"))
+				else
 				{
-					if (m_bWeaponDataHopperPage)
-					{
-						m_bWeaponDataScoPage = true;
-						m_bWeaponDataHopperPage = false;
-					}
-					else
-					{
-						m_bWeaponDataScoPage = false;
-						m_bWeaponDataHopperPage = true;
-					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
+					m_bWeaponDataScoPage = false;
+					m_bWeaponDataHopperPage = true;
 				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 			}
-			else
+
+			if (ButtomProcessing({ m_weaponRightYaiPos.x,m_weaponRightYaiPos.y }, m_rightYaiTex, m_weaponRightYaiScale))
 			{
-				m_weaponRightYaiScale = 1.0f;
+				if (m_bWeaponDataHopperPage)
+				{
+					m_bWeaponDataScoPage = true;
+					m_bWeaponDataHopperPage = false;
+				}
+				else
+				{
+					m_bWeaponDataScoPage = false;
+					m_bWeaponDataHopperPage = true;
+				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushArrow.wav");
 			}
 		}
 	}

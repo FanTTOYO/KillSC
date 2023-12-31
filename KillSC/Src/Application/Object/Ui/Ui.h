@@ -32,7 +32,7 @@ public:
 	void PostUpdate()override;
 	void Init()override;
 	void DrawSprite()override;
-
+	bool ButtomProcessing(Math::Vector2 a_pos , const KdTexture& a_tex , float& a_scale);
 
 	virtual void SetUiType(UiType a_uiType);
 	virtual void SetAddFadeAlpha() { m_currentUiClassId->SetAddFadeAlpha(); }
@@ -434,7 +434,7 @@ private:
 	int  m_tutorialCnt = 0;
 	TutorialType m_tutorialType = kihonTu;
 	int m_tutorialSwitchAfterTime;
-	KdTexture m_PointTex[5];
+	KdTexture m_PointTex[6];
 
 	bool m_bExit = false;
 	bool m_bFirstExit = false;
