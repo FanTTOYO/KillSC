@@ -32,9 +32,9 @@ public:
 	void PostUpdate()override;
 	void Init()override;
 	void DrawSprite()override;
-	bool ButtomProcessing(Math::Vector2 a_pos , const KdTexture& a_tex , float& a_scale);
+	bool ButtomProcessing(Math::Vector2 a_pos , const KdTexture& a_tex , float& a_scale , float a_originalScale = 1.0f, float a_addScaleVal = 0.2f);
 
-	virtual void SetUiType(UiType a_uiType);
+	virtual void SetUiType(UiType a_uiType, std::weak_ptr<json11::Json> a_wpJsonObj);
 	virtual void SetAddFadeAlpha() { m_currentUiClassId->SetAddFadeAlpha(); }
 	virtual int GetTime() {return m_currentUiClassId->GetTime(); }
 	virtual const bool GetBOption() { return m_currentUiClassId->GetBOption(); }
@@ -55,6 +55,9 @@ public:
 	virtual void SetBWaveChange() { m_currentUiClassId->SetBWaveChange(); }
 
 protected:
+	std::map<std::string, json11::Json>  m_mpUiSharedObj;																	// JsonからUi共通オブジェクトの情報をもらうときに使用
+	std::map<std::string, json11::Json>  m_mpDedicatedObj;																	// Jsonからそれぞれ専用のオブジェクトの情報をもらうときに使用
+private:
 
 	UiType m_uiType = UiType::title;
 	std::shared_ptr<Ui> m_currentUiClassId;
@@ -232,6 +235,12 @@ private:
 	Math::Matrix m_torionBarMat;
 	Math::Matrix m_enduranceMat;
 	Math::Matrix m_enduranceBarMat;
+
+	KdTexture m_lWeaponChangeKeyTex; // 左の通常状態画像
+	KdTexture m_rWeaponChangeKeyTex; // 右の通常状態画像
+
+	KdTexture m_lWeaponChangeKeyPushStateTex; // 左の押された状態画像
+	KdTexture m_rWeaponChangeKeyPushStateTex; // 右の押された状態画像
 };
 
 class ResultUi : public Ui
@@ -292,8 +301,8 @@ private:
 	KdTexture m_modeSelectTex;
 	KdTexture m_pictureFrameTex;
 
-	KdTexture m_selectTitleTex;
-	KdTexture m_selectExitTex;
+	KdTexture m_titleTex;
+	KdTexture m_exitTex;
 
 	KdTexture m_gameTex;
 	KdTexture m_challengeTex;
@@ -383,9 +392,6 @@ private:
 	bool m_bOption = false;
 	bool m_bTitle = false;
 	bool m_bSelect = false;
-
-	bool m_bBattleSelect = false;
-	bool m_bChallengeSelect = false;
 };
 
 class TutorialUi : public Ui

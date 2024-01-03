@@ -112,7 +112,7 @@ void TrainingScene::Init()
 	m_wpEnemy = enemy;
 
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
-	ui->SetUiType(Ui::UiType::training);
+	ui->SetUiType(Ui::UiType::training, m_spJsonObj);
 	ui->Init();
 	ui->SetPlayer(player);
 	ui->SetEnemy(enemy);

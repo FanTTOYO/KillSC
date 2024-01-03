@@ -13,4 +13,5 @@ private:
 	void Init()override;
 	std::weak_ptr<Ui> m_wpUi;
 	bool m_bReturn = false;
+	std::shared_ptr<json11::Json> m_spJsonObj;
 };

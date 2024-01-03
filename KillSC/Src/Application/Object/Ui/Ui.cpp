@@ -5,7 +5,7 @@
 #include "../Character/Enemy/Enemy.h"
 #include "../../Camera/GameCamera/GameCamera.h"
 
-void Ui::SetUiType(UiType a_uiType)
+void Ui::SetUiType(UiType a_uiType, std::weak_ptr<json11::Json> a_wpJsonObj)
 {
 	m_uiType = a_uiType;
 	switch (m_uiType)
@@ -71,7 +71,7 @@ void Ui::Init()
 	m_currentUiClassId->Init();
 }
 
-bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_scale)
+bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_scale, float a_originalScale, float a_addScaleVal)
 {
 	PWINDOWINFO pwi = new WINDOWINFO;
 	pwi->cbSize = sizeof(WINDOWINFO);
@@ -106,7 +106,7 @@ bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_
 	if (MouseRight > ButtomLeft && ButtomRight > MouseLeft &&
 		MouseTop > ButtomBottom && ButtomTop > MouseBottom)
 	{
-		a_scale = 1.2f;
+		a_scale = a_originalScale + a_addScaleVal;
 
 		if (KdInputManager::Instance().IsPress("select"))
 		{
@@ -117,7 +117,7 @@ bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_
 	}
 	else
 	{
-		a_scale = 1.0f;
+		a_scale = a_originalScale;
 	}
 
 	return false;
@@ -173,13 +173,10 @@ void TitleUi::Update()
 			{
 				m_fadeAlpha = 1.0f;
 
-				if (m_uiType == UiType::title)
-				{
-					SceneManager::Instance().SetNextScene
-					(
-						SceneManager::SceneType::select
-					);
-				}
+				SceneManager::Instance().SetNextScene
+				(
+					SceneManager::SceneType::select
+				);
 			}
 		}
 	}
@@ -306,6 +303,13 @@ void GameUi::Init()
 	m_EnemyDirectionArrowBTex.Load("Asset/Textures/Ui/Game/enemyDirectionArrowB.png");
 	m_waveTex.Load("Asset/Textures/Ui/Game/wave.png");
 
+	m_lWeaponChangeKeyTex.Load("Asset/Textures/Ui/Game/Q-Key.png");
+	m_rWeaponChangeKeyTex.Load("Asset/Textures/Ui/Game/E-Key.png");
+
+	m_lWeaponChangeKeyPushStateTex.Load("Asset/Textures/Ui/Game/PushStateQ-Key.png");
+	m_rWeaponChangeKeyPushStateTex.Load("Asset/Textures/Ui/Game/PushStateE-Key.png");
+
+
 	m_addFadeAlpha = false;
 	m_time = 0;
 
@@ -316,7 +320,7 @@ void GameUi::Init()
 	m_selectPos = { 0,0,0 };
 	m_exitPos = { 0,-250,0 };
 
-	m_backPos = { 550,-300,0 };
+	m_backPos = { 515,-300,0 };
 	m_backScale = 0.8f;
 
 	m_countOneScale = 0.1f;
@@ -773,7 +777,7 @@ void GameUi::DrawSprite()
 
 	if (spPlayer)
 	{
-		transMat = Math::Matrix::CreateTranslation(350, -250, 0);
+		transMat = Math::Matrix::CreateTranslation(320, -250, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, m_weaponType1Tex.GetWidth(), m_weaponType1Tex.GetHeight());
 		if (spPlayer->GetWeaponType() & Player::WeaponType::grassHopper)
@@ -783,12 +787,12 @@ void GameUi::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, (int)m_weaponTypeOvreDarkTex.GetWidth(), (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color);
 		}
 
-		transMat = Math::Matrix::CreateTranslation(500, -250, 0);
+		transMat = Math::Matrix::CreateTranslation(530, -250, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, (int)m_weaponType2Tex.GetWidth(), (int)m_weaponType2Tex.GetHeight());
 		if (spPlayer->GetWeaponType() & Player::WeaponType::scorpion)
 		{
-			transMat = Math::Matrix::CreateTranslation(440, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(470, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			Math::Rectangle rc = { 0,0,(int)m_weaponTypeOvreDarkTex.GetWidth(),(int)m_weaponTypeOvreDarkTex.GetHeight() };
 			color = { 1,1,1,0.6f };
@@ -796,14 +800,27 @@ void GameUi::DrawSprite()
 		}
 		else if (spPlayer->GetWeaponType() & Player::WeaponType::grassHopper && spPlayer->GetRGrassHopperPauCnt() != 0)
 		{
-			transMat = Math::Matrix::CreateTranslation(440, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(470, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			Math::Rectangle rc = { 0,0,spPlayer->GetRGrassHopperPauCnt() * 4,(int)m_weaponTypeOvreDarkTex.GetHeight() };
 			color = { 1,1,1,0.6f };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, spPlayer->GetRGrassHopperPauCnt() * 4, (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 		}
 
-		transMat = Math::Matrix::CreateTranslation(-500, -250, 0);
+		if (KdInputManager::Instance().GetButtonState("rWeaponChange"))
+		{	
+			transMat = Math::Matrix::CreateTranslation(425, -250, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rWeaponChangeKeyPushStateTex, 0, 0, (int)m_rWeaponChangeKeyPushStateTex.GetWidth(), (int)m_rWeaponChangeKeyPushStateTex.GetHeight());
+		}
+		else
+		{
+			transMat = Math::Matrix::CreateTranslation(425, -250, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rWeaponChangeKeyTex, 0, 0, (int)m_rWeaponChangeKeyTex.GetWidth(), (int)m_rWeaponChangeKeyTex.GetHeight());
+		}
+
+		transMat = Math::Matrix::CreateTranslation(-530, -250, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, (int)m_weaponType1Tex.GetWidth(), (int)m_weaponType1Tex.GetHeight());
 		if (spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper)
@@ -813,12 +830,12 @@ void GameUi::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, (int)m_weaponTypeOvreDarkTex.GetWidth(), (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color);
 		}
 
-		transMat = Math::Matrix::CreateTranslation(-350, -250, 0);
+		transMat = Math::Matrix::CreateTranslation(-320, -250, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, (int)m_weaponType2Tex.GetWidth(), (int)m_weaponType2Tex.GetHeight());
 		if (spPlayer->GetWeaponType() & Player::WeaponType::lScorpion)
 		{
-			transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(-380, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			Math::Rectangle rc = { 0,0,(int)m_weaponTypeOvreDarkTex.GetWidth(),(int)m_weaponTypeOvreDarkTex.GetHeight() };
 			color = { 1,1,1,0.6f };
@@ -826,11 +843,24 @@ void GameUi::DrawSprite()
 		}
 		else if (spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper && spPlayer->GetLGrassHopperPauCnt() != 0)
 		{
-			transMat = Math::Matrix::CreateTranslation(-410, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(-380, -250, 0);
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			Math::Rectangle rc = { 0,0,spPlayer->GetLGrassHopperPauCnt() * 4,(int)m_weaponTypeOvreDarkTex.GetHeight() };
 			color = { 1,1,1,0.6f };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, spPlayer->GetLGrassHopperPauCnt() * 4, (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
+		}
+
+		if (KdInputManager::Instance().GetButtonState("lWeaponChange"))
+		{
+			transMat = Math::Matrix::CreateTranslation(-425, -250, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_lWeaponChangeKeyPushStateTex, 0, 0, (int)m_lWeaponChangeKeyPushStateTex.GetWidth(), (int)m_lWeaponChangeKeyPushStateTex.GetHeight());
+		}
+		else
+		{
+			transMat = Math::Matrix::CreateTranslation(-425, -250, 0);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_lWeaponChangeKeyTex, 0, 0, (int)m_lWeaponChangeKeyTex.GetWidth(), (int)m_lWeaponChangeKeyTex.GetHeight());
 		}
 
 		transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
@@ -1756,8 +1786,8 @@ void ModeSelectUi::Init()
 	m_modeSelectTex.Load("Asset/Textures/Ui/Select/ModeSelect.png");
 	m_pictureFrameTex.Load("Asset/Textures/Ui/Select/PictureFrame.png");
 
-	m_selectTitleTex.Load("Asset/Textures/Ui/Select/title.png");
-	m_selectExitTex.Load("Asset/Textures/Ui/Select/exit.png");
+	m_titleTex.Load("Asset/Textures/Ui/Select/title.png");
+	m_exitTex.Load("Asset/Textures/Ui/Select/exit.png");
 	m_gameTex.Load("Asset/Textures/Ui/Select/Battle.png");
 	m_battleCharaTex.Load("Asset/Textures/Ui/Select/BattleChara.png");
 	m_challengeTex.Load("Asset/Textures/Ui/Select/Challenge.png");
@@ -1773,7 +1803,6 @@ void ModeSelectUi::Init()
 	m_helpMkTex.Load("Asset/Textures/Ui/Select/help.png");
 	m_clauseMkTex.Load("Asset/Textures/Ui/Select/clause.png");
 	m_battlehelpTex.Load("Asset/Textures/Ui/Select/BattleHelp.png");
-	//m_chalengehelpTex.Load("Asset/Textures/Ui/Select/threeEnemy.png");
 
 	m_chalenge50Tex.Load("Asset/Textures/Ui/Select/Challenge50.png");
 	m_chalenge100Tex.Load("Asset/Textures/Ui/Select/Challenge100.png");
@@ -1835,9 +1864,6 @@ void ModeSelectUi::Init()
 	m_bTwoEnemyBossTypeOneTotal = false;
 	m_bBattleChara = false;
 	m_bChallengeChara = false;
-
-	m_bBattleSelect = false;
-	m_bChallengeSelect = false;
 }
 
 void ModeSelectUi::Update()
@@ -1852,458 +1878,166 @@ void ModeSelectUi::Update()
 
 	if (m_bBattlehelp || m_bChalengehelp)
 	{
-		mousePos.x -= 640;
-		mousePos.y = mousePos.y * -1 + 360;
-		Math::Vector3 Dis;
-		float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
-		float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
-
-		Math::Vector3 ClauseMkPos;
-		ClauseMkPos.x = m_clauseMkPos.x + (float)(pwi->rcWindow.left);
-		ClauseMkPos.y = m_clauseMkPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ClauseMkPos.z = m_clauseMkPos.z;
-
-		Dis = ClauseMkPos - Math::Vector3(mouseX, mouseY, 0.0f);
-
-		if (Dis.Length() < 25)
+		if (ButtomProcessing({ m_clauseMkPos.x,m_clauseMkPos.y}, m_clauseMkTex, m_clauseMkScale,0.1f))
 		{
-			m_clauseMkScale = 1.1f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (!m_addFadeAlpha)
 			{
-				if (!m_addFadeAlpha)
+				if (m_bChalengehelp)
 				{
-					if (m_bChalengehelp)
-					{
-						m_bChalengehelp = false;
-					}
-					else if (m_bBattlehelp)
-					{
-						m_bBattlehelp = false;
-					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+					m_bChalengehelp = false;
 				}
+				else if (m_bBattlehelp)
+				{
+					m_bBattlehelp = false;
+				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
 			}
-
-		}
-		else
-		{
-			m_clauseMkScale = 1.0f;
 		}
 	}
 	else
 	{
-
-
-		mousePos.x -= 640;
-		mousePos.y = mousePos.y * -1 + 360;
-		Math::Vector3 Dis;
-		float mouseX = (float)mousePos.x/* + (float)(pwi->rcWindow.left)*/;
-		float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
-
-		Math::Vector3 TutrorialPos;
-		TutrorialPos.x = m_tutorialPos.x + (float)(pwi->rcWindow.left);
-		TutrorialPos.y = m_tutorialPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		TutrorialPos.z = m_tutorialPos.z;
-
-		float MouseLeft = mouseX - 2.0f;
-		float MouseRight = mouseX + 2.0f;
-		float MouseTop = mouseY + 2.0f;
-		float MouseBottom = mouseY - 2.0f;
-
-		float TutorialLeft = TutrorialPos.x - 117.5f;
-		float TutorialRight = TutrorialPos.x + 117.5f;
-		float TutorialTop = TutrorialPos.y + 132.5f;
-		float TutorialBottom = TutrorialPos.y - 132.5f;
-
-		if (MouseRight > TutorialLeft && TutorialRight > MouseLeft &&
-			MouseTop > TutorialBottom && TutorialTop > MouseBottom)
+		if (ButtomProcessing({ m_tutorialPos.x,m_tutorialPos.y }, m_tutorialTex, m_tutorialScale,1.0f, 0.1f))
 		{
-			m_tutorialScale = 1.1f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (!m_addFadeAlpha)
 			{
-				if (!m_addFadeAlpha)
+				m_bTutorial = true;
+				m_addFadeAlpha = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+			}
+		}
+
+		if (ButtomProcessing({ m_exitPos.x,m_exitPos.y }, m_exitTex, m_exitScale,1.0f,0.1f))
+		{
+			if (!m_addFadeAlpha)
+			{
+				m_bExit = true;
+				m_addFadeAlpha = true;
+				m_bFirstExit = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+			}
+		}
+
+		if (ButtomProcessing({ m_battleCharaPos.x,m_battleCharaPos.y }, m_battleCharaTex, m_battleCharaScale, 1.0f, 0.1f))
+		{
+			if (!m_addFadeAlpha)
+			{
+				m_bBattleChara = !m_bBattleChara;
+
+				if (m_bChallengeChara)
 				{
-					m_bTutorial = true;
-					m_addFadeAlpha = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+					m_bChallengeChara = false;
 				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 			}
-
-		}
-		else
-		{
-			m_tutorialScale = 1.0f;
-		}
-
-		Math::Vector3 ExitPos;
-		ExitPos.x = m_exitPos.x + (float)(pwi->rcWindow.left);
-		ExitPos.y = m_exitPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ExitPos.z = m_exitPos.z;
-
-		float ExitLeft = ExitPos.x - 50;
-		float ExitRight = ExitPos.x + 50;
-		float ExitTop = ExitPos.y + 25;
-		float ExitBottom = ExitPos.y - 25;
-
-		if (MouseRight > ExitLeft && ExitRight > MouseLeft &&
-			MouseTop > ExitBottom && ExitTop > MouseBottom)
-		{
-			m_exitScale = 1.1f;
-
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				if (!m_addFadeAlpha)
-				{
-					m_bExit = true;
-					m_addFadeAlpha = true;
-					m_bFirstExit = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-				}
-			}
-
-		}
-		else
-		{
-			m_exitScale = 1.0f;
-		}
-
-		Math::Vector3 GamePos;
-		GamePos.x = m_battleCharaPos.x + (float)(pwi->rcWindow.left);
-		GamePos.y = m_battleCharaPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		GamePos.z = m_battleCharaPos.z;
-
-		float GameLeft = GamePos.x - 260;
-		float GameRight = GamePos.x + 260;
-		float GameTop = GamePos.y + 65;
-		float GameBottom = GamePos.y - 65;
-
-		if (MouseRight > GameLeft && GameRight > MouseLeft &&
-			MouseTop > GameBottom && GameTop > MouseBottom)
-		{
-			m_battleCharaScale = 1.1f;
-
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				if (!m_addFadeAlpha && !m_bBattleSelect)
-				{
-					m_bBattleChara = !m_bBattleChara;
-
-					if (m_bChallengeChara)
-					{
-						m_bChallengeChara = false;
-					}
-
-					m_bBattleSelect = true;
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-				}
-			}
-			else
-			{
-				m_bBattleSelect = false;
-			}
-
-		}
-		else
-		{
-			m_battleCharaScale = 1.0f;
 		}
 
 		if (m_bBattleChara)
 		{
-			GamePos.x = m_enemyBossTypeOnePos.x + (float)(pwi->rcWindow.left);
-			GamePos.y = m_enemyBossTypeOnePos.y /*+ (float)(pwi->rcWindow.top)*/;
-			GamePos.z = m_enemyBossTypeOnePos.z;
-
-			GameLeft = GamePos.x - 105;
-			GameRight = GamePos.x + 105;
-			GameTop = GamePos.y + 40;
-			GameBottom = GamePos.y - 40;
-
-			if (MouseRight > GameLeft && GameRight > MouseLeft &&
-				MouseTop > GameBottom && GameTop > MouseBottom)
+			if (ButtomProcessing({ m_enemyBossTypeOnePos.x,m_enemyBossTypeOnePos.y }, m_enemyBossTypeOneTex, m_enemyBossTypeOneScale, 1.0f, 0.1f))
 			{
-				m_enemyBossTypeOneScale = 1.1f;
-
-				if (KdInputManager::Instance().IsPress("select"))
+				if (!m_addFadeAlpha)
 				{
-					if (!m_addFadeAlpha)
-					{
-						m_bEnemyBossTypeOneTotal = true;
-						m_bGame = true;
-						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-					}
-				}
-
-			}
-			else
-			{
-				m_enemyBossTypeOneScale = 1.0f;
-			}
-
-			GamePos.x = m_enemyBossTypeTwoPos.x + (float)(pwi->rcWindow.left);
-			GamePos.y = m_enemyBossTypeTwoPos.y /*+ (float)(pwi->rcWindow.top)*/;
-			GamePos.z = m_enemyBossTypeTwoPos.z;
-
-			GameLeft = GamePos.x - 105;
-			GameRight = GamePos.x + 105;
-			GameTop = GamePos.y + 40;
-			GameBottom = GamePos.y - 40;
-
-			if (MouseRight > GameLeft && GameRight > MouseLeft &&
-				MouseTop > GameBottom && GameTop > MouseBottom)
-			{
-				m_enemyBossTypeTwoScale = 1.1f;
-
-				if (KdInputManager::Instance().IsPress("select"))
-				{
-					if (!m_addFadeAlpha)
-					{
-						m_bEnemyBossTypeTwoTotal = true;
-						m_bGame = true;
-						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-					}
-				}
-
-			}
-			else
-			{
-				m_enemyBossTypeTwoScale = 1.0f;
-			}
-
-			GamePos.x = m_twoEnemyBossTypeOnePos.x + (float)(pwi->rcWindow.left);
-			GamePos.y = m_twoEnemyBossTypeOnePos.y /*+ (float)(pwi->rcWindow.top)*/;
-			GamePos.z = m_twoEnemyBossTypeOnePos.z;
-
-			GameLeft = GamePos.x - 105;
-			GameRight = GamePos.x + 105;
-			GameTop = GamePos.y + 40;
-			GameBottom = GamePos.y - 40;
-
-			if (MouseRight > GameLeft && GameRight > MouseLeft &&
-				MouseTop > GameBottom && GameTop > MouseBottom)
-			{
-				m_twoEnemyBossTypeOneScale = 1.1f;
-
-				if (KdInputManager::Instance().IsPress("select"))
-				{
-					if (!m_addFadeAlpha)
-					{
-						m_bTwoEnemyBossTypeOneTotal = true;
-						m_bGame = true;
-						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-					}
-				}
-
-			}
-			else
-			{
-				m_twoEnemyBossTypeOneScale = 1.0f;
-			}
-		}
-
-		Math::Vector3 ChallengePos;
-		ChallengePos.x = m_challengeCharaPos.x + (float)(pwi->rcWindow.left);
-		ChallengePos.y = m_challengeCharaPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		ChallengePos.z = m_challengeCharaPos.z;
-
-		float ChallengeLeft = ChallengePos.x - 260;
-		float ChallengeRight = ChallengePos.x + 260;
-		float ChallengeTop = ChallengePos.y + 65;
-		float ChallengeBottom = ChallengePos.y - 65;
-
-		if (MouseRight > ChallengeLeft && ChallengeRight > MouseLeft &&
-			MouseTop > ChallengeBottom && ChallengeTop > MouseBottom)
-		{
-			m_challengeCharaScale = 1.1f;
-
-			if (KdInputManager::Instance().IsPress("select"))
-			{
-				if (!m_addFadeAlpha && !m_bChallengeSelect)
-				{
-					m_bChallengeChara = !m_bChallengeChara;
-
-					if (m_bBattleChara)
-					{
-						m_bBattleChara = false;
-					}
-
-					m_bChallengeSelect = true;
+					m_bEnemyBossTypeOneTotal = true;
+					m_bGame = true;
+					m_addFadeAlpha = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
-			else
+			
+			if (ButtomProcessing({ m_enemyBossTypeTwoPos.x,m_enemyBossTypeTwoPos.y }, m_enemyBossTypeTwoTotalTex, m_enemyBossTypeTwoScale, 1.0f, 0.1f))
 			{
-				m_bChallengeSelect = false;
+				if (!m_addFadeAlpha)
+				{
+					m_bEnemyBossTypeTwoTotal = true;
+					m_bGame = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+				}
 			}
-
+	
+			if (ButtomProcessing({ m_twoEnemyBossTypeOnePos.x,m_twoEnemyBossTypeOnePos.y }, m_twoEnemyBossTypeOneTex, m_twoEnemyBossTypeOneScale, 1.0f, 0.1f))
+			{
+				if (!m_addFadeAlpha)
+				{
+					m_bTwoEnemyBossTypeOneTotal = true;
+					m_bGame = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+				}
+			}
 		}
-		else
+
+		if (ButtomProcessing({ m_challengeCharaPos.x,m_challengeCharaPos.y }, m_challengeCharaTex, m_challengeCharaScale, 1.0f, 0.1f))
 		{
-			m_challengeCharaScale = 1.0f;
+			if (!m_addFadeAlpha)
+			{
+				m_bChallengeChara = !m_bChallengeChara;
+
+				if (m_bBattleChara)
+				{
+					m_bBattleChara = false;
+				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+			}
 		}
 
 		if (m_bChallengeChara)
 		{
-			ChallengePos.x = m_chalenge50Pos.x + (float)(pwi->rcWindow.left);
-			ChallengePos.y = m_chalenge50Pos.y /*+ (float)(pwi->rcWindow.top)*/;
-			ChallengePos.z = m_chalenge50Pos.z;
-
-			ChallengeLeft = ChallengePos.x - 105;
-			ChallengeRight = ChallengePos.x + 105;
-			ChallengeTop = ChallengePos.y + 40;
-			ChallengeBottom = ChallengePos.y - 40;
-
-			if (MouseRight > ChallengeLeft && ChallengeRight > MouseLeft &&
-				MouseTop > ChallengeBottom && ChallengeTop > MouseBottom)
-			{
-				m_chalenge50Scale = 1.1f;
-
-				if (KdInputManager::Instance().IsPress("select"))
-				{
-					if (!m_addFadeAlpha)
-					{
-						m_bChalenge50 = true;
-						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-					}
-				}
-
-			}
-			else
-			{
-				m_chalenge50Scale = 1.0f;
-			}
-
-			ChallengePos;
-			ChallengePos.x = m_chalenge100Pos.x + (float)(pwi->rcWindow.left);
-			ChallengePos.y = m_chalenge100Pos.y /*+ (float)(pwi->rcWindow.top)*/;
-			ChallengePos.z = m_chalenge100Pos.z;
-
-			ChallengeLeft = ChallengePos.x - 105;
-			ChallengeRight = ChallengePos.x + 105;
-			ChallengeTop = ChallengePos.y + 40;
-			ChallengeBottom = ChallengePos.y - 40;
-
-			if (MouseRight > ChallengeLeft && ChallengeRight > MouseLeft &&
-				MouseTop > ChallengeBottom && ChallengeTop > MouseBottom)
-			{
-				m_chalenge100Scale = 1.1f;
-
-				if (KdInputManager::Instance().IsPress("select"))
-				{
-					if (!m_addFadeAlpha)
-					{
-						m_bChalenge100 = true;
-						m_addFadeAlpha = true;
-						KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-					}
-				}
-
-			}
-			else
-			{
-				m_chalenge100Scale = 1.0f;
-			}
-		}
-
-		Math::Vector3 TrainingPos;
-		TrainingPos.x = m_trainingPos.x + (float)(pwi->rcWindow.left);
-		TrainingPos.y = m_trainingPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		TrainingPos.z = m_trainingPos.z;
-
-		float TrainingLeft = TrainingPos.x - 117.5f;
-		float TrainingRight = TrainingPos.x + 117.5f;
-		float TrainingTop = TrainingPos.y + 132.5f;
-		float TrainingBottom = TrainingPos.y - 132.5f;
-
-		if (MouseRight > TrainingLeft && TrainingRight > MouseLeft &&
-			MouseTop > TrainingBottom && TrainingTop > MouseBottom)
-		{
-			m_trainingScale = 1.1f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (ButtomProcessing({ m_chalenge50Pos.x,m_chalenge50Pos.y }, m_chalenge50Tex, m_chalenge50Scale, 1.0f, 0.1f))
 			{
 				if (!m_addFadeAlpha)
 				{
-					m_bTraining = true;
+					m_bChalenge50 = true;
 					m_addFadeAlpha = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
 
-		}
-		else
-		{
-			m_trainingScale = 1.0f;
-		}
-
-		Math::Vector3 TitlePos;
-		TitlePos.x = m_titlePos.x + (float)(pwi->rcWindow.left);
-		TitlePos.y = m_titlePos.y /*+ (float)(pwi->rcWindow.top)*/;
-		TitlePos.z = m_titlePos.z;
-
-		float TitleLeft = TitlePos.x - 50;
-		float TitleRight = TitlePos.x + 50;
-		float TitleTop = TitlePos.y + 25;
-		float TitleBottom = TitlePos.y - 25;
-
-		if (MouseRight > TitleLeft && TitleRight > MouseLeft &&
-			MouseTop > TitleBottom && TitleTop > MouseBottom)
-		{
-			m_titleScale = 1.1f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (ButtomProcessing({ m_chalenge100Pos.x,m_chalenge100Pos.y }, m_chalenge100Tex, m_chalenge100Scale, 1.0f, 0.1f))
 			{
 				if (!m_addFadeAlpha)
 				{
-					m_bTitle = true;
+					m_bChalenge100 = true;
 					m_addFadeAlpha = true;
 					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 				}
 			}
-
-		}
-		else
-		{
-			m_titleScale = 1.0f;
 		}
 
-		Math::Vector3 helpMkPos;
-		helpMkPos.x = m_helpMkPos.x + (float)(pwi->rcWindow.left);
-		helpMkPos.y = m_helpMkPos.y /*+ (float)(pwi->rcWindow.top)*/;
-		helpMkPos.z = m_helpMkPos.z;
-
-		Dis = helpMkPos - Math::Vector3(mouseX, mouseY, 0.0f);
-
-		if (Dis.Length() < 25)
+		if (ButtomProcessing({ m_trainingPos.x,m_trainingPos.y }, m_trainingTex, m_trainingScale, 1.0f, 0.1f))
 		{
-			m_helpMkScale = 1.1f;
-
-			if (KdInputManager::Instance().IsPress("select"))
+			if (!m_addFadeAlpha)
 			{
-				if (!m_addFadeAlpha)
-				{
-					if (m_bChallengeChara)
-					{
-						//m_bBattlehelp = true;
-					}
-					else if (m_bBattleChara)
-					{
-						m_bBattlehelp = true;
-					}
-					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
-				}
+				m_bTraining = true;
+				m_addFadeAlpha = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 			}
-
 		}
-		else
+
+		if (ButtomProcessing({ m_titlePos.x,m_titlePos.y }, m_titleTex, m_titleScale, 1.0f, 0.1f))
 		{
-			m_helpMkScale = 1.0f;
+			if (!m_addFadeAlpha)
+			{
+				m_bTitle = true;
+				m_addFadeAlpha = true;
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+			}
+		}
+
+		if (ButtomProcessing({ m_helpMkPos.x,m_helpMkPos.y }, m_helpMkTex, m_helpMkScale, 1.0f, 0.1f))
+		{
+			if (!m_addFadeAlpha)
+			{
+				if (m_bChallengeChara)
+				{
+					//m_bBattlehelp = true;
+				}
+				else if (m_bBattleChara)
+				{
+					m_bBattlehelp = true;
+				}
+				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+			}
 		}
 	}
 
@@ -2493,11 +2227,11 @@ void ModeSelectUi::DrawSprite()
 
 	mat = Math::Matrix::CreateScale(m_titleScale) * Math::Matrix::CreateTranslation(m_titlePos);
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectTitleTex, 0, 0, 100, 50);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_titleTex, 0, 0, 100, 50);
 
 	mat = Math::Matrix::CreateScale(m_exitScale) * Math::Matrix::CreateTranslation(m_exitPos);
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectExitTex, 0, 0, 100, 50);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_exitTex, 0, 0, 100, 50);
 
 	mat = Math::Matrix::Identity;
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -2566,7 +2300,7 @@ void TutorialUi::Init()
 	m_exitPos = { 0,-250,0 };
 
 	m_fadeAlpha = 0.0f;
-	m_backPos = { 550,-300,0 };
+	m_backPos = { 515,-300,0 };
 	m_backScale = 0.8f;
 
 	m_tutorialType = kihonTu;
@@ -2952,7 +2686,7 @@ void TutorialUi::OptionUpdate()
 			KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 		}
 
-		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale,0.8f))
 		{
 			m_bOption = false;
 			ShowCursor(false); // マウスカーソルを消す
@@ -2998,7 +2732,7 @@ void TutorialUi::OptionUpdate()
 	}
 	else
 	{
-		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale,0.8f))
 		{
 			m_bWeaponDataPage = false;
 			m_bWeaponDataHopperPage = false;
@@ -3137,7 +2871,7 @@ void TrainingUi::Init()
 	m_exitPos = { 0,-250,0 };
 	m_fadeAlpha = 0.0f;
 
-	m_backPos = { 550,-300,0 };
+	m_backPos = { 515,-300,0 };
 	m_backScale = 0.8f;
 
 	m_countOneScale = 0.1f;
@@ -3661,7 +3395,7 @@ void TrainingUi::OptionUpdate()
 			KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 		}
 
-		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale,0.8f))
 		{
 			m_bOption = false;
 			ShowCursor(false); // マウスカーソルを消す
@@ -3707,7 +3441,7 @@ void TrainingUi::OptionUpdate()
 	}
 	else
 	{
-		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
+		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale,0.8f))
 		{
 			m_bWeaponDataPage = false;
 			m_bWeaponDataHopperPage = false;

@@ -232,6 +232,30 @@
     "AddValRockOnPosZ": 0.5
   },
 
+  "Ui": {
+    "TitleUi": {
+
+    },
+    "ModeSelect ": {
+
+    },
+    "GameUi": {
+
+    },
+    "ResultUi": {
+
+    },
+    "TrainingUi": {
+
+    },
+    "TutorialUi": {
+
+    },
+
+    "FadeSpeed": 0.0166666666666667
+  },
+
+  // 全キャラ共通
   "TutorialMinimumYPos": -10,
   "MinimumYPos": -1,
   "HightYPos": 125,
@@ -249,17 +273,25 @@
   "InvincibilityMaxTimeCnt": 100,
   "InvincibilityProgramTimeCnt": [ 90, 80, 70, 60, 50, 40, 30, 20, 15, 10, 5, 3, 1 ],
   "HitColorChangeTimeCnt": 15,
+
+  // キャラごとに異なる
   "OnHitDamage": 15,
+
+  // 敵共通
   "EnemyAppearanceF": [ 0, 1, 20 ],
   "EnemyAppearanceR": [ 20, 1, 0 ],
   "EnemyAppearanceB": [ 0, 1, -30 ],
   "EnemyAppearanceL": [ -20, 1, 0 ],
+
+  // 人型キャラ共通
   "GrassDashSpeeedDecelerationTime": [ 30, 25, 20, 15, 10, 5 ],
   "GrassDashMaxTime": 90,
   "GrassDashSteppingAwayMoment": 75,
   "GrassDashSteppingAwayJustBefore": 80,
   "GrassDashSpeed": [ 0, 0.8, 0.5, 0.4, 0.35, 0.3, 0.25, 0.2 ],
   "SpeedSterGrassDashSpeed": [ 1.2, 0.4, 0.35, 0.3, 0.25, 0.2, 0.1 ],
+
+  // モンスター型敵共通
   "FristWeaknessHitGraduallyTorionDecVal" : 0.1,
-  "AddWeaknessHitGraduallyTorionDecVal" : 1.5
+  "AddWeaknessHitGraduallyTorionDecVal": 1.5
 }
