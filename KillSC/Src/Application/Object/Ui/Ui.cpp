@@ -5,7 +5,7 @@
 #include "../Character/Enemy/Enemy.h"
 #include "../../Camera/GameCamera/GameCamera.h"
 
-void Ui::SetUiType(UiType a_uiType, std::weak_ptr<json11::Json> a_wpJsonObj)
+void Ui::SetUiType(UiType a_uiType)
 {
 	m_uiType = a_uiType;
 	switch (m_uiType)
@@ -66,9 +66,9 @@ void Ui::SetEnemy(std::shared_ptr<Enemy> a_spEnemy)
 	m_currentUiClassId->SetEnemy(a_spEnemy);
 }
 
-void Ui::Init()
+void Ui::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
-	m_currentUiClassId->Init();
+	m_currentUiClassId->Init(a_wpJsonObj);
 }
 
 bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_scale, float a_originalScale, float a_addScaleVal)
@@ -126,8 +126,11 @@ bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_
 }
 
 // タイトルのUI関連の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-void TitleUi::Init()
+void TitleUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
+	m_mpUiSharedObj = (*a_wpJsonObj.lock())["Ui"].object_items();
+	m_mpDedicatedObj = m_mpUiSharedObj["TitleUi"].object_items();
+
 	m_pushLClickTex.Load("Asset/Textures/Ui/shared/PUSHTLCLICK.png");
 	m_titleCharRogoTex.Load("Asset/Textures/Ui/Title/KillSC.png");
 	m_FTtoyoRogoTex.Load("Asset/Textures/Ui/Title/FTtoyo.png");
@@ -137,19 +140,33 @@ void TitleUi::Init()
 	m_bSceneCangePossible = false;
 	m_pushLClickAlpha = 1.0f;
 	m_bPushLClickAlphaAdd = false;
+
+	m_titlerogoTexPos = {(float)m_mpDedicatedObj["TitlerogoTexPos"][0].number_value(),
+						 (float)m_mpDedicatedObj["TitlerogoTexPos"][1].number_value(),
+						 (float)m_mpDedicatedObj["TitlerogoTexPos"][2].number_value()};
+
+	m_pushLClickTexPos = {(float)m_mpDedicatedObj["PushLClickTexPos"][0].number_value(),
+						  (float)m_mpDedicatedObj["PushLClickTexPos"][1].number_value(),
+						  (float)m_mpDedicatedObj["PushLClickTexPos"][2].number_value() };
+
+	m_screenAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["ScreenAlphaFadeSpeed"].number_value());
+	m_pushLClickAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["PushLClickAlphaFadeSpeed"].number_value());
+	m_mouseRadius = m_mpUiSharedObj["MouseRadius"].int_value();
+	m_mouseHalfHeight = m_mpUiSharedObj["MouseHalfHeight"].int_value();
+	m_titleBarHeight = m_mpUiSharedObj["TitleBarHeight"].int_value();
 }
 
 void TitleUi::Update()
 {
 	m_time++;
-	if (m_time >= 480)
+	if (m_time >= m_mpDedicatedObj["MaxTime"].int_value())
 	{
-		m_time = 480;
+		m_time = m_mpDedicatedObj["MaxTime"].int_value();
 		m_bSceneCangePossible = true;
 
 		if (m_bPushLClickAlphaAdd)
 		{
-			m_pushLClickAlpha += (0.8f / 30);
+			m_pushLClickAlpha += m_pushLClickAlphaFadeSpeed;
 			if (m_pushLClickAlpha >= 1.0f)
 			{
 				m_pushLClickAlpha = 1.0f;
@@ -158,7 +175,7 @@ void TitleUi::Update()
 		}
 		else
 		{
-			m_pushLClickAlpha -= (0.8f / 30);
+			m_pushLClickAlpha -= m_pushLClickAlphaFadeSpeed;
 			if (m_pushLClickAlpha <= 0.2f)
 			{
 				m_pushLClickAlpha = 0.2f;
@@ -168,7 +185,7 @@ void TitleUi::Update()
 
 		if (m_addFadeAlpha)
 		{
-			m_fadeAlpha += (1.0f / 60.0f);
+			m_fadeAlpha += m_screenAlphaFadeSpeed;
 			if (m_fadeAlpha >= 1.0f)
 			{
 				m_fadeAlpha = 1.0f;
@@ -232,11 +249,11 @@ void TitleUi::DrawSprite()
 	}
 	else if (m_time >= 360)
 	{
-		transMat = Math::Matrix::CreateTranslation(0, 200, 0);
+		transMat = Math::Matrix::CreateTranslation(m_titlerogoTexPos);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_titleCharRogoTex, 0, 0, (int)m_titleCharRogoTex.GetWidth(), (int)m_titleCharRogoTex.GetHeight());
 
-		transMat = Math::Matrix::CreateTranslation(0, -200, 0);
+		transMat = Math::Matrix::CreateTranslation(m_pushLClickTexPos);
 		Math::Rectangle rc = { 0,0,(int)m_pushLClickTex.GetWidth(),(int)m_pushLClickTex.GetHeight() };
 		color = { 1,1,1,m_pushLClickAlpha };
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -251,8 +268,17 @@ void TitleUi::DrawSprite()
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 // ゲームモードのUI関連の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-void GameUi::Init()
+void GameUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
+	m_mpUiSharedObj = (*a_wpJsonObj.lock())["Ui"].object_items();
+	m_mpDedicatedObj = m_mpUiSharedObj["GameUi"].object_items();
+
+	m_screenAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["ScreenAlphaFadeSpeed"].number_value());
+	m_pushLClickAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["PushLClickAlphaFadeSpeed"].number_value());
+	m_mouseRadius = m_mpUiSharedObj["MouseRadius"].int_value();
+	m_mouseHalfHeight = m_mpUiSharedObj["MouseHalfHeight"].int_value();
+	m_titleBarHeight = m_mpUiSharedObj["TitleBarHeight"].int_value();
+
 	m_exitTex.Load("Asset/Textures/Ui/OPTION/EXIT.png");
 	m_selectTex.Load("Asset/Textures/Ui/OPTION/ModeSelect.png");
 	m_operationTex.Load("Asset/Textures/Ui/OPTION/Operation.png");
@@ -318,9 +344,14 @@ void GameUi::Init()
 	m_selectScale = 1.0f;
 
 	m_selectPos = { 0,0,0 };
-	m_exitPos = { 0,-250,0 };
+	m_exitPos = {static_cast<float>(m_mpDedicatedObj["ExitButtomPos"][0].number_value()),
+				 static_cast<float>(m_mpDedicatedObj["ExitButtomPos"][1].number_value()),
+				 static_cast<float>(m_mpDedicatedObj["ExitButtomPos"][2].number_value())};
 
-	m_backPos = { 515,-300,0 };
+	m_backPos = {static_cast<float>(m_mpDedicatedObj["BackButtomPos"][0].number_value()),
+				 static_cast<float>(m_mpDedicatedObj["BackButtomPos"][1].number_value()),
+				 static_cast<float>(m_mpDedicatedObj["BackButtomPos"][2].number_value())};
+
 	m_backScale = 0.8f;
 
 	m_countOneScale = 0.1f;
@@ -350,21 +381,37 @@ void GameUi::Init()
 	m_bHowToPage = true;
 
 	m_weaponLeftYaiScale = 1.0f;
-	m_weaponLeftYaiPos = { -500,250,0 };
+	m_weaponLeftYaiPos = {static_cast<float>(m_mpDedicatedObj["WeaponLeftYaiButtomPos"][0].number_value()),
+				          static_cast<float>(m_mpDedicatedObj["WeaponLeftYaiButtomPos"][1].number_value()),
+				          static_cast<float>(m_mpDedicatedObj["WeaponLeftYaiButtomPos"][2].number_value())};
 
 	m_weaponRightYaiScale = 1.0f;
-	m_weaponRightYaiPos = { 500,250,0, };
+	m_weaponRightYaiPos = {static_cast<float>(m_mpDedicatedObj["WeaponRightYaiButtomPos"][0].number_value()),
+						   static_cast<float>(m_mpDedicatedObj["WeaponRightYaiButtomPos"][1].number_value()),
+						   static_cast<float>(m_mpDedicatedObj["WeaponRightYaiButtomPos"][2].number_value())};
 
 	m_weaOrHowLeftYaiScale = 1.0f;
-	m_weaOrHowLeftYaiPos = { -600,0,0 };
+	m_weaOrHowLeftYaiPos = {static_cast<float>(m_mpDedicatedObj["WeaOrHowLeftYaiButtomPos"][0].number_value()),
+						    static_cast<float>(m_mpDedicatedObj["WeaOrHowLeftYaiButtomPos"][1].number_value()),
+						    static_cast<float>(m_mpDedicatedObj["WeaOrHowLeftYaiButtomPos"][2].number_value())};
 
 	m_weaOrHowRightYaiScale = 1.0f;
-	m_weaOrHowRightYaiPos = { 600,0,0 };
+	m_weaOrHowRightYaiPos = {static_cast<float>(m_mpDedicatedObj["WeaOrHowRightYaiButtomPos"][0].number_value()),
+						     static_cast<float>(m_mpDedicatedObj["WeaOrHowRightYaiButtomPos"][1].number_value()),
+						     static_cast<float>(m_mpDedicatedObj["WeaOrHowRightYaiButtomPos"][2].number_value())};
 
 	m_operationScale = 1.0f;
-	m_operationPos = { 0,250,0 };
+	m_operationPos = {static_cast<float>(m_mpDedicatedObj["OperationButtomPos"][0].number_value()),
+					  static_cast<float>(m_mpDedicatedObj["OperationButtomPos"][1].number_value()),
+				      static_cast<float>(m_mpDedicatedObj["OperationButtomPos"][2].number_value())};
+
 	m_bOperation = false;
 	m_bFirstExit = true;
+	m_scaleFadeSpeed = static_cast<float>(m_mpDedicatedObj["ScaleFadeSpeed"].number_value());
+
+	m_charFadeSpeed = static_cast<float>(m_mpDedicatedObj["CharFadeSpeed"].number_value());
+	m_charLastFadeOutSpeed = static_cast<float>(m_mpDedicatedObj["CharLastFadeOutSpeed"].number_value());
+
 }
 
 void GameUi::Update()
@@ -396,139 +443,122 @@ void GameUi::Update()
 
 	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
 	{
-		if (m_time >= 0 && m_time < 90)
+		if (m_time >= 0 && m_time < m_mpDedicatedObj["WaveTexDepartureTime"][0].int_value())
 		{
-			m_waveScale += (1.0f / 10.0f);
+			m_waveScale += m_scaleFadeSpeed;
 			if (m_waveScale > 1.0f)
 			{
 				m_waveScale = 1.0f;
 			}
 
-			m_waveAlpha += (1.0f / 30.0f);
+			m_waveAlpha += m_charFadeSpeed;
 			if (m_waveAlpha > 1.0f)
 			{
 				m_waveAlpha = 1.0f;
 			}
 		}
-		else if (m_time >= 90 && m_time < 180)
+		else if (m_time >= m_mpDedicatedObj["WaveTexDepartureTime"][0].int_value() && 
+			     m_time < m_mpDedicatedObj["WaveTexDepartureTime"][1].int_value())
 		{
-			m_waveAlpha -= (1.0f / 60.0f);
+			m_waveAlpha -= m_charLastFadeOutSpeed;
 			if (m_waveAlpha < 0.0f)
 			{
 				m_waveAlpha = 0.0f;
 			}
 		}
-		else if (m_time >= 180 && m_time < 210)
-		{
-			m_countGoScale += (1.0f / 10.0f);
-			if (m_countGoScale > 1.0f)
-			{
-				m_countGoScale = 1.0f;
-			}
-
-			m_countGoAlpha += (1.0f / 30.0f);
-			if (m_countGoAlpha > 1.0f)
-			{
-				m_countGoAlpha = 1.0f;
-			}
-		}
-		else if (m_time >= 210 && m_time < 240)
-		{
-			m_countGoAlpha -= (1.0f / 30.0f);
-			if (m_countGoAlpha < 0.0f)
-			{
-				m_countGoAlpha = 0.0f;
-				SetCursorPos(640, 360);
-				m_waveAlpha = 0.0f;
-				m_waveScale = 0.1f;
-			}
-		}
 	}
 
-	if (m_time >= 0 && m_time < 30)
+	if (m_time >= 0 && m_time < m_mpDedicatedObj["CountFadeTime"][0].int_value())
 	{
-		m_countThreeScale += (1.0f / 10.0f);
+		m_countThreeScale += m_scaleFadeSpeed;
 		if (m_countThreeScale > 1.0f)
 		{
 			m_countThreeScale = 1.0f;
 		}
 
-		m_countThreeAlpha += (1.0f / 30.0f);
+		m_countThreeAlpha += m_charFadeSpeed;
 		if (m_countThreeAlpha > 1.0f)
 		{
 			m_countThreeAlpha = 1.0f;
 		}
 	}
-	else if (m_time >= 30 && m_time < 60)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][0].int_value() && 
+		     m_time <  m_mpDedicatedObj["CountFadeTime"][1].int_value())
 	{
 
-		m_countThreeAlpha -= (1.0f / 30.0f);
+		m_countThreeAlpha -= m_charFadeSpeed;
 		if (m_countThreeAlpha < 0.0f)
 		{
 			m_countThreeAlpha = 0.0f;
 		}
 	}
-	else if (m_time >= 60 && m_time < 90)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][1].int_value() && 
+		     m_time <  m_mpDedicatedObj["CountFadeTime"][2].int_value())
 	{
-		m_countTwoScale += (1.0f / 10.0f);
+		m_countTwoScale += m_scaleFadeSpeed;
 		if (m_countTwoScale > 1.0f)
 		{
 			m_countTwoScale = 1.0f;
 		}
 
-		m_countTwoAlpha += (1.0f / 30.0f);
+		m_countTwoAlpha += m_charFadeSpeed;
 		if (m_countTwoAlpha > 1.0f)
 		{
 			m_countTwoAlpha = 1.0f;
 		}
 	}
-	else if (m_time >= 90 && m_time < 120)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][2].int_value() && 
+		     m_time <  m_mpDedicatedObj["CountFadeTime"][3].int_value())
 	{
-		m_countTwoAlpha -= (1.0f / 30.0f);
+		m_countTwoAlpha -= m_charFadeSpeed;
 		if (m_countThreeAlpha < 0.0f)
 		{
 			m_countThreeAlpha = 0.0f;
 		}
 	}
-	else if (m_time >= 120 && m_time < 150)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][3].int_value() &&
+		     m_time <  m_mpDedicatedObj["CountFadeTime"][4].int_value())
 	{
-		m_countOneScale += (1.0f / 10.0f);
+		m_countOneScale += m_scaleFadeSpeed;
 		if (m_countOneScale > 1.0f)
 		{
 			m_countOneScale = 1.0f;
 		}
 
-		m_countOneAlpha += (1.0f / 30.0f);
+		m_countOneAlpha += m_charFadeSpeed;
 		if (m_countOneAlpha > 1.0f)
 		{
 			m_countOneAlpha = 1.0f;
 		}
 	}
-	else if (m_time >= 150 && m_time < 180)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][4].int_value() && 
+		     m_time <  m_mpDedicatedObj["CountFadeTime"][5].int_value())
 	{
-		m_countOneAlpha -= (1.0f / 30.0f);
+		m_countOneAlpha -= m_charFadeSpeed;
 		if (m_countOneAlpha < 0.0f)
 		{
 			m_countOneAlpha = 0.0f;
 		}
 	}
-	else if (m_time >= 180 && m_time < 210)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][5].int_value() &&
+		     m_time <  m_mpDedicatedObj["CountFadeTime"][6].int_value())
 	{
-		m_countGoScale += (1.0f / 10.0f);
+		m_countGoScale += m_scaleFadeSpeed;
 		if (m_countGoScale > 1.0f)
 		{
 			m_countGoScale = 1.0f;
 		}
 
-		m_countGoAlpha += (1.0f / 30.0f);
+		m_countGoAlpha += m_charFadeSpeed;
 		if (m_countGoAlpha > 1.0f)
 		{
 			m_countGoAlpha = 1.0f;
 		}
 	}
-	else if (m_time >= 210 && m_time < 240)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][6].int_value() &&
+		     m_time <  m_mpDedicatedObj["CountFadeTime"][7].int_value())
 	{
-		m_countGoAlpha -= (1.0f / 30.0f);
+		m_countGoAlpha -= m_charFadeSpeed;
 		if (m_countGoAlpha < 0.0f)
 		{
 			m_countGoAlpha = 0.0f;
@@ -537,7 +567,7 @@ void GameUi::Update()
 	}
 
 
-	if (m_time > 240)
+	if (m_time > m_mpDedicatedObj["CountFadeTime"][7].int_value())
 	{
 
 		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
@@ -545,29 +575,30 @@ void GameUi::Update()
 			if (m_bWaveChange)
 			{
 				++m_waveTimeCnt;
-				if (m_waveTimeCnt >= 0 && m_waveTimeCnt < 90)
+				if (m_waveTimeCnt >= 0 && m_waveTimeCnt < m_mpDedicatedObj["CountFadeTime"][2].int_value())
 				{
-					m_waveScale += (1.0f / 10.0f);
+					m_waveScale += m_scaleFadeSpeed;
 					if (m_waveScale > 1.0f)
 					{
 						m_waveScale = 1.0f;
 					}
 
-					m_waveAlpha += (1.0f / 30.0f);
+					m_waveAlpha += m_charFadeSpeed;
 					if (m_waveAlpha > 1.0f)
 					{
 						m_waveAlpha = 1.0f;
 					}
 				}
-				else if (m_waveTimeCnt >= 90 && m_waveTimeCnt < 180)
+				else if (m_waveTimeCnt >= m_mpDedicatedObj["CountFadeTime"][2].int_value() && 
+					     m_waveTimeCnt <  m_mpDedicatedObj["CountFadeTime"][5].int_value())
 				{
-					m_waveAlpha -= (1.0f / 60.0f);
+					m_waveAlpha -= m_charLastFadeOutSpeed;
 					if (m_waveAlpha < 0.0f)
 					{
 						m_waveAlpha = 0.0f;
 					}
 				}
-				else if (m_waveTimeCnt >= 180)
+				else if (m_waveTimeCnt >= m_mpDedicatedObj["CountFadeTime"][5].int_value())
 				{
 					m_bWaveChange = false;
 					m_waveTimeCnt = 0;
@@ -676,14 +707,12 @@ void GameUi::PostUpdate()
 	int i = 0;
 	for (auto& list : m_wpEnemyList)
 	{
-		Math::Vector3 pos = Math::Vector3(list.lock()->GetPos().x, list.lock()->GetPos().y + 1.2f, list.lock()->GetPos().z);
+		Math::Vector3 pos = Math::Vector3(list.lock()->GetPos().x, list.lock()->GetPos().y + list.lock()->GetAddCenterVal().y + 1.4f, list.lock()->GetPos().z);
 
 		POINT dev;
 		KdDirect3D::Instance().WorldToClient(pos, dev, m_wpCamera.lock()->WorkCamera()->GetCameraMatrix(), m_wpCamera.lock()->WorkCamera()->GetProjMatrix());
 		dev.x -= (long)640.0f;
 		dev.y = (long)(dev.y * -1 + 360.0f);
-		float z = m_wpCamera.lock()->GetPos().z - list.lock()->GetPos().z;
-		dev.y += (long)(180 - (std::fabs(z) * 1.5f));
 		dev.x -= 50;
 		m_enemyScPosList[i] = Math::Vector2((float)dev.x, (float)dev.y);
 		++i;
@@ -700,16 +729,22 @@ void GameUi::DrawSprite()
 
 	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
 	{
-		if (m_time >= 0 && m_time < 180)
+		if (m_time >= 0 && m_time < m_mpDedicatedObj["CountFadeTime"][5].int_value())
 		{
-			transMat = Math::Matrix::CreateTranslation(-75, 200, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WaveTexPos"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WaveTexPos"][1].number_value()), 
+				                                       static_cast<float>(m_mpDedicatedObj["WaveTexPos"][2].number_value()));
+
 			mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 			Math::Rectangle rc = { 0,0,(int)m_waveTex.GetWidth(), (int)m_waveTex.GetHeight() };
 			color = { 1,1,1,m_waveAlpha };
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_waveTex, 0, 0, (int)m_waveTex.GetWidth(), (int)m_waveTex.GetHeight(), &rc, &color);
 
-			transMat = Math::Matrix::CreateTranslation(175, 190, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WaveCntTexPos"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WaveCntTexPos"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WaveCntTexPos"][2].number_value()));
+
 			mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 			rc = { 0,0,(int)m_PointTex[1].GetWidth(), (int)m_PointTex[1].GetHeight() };
@@ -720,16 +755,21 @@ void GameUi::DrawSprite()
 
 		if (m_waveCnt >= 2)
 		{
-			if (m_waveTimeCnt >= 0 && m_waveTimeCnt < 180)
+			if (m_waveTimeCnt >= 0 && m_waveTimeCnt < m_mpDedicatedObj["CountFadeTime"][5].int_value())
 			{
-				transMat = Math::Matrix::CreateTranslation(-75, 200, 0);
+				transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WaveTexPos"][0].number_value()),
+					                                       static_cast<float>(m_mpDedicatedObj["WaveTexPos"][1].number_value()),
+					                                       static_cast<float>(m_mpDedicatedObj["WaveTexPos"][2].number_value()));
 				mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 				Math::Rectangle rc = { 0,0,(int)m_waveTex.GetWidth(), (int)m_waveTex.GetHeight() };
 				color = { 1,1,1,m_waveAlpha };
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_waveTex, 0, 0, (int)m_waveTex.GetWidth(), (int)m_waveTex.GetHeight(), &rc, &color);
 
-				transMat = Math::Matrix::CreateTranslation(175, 190, 0);
+				transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WaveCntTexPos"][0].number_value()),
+					                                       static_cast<float>(m_mpDedicatedObj["WaveCntTexPos"][1].number_value()),
+					                                       static_cast<float>(m_mpDedicatedObj["WaveCntTexPos"][2].number_value()));
+
 				mat = Math::Matrix::CreateScale(m_waveScale) * transMat;
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 				rc = { 0,0,(int)m_PointTex[2].GetWidth(), (int)m_PointTex[2].GetHeight() };
@@ -741,7 +781,7 @@ void GameUi::DrawSprite()
 
 	transMat = Math::Matrix::Identity;
 
-	if (m_time >= 0 && m_time < 60)
+	if (m_time >= 0 && m_time < m_mpDedicatedObj["CountFadeTime"][1].int_value())
 	{
 		mat = Math::Matrix::CreateScale(m_countThreeScale) * transMat;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -749,7 +789,7 @@ void GameUi::DrawSprite()
 		color = { 1,1,1,m_countThreeAlpha };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countThreeTex, 0, 0, (int)m_countThreeTex.GetWidth(), (int)m_countThreeTex.GetHeight(), &rc, &color);
 	}
-	else if (m_time >= 60 && m_time < 120)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][1].int_value() && m_time < m_mpDedicatedObj["CountFadeTime"][3].int_value())
 	{
 		mat = Math::Matrix::CreateScale(m_countTwoScale) * transMat;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -757,7 +797,7 @@ void GameUi::DrawSprite()
 		color = { 1,1,1,m_countTwoAlpha };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countTwoTex, 0, 0, (int)m_countTwoTex.GetWidth(), (int)m_countTwoTex.GetHeight(), &rc, &color);
 	}
-	else if (m_time >= 120 && m_time < 180)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][3].int_value() && m_time < m_mpDedicatedObj["CountFadeTime"][5].int_value())
 	{
 		mat = Math::Matrix::CreateScale(m_countOneScale) * transMat;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -765,7 +805,7 @@ void GameUi::DrawSprite()
 		color = { 1,1,1,m_countOneAlpha };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_countOneTex, 0, 0, (int)m_countOneTex.GetWidth(), (int)m_countOneTex.GetHeight(), &rc, &color);
 	}
-	else if (m_time >= 180 && m_time < 240)
+	else if (m_time >= m_mpDedicatedObj["CountFadeTime"][5].int_value() && m_time < m_mpDedicatedObj["CountFadeTime"][7].int_value())
 	{
 		mat = Math::Matrix::CreateScale(m_countGoScale) * transMat;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
@@ -777,7 +817,10 @@ void GameUi::DrawSprite()
 
 	if (spPlayer)
 	{
-		transMat = Math::Matrix::CreateTranslation(320, -250, 0);
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponTypeOneTexPos_R"][0].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeOneTexPos_R"][1].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeOneTexPos_R"][2].number_value()));
+
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, m_weaponType1Tex.GetWidth(), m_weaponType1Tex.GetHeight());
 		if (spPlayer->GetWeaponType() & Player::WeaponType::grassHopper)
@@ -787,12 +830,18 @@ void GameUi::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, (int)m_weaponTypeOvreDarkTex.GetWidth(), (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color);
 		}
 
-		transMat = Math::Matrix::CreateTranslation(530, -250, 0);
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoTexPos_R"][0].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoTexPos_R"][1].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoTexPos_R"][2].number_value()));
+
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, (int)m_weaponType2Tex.GetWidth(), (int)m_weaponType2Tex.GetHeight());
 		if (spPlayer->GetWeaponType() & Player::WeaponType::scorpion)
 		{
-			transMat = Math::Matrix::CreateTranslation(470, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_R"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_R"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_R"][2].number_value()));
+
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			Math::Rectangle rc = { 0,0,(int)m_weaponTypeOvreDarkTex.GetWidth(),(int)m_weaponTypeOvreDarkTex.GetHeight() };
 			color = { 1,1,1,0.6f };
@@ -800,7 +849,10 @@ void GameUi::DrawSprite()
 		}
 		else if (spPlayer->GetWeaponType() & Player::WeaponType::grassHopper && spPlayer->GetRGrassHopperPauCnt() != 0)
 		{
-			transMat = Math::Matrix::CreateTranslation(470, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_R"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_R"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_R"][2].number_value()));
+
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			Math::Rectangle rc = { 0,0,spPlayer->GetRGrassHopperPauCnt() * 4,(int)m_weaponTypeOvreDarkTex.GetHeight() };
 			color = { 1,1,1,0.6f };
@@ -809,18 +861,27 @@ void GameUi::DrawSprite()
 
 		if (KdInputManager::Instance().GetButtonState("rWeaponChange"))
 		{	
-			transMat = Math::Matrix::CreateTranslation(425, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_R"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_R"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_R"][2].number_value()));
+
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rWeaponChangeKeyPushStateTex, 0, 0, (int)m_rWeaponChangeKeyPushStateTex.GetWidth(), (int)m_rWeaponChangeKeyPushStateTex.GetHeight());
 		}
 		else
 		{
-			transMat = Math::Matrix::CreateTranslation(425, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_R"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_R"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_R"][2].number_value()));
+
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rWeaponChangeKeyTex, 0, 0, (int)m_rWeaponChangeKeyTex.GetWidth(), (int)m_rWeaponChangeKeyTex.GetHeight());
 		}
 
-		transMat = Math::Matrix::CreateTranslation(-530, -250, 0);
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponTypeOneTexPos_L"][0].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeOneTexPos_L"][1].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeOneTexPos_L"][2].number_value()));
+
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType1Tex, 0, 0, (int)m_weaponType1Tex.GetWidth(), (int)m_weaponType1Tex.GetHeight());
 		if (spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper)
@@ -830,12 +891,18 @@ void GameUi::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponTypeOvreDarkTex, 0, 0, (int)m_weaponTypeOvreDarkTex.GetWidth(), (int)m_weaponTypeOvreDarkTex.GetHeight(), &rc, &color);
 		}
 
-		transMat = Math::Matrix::CreateTranslation(-320, -250, 0);
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoTexPos_L"][0].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoTexPos_L"][1].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoTexPos_L"][2].number_value()));
+
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponType2Tex, 0, 0, (int)m_weaponType2Tex.GetWidth(), (int)m_weaponType2Tex.GetHeight());
 		if (spPlayer->GetWeaponType() & Player::WeaponType::lScorpion)
 		{
-			transMat = Math::Matrix::CreateTranslation(-380, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_L"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_L"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_L"][2].number_value()));
+
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			Math::Rectangle rc = { 0,0,(int)m_weaponTypeOvreDarkTex.GetWidth(),(int)m_weaponTypeOvreDarkTex.GetHeight() };
 			color = { 1,1,1,0.6f };
@@ -843,7 +910,10 @@ void GameUi::DrawSprite()
 		}
 		else if (spPlayer->GetWeaponType() & Player::WeaponType::lGrassHopper && spPlayer->GetLGrassHopperPauCnt() != 0)
 		{
-			transMat = Math::Matrix::CreateTranslation(-380, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_L"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_L"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponTypeTwoOvreDarkTexPos_L"][2].number_value()));
+
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			Math::Rectangle rc = { 0,0,spPlayer->GetLGrassHopperPauCnt() * 4,(int)m_weaponTypeOvreDarkTex.GetHeight() };
 			color = { 1,1,1,0.6f };
@@ -852,36 +922,50 @@ void GameUi::DrawSprite()
 
 		if (KdInputManager::Instance().GetButtonState("lWeaponChange"))
 		{
-			transMat = Math::Matrix::CreateTranslation(-425, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_L"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_L"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_L"][2].number_value()));
+
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_lWeaponChangeKeyPushStateTex, 0, 0, (int)m_lWeaponChangeKeyPushStateTex.GetWidth(), (int)m_lWeaponChangeKeyPushStateTex.GetHeight());
 		}
 		else
 		{
-			transMat = Math::Matrix::CreateTranslation(-425, -250, 0);
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_L"][0].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_L"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponChangeKeyPushStateTexPos_L"][2].number_value()));
+
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_lWeaponChangeKeyTex, 0, 0, (int)m_lWeaponChangeKeyTex.GetWidth(), (int)m_lWeaponChangeKeyTex.GetHeight());
 		}
 
-		transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["enduranceRelationTexPos"][0].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["enduranceRelationTexPos"][1].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["enduranceRelationTexPos"][2].number_value()));
+
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		Math::Rectangle rc = { 0,0,(int)m_enduranceBarTex.GetWidth(),(int)m_enduranceBarTex.GetHeight() };
 		color = { 1, 1, 1, 1 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, (int)m_enduranceBarTex.GetWidth(), (int)m_enduranceBarTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 
-		transMat = Math::Matrix::CreateTranslation(-630, 300, 0);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		rc = { 0,0,(int)(spPlayer->GetEndurance()),(int)m_enduranceTex.GetHeight() };
 		color = { 1, 1, 1, 1 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, (int)(spPlayer->GetEndurance()), (int)m_enduranceTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 
-		transMat = Math::Matrix::CreateTranslation(-630, 255, 0);
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["TorionBarTexPos"][0].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["TorionBarTexPos"][1].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["TorionBarTexPos"][2].number_value()));
+
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		rc = { 0,0,(int)m_torionBarTex.GetWidth(),(int)m_torionBarTex.GetHeight() };
 		color = { 1, 1, 1, 1 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionBarTex, 0, 0, (int)m_torionBarTex.GetWidth(), (int)m_torionBarTex.GetHeight(), &rc, &color, Math::Vector2(0, 0.5f));
 
-		transMat = Math::Matrix::CreateTranslation(-620, 255, 0);
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["TorionTexPos"][0].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["TorionTexPos"][1].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["TorionTexPos"][2].number_value()));
+
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		rc = { 0,0,(int)(spPlayer->GetVForce()),(int)m_torionTex.GetHeight() };
 		color = { 1, 1, 1, 1 };
@@ -951,7 +1035,10 @@ void GameUi::DrawSprite()
 
 				if (m_heightDifference >= 2.0f)
 				{
-					mat = Math::Matrix::CreateTranslation(-25, 225.0f, 0.0f);
+					mat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][0].number_value()),
+						                                  static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][1].number_value()),
+						                                  static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][2].number_value()));
+
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 					rc = { 0,0,(int)m_EnemyDirectionArrowUTex.GetWidth(),(int)m_EnemyDirectionArrowUTex.GetHeight() };
 					color = { 1, 1, 1, 1 };
@@ -959,7 +1046,10 @@ void GameUi::DrawSprite()
 				}
 				else if (m_heightDifference <= -2.0f)
 				{
-					mat = Math::Matrix::CreateTranslation(-25, -225.0f, 0.0f);
+					mat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][0].number_value()),
+						                                 -static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][1].number_value()),
+						                                  static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][2].number_value()));
+
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 					rc = { 0,0,(int)m_EnemyDirectionArrowBTex.GetWidth(),(int)m_EnemyDirectionArrowBTex.GetHeight() };
 					color = { 1, 1, 1, 1 };
@@ -971,7 +1061,10 @@ void GameUi::DrawSprite()
 
 				if (cross.y < 0)
 				{
-					mat = Math::Matrix::CreateTranslation(-500, 0.0f, 0.0f);
+					mat = Math::Matrix::CreateTranslation(-static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][0].number_value()),
+						                                   static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][1].number_value()),
+						                                   static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][2].number_value()));
+
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 					rc = { 0,0,(int)m_EnemyDirectionArrowLTex.GetWidth(),(int)m_EnemyDirectionArrowLTex.GetHeight() };
 					color = { 1, 1, 1, 1 };
@@ -979,7 +1072,10 @@ void GameUi::DrawSprite()
 				}
 				else if (cross.y >= 0)
 				{
-					mat = Math::Matrix::CreateTranslation(500, 0.0f, 0.0f);
+					mat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][0].number_value()),
+						                                  static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][1].number_value()),
+						                                  static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][2].number_value()));
+
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 					rc = { 0,0,(int)m_EnemyDirectionArrowRTex.GetWidth(),(int)m_EnemyDirectionArrowRTex.GetHeight() };
 					color = { 1, 1, 1, 1 };
@@ -1060,25 +1156,38 @@ void GameUi::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_backTex, 0, 0, 182, 80);
 	}
 
-	mat = Math::Matrix::CreateTranslation(-50, 325, 0);
+	mat = Math::Matrix::CreateTranslation(-static_cast<float>(m_mpDedicatedObj["GameTime10"][0].number_value()),
+		                                   static_cast<float>(m_mpDedicatedObj["GameTime10"][1].number_value()),
+		                                   static_cast<float>(m_mpDedicatedObj["GameTime10"][2].number_value()));
 
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeM10], 0, 0, (int)m_timeTex[m_gameTimeM10].GetWidth(), (int)m_timeTex[m_gameTimeM10].GetHeight());
 
-	mat = Math::Matrix::CreateTranslation(-20, 325, 0);
+	mat = Math::Matrix::CreateTranslation(-static_cast<float>(m_mpDedicatedObj["GameTime1"][0].number_value()),
+		                                   static_cast<float>(m_mpDedicatedObj["GameTime1"][1].number_value()),
+		                                   static_cast<float>(m_mpDedicatedObj["GameTime1"][2].number_value()));
+
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeM1], 0, 0, (int)m_timeTex[m_gameTimeM1].GetWidth(), (int)m_timeTex[m_gameTimeM1].GetHeight());
 
-	mat = Math::Matrix::CreateTranslation(0, 325, 0);
+	mat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["GameConmaTex"][0].number_value()),
+		                                  static_cast<float>(m_mpDedicatedObj["GameConmaTex"][1].number_value()),
+		                                  static_cast<float>(m_mpDedicatedObj["GameConmaTex"][2].number_value()));
+
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_conmaTex, 0, 0, (int)m_conmaTex.GetWidth(), (int)m_conmaTex.GetHeight());
 
-	mat = Math::Matrix::CreateTranslation(20, 325, 0);
+	mat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["GameTime1"][0].number_value()),
+		                                  static_cast<float>(m_mpDedicatedObj["GameTime1"][1].number_value()),
+		                                  static_cast<float>(m_mpDedicatedObj["GameTime1"][2].number_value()));
 
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeS10], 0, 0, (int)m_timeTex[m_gameTimeS10].GetWidth(), (int)m_timeTex[m_gameTimeS10].GetHeight());
 
-	mat = Math::Matrix::CreateTranslation(50, 325, 0);
+	mat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["GameTime10"][0].number_value()),
+		                                  static_cast<float>(m_mpDedicatedObj["GameTime10"][1].number_value()),
+		                                  static_cast<float>(m_mpDedicatedObj["GameTime10"][2].number_value()));
+
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 	KdShaderManager::Instance().m_spriteShader.DrawTex(&m_timeTex[m_gameTimeS1], 0, 0, (int)m_timeTex[m_gameTimeS1].GetWidth(), (int)m_timeTex[m_gameTimeS1].GetHeight());
 
@@ -1245,7 +1354,7 @@ void GameUi::OptionUpdate()
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 // リザルトのUI関連の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-void ResultUi::Init()
+void ResultUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
 	m_addFadeAlpha = false;
 	m_fadeAlpha = 0.0f;
@@ -1781,8 +1890,17 @@ void ResultUi::DrawSprite()
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 // モードセレクトのUI関連の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-void ModeSelectUi::Init()
+void ModeSelectUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
+	m_mpUiSharedObj = (*a_wpJsonObj.lock())["Ui"].object_items();
+	m_mpDedicatedObj = m_mpUiSharedObj["ModeSelectUi"].object_items();
+
+	m_screenAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["ScreenAlphaFadeSpeed"].number_value());
+	m_pushLClickAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["PushLClickAlphaFadeSpeed"].number_value());
+	m_mouseRadius = m_mpUiSharedObj["MouseRadius"].int_value();
+	m_mouseHalfHeight = m_mpUiSharedObj["MouseHalfHeight"].int_value();
+	m_titleBarHeight = m_mpUiSharedObj["TitleBarHeight"].int_value();
+
 	m_modeSelectTex.Load("Asset/Textures/Ui/Select/ModeSelect.png");
 	m_pictureFrameTex.Load("Asset/Textures/Ui/Select/PictureFrame.png");
 
@@ -2261,8 +2379,17 @@ void ModeSelectUi::DrawSprite()
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 // チュートリアルモードのUI関連の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-void TutorialUi::Init()
+void TutorialUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
+	m_mpUiSharedObj = (*a_wpJsonObj.lock())["Ui"].object_items();
+	m_mpDedicatedObj = m_mpUiSharedObj["TutorialUi"].object_items();
+
+	m_screenAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["ScreenAlphaFadeSpeed"].number_value());
+	m_pushLClickAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["PushLClickAlphaFadeSpeed"].number_value());
+	m_mouseRadius = m_mpUiSharedObj["MouseRadius"].int_value();
+	m_mouseHalfHeight = m_mpUiSharedObj["MouseHalfHeight"].int_value();
+	m_titleBarHeight = m_mpUiSharedObj["TitleBarHeight"].int_value();
+
 	m_exitTex.Load("Asset/Textures/Ui/OPTION/EXIT.png");
 	m_selectTex.Load("Asset/Textures/Ui/OPTION/ModeSelect.png");
 	m_operationTex.Load("Asset/Textures/Ui/OPTION/Operation.png");
@@ -2809,8 +2936,17 @@ void TutorialUi::OptionUpdate()
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 // トレーニングモードのUI関連の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
-void TrainingUi::Init()
+void TrainingUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
+	m_mpUiSharedObj = (*a_wpJsonObj.lock())["Ui"].object_items();
+	m_mpDedicatedObj = m_mpUiSharedObj["TrainingUi"].object_items();
+
+	m_screenAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["ScreenAlphaFadeSpeed"].number_value());
+	m_pushLClickAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["PushLClickAlphaFadeSpeed"].number_value());
+	m_mouseRadius = m_mpUiSharedObj["MouseRadius"].int_value();
+	m_mouseHalfHeight = m_mpUiSharedObj["MouseHalfHeight"].int_value();
+
+	m_titleBarHeight = m_mpUiSharedObj["TitleBarHeight"].int_value();
 	m_exitTex.Load("Asset/Textures/Ui/OPTION/EXIT.png");
 	m_selectTex.Load("Asset/Textures/Ui/OPTION/ModeSelect.png");
 	m_operationTex.Load("Asset/Textures/Ui/OPTION/Operation.png");
@@ -3061,15 +3197,13 @@ void TrainingUi::Update()
 
 void TrainingUi::PostUpdate()
 {
-	Math::Vector3 pos = Math::Vector3(m_wpEnemy.lock()->GetPos().x, m_wpEnemy.lock()->GetPos().y + m_wpEnemy.lock()->GetAddCenterVal().y, m_wpEnemy.lock()->GetPos().z);
+	Math::Vector3 pos = Math::Vector3(m_wpEnemy.lock()->GetPos().x, m_wpEnemy.lock()->GetPos().y + m_wpEnemy.lock()->GetAddCenterVal().y + 1.4f, m_wpEnemy.lock()->GetPos().z);
 
 	{
 		POINT dev;
 		KdDirect3D::Instance().WorldToClient(pos, dev, m_wpCamera.lock()->WorkCamera()->GetCameraMatrix(), m_wpCamera.lock()->WorkCamera()->GetProjMatrix());
 		dev.x -= (long)640.0f;
 		dev.y = (long)(dev.y * -1 + 360.0f);
-		float z = m_wpCamera.lock()->GetPos().z - m_wpEnemy.lock()->GetPos().z;
-		dev.y += (long)(180 - (std::fabs(z) * 1.5f));
 		dev.x -= 50;
 		m_enemyScPos = Math::Vector2((float)dev.x, (float)dev.y);
 	}

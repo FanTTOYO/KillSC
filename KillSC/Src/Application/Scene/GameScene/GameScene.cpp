@@ -721,8 +721,8 @@ void GameScene::Init()
 
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
 
-	ui->SetUiType(Ui::UiType::game, m_spJsonObj);
-	ui->Init();
+	ui->SetUiType(Ui::UiType::game);
+	ui->Init(m_spJsonObj);
 	ui->SetPlayer(player);
 	ui->SetWaveCnt(m_waveCnt);
 	m_objList.push_back(ui);

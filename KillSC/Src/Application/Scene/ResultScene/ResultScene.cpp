@@ -43,8 +43,8 @@ void ResultScene::Init()
 	}
 
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
-	ui->SetUiType(Ui::UiType::result, m_spJsonObj);
-	ui->Init();
+	ui->SetUiType(Ui::UiType::result);
+	ui->Init(m_spJsonObj);
 	m_objList.push_back(ui);
 	m_wpUi = ui;
 	KdAudioManager::Instance().StopAllSound();

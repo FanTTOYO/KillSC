@@ -30,11 +30,11 @@ public:
 
 	void Update()override;
 	void PostUpdate()override;
-	void Init()override;
+	virtual void Init(std::weak_ptr<json11::Json> a_wpJsonObj);
 	void DrawSprite()override;
 	bool ButtomProcessing(Math::Vector2 a_pos , const KdTexture& a_tex , float& a_scale , float a_originalScale = 1.0f, float a_addScaleVal = 0.2f);
 
-	virtual void SetUiType(UiType a_uiType, std::weak_ptr<json11::Json> a_wpJsonObj);
+	virtual void SetUiType(UiType a_uiType);
 	virtual void SetAddFadeAlpha() { m_currentUiClassId->SetAddFadeAlpha(); }
 	virtual int GetTime() {return m_currentUiClassId->GetTime(); }
 	virtual const bool GetBOption() { return m_currentUiClassId->GetBOption(); }
@@ -55,8 +55,16 @@ public:
 	virtual void SetBWaveChange() { m_currentUiClassId->SetBWaveChange(); }
 
 protected:
-	std::map<std::string, json11::Json>  m_mpUiSharedObj;																	// JsonからUi共通オブジェクトの情報をもらうときに使用
-	std::map<std::string, json11::Json>  m_mpDedicatedObj;																	// Jsonからそれぞれ専用のオブジェクトの情報をもらうときに使用
+	std::map<std::string,json11::Json>  m_mpUiSharedObj;																	// JsonからUi共通オブジェクトの情報をもらうときに使用
+	std::map<std::string,json11::Json>  m_mpDedicatedObj;																	// Jsonからそれぞれ専用のオブジェクトの情報をもらうときに使用
+	float m_screenAlphaFadeSpeed;																							// スクリーンがフェードする速さ
+	float m_pushLClickAlphaFadeSpeed;																						// PushLClickテクスチャのフェード速度
+	int   m_mouseRadius;																									// マウスの半径
+	int   m_mouseHalfHeight;																								// マウスの半分の高さ
+	int   m_titleBarHeight;																									// エグゼのタイトルバーのデカさ
+	Math::Vector3 m_titlerogoTexPos;																						// ゲームロゴの座標
+	Math::Vector3 m_pushLClickTexPos;																						// PushLClickの座標
+
 private:
 
 	UiType m_uiType = UiType::title;
@@ -71,7 +79,7 @@ public:
 
 	void Update()override;
 	void PostUpdate(){}
-	void Init()override;
+	void Init(std::weak_ptr<json11::Json> a_wpJsonObj)override;
 
 	void DrawSprite()override;
 
@@ -102,7 +110,7 @@ public:
 
 	void Update()override;
 	void PostUpdate()override;
-	void Init()override;
+	void Init(std::weak_ptr<json11::Json> a_wpJsonObj)override;
 
 	void DrawSprite()override;
 
@@ -241,6 +249,10 @@ private:
 
 	KdTexture m_lWeaponChangeKeyPushStateTex; // 左の押された状態画像
 	KdTexture m_rWeaponChangeKeyPushStateTex; // 右の押された状態画像
+
+	float m_scaleFadeSpeed; // スケールのフェード速度
+	float m_charFadeSpeed;  // 文字のフェード速度
+	float m_charLastFadeOutSpeed;  // 文字の最後のフェードアウト速度
 };
 
 class ResultUi : public Ui
@@ -251,7 +263,7 @@ public:
 
 	void Update()override;
 	void PostUpdate(){}
-	void Init()override;
+	void Init(std::weak_ptr<json11::Json> a_wpJsonObj)override;
 
 	void DrawSprite()override;
 
@@ -290,7 +302,7 @@ public:
 
 	void Update()override;
 	void PostUpdate(){}
-	void Init()override;
+	void Init(std::weak_ptr<json11::Json> a_wpJsonObj)override;
 
 	void DrawSprite()override;
 
@@ -402,7 +414,7 @@ public:
 
 	void Update()override;
 	void PostUpdate(){}
-	void Init()override;
+	void Init(std::weak_ptr<json11::Json> a_wpJsonObj)override;
 
 	void DrawSprite()override;
 
@@ -508,7 +520,7 @@ public:
 
 	void Update()override;
 	void PostUpdate()override;
-	void Init()override;
+	void Init(std::weak_ptr<json11::Json> a_wpJsonObj)override;
 
 	void DrawSprite()override;
 

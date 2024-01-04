@@ -232,30 +232,74 @@
     "AddValRockOnPosZ": 0.5
   },
 
-  "Ui": {
+  "Ui" : {
+    "ScreenAlphaFadeSpeed": 0.0166666666666667,
+    "PushLClickAlphaFadeSpeed": 0.0266666666666667,
+    "MouseRadius": 2,
+    "MouseHalfHeight": 2,
+    "TitleBarHeight": 35,
+
     "TitleUi": {
+      "ScreenAlphaFadeSpeed": 0.0083333333333333,
+      "FadeTime": [ 120, 240, 360, 480 ],
+      "TitlerogoTexPos": [ 0, 200, 0 ],
+      "PushLClickTexPos": [ 0, -200, 0 ],
+      "MaxTime": 480
+    },
+
+    "ModeSelectUi": {
 
     },
-    "ModeSelect ": {
 
-    },
     "GameUi": {
+      "CharFadeSpeed": 0.0333333333333333,
+      "CharLastFadeOutSpeed" : 0.0166666666666667,
+      "OperationButtomPos": [ 0, 250, 0 ],
+      "ModeSelectButtomPos": [ 0, 0, 0 ],
+      "ExitButtomPos": [ 0, -250, 0 ],
+      "BackButtomPos": [ 515, -300, 0 ],
+      "WeaponLeftYaiButtomPos": [ -500, 250, 0 ],
+      "WeaponRightYaiButtomPos": [ 500, 250, 0 ],
+      "WeaOrHowLeftYaiButtomPos": [ -600, 0, 0 ],
+      "WeaOrHowRightYaiButtomPos": [ 600, 0, 0 ],
 
+      "WaveTexDepartureTime": [ 90, 180 ],
+      "CountFadeTime": [ 30, 60, 90, 120, 150, 180, 210, 240 ],
+      "ScaleFadeSpeed": 0.1,
+      "WaveTexPos": [ -75, 200, 0 ],
+      "WaveCntTexPos": [ 175, 190, 0 ],
+      "WeaponTypeOneTexPos_R": [ 320, -250, 0 ],
+      "WeaponTypeTwoTexPos_R": [ 530, -250, 0 ],
+      "WeaponChangeKeyPushStateTexPos_R": [ 425, -250, 0 ],
+      "WeaponTypeTwoOvreDarkTexPos_R": [ 470, -250, 0 ],
+      "WeaponTypeOneTexPos_L": [ -530, -250, 0 ],
+      "WeaponTypeTwoTexPos_L": [ -320, -250, 0 ],
+      "WeaponChangeKeyPushStateTexPos_L": [ -425, -250, 0 ],
+      "WeaponTypeTwoOvreDarkTexPos_L": [ -380, -250, 0 ],
+      "TorionTexPos": [ -620, 255, 0 ],
+      "TorionBarTexPos": [ -630, 255, 0 ],
+      "enduranceRelationTexPos": [ -630, 300, 0 ],
+      "AroowUpAndDownPos": [ -25, 225, 0 ],
+      "AroowLeftAndRightPos": [ 500, 0, 0 ],
+      "GameTime10": [ 50, 325, 0 ],
+      "GameTime1": [ 20, 325, 0 ],
+      "GameConmaTex": [ 0, 325, 0 ]
     },
+
     "ResultUi": {
 
     },
+
     "TrainingUi": {
 
     },
+
     "TutorialUi": {
 
-    },
-
-    "FadeSpeed": 0.0166666666666667
+    }
   },
 
-  // 全キャラ共通
+
   "TutorialMinimumYPos": -10,
   "MinimumYPos": -1,
   "HightYPos": 125,
@@ -274,16 +318,13 @@
   "InvincibilityProgramTimeCnt": [ 90, 80, 70, 60, 50, 40, 30, 20, 15, 10, 5, 3, 1 ],
   "HitColorChangeTimeCnt": 15,
 
-  // キャラごとに異なる
   "OnHitDamage": 15,
 
-  // 敵共通
   "EnemyAppearanceF": [ 0, 1, 20 ],
   "EnemyAppearanceR": [ 20, 1, 0 ],
   "EnemyAppearanceB": [ 0, 1, -30 ],
   "EnemyAppearanceL": [ -20, 1, 0 ],
 
-  // 人型キャラ共通
   "GrassDashSpeeedDecelerationTime": [ 30, 25, 20, 15, 10, 5 ],
   "GrassDashMaxTime": 90,
   "GrassDashSteppingAwayMoment": 75,
@@ -291,7 +332,6 @@
   "GrassDashSpeed": [ 0, 0.8, 0.5, 0.4, 0.35, 0.3, 0.25, 0.2 ],
   "SpeedSterGrassDashSpeed": [ 1.2, 0.4, 0.35, 0.3, 0.25, 0.2, 0.1 ],
 
-  // モンスター型敵共通
   "FristWeaknessHitGraduallyTorionDecVal" : 0.1,
   "AddWeaknessHitGraduallyTorionDecVal": 1.5
 }

@@ -72,9 +72,9 @@ void TutorialScene::Init()
 
 	std::shared_ptr<Ui> ui = std::make_shared<Ui>();
 	player->SetUi(ui);
-	ui->SetUiType(Ui::UiType::tutorial, m_spJsonObj);
+	ui->SetUiType(Ui::UiType::tutorial);
 	ui->SetPlayer(player);
-	ui->Init();
+	ui->Init(m_spJsonObj);
 	m_objList.push_back(ui);
 	m_wpUi = ui;
 
