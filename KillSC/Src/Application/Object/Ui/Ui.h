@@ -332,10 +332,6 @@ private:
 	float m_trainingScale = 0;
 
 	Math::Vector3 m_tutorialPos = {};
-	Math::Vector3 m_gamePos = {};
-	Math::Vector3 m_pictureFramePos = {};
-	Math::Vector3 m_challengePos = {};
-	Math::Vector3 m_selectBackPos = {};
 	Math::Vector3 m_trainingPos = {};
 	Math::Vector3 m_titlePos = {};
 	Math::Vector3 m_exitPos = {};
@@ -389,15 +385,15 @@ private:
 	float         m_challengeCharaScale;
 	bool          m_bChallengeChara;
 
-	KdTexture      m_chalenge50Tex;
-	Math::Vector3  m_chalenge50Pos;
-	float          m_chalenge50Scale;
-	bool           m_bChalenge50;
+	KdTexture      m_chalengeFiftyTex;
+	Math::Vector3  m_chalengeFiftyPos;
+	float          m_chalengeFiftyScale;
+	bool           m_bChalengeFifty;
 
-	KdTexture      m_chalenge100Tex;
-	Math::Vector3  m_chalenge100Pos;
-	float          m_chalenge100Scale;
-	bool           m_bChalenge100;
+	KdTexture      m_chalengeHundredTex;
+	Math::Vector3  m_chalengeHundredPos;
+	float          m_chalengeHundredScale;
+	bool           m_bChalengeHundred;
 
 	bool m_bExit = false;
 	bool m_bFirstExit = false;
@@ -510,6 +506,12 @@ private:
 	Math::Matrix m_torionBarMat;
 	Math::Matrix m_enduranceMat;
 	Math::Matrix m_enduranceBarMat;
+
+	KdTexture m_lWeaponChangeKeyTex; // 左の通常状態画像
+	KdTexture m_rWeaponChangeKeyTex; // 右の通常状態画像
+
+	KdTexture m_lWeaponChangeKeyPushStateTex; // 左の押された状態画像
+	KdTexture m_rWeaponChangeKeyPushStateTex; // 右の押された状態画像
 };
 
 class TrainingUi : public Ui
@@ -651,4 +653,13 @@ private:
 	Math::Matrix m_torionBarMat;
 	Math::Matrix m_enduranceMat;
 	Math::Matrix m_enduranceBarMat;
+
+	KdTexture m_lWeaponChangeKeyTex; // 左の通常状態画像
+	KdTexture m_rWeaponChangeKeyTex; // 右の通常状態画像
+
+	KdTexture m_lWeaponChangeKeyPushStateTex; // 左の押された状態画像
+	KdTexture m_rWeaponChangeKeyPushStateTex; // 右の押された状態画像
+
+	float m_scaleFadeSpeed; // スケールのフェード速度
+	float m_charFadeSpeed;  // 文字のフェード速度
 };
