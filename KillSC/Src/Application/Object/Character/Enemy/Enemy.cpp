@@ -5310,10 +5310,10 @@ void Enemy::AllRounderBrain()
 
 	if (src.Length() <= 8.0f && spTarget)
 	{
-		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (spTarget->GetPlayerState() & (Player::PlayerState::rlAttack))
 		{
-			randNum[0] = 750;
-			randNum[1] = 250;
+			randNum[0] = 350;
+			randNum[1] = 650;
 			for (int i = 0; i < 2; i++)
 			{
 				rand -= randNum[i];
@@ -5325,7 +5325,7 @@ void Enemy::AllRounderBrain()
 						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
 						break;
 					case 1:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
+						m_wantToMoveState = Enemy::WantToMoveState::wNone;
 						break;
 					}
 					break;
@@ -5348,7 +5348,7 @@ void Enemy::AllRounderBrain()
 						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory;
 						break;
 					case 1:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
+						m_wantToMoveState = Enemy::WantToMoveState::wNone;
 						break;
 					}
 					break;
@@ -5360,29 +5360,7 @@ void Enemy::AllRounderBrain()
 	}
 	else
 	{
-		if (src.Length() <= 5.0f && spTarget && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
-		{
-			randNum[0] = 750;
-			randNum[1] = 250;
-			for (int i = 0; i < 2; i++)
-			{
-				rand -= randNum[i];
-				if (rand < 0)
-				{
-					switch (i)
-					{
-					case 0:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
-						break;
-					case 1:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
-						break;
-					}
-					break;
-				}
-			}
-		}
-		else if (src.Length() <= 2.5f && !m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		if (src.Length() <= 2.5f && !m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			randNum[0] = 600;
 			randNum[1] = 400;
