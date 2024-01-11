@@ -649,17 +649,17 @@ private:
 	KdTexture m_enduranceTex;
 	KdTexture m_enduranceBarTex;
 
-	Math::Matrix m_torionMat;
-	Math::Matrix m_torionBarMat;
-	Math::Matrix m_enduranceMat;
-	Math::Matrix m_enduranceBarMat;
+	Math::Matrix m_torionMat;									// 
+	Math::Matrix m_torionBarMat;								// 
+	Math::Matrix m_enduranceMat;								// 
+	Math::Matrix m_enduranceBarMat;								// 
 
-	KdTexture m_lWeaponChangeKeyTex; // 左の通常状態画像
-	KdTexture m_rWeaponChangeKeyTex; // 右の通常状態画像
+	KdTexture m_lWeaponChangeKeyTex;							// 左の通常状態画像
+	KdTexture m_rWeaponChangeKeyTex;							// 右の通常状態画像
 
-	KdTexture m_lWeaponChangeKeyPushStateTex; // 左の押された状態画像
-	KdTexture m_rWeaponChangeKeyPushStateTex; // 右の押された状態画像
+	KdTexture m_lWeaponChangeKeyPushStateTex;					// 左の押された状態画像
+	KdTexture m_rWeaponChangeKeyPushStateTex;					// 右の押された状態画像
 
-	float m_scaleFadeSpeed; // スケールのフェード速度
-	float m_charFadeSpeed;  // 文字のフェード速度
+	float m_scaleFadeSpeed;										// スケールのフェード速度
+	float m_charFadeSpeed;										// 文字のフェード速度
 };

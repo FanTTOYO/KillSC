@@ -1,11 +1,9 @@
 ﻿#pragma once
-#define ENEMYAIRBORNETIMETOBECNTVAL			180
-#define INITIALPOSZ							 10
-#define INITIALROTATIONY					180
-#define ADDWEAKNESSEUCCESSIONHITCNTTIMELIMIT 90 // 連続攻撃と認められる時間
-#define ADDROTAYIONATTACKDISTTOPLAYERTIME   120 // 攻撃開始する時間
-#define ROTAYIONATTACKDISTTOPLAYERINITTIME   60 // 攻撃開始時間を初期化する時間
-#define ATTACKDELAYTIME						120 // 攻撃できない時間
+#define ENEMY_AIRBORNE_TIME_TO_BE_CNT_VAL			180
+#define ADD_WEAKNES_SEUCCESSION_HIT_CNT_TIME_LIMIT	90 // 連続攻撃と認められる時間
+#define ADDROTAYIONATTACKDISTTOPLAYERTIME			120 // 攻撃開始する時間
+#define ROTAYIONATTACKDISTTOPLAYERINITTIME			60 // 攻撃開始時間を初期化する時間
+#define ATTACKDELAYTIME								120 // 攻撃できない時間
 
 class WeaponBase;
 class Player;
@@ -146,6 +144,7 @@ public:
 	const float& GetGravity() { return m_gravity; }
 	const float& GetDashSpd() { return m_dashSpd;}
 	const float& GetEndurance() { return m_endurance; }
+	const float& GetMaxEndurance() { return m_maxEndurance; }
 	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }
 	const std::shared_ptr<KdModelWork>& GetModel() { return m_model; }
 	const bool GetBRushAttackPossible() { return m_bRushAttackPossible; }
@@ -183,7 +182,9 @@ public:
 
 	const bool GetBRangedAttack() { return m_bRangedAttack; }
 
-	const Math::Vector3& GetAddCenterVal(){return m_addCenterVal;};
+	const Math::Vector3& GetAddCenterVal(){return m_addCenterVal;}
+	const Math::Vector3& GetRockOnPos(){return m_rockOnPos;}
+	const float GetAddHpPosY(){return m_addHpPosY;}
 
 private:
 
@@ -226,11 +227,10 @@ private:
 
 	std::shared_ptr<KdModelWork> m_model;
 
-	const int MAXWEAPONTYPE = 2;
-	const int FIRSTWEAPONTYPENUMBER = 1;
-
 	Math::Vector3 m_addCenterVal;
 	Math::Vector3 m_addGrassDashEffectPosVal;
+	Math::Vector3 m_rockOnPos;																						// ロックオンされる位置
+	float         m_addHpPosY;																						// HPの表示位置に足す
 
 	float m_gravity = 0;
 	int m_toleranceComboTime = 0; // コンボ許容時間
@@ -290,6 +290,7 @@ private:
 	Math::Vector3 m_knockBackVec;  // ノックバックする方向
 	float m_vForce = 0.0f;
 	float m_endurance = 0.0f;    // トリオン体耐久力
+	float m_maxEndurance = 0.0f;    // トリオン体耐久力の最大値
 	float m_graduallyTorionDecVal; // 徐々に減ってくトリオン量
 	int m_delayTurnAroundTime; // 振り返りを遅らせる時間
 
@@ -314,9 +315,6 @@ private:
 	Math::Vector3 m_stepDashDir;
 	bool m_bMantisPossAng; // マンティスがあたる角度 true
 	int m_hasDeTime;
-
-	KdPolygon m_enduranceBarPoly;
-	KdPolygon m_endurancePoly;
 
 	bool m_bEnemyLose;
 	bool m_bEnemyDeath;
@@ -353,8 +351,6 @@ private:
 	bool  m_bBeamHitStart;	        // 当たり判定してる時 : true
 	bool  m_bEnergyBulletHitStart;	// 当たり判定してる時 : true
 
-	Math::Vector3 m_hitpos;
-
 	int m_enemyAttackTotal;
 	int m_enemyAttackMaxTotal;
 
@@ -362,8 +358,8 @@ private:
 
 	bool  m_bRangedAttackCapableOfFiring; // 遠距離攻撃を打てるか : true;
 
-	int m_weaknesSsuccessionHitCnt;             // 連続で弱点に当たった回数
-	int m_addWeaknesSsuccessionHitCntTime;      // 弱点Hitから何秒経過したか計る
+	int m_weaknesSuccessionHitCnt;             // 連続で弱点に当たった回数
+	int m_addWeaknesSuccessionHitCntTime;      // 弱点Hitから何秒経過したか計る
 
 	int m_addRotationAttackDistToPlayerTime;	    // 回転攻撃範囲内にPlayerがいる時間を計る
 	int m_rotationAttackDistToPlayerTimeInitTime;	// 回転攻撃範囲内にPlayerがいない時間を計る

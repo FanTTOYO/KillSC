@@ -142,8 +142,8 @@ private:
 																													
 	std::shared_ptr<KdModelWork> m_spModel;																			// モデル
 																													
-	const int MAXWEAPONTYPE = 2;																					// 武器の最大のナンバー
-	const int FIRSTWEAPONTYPENUMBER = 1;																			// 武器の最初のナンバー
+	int m_maxWeaponType = 2;																						// 武器の最大のナンバー
+	const int FIRST_WEAPON_TYPE_NUMBER = 1;																			// 武器の最初のナンバー
 
 	Math::Vector3 m_addCenterVal;																					// 足したら中心になる値
 	Math::Vector3 m_addGrassDashEffectPosVal;																		// プレイヤーの座標に足すとエフェクトを出す位置になる
@@ -165,8 +165,8 @@ private:
 	Math::Vector3    m_move = {};																					// 動く方向
 	Math::Vector3    m_scale = {};																					// デカさ
 
-	std::weak_ptr<CameraBase>        m_wpCamera;
-	Math::Vector3					 m_mWorldRot;
+	std::weak_ptr<CameraBase>        m_wpCamera;																	// カメラのアドレスを保持
+	Math::Vector3					 m_mWorldRot;																	// 回転情報を保持
 
 	int m_lGrassHopperPauCnt = 0;																					// 休止する時間
 	int m_rGrassHopperPauCnt = 0;																					// 休止する時間

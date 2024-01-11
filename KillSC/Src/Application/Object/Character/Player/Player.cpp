@@ -109,6 +109,7 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 											   static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][1].number_value()),
 											   static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][2].number_value())};
 	m_addGrassDashEffectPosVal = AddGrassDashEffectPosVal;
+	m_maxWeaponType = 2; // ここはJSONからもらってくるようにする　＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 }
 
 void Player::AddWeaponToEnemy(std::shared_ptr<Enemy> a_spEnemy)
@@ -208,9 +209,9 @@ void Player::Update()
 		if (KdInputManager::Instance().IsPress("lWeaponChange"))
 		{
 			m_leftWeaponNumber++;
-			if (m_leftWeaponNumber > MAXWEAPONTYPE)
+			if (m_leftWeaponNumber > m_maxWeaponType)
 			{
-				m_leftWeaponNumber = FIRSTWEAPONTYPENUMBER;
+				m_leftWeaponNumber = FIRST_WEAPON_TYPE_NUMBER;
 			}
 
 			if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
@@ -228,9 +229,9 @@ void Player::Update()
 		if (KdInputManager::Instance().IsPress("rWeaponChange"))
 		{
 			m_rightWeaponNumber++;
-			if (m_rightWeaponNumber > MAXWEAPONTYPE)
+			if (m_rightWeaponNumber > m_maxWeaponType)
 			{
-				m_rightWeaponNumber = FIRSTWEAPONTYPENUMBER;
+				m_rightWeaponNumber = FIRST_WEAPON_TYPE_NUMBER;
 			}
 
 			if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
@@ -420,6 +421,12 @@ void Player::Update()
 	if (m_wpEnemy.expired())return;
 
 	mat = Math::Matrix::CreateTranslation(m_wpEnemy.lock()->GetMatrix().Translation());
+	if (m_wpEnemy.lock()->GetEnemyType() & (Enemy::EnemyType::wimpEnemyTypeOne | Enemy::EnemyType::bossEnemyTypeOne))
+	{
+		mat._41 += m_wpEnemy.lock()->GetRockOnPos().x;
+		mat._42 += m_wpEnemy.lock()->GetRockOnPos().y;
+		mat._43 += m_wpEnemy.lock()->GetRockOnPos().z;
+	} 
 	m_rockOnPolyMat = mat;
 	auto& object = (*m_wpJsonObj.lock())["RockOn"].object_items();
 	m_rockOnPolyMat._42 += static_cast<float>(object["AddValRockOnPosY"].number_value());
@@ -809,6 +816,7 @@ void Player::PostUpdate()
 		if (!(m_playerState & (lAttack | rAttack | rlAttack | rlAttackRush)))
 		{
 			m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
+			m_spModel->CalcNodeMatrices();
 			if (m_playerState & run)
 			{
 				++m_runAnimeCnt;

@@ -110,17 +110,18 @@
     "AttackOneOrTwoShakenMoment": 10,
     "AttackThreeShakenMoment": 15,
     "MaxCoarseFishEnemyAttackDelayCnt": 120,
-    "PlayerIsDistToBackMove": 2.25
+    "PlayerIsDistToBackMove": 2.25,
+    "AddHpPosY" : 1.4
   },
 
   "WimpEnemyTypeOne": {
     "AddBottomYVal": 0.1,
     "FootfallPointMoment": [ 16, 31 ],
     "LastRunAnimationTime": 40,
-    "WimpEnemyTypeOnePosF": [   0,  0, 30 ],
-    "WimpEnemyTypeOnePosR": [  30,  0,  0 ],
-    "WimpEnemyTypeOnePosB": [   0,  0,-30 ],
-    "WimpEnemyTypeOnePosL": [ -30,  0,  0 ],
+    "WimpEnemyTypeOnePosF": [ 0, 0, 30 ],
+    "WimpEnemyTypeOnePosR": [ 30, 0, 0 ],
+    "WimpEnemyTypeOnePosB": [ 0, 0, -30 ],
+    "WimpEnemyTypeOnePosL": [ -30, 0, 0 ],
     "EnableStepHight": 0.2,
     "TypeGroundToHitSphereRadius": 0.3,
     "TypeBuriedToHitSphereRadius": 0.4,
@@ -132,7 +133,10 @@
     "Endurance": 200,
     "Vforce": 300,
     "EnergyBulletSpeed": 0.45,
-    "PlayerIsDistToBackMove" : 20
+    "PlayerIsDistToBackMove": 20,
+    "AddRockOnPos": 2.25,
+    "SubRockOnPosY": 0.25,
+    "AddHpPosY": 2.8
   },
 
   "BossEnemy": {
@@ -181,7 +185,8 @@
     "RLAttackRushOneAndTwoShakenMomentMoveSpeed": 0.2,
     "RLAttackRushThreeAndFourShakenMomentMoveSpeed": 0.25,
     "RLAttackRushFiveAndSixShakenMomentMoveSpeed": 0.1,
-    "RushLastAttackMoveSpeed": 0.05
+    "RushLastAttackMoveSpeed": 0.05,
+    "AddHpPosY": 1.4
   },
 
   "TutorialEnemy": {
@@ -218,12 +223,15 @@
     "EnergyBulletSpeed": 1,
     "EnergyBeemSpeed": 2.25,
     "EnergyBeemLongestVal": 45,
-    "MaxWeaknesSsuccessionHitCnt": 5,
-    "MaxWeaknesSsuccessionHitStopCnt": 80,
-    "RotationAttackHitChaeckSphereRadius" : 50,
-    "RotationAttackMoveSpeed" : 0.25,
-    "RotationAttackHitStart" : 17,
-    "RotationAttackHitEnd" : 73
+    "MaxWeaknesSuccessionHitCnt": 5,
+    "MaxWeaknesSuccessionHitStopCnt": 80,
+    "RotationAttackHitChaeckSphereRadius": 52.5,
+    "RotationAttackMoveSpeed": 0.25,
+    "RotationAttackHitStart": 80,
+    "RotationAttackHitEnd": 190,
+    "AddRockOnPos": 2.25,
+    "AddRockOnPosY": 10,
+    "AddHpPosY": 5.6
   },
 
   "RockOn": {
@@ -302,7 +310,8 @@
       "AroowLeftAndRightPos": [ 500, 0, 0 ],
       "GameTime10": [ 50, 325, 0 ],
       "GameTime1": [ 20, 325, 0 ],
-      "GameConmaTex": [ 0, 325, 0 ]
+      "GameConmaTex": [ 0, 325, 0 ],
+      "EnduranceTexWidth" :  400
     },
 
     "ResultUi": {

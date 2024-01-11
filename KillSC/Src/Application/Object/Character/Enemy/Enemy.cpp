@@ -20,9 +20,6 @@ void Enemy::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_pCollider->RegisterCollisionShape
 	("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage | KdCollider::TypeAttackDec);
 
-	m_enduranceBarPoly.SetMaterial("Asset/Textures/Ui/Game/enduranceBar.png");
-	m_endurancePoly.SetMaterial("Asset/Textures/Ui/Game/endurance.png");
-
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 
 	m_EnemyState = idle;
@@ -45,7 +42,7 @@ void Enemy::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_bRushAttackPossible = false;
 	m_bEnemyLose = false;
 	m_graduallyTorionDecVal = 0;
-	m_enemyAirborneTimetoBeCnt = ENEMYAIRBORNETIMETOBECNTVAL;
+	m_enemyAirborneTimetoBeCnt = ENEMY_AIRBORNE_TIME_TO_BE_CNT_VAL;
 
 	m_animator = std::make_shared<KdAnimator>();
 	m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
@@ -83,8 +80,8 @@ void Enemy::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_bRangedAttackCapableOfFiring = false;
 	m_rangedAttackAnimeCnt = 0;
 
-	m_weaknesSsuccessionHitCnt = 0;
-	m_addWeaknesSsuccessionHitCntTime = 0;
+	m_weaknesSuccessionHitCnt = 0;
+	m_addWeaknesSuccessionHitCntTime = 0;
 
 	m_addRotationAttackDistToPlayerTime = 0;
 	m_notHumanoidEnemyState = stand;
@@ -142,12 +139,12 @@ void Enemy::Update()
 		}
 
 #endif
-
 		// debugキー
 		if (GetAsyncKeyState('K') & 0x8000)
 		{
 			m_vForce = 0;
 		}
+
 		
 
 		m_vForce -= m_graduallyTorionDecVal;
@@ -1398,11 +1395,14 @@ void Enemy::BossUpdate()
 										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
 										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
 		m_addCenterVal = addCenterVal;
+		m_rockOnPos = addCenterVal;
 
 		Math::Vector3 AddGrassDashEffectPosVal = { static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][0].number_value()),
 										           static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][1].number_value()),
 										           static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][2].number_value())};
 		m_addGrassDashEffectPosVal = AddGrassDashEffectPosVal;
+
+		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
 
 		for (auto& WeaList : m_weaponList)
 		{
@@ -1413,7 +1413,7 @@ void Enemy::BossUpdate()
 		{
 			m_vForce = (float)m_mpObj["ChallengeVforce"].number_value();
 			m_endurance = (float)m_mpObj["ChallengeEndurance"].number_value();
-
+			m_maxEndurance = m_endurance;
 			std::random_device rnd;
 			std::mt19937 mt(rnd());
 			std::uniform_int_distribution<int> intRand(0, 999);
@@ -1776,9 +1776,9 @@ void Enemy::BossEnemyTyepOneUpdate()
 		m_leftWeaponNumber = 0;
 		m_rightWeaponNumber = 0;
 
-		m_vForce    = (float)m_mpObj["Vforce"].number_value();
-		m_endurance = (float)m_mpObj["Endurance"].number_value();
-
+		m_vForce    = static_cast<float>(m_mpObj["Vforce"].number_value());
+		m_endurance = static_cast<float>(m_mpObj["Endurance"].number_value());
+		m_maxEndurance = m_endurance;
 		if (!(m_EnemyState & run))
 		{
 			m_animator->SetAnimation(m_model->GetAnimation("RUN"));
@@ -1789,22 +1789,9 @@ void Enemy::BossEnemyTyepOneUpdate()
 										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
 										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
 		m_addCenterVal = addCenterVal;
+		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
 		return;
 	}
-
-#ifdef _DEBUG
-	const KdModelWork::Node* node = nullptr;
-	Math::Matrix mat = Math::Matrix::Identity;
-
-	node = m_model->FindNode("HitPoint");
-	mat = node->m_worldTransform * m_mWorld;
-	m_pDebugWire->AddDebugSphere
-	(
-		mat.Translation(),
-		6.0f,
-		{ 0,0,0,1 }
-	);
-#endif
 
 	if (m_attackDelayTime < ATTACKDELAYTIME)
 	{
@@ -1824,9 +1811,9 @@ void Enemy::BossEnemyTyepOneUpdate()
 
 	if (m_hitStopCnt == 0)
 	{
-		if (m_addWeaknesSsuccessionHitCntTime > 0)
+		if (m_addWeaknesSuccessionHitCntTime > 0)
 		{
-			--m_addWeaknesSsuccessionHitCntTime;
+			--m_addWeaknesSuccessionHitCntTime;
 		}
 
 		if (m_bShotBeam || m_bShotEnergyBullet)
@@ -1901,6 +1888,24 @@ void Enemy::BossEnemyTyepOneUpdate()
 
 		}
 	}
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+
+	node = m_model->FindNode("HitPoint");
+	mat = node->m_localTransform;
+	Math::Vector3 addPos = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+	addPos *= static_cast<float>(m_mpObj["AddRockOnPos"].number_value());
+	m_rockOnPos = { mat._41 + addPos.x,mat._42 + static_cast<float>(m_mpObj["AddRockOnPosY"].number_value()),mat._43 + addPos.z };
+
+#ifdef _DEBUG
+	m_pDebugWire->AddDebugSphere
+	(
+		mat.Translation(),
+		6.0f,
+		{ 0,0,0,1 }
+	);
+#endif
+
 }
 
 void Enemy::CoarseFishEnemyUpdate()
@@ -1929,6 +1934,7 @@ void Enemy::CoarseFishEnemyUpdate()
 
 		m_vForce = (float)m_mpObj["Vforce"].number_value();
 		m_endurance = (float)m_mpObj["Endurance"].number_value();
+		m_maxEndurance = m_endurance;
 
 		m_enemyType = Enemy::EnemyType::coarseFishEnemy;
 		
@@ -1936,7 +1942,8 @@ void Enemy::CoarseFishEnemyUpdate()
 										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
 										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
 		m_addCenterVal = addCenterVal;
-
+		m_rockOnPos = addCenterVal;
+		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
 		return;
 	}
 
@@ -2027,6 +2034,7 @@ void Enemy::WimpEnemyTypeOneUpdate()
 
 		m_vForce = (float)m_mpObj["Vforce"].number_value();
 		m_endurance = (float)m_mpObj["Endurance"].number_value();
+		m_maxEndurance = m_endurance;
 
 		m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
 		m_EnemyState = idle;
@@ -2035,23 +2043,10 @@ void Enemy::WimpEnemyTypeOneUpdate()
 										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
 										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
 		m_addCenterVal = addCenterVal;
-
+		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
 		return;
 	}
 
-#ifdef _DEBUG
-	const KdModelWork::Node* node = nullptr;
-	Math::Matrix mat = Math::Matrix::Identity;
-	
-	node = m_model->FindNode("HitPoint");
-	mat = node->m_worldTransform * m_mWorld;
-	m_pDebugWire->AddDebugSphere
-	(
-		{ mat._41, mat._42 , mat._43},
-		0.325f,
-		{ 0,0,0,1 }
-	);
-#endif
 
 	if (m_attackDelayTime < ATTACKDELAYTIME)
 	{
@@ -2112,6 +2107,25 @@ void Enemy::WimpEnemyTypeOneUpdate()
 		}
 
 	}
+
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+
+	node = m_model->FindNode("HitPoint");
+	mat = node->m_localTransform;
+	Math::Vector3 addPos = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+	addPos *= static_cast<float>(m_mpObj["AddRockOnPos"].number_value());
+	m_rockOnPos = {mat._41 + addPos.x,mat._42 - static_cast<float>(m_mpObj["SubRockOnPosY"].number_value()),mat._43 + addPos.z};
+
+#ifdef _DEBUG
+	m_pDebugWire->AddDebugSphere
+	(
+		{ mat._41, mat._42 , mat._43},
+		0.325f,
+		{ 0,0,0,1 }
+	);
+#endif
+
 }
 
 void Enemy::TutorialUpdate()
@@ -2754,23 +2768,23 @@ void Enemy::WeaknessOnHit()
 
 	if (m_enemyType & bossEnemyTypeOne)
 	{
-		if (m_addWeaknesSsuccessionHitCntTime == 0)
+		if (m_addWeaknesSuccessionHitCntTime == 0)
 		{
-			m_weaknesSsuccessionHitCnt = 1;
+			m_weaknesSuccessionHitCnt = 1;
 		}
 		else
 		{
-			++m_weaknesSsuccessionHitCnt;
+			++m_weaknesSuccessionHitCnt;
 		}
 
-		m_addWeaknesSsuccessionHitCntTime = ADDWEAKNESSEUCCESSIONHITCNTTIMELIMIT;
+		m_addWeaknesSuccessionHitCntTime = ADD_WEAKNES_SEUCCESSION_HIT_CNT_TIME_LIMIT;
 
-		if (m_weaknesSsuccessionHitCnt >= m_mpObj["MaxWeaknesSsuccessionHitCnt"].int_value())
+		if (m_weaknesSuccessionHitCnt >= m_mpObj["MaxWeaknesSuccessionHitCnt"].int_value())
 		{
-			m_weaknesSsuccessionHitCnt = 0;
-			m_addWeaknesSsuccessionHitCntTime = 0;
+			m_weaknesSuccessionHitCnt = 0;
+			m_addWeaknesSuccessionHitCntTime = 0;
 			m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
-			m_hitStopCnt = m_mpObj["MaxWeaknesSsuccessionHitStopCnt"].int_value();
+			m_hitStopCnt = m_mpObj["MaxWeaknesSuccessionHitStopCnt"].int_value();
 			m_animator->SetAnimation(m_model->GetAnimation("SuccessionWeaknessOnHit"), false);
 		}
 
@@ -2982,6 +2996,7 @@ void Enemy::SetModelAndType(EnemyType a_enemyType)
 		m_pCollider->RegisterCollisionShape
 		("EnemyModelWeakness", { mat._41,mat._42,mat._43}, 0.325f, KdCollider::TypeWeakness);
 		m_enemyAttackMaxTotal = 4;
+		m_rockOnPos = { mat._41,mat._42,mat._43 };
 		break;
 	case bossEnemyTypeOne:
 		m_model = std::make_shared<KdModelWork>();
@@ -2997,7 +3012,7 @@ void Enemy::SetModelAndType(EnemyType a_enemyType)
 		mat = node->m_worldTransform * Math::Matrix::Identity;
 		m_pCollider->RegisterCollisionShape
 		("EnemyModelWeakness", { mat._41,mat._42,mat._43}, 3.00f, KdCollider::TypeWeakness);
-		m_hitpos = { mat._41,mat._42,mat._43};
+		m_rockOnPos = { mat._41,mat._42,mat._43};
 		break;
 	}
 }
@@ -5866,15 +5881,14 @@ void Enemy::RotationAttackMove()
 
 	if (!m_target.expired())
 	{
-		if (m_target.lock()->GetInvincibilityTimeCnt() == 0 && m_attackAnimeCnt >= m_mpObj["RotationAttackHitStart"].int_value()
-			                                                && m_attackAnimeCnt <= m_mpObj["RotationAttackHitEnd"].int_value())
+		if (m_attackAnimeCnt >= m_mpObj["RotationAttackHitStart"].int_value() && 
+			m_attackAnimeCnt <= m_mpObj["RotationAttackHitEnd"].int_value())
 		{
 			m_target.lock()->SetAttackHit(false);
 			m_target.lock()->SetDefenseSuc(false);
+			RotationAttackChaeck();
 		}
 	}
-
-	RotationAttackChaeck();
 }
 
 void Enemy::RotationAttackChaeck()
@@ -5906,7 +5920,7 @@ void Enemy::RotationAttackChaeck()
 
 	if (!m_target.expired())
 	{
-		if (!m_target.lock()->GetAttackHit() && !m_target.lock()->GetDefenseSuc() && m_target.lock()->GetInvincibilityTimeCnt() == 0 && !m_target.lock()->GetBPlayerDeath() && m_attackAnimeCnt >= 18 && m_attackAnimeCnt <= 73)
+		if (!m_target.lock()->GetAttackHit() && !m_target.lock()->GetDefenseSuc() && m_target.lock()->GetInvincibilityTimeCnt() == 0 && !m_target.lock()->GetBPlayerDeath())
 		{
 			if (!m_target.lock()->GetBPlayerLose())
 			{

@@ -284,7 +284,8 @@ void GameCamera::UpdateRotateByEnemy()
 	nowVec.Normalize();
 
 	// 向きたい方向
-	Math::Vector3 toVec = m_wpEnemy.lock()->GetPos() - GetPos();
+	Math::Vector3 toVec = Math::Vector3(m_wpEnemy.lock()->GetPos().x + m_wpEnemy.lock()->GetRockOnPos().x, m_wpEnemy.lock()->GetPos().y + m_wpEnemy.lock()->GetRockOnPos().y, m_wpEnemy.lock()->GetPos().z + m_wpEnemy.lock()->GetRockOnPos().z) -
+	 	                  Math::Vector3(m_wpPlayer.lock()->GetPos().x + m_wpPlayer.lock()->GetAddCenterVal().x, m_wpPlayer.lock()->GetPos().y + m_wpPlayer.lock()->GetAddCenterVal().y, m_wpPlayer.lock()->GetPos().z + m_wpPlayer.lock()->GetAddCenterVal().z);
 	toVec.y = 0.0f;
 	toVec.Normalize();
 
@@ -330,7 +331,8 @@ void GameCamera::UpdateRotateByEnemy()
 	nowVec.x = 0.0f;
 	nowVec.Normalize();
 
-	toVec   = Math::Vector3(m_wpEnemy.lock()->GetPos().x, m_wpEnemy.lock()->GetPos().y + 0.5f, m_wpEnemy.lock()->GetPos().z) - Math::Vector3(m_wpPlayer.lock()->GetPos().x, m_wpPlayer.lock()->GetPos().y + 0.5f, m_wpPlayer.lock()->GetPos().z);
+	toVec   = Math::Vector3(m_wpEnemy.lock()->GetPos().x + m_wpEnemy.lock()->GetRockOnPos().x, m_wpEnemy.lock()->GetPos().y + m_wpEnemy.lock()->GetRockOnPos().y, m_wpEnemy.lock()->GetPos().z + m_wpEnemy.lock()->GetRockOnPos().z) - 
+		      Math::Vector3(m_wpPlayer.lock()->GetPos().x + m_wpPlayer.lock()->GetAddCenterVal().x, m_wpPlayer.lock()->GetPos().y + m_wpPlayer.lock()->GetAddCenterVal().y, m_wpPlayer.lock()->GetPos().z + m_wpPlayer.lock()->GetAddCenterVal().z);
 	toVec.x = 0.0f;
 	toVec.Normalize();
 

@@ -707,7 +707,7 @@ void GameUi::PostUpdate()
 	int i = 0;
 	for (auto& list : m_wpEnemyList)
 	{
-		Math::Vector3 pos = Math::Vector3(list.lock()->GetPos().x, list.lock()->GetPos().y + list.lock()->GetAddCenterVal().y + 1.4f, list.lock()->GetPos().z);
+		Math::Vector3 pos = Math::Vector3(list.lock()->GetPos().x, list.lock()->GetPos().y + list.lock()->GetRockOnPos().y + list.lock()->GetAddHpPosY(), list.lock()->GetPos().z);
 
 		POINT dev;
 		KdDirect3D::Instance().WorldToClient(pos, dev, m_wpCamera.lock()->WorkCamera()->GetCameraMatrix(), m_wpCamera.lock()->WorkCamera()->GetProjMatrix());
@@ -1022,7 +1022,8 @@ void GameUi::DrawSprite()
 					}
 					else
 					{
-						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, static_cast<int>(list.lock()->GetEndurance() * 4.0f), static_cast<int>(m_enduranceTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
+						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, static_cast<int>(list.lock()->GetEndurance() * (static_cast<float>(m_mpDedicatedObj["EnduranceTexWidth"].number_value()) / list.lock()->GetMaxEndurance())), 
+							                                               static_cast<int>(m_enduranceTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
 					}
 				}
 
@@ -1033,9 +1034,9 @@ void GameUi::DrawSprite()
 
 			if (ang >= 45)
 			{
-				float m_heightDifference = list.lock()->GetPos().y - m_wpPlayer.lock()->GetPos().y;
+				float m_heightDifference = list.lock()->GetPos().y - m_wpPlayer.lock()->GetPos().y; // Y座標の差
 
-				if (m_heightDifference >= 2.0f)
+				if (m_heightDifference >= 2.0f) // 敵がプレイヤーの上にいるとき
 				{
 					mat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][0].number_value()),
 						                                  static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][1].number_value()),
@@ -1046,7 +1047,7 @@ void GameUi::DrawSprite()
 					color = { 1, 1, 1, 1 };
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowUTex, 0, 0, static_cast<int>(m_EnemyDirectionArrowUTex.GetWidth()), static_cast<int>(m_EnemyDirectionArrowUTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
 				}
-				else if (m_heightDifference <= -2.0f)
+				else if (m_heightDifference <= -2.0f) // 敵がプレイヤーの下にいるとき
 				{
 					mat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][0].number_value()),
 						                                 -static_cast<float>(m_mpDedicatedObj["AroowUpAndDownPos"][1].number_value()),
@@ -1061,7 +1062,7 @@ void GameUi::DrawSprite()
 
 				Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
 
-				if (cross.y < 0)
+				if (cross.y < 0) // 敵がプレイヤーの左側にいるとき
 				{
 					mat = Math::Matrix::CreateTranslation(-static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][0].number_value()),
 						                                   static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][1].number_value()),
@@ -1072,7 +1073,7 @@ void GameUi::DrawSprite()
 					color = { 1, 1, 1, 1 };
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_EnemyDirectionArrowLTex, 0, 0, static_cast<int>(m_EnemyDirectionArrowLTex.GetWidth()), static_cast<int>(m_EnemyDirectionArrowLTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
 				}
-				else if (cross.y >= 0)
+				else if (cross.y >= 0) // 敵がプレイヤーの右側にいるとき
 				{
 					mat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][0].number_value()),
 						                                  static_cast<float>(m_mpDedicatedObj["AroowLeftAndRightPos"][1].number_value()),
@@ -3466,7 +3467,7 @@ void TrainingUi::Update()
 
 void TrainingUi::PostUpdate()
 {
-	Math::Vector3 pos = Math::Vector3(m_wpEnemy.lock()->GetPos().x, m_wpEnemy.lock()->GetPos().y + m_wpEnemy.lock()->GetAddCenterVal().y + 1.4f, m_wpEnemy.lock()->GetPos().z);
+	Math::Vector3 pos = Math::Vector3(m_wpEnemy.lock()->GetPos().x, m_wpEnemy.lock()->GetPos().y + m_wpEnemy.lock()->GetRockOnPos().y + m_wpEnemy.lock()->GetAddHpPosY(), m_wpEnemy.lock()->GetPos().z);
 
 	{
 		POINT dev;
@@ -3889,7 +3890,7 @@ void TrainingUi::OptionUpdate()
 
 		if (m_addFadeAlpha)
 		{
-			m_fadeAlpha += m_scaleFadeSpeed;
+			m_fadeAlpha += m_screenAlphaFadeSpeed;
 			if (m_fadeAlpha >= 1.0f)
 			{
 				m_fadeAlpha = 1.0f;
