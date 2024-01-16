@@ -15,11 +15,11 @@ void InvisibleWall::Init()
 	m_mWorld = scaleMat * transMat;
 
 	m_model = std::make_shared<KdModelData>();
-	m_model->Load("Asset/Models/Stage/Stage.gltf");
+	m_model->Load("Asset/Models/Wall/Wall.gltf");
 	// 当たり判定初期化
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape
-	("StageModel" ,m_model,KdCollider::TypeGround);
+	("StageModel" ,m_model,KdCollider::TypeGround | KdCollider::TypeAttackDec | KdCollider::TypeSpeedDec);
 }
 
 void InvisibleWall::DrawUnLit()

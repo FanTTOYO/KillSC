@@ -678,6 +678,7 @@ void GameScene::Init()
 	std::shared_ptr<GameCamera> camera = std::make_shared<GameCamera>();
 	std::shared_ptr<Ground> ground;
 	ground = std::make_shared<Ground>();
+	ground->Init(Ground::groundType::street);
 	m_objList.push_back(ground);
 	camera->SetHitObj(ground);
 

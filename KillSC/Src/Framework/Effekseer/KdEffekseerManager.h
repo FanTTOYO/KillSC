@@ -61,7 +61,7 @@ public:
 
 private:
 
-	const Effekseer::Vector3D& GetEfkVec3D(const Math::Vector3& vec) const
+	const Effekseer::Vector3D GetEfkVec3D(const Math::Vector3& vec) const
 	{
 		return Effekseer::Vector3D(vec.x, vec.y, vec.z);
 	}

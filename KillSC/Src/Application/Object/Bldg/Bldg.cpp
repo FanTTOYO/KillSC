@@ -1,5 +1,4 @@
 ﻿#include "Bldg.h"
-#include "../Ground/Ground.h"
 
 void Bldg::DrawLit()
 {

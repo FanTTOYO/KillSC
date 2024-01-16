@@ -21,6 +21,7 @@
     "TypeGroundToHitSphereRadius": 0.3,
     "TypeGroundToHitSphereRadiusIsGrassDash": 1.2,
     "TypeBumpToHitSphereRadius": 0.3,
+    "TypeSpeedDecToHitSphereRadius": 1.8,
     "TypeBumpToHitSphereRadiusIsBossEnemyTypeOne": 1.2,
     "TypeAttackDecSphereRadius": 0.95,
 
@@ -89,8 +90,9 @@
     "CoarseFishEnemyPosR": [ 20, 0, -0.5 ],
     "CoarseFishEnemyPosB": [ -0.5, 0, -30 ],
     "CoarseFishEnemyPosL": [ -20, 0, -0.5 ],
-
+    "MoveSpeed": 0.15,
     "EnableStepHight": 0.2,
+    "BailOutEffectScale": 0.15,
     "TypeGroundToHitSphereRadius": 0.3,
     "TypeBuriedToHitSphereRadius": 0.4,
     "TypeGroundToHitSphereRadiusIsGrassDash": 1.2,
@@ -111,11 +113,13 @@
     "AttackThreeShakenMoment": 15,
     "MaxCoarseFishEnemyAttackDelayCnt": 120,
     "PlayerIsDistToBackMove": 2.25,
-    "AddHpPosY" : 1.4
+    "AddHpPosY": 1.4
   },
 
   "WimpEnemyTypeOne": {
     "AddBottomYVal": 0.1,
+    "MoveSpeed": 0.05,
+    "BailOutEffectScale": 0.35,
     "FootfallPointMoment": [ 16, 31 ],
     "LastRunAnimationTime": 40,
     "WimpEnemyTypeOnePosF": [ 0, 0, 30 ],
@@ -151,7 +155,8 @@
     "LeftWeaponScopionNum": 1,
     "LeftWeaponGrassHopperNum": 2,
     "DashAttackPossibleTime": 80,
-
+    "MoveSpeed": 0.25,
+    "BailOutEffectScale": 0.35,
     "EnableStepHight": 0.2,
     "TypeGroundToHitSphereRadius": 0.3,
     "TypeBuriedToHitSphereRadius": 0.4,
@@ -212,6 +217,8 @@
     "Endurance": 1000,
     "Vforce": 10000,
     "EnableStepHight": 0.2,
+    "MoveSpeed": 0.1,
+    "BailOutEffectScale": 5,
     "TypeGroundToHitSphereRadius": 0.3,
     "TypeBuriedToHitSphereRadius": 0.4,
     "TypeGroundToHitSphereRadiusIsGrassDash": 1.2,
@@ -251,7 +258,7 @@
       "ScreenAlphaFadeSpeed": 0.0083333333333333,
       "FadeTime": [ 120, 240, 360, 480 ],
       "TitlerogoTexPos": [ 0, 200, 0 ],
-      "PushLClickTexPos": [ 0, -200, 0 ],
+      "PushLClickTexPos": [ 13, -200, 0 ],
       "MaxTime": 480
     },
 
@@ -343,7 +350,7 @@
       "ChallengeEnemyCharaTexPos": [ -600, 320, 0 ],
       "ChallengeFiftyTexPosAddVal": [ 80, 70, 0 ],
       "ChallengeHundredTexPosAddVal": [ 80, 35, 0 ],
-      "PushLClickTexPos": [ 0, -250, 0 ]
+      "PushLClickTexPos": [ 40, -250, 0 ]
     },
 
     "TrainingUi": {
@@ -392,11 +399,13 @@
       "WeaponTypeTwoTexPos_L": [ -320, -250, 0 ],
       "WeaponChangeKeyPushStateTexPos_L": [ -425, -250, 0 ],
       "WeaponTypeTwoOvreDarkTexPos_L": [ -380, -250, 0 ],
-      "TorionTexPos": [ -620, 255, 0 ],
-      "TorionBarTexPos": [ -630, 255, 0 ],
-      "enduranceRelationTexPos": [ -630, 300, 0 ],
       "AroowUpAndDownPos": [ -25, 225, 0 ],
-      "AroowLeftAndRightPos": [ 500, 0, 0 ]
+      "AroowLeftAndRightPos": [ 500, 0, 0 ],
+      "TutorialToDoTexPos": [ 390, 285, 0 ],
+      "EnemyPosToZeroWayTexPos": [ -390, 285, 0 ],
+      "ToDoExecutedCntPos": [ -75, 300, 0 ],
+      "DivisionSignPos": [ 0, 300, 0 ],
+      "MaxToDoExecutedCntPos": [ 75, 300, 0 ]
     }
   },
 

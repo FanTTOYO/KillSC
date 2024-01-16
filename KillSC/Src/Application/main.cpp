@@ -167,6 +167,7 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	KdEffekseerManager::GetInstance().Create(w, h);
 
+	// キー情報の登録＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 	KdInputCollector* keyboardCollector = new KdInputCollector();
 
 	KdInputButtonForWindows* pForward       = new KdInputButtonForWindows({ 'W' , VK_GAMEPAD_LEFT_THUMBSTICK_UP });
@@ -179,6 +180,7 @@ bool Application::Init(int w, int h)
 	KdInputButtonForWindows* pJump          = new KdInputButtonForWindows(VK_SPACE);
 	KdInputButtonForWindows* pRWeaponChange = new KdInputButtonForWindows('E');
 	KdInputButtonForWindows* pLWeaponChange = new KdInputButtonForWindows('Q');
+	KdInputButtonForWindows* pTutorialEnemyPosInit = new KdInputButtonForWindows('P');
 
 	keyboardCollector->AddButton("forward", pForward);
 	keyboardCollector->AddButton("left", pLeft);
@@ -186,6 +188,7 @@ bool Application::Init(int w, int h)
 	keyboardCollector->AddButton("right", pRight);
 	keyboardCollector->AddButton("rWeaponChange", pRWeaponChange);
 	keyboardCollector->AddButton("lWeaponChange", pLWeaponChange);
+	keyboardCollector->AddButton("TutorialEnemyPosInit", pTutorialEnemyPosInit);
 
 	KdInputAxisForWindows* pMove = new KdInputAxisForWindows(keyboardCollector->GetButton("forward"), keyboardCollector->GetButton("right"),
 		keyboardCollector->GetButton("backward"), keyboardCollector->GetButton("left"));
@@ -198,6 +201,7 @@ bool Application::Init(int w, int h)
 	keyboardCollector->AddButton("jump", pJump);
 
 	KdInputManager::Instance().AddDevice("Keyboard", keyboardCollector);
+	//＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 	return true;
 }
@@ -329,7 +333,8 @@ void Application::Release()
 	KdShaderManager::Instance().Release();
 
 	KdAudioManager::Instance().Release();
-
+	
+	KdDirect3D::Instance().WorkSwapChain()->SetFullscreenState(FALSE, 0);
 	KdDirect3D::Instance().Release();
 
 	// ウィンドウ削除

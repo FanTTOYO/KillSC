@@ -49,6 +49,11 @@ void TutorialScene::Init()
 	invisibleWall = std::make_shared<InvisibleWall>();
 	m_objList.push_back(invisibleWall);
 
+	std::shared_ptr<Ground> ground;
+	ground = std::make_shared<Ground>();
+	ground->Init(Ground::groundType::trainingRoom);
+	m_objList.push_back(ground);
+
 	std::shared_ptr<Enemy> enemy;
 	enemy = std::make_shared<Enemy>();
 	m_objList.push_back(enemy);

@@ -16,11 +16,13 @@ public:
 
 	const std::shared_ptr<const KdCamera>& GetCamera() const // 見るだけ（変更できない）
 	{
+		if (!m_spCamera) { return nullptr; }
 		return m_spCamera;
 	}
 
 	std::shared_ptr<KdCamera> WorkCamera() const            // m_spCameraの何かを変更したいとき
 	{
+		if (!m_spCamera) { return nullptr; }
 		return m_spCamera;
 	}
 

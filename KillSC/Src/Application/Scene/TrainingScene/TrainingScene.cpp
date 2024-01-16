@@ -91,6 +91,11 @@ void TrainingScene::Init()
 	m_objList.push_back(invisibleWall);
 	camera->SetHitObj(invisibleWall);
 
+	std::shared_ptr<Ground> ground;
+	ground = std::make_shared<Ground>();
+	ground->Init(Ground::groundType::trainingRoom);
+	m_objList.push_back(ground);
+
 	std::shared_ptr<Player> player;
 	player = std::make_shared<Player>();
 	m_objList.push_back(player);

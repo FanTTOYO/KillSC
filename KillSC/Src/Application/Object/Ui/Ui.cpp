@@ -84,12 +84,12 @@ bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_
 	mousePos.y = mousePos.y * -1 + 360;
 	Math::Vector3 Dis;
 	float mouseX = (float)mousePos.x;
-	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + 35);
+	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + m_mpUiSharedObj["TitleBarHeight"].int_value());
 
-	float MouseLeft = mouseX - 2.0f;
-	float MouseRight = mouseX + 2.0f;
-	float MouseTop = mouseY + 2.0f;
-	float MouseBottom = mouseY - 2.0f;
+	float MouseLeft = mouseX - static_cast<float>(m_mpUiSharedObj["MouseRadius"].number_value());
+	float MouseRight = mouseX + static_cast<float>(m_mpUiSharedObj["MouseRadius"].number_value());
+	float MouseTop = mouseY + static_cast<float>(m_mpUiSharedObj["MouseHalfHeight"].number_value());
+	float MouseBottom = mouseY - static_cast<float>(m_mpUiSharedObj["MouseHalfHeight"].number_value());
 
 	Math::Vector3 ButtomPos;
 	ButtomPos.x = a_pos.x + (float)(pwi->rcWindow.left);
@@ -1094,7 +1094,7 @@ void GameUi::DrawSprite()
 	{
 		transMat = Math::Matrix::Identity;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		color = { 0,0,0,0.2f };
+		color = { 0,0,0,0.6f };
 		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 
 		if (!m_bOperation)
@@ -1268,7 +1268,6 @@ void GameUi::OptionUpdate()
 
 				if (m_bSelect)
 				{
-					ShowCursor(false); // マウスカーソルを消す
 					KdEffekseerManager::GetInstance().Reset();
 					SceneManager::Instance().SetNextScene
 					(
@@ -1412,6 +1411,7 @@ void ResultUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 	m_winCharaTex.Load("Asset/Textures/Ui/Result/winChara.png");
 	m_winPlayerCharaTex.Load("Asset/Textures/Ui/Result/winPlayerChara.png");
+	m_losePlayerCharaTex.Load("Asset/Textures/Ui/Result/LosePlayerChara.png");
 	m_loseCharaTex.Load("Asset/Textures/Ui/Result/loseChara.png");
 
 	m_time = 0;
@@ -1820,7 +1820,7 @@ void ResultUi::DrawSprite()
 				                                       static_cast<float>(m_mpDedicatedObj["LosePlayerCharaTexPos"][2].number_value()));
 
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_losePlayerCharaTex, 0, 0, static_cast<int>(m_losePlayerCharaTex.GetWidth()), static_cast<int>(m_losePlayerCharaTex.GetHeight()));
 
 			switch (SceneManager::Instance().GetEnemyTotal())
 			{
@@ -2577,12 +2577,19 @@ void TutorialUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_tyubukiTex.Load("Asset/Textures/Ui/Tutorial/tyubuki.png");
 	m_tyuKihonTex.Load("Asset/Textures/Ui/Tutorial/tyuKihon.png");
 
-	m_PointTex[0].Load("Asset/Textures/Ui/Result/p0.png");
-	m_PointTex[1].Load("Asset/Textures/Ui/Result/p1.png");
-	m_PointTex[2].Load("Asset/Textures/Ui/Result/p2.png");
-	m_PointTex[3].Load("Asset/Textures/Ui/Result/p3.png");
-	m_PointTex[4].Load("Asset/Textures/Ui/Result/p4.png");
-	m_PointTex[5].Load("Asset/Textures/Ui/Result/p5.png");
+	m_hopperTyuToDoTex.Load("Asset/Textures/Ui/Tutorial/hopperTyuToDo.png");
+	m_sukoADMoveToDoTex.Load("Asset/Textures/Ui/Tutorial/sukoADMoveToDo.png");
+	m_tyubukiToDoTex.Load("Asset/Textures/Ui/Tutorial/tyubukiToDo.png");
+	m_tyuKihonToDoTex.Load("Asset/Textures/Ui/Tutorial/tyuKihonToDo.png");
+	m_enemyPosToZeroWayTex.Load("Asset/Textures/Ui/Tutorial/EnemyPosToZeroWay.png");
+
+	m_cntTex[0].Load("Asset/Textures/Ui/Result/p0.png");
+	m_cntTex[1].Load("Asset/Textures/Ui/Result/p1.png");
+	m_cntTex[2].Load("Asset/Textures/Ui/Result/p2.png");
+	m_cntTex[3].Load("Asset/Textures/Ui/Result/p3.png");
+	m_cntTex[4].Load("Asset/Textures/Ui/Result/p4.png");
+	m_cntTex[5].Load("Asset/Textures/Ui/Result/p5.png");
+	m_divisionSignTex.Load("Asset/Textures/Ui/Tutorial/DivisionSign.png");
 
 	m_addFadeAlpha = false;
 	m_time = 0;
@@ -2867,57 +2874,37 @@ void TutorialUi::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_lWeaponChangeKeyTex, 0, 0, static_cast<int>(m_lWeaponChangeKeyTex.GetWidth()), static_cast<int>(m_lWeaponChangeKeyTex.GetHeight()));
 		}
-
-		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["enduranceRelationTexPos"][0].number_value()),
-			                                       static_cast<float>(m_mpDedicatedObj["enduranceRelationTexPos"][1].number_value()),
-			                                       static_cast<float>(m_mpDedicatedObj["enduranceRelationTexPos"][2].number_value()));
-
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		rc = { 0,0,static_cast<int>(m_enduranceBarTex.GetWidth()),static_cast<int>(m_enduranceBarTex.GetHeight()) };
-		color = { 1, 1, 1, 1 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, static_cast<int>(m_enduranceBarTex.GetWidth()), static_cast<int>(m_enduranceBarTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
-
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		rc = { 0,0,static_cast<int>((spPlayer->GetEndurance())), static_cast<int>(m_enduranceTex.GetHeight()) };
-		color = { 1, 1, 1, 1 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceTex, 0, 0, static_cast<int>((spPlayer->GetEndurance())), static_cast<int>(m_enduranceTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
-
-		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["TorionBarTexPos"][0].number_value()),
-			                                       static_cast<float>(m_mpDedicatedObj["TorionBarTexPos"][1].number_value()),
-			                                       static_cast<float>(m_mpDedicatedObj["TorionBarTexPos"][2].number_value()));
-
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		rc = { 0,0,static_cast<int>(m_torionBarTex.GetWidth()),static_cast<int>(m_torionBarTex.GetHeight()) };
-		color = { 1, 1, 1, 1 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionBarTex, 0, 0, static_cast<int>(m_torionBarTex.GetWidth()), static_cast<int>(m_torionBarTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
-
-		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["TorionTexPos"][0].number_value()),
-			                                       static_cast<float>(m_mpDedicatedObj["TorionTexPos"][1].number_value()),
-			                                       static_cast<float>(m_mpDedicatedObj["TorionTexPos"][2].number_value()));
-
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		rc = { 0,0,static_cast<int>(spPlayer->GetVForce()),static_cast<int>(m_torionTex.GetHeight()) };
-		color = { 1, 1, 1, 1 };
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, static_cast<int>((spPlayer->GetVForce())), static_cast<int>(m_torionTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
 	}
 
 	if (m_tutorialType != sonotaTu)
 	{
-		transMat = Math::Matrix::CreateTranslation(450, -300, 0);
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["ToDoExecutedCntPos"][0].number_value()),
+												   static_cast<float>(m_mpDedicatedObj["ToDoExecutedCntPos"][1].number_value()),
+												   static_cast<float>(m_mpDedicatedObj["ToDoExecutedCntPos"][2].number_value()));
+		
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_cntTex[m_tutorialCnt], 0, 0, static_cast<int>(m_cntTex[m_tutorialCnt].GetWidth()), static_cast<int>(m_cntTex[m_tutorialCnt].GetHeight()));
+
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["MaxToDoExecutedCntPos"][0].number_value()),
+										           static_cast<float>(m_mpDedicatedObj["MaxToDoExecutedCntPos"][1].number_value()),
+										           static_cast<float>(m_mpDedicatedObj["MaxToDoExecutedCntPos"][2].number_value()));
 
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_PointTex[m_tutorialCnt], 0, 0, static_cast<int>(m_PointTex[m_tutorialCnt].GetWidth()), static_cast<int>(m_PointTex[m_tutorialCnt].GetHeight()));
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_cntTex[5], 0, 0, static_cast<int>(m_cntTex[5].GetWidth()), static_cast<int>(m_cntTex[5].GetHeight()));
 
-		transMat = Math::Matrix::CreateTranslation(550, -300, 0);
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["DivisionSignPos"][0].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["DivisionSignPos"][1].number_value()),
+			                                       static_cast<float>(m_mpDedicatedObj["DivisionSignPos"][2].number_value()));
+
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_PointTex[5], 0, 0, static_cast<int>(m_PointTex[5].GetWidth()), static_cast<int>(m_PointTex[5].GetHeight()));
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_divisionSignTex, 0, 0, static_cast<int>(m_divisionSignTex.GetWidth()), static_cast<int>(m_divisionSignTex.GetHeight()));
 	}
 
 	if (m_bOption)
 	{
 		transMat = Math::Matrix::Identity;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		color = { 0,0,0,0.2f };
+		color = { 0,0,0,0.6f };
 		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 
 		if (!m_bOperation)
@@ -3018,6 +3005,51 @@ void TutorialUi::DrawSprite()
 			break;
 		}
 	}
+	else
+	{
+		transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyPosToZeroWayTexPos"][0].number_value()),
+										           static_cast<float>(m_mpDedicatedObj["EnemyPosToZeroWayTexPos"][1].number_value()),
+										           static_cast<float>(m_mpDedicatedObj["EnemyPosToZeroWayTexPos"][2].number_value()));
+
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enemyPosToZeroWayTex, 0, 0, static_cast<int>(m_enemyPosToZeroWayTex.GetWidth()), static_cast<int>(m_enemyPosToZeroWayTex.GetHeight()));
+
+		switch (m_tutorialType)
+		{
+		case kihonTu:
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][0].number_value()),
+				static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][1].number_value()),
+				static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][2].number_value()));
+
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_tyuKihonToDoTex, 0, 0, static_cast<int>(m_tyuKihonToDoTex.GetWidth()), static_cast<int>(m_tyuKihonToDoTex.GetHeight()));
+			break;
+		case bukiTu:
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][0].number_value()),
+				static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][1].number_value()),
+				static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][2].number_value()));
+
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_tyubukiToDoTex, 0, 0, static_cast<int>(m_tyubukiToDoTex.GetWidth()), static_cast<int>(m_tyubukiToDoTex.GetHeight()));
+			break;
+		case sukoADMoveTu:
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][0].number_value()),
+				static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][1].number_value()),
+				static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][2].number_value()));
+
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_sukoADMoveToDoTex, 0, 0, static_cast<int>(m_sukoADMoveToDoTex.GetWidth()), static_cast<int>(m_sukoADMoveToDoTex.GetHeight()));
+			break;
+		case hopperTu:
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][0].number_value()),
+				static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][1].number_value()),
+				static_cast<float>(m_mpDedicatedObj["TutorialToDoTexPos"][2].number_value()));
+
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_hopperTyuToDoTex, 0, 0, static_cast<int>(m_hopperTyuToDoTex.GetWidth()), static_cast<int>(m_hopperTyuToDoTex.GetHeight()));
+			break;
+		}
+	}
 
 	transMat = Math::Matrix::Identity;
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
@@ -3095,7 +3127,6 @@ void TutorialUi::OptionUpdate()
 
 				if (m_bSelect)
 				{
-					ShowCursor(false); // マウスカーソルを消す
 					KdEffekseerManager::GetInstance().Reset();
 					SceneManager::Instance().SetNextScene
 					(
@@ -3775,7 +3806,7 @@ void TrainingUi::DrawSprite()
 	{
 		transMat = Math::Matrix::Identity;
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		color = { 0,0,0,0.2f };
+		color = { 0,0,0,0.6f };
 		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
 
 		if (!m_bOperation)
@@ -3913,7 +3944,6 @@ void TrainingUi::OptionUpdate()
 
 				if (m_bSelect)
 				{
-					ShowCursor(false); // マウスカーソルを消す
 					KdEffekseerManager::GetInstance().Reset();
 					SceneManager::Instance().SetNextScene
 					(

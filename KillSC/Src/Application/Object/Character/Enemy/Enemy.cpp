@@ -5,6 +5,7 @@
 #include "../../Weapon/Scopion/Scopion.h"
 #include "../Player/Player.h"
 
+// 初期化
 void Enemy::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 {
 	// 行列合成
@@ -103,17 +104,18 @@ void Enemy::Update()
 	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
 	{
 		lowestYPos = static_cast<float>((*m_wpJsonObj.lock())["TutorialMinimumYPos"].number_value());
-		m_mpObj = (*m_wpJsonObj.lock())["TutorialEnemy"].object_items();
-		m_mWorldRot.y = (float)m_mpObj["InitWorldRotationY"].number_value();
-		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
-		m_addCenterVal = addCenterVal;
-
 		if (m_bFirstUpdate)
 		{
+			m_mpObj = (*m_wpJsonObj.lock())["TutorialEnemy"].object_items();
+			m_mWorldRot.y = static_cast<float>(m_mpObj["InitWorldRotationY"].number_value());
+			Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										   static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										   static_cast<float>(m_mpObj["AddCenterVal"][2].number_value())};
+			m_addCenterVal = addCenterVal;
 			m_weaponList.clear();
 		}
+
+		TutorialUpdate();
 	}
 	else
 	{
@@ -138,12 +140,12 @@ void Enemy::Update()
 			m_pos = Math::Vector3::Zero;
 		}
 
-#endif
 		// debugキー
 		if (GetAsyncKeyState('K') & 0x8000)
 		{
 			m_vForce = 0;
 		}
+#endif
 
 		
 
@@ -324,6 +326,7 @@ void Enemy::Update()
 				m_hitMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
 			}
 
+			SpeedyMoveWallHitChack(m_hitMoveSpd, m_knockBackVec);
 			m_pos += m_knockBackVec * m_hitMoveSpd;
 		}
 
@@ -1361,6 +1364,64 @@ void Enemy::CollisionUpdate()
 	}
 }
 
+void Enemy::SpeedyMoveWallHitChack(float& a_moveSpd, Math::Vector3 moveVec)
+{
+	KdCollider::RayInfo rayInfo;
+	rayInfo.m_pos = m_pos + m_addCenterVal;
+	rayInfo.m_dir = moveVec;
+	static float enableStepHight = static_cast<float>(m_mpObj["EnableStepHight"].number_value());
+	rayInfo.m_pos.y += enableStepHight;
+	rayInfo.m_range = a_moveSpd;
+
+	rayInfo.m_type = KdCollider::TypeSpeedDec;
+
+#ifdef _DEBUG
+	m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range, { 1,1,1,1 });
+#endif
+	std::list<KdCollider::CollisionResult> retRayList;
+
+	for (auto& obj : SceneManager::Instance().GetObjList())
+	{
+		obj->Intersects
+		(
+			rayInfo,
+			&retRayList
+		);
+	}
+
+	// レイに当たったリストから一番近いオブジェクトを検出
+	float maxOverLap = 0;
+	Math::Vector3 groundPos = {};
+	bool hit = false;
+	for (auto& ret : retRayList)
+	{
+		// レイを遮断しオーバーした長さ
+		// 一番長いものを探す
+		if (maxOverLap < ret.m_overlapDistance)
+		{
+			maxOverLap = ret.m_overlapDistance;
+			groundPos = ret.m_hitPos;
+			hit = true;
+		}
+	}
+
+	if (hit)
+	{
+		if (maxOverLap <= 0.2)
+		{
+			a_moveSpd -= maxOverLap;
+			if (a_moveSpd < 0)
+			{
+				a_moveSpd = 0;
+			}
+		}
+		else
+		{
+			a_moveSpd = 0;
+		}
+	}
+}
+
 void Enemy::BossUpdate()
 {
 	if (m_bFirstUpdate)
@@ -2130,7 +2191,10 @@ void Enemy::WimpEnemyTypeOneUpdate()
 
 void Enemy::TutorialUpdate()
 {
-
+	if (KdInputManager::Instance().IsPress("TutorialEnemyPosInit"))
+	{
+		m_pos = { Math::Vector3::Zero };
+	}
 }
 
 void Enemy::PostUpdate()
@@ -2415,20 +2479,8 @@ void Enemy::PostUpdate()
 				KdEffekseerManager::GetInstance().
 					Play("BailOutEnemy.efk", { m_pos.x,m_pos.y + 0.3f,m_pos.z });
 				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutEnemy.efk"); // これでループしない
-
-				if (!m_bBoss)
-				{
-					if (m_enemyType & coarseFishEnemy)
-					{
-						Math::Matrix efcMat = Math::Matrix::CreateScale(0.15f) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 0.9f,m_pos.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("BailOutEnemy.efk", efcMat);
-					}
-					else
-					{
-						Math::Matrix efcMat = Math::Matrix::CreateScale(0.35f) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 0.3f,m_pos.z });
-						KdEffekseerManager::GetInstance().SetWorldMatrix("BailOutEnemy.efk", efcMat);
-					}
-				}
+				Math::Matrix efcMat = Math::Matrix::CreateScale(static_cast<float>(m_mpObj["BailOutEffectScale"].number_value())) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 0.9f,m_pos.z });
+				KdEffekseerManager::GetInstance().SetWorldMatrix("BailOutEnemy.efk", efcMat);
 				//m_isExpired = true;
 			}
 		}
@@ -4482,23 +4534,6 @@ void Enemy::NormalMove()
 {
 	Math::Vector3 moveVec = {};
 
-	float moveSpd = 0.0f;
-	moveSpd = 0.25f;
-	switch(m_enemyType)
-	{
-	case coarseFishEnemy:
-		moveSpd = 0.15f;
-		break;
-	case wimpEnemyTypeOne:
-		moveSpd = 0.15f;
-		break;
-	case bossEnemyTypeOne:
-		moveSpd = 0.1f;
-		break;
-	}
-	
-
-
 	if (m_EnemyState & run)
 	{
 		if (m_enemyType == wimpEnemyTypeOne)
@@ -4539,7 +4574,7 @@ void Enemy::NormalMove()
 
 	if (!(m_EnemyState & (grassHopperDash | grassHopperDashUp)))
 	{
-		m_pos += moveVec * moveSpd;
+		m_pos += moveVec * static_cast<float>(m_mpObj["MoveSpeed"].number_value());
 	}
 
 	Brain();
@@ -6169,6 +6204,7 @@ void Enemy::ScorpionAttackMove()
 			}
 		}
 
+		SpeedyMoveWallHitChack(m_attackMoveSpd, m_attackMoveDir);
 		m_pos += m_attackMoveDir * m_attackMoveSpd;
 	}
 }

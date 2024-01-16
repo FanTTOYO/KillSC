@@ -135,6 +135,7 @@ private:
 	void OverStageChaeck();																							// ステージから出たかどうかを確認
 	void EnemyRockOn();																								// 敵をロックオンする処理
 	void HitStateUpdate();																							// Hit状態の時の処理
+	void SpeedyMoveWallHitChack(float& a_moveSpd, Math::Vector3 moveVec);											// 速い動きの時の壁との当たり判定
 	void CollisionUpdate();																							// 当たり判定処理
 
 	std::map<std::string,json11::Json>  m_mpObj;																	// JsonからPlayerオブジェクトの情報をもらうときに使用

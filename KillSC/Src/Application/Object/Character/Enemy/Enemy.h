@@ -189,6 +189,7 @@ public:
 private:
 
 	void CollisionUpdate();
+	void SpeedyMoveWallHitChack(float& a_moveSpd, Math::Vector3 moveVec);											// 速い動きの時の壁との当たり判定
 	void BossUpdate();
 	void BossEnemyTyepOneUpdate();
 	void CoarseFishEnemyUpdate();

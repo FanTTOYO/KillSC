@@ -69,7 +69,6 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 	switch (_sceneType)
 	{
 	case SceneType::title:
-		ShowCursor(false); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_bPlayerWin = false;
 		m_currentScene = std::make_shared<TitleScene>();
 		break;
@@ -90,7 +89,6 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 		m_currentScene = std::make_shared<ResultScene>();
 		break;
 	case SceneType::select:
-		ShowCursor(true); // マウスカーソルを消す); // マウスカーソルを消す)
 		m_currentScene = std::make_shared<SelectScene>();
 		break;
 	case SceneType::tutorial:
