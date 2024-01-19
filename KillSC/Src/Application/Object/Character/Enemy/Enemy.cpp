@@ -140,12 +140,12 @@ void Enemy::Update()
 			m_pos = Math::Vector3::Zero;
 		}
 
+#endif
 		// debugキー
 		if (GetAsyncKeyState('K') & 0x8000)
 		{
 			m_vForce = 0;
 		}
-#endif
 
 		
 

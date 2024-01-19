@@ -525,7 +525,7 @@ void KdHD2DShader::DrawVertices(const std::vector<KdPolygon::Vertex>& vertices, 
 	// 描画パイプラインのチェック
 	ID3D11VertexShader* pNowVS = nullptr;
 	KdDirect3D::Instance().WorkDevContext()->VSGetShader(&pNowVS, nullptr, nullptr);
-	bool isLitShader = m_VS_Lit == pNowVS;
+	//bool isLitShader = m_VS_Lit == pNowVS;
 	KdSafeRelease(pNowVS);
 
 	// 頂点配列を描画
