@@ -113,7 +113,6 @@ bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_
 			KdSafeDelete(pwi);
 			return true;
 		}
-
 	}
 	else
 	{
@@ -436,9 +435,13 @@ void GameUi::Update()
 		}
 	}
 
-	if (m_time <= m_mpDedicatedObj["MaxTime"].int_value())
+	if (m_time < m_mpDedicatedObj["MaxTime"].int_value())
 	{
 		m_time++;
+		if (m_time == m_mpDedicatedObj["MaxTime"].int_value())
+		{
+			KdAudioManager::Instance().Play("Asset/Audio/BGM/Battle-Furious.wav", true);
+		}
 	}
 
 	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
@@ -567,7 +570,7 @@ void GameUi::Update()
 	}
 
 
-	if (m_time > m_mpDedicatedObj["CountFadeTime"][7].int_value())
+	if (m_time == m_mpDedicatedObj["CountFadeTime"][7].int_value())
 	{
 
 		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
@@ -614,8 +617,9 @@ void GameUi::Update()
 				if (!m_bOption)
 				{
 					m_bOption = true;
+					KdAudioManager::Instance().PauseAllSound();
 					KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-					ShowCursor(true); // マウスカーソルを消す
+					ShowCursor(true); // マウスカーソルを出現させる
 					KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
 				}
 				else if (m_bOption)
@@ -627,6 +631,7 @@ void GameUi::Update()
 					m_bHowToPage = true;
 					m_bOperation = false;
 					SetCursorPos(640, 360);
+					KdAudioManager::Instance().ResumeAllSound();
 					KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
 					ShowCursor(false); // マウスカーソルを消す
 					KdEffekseerManager::GetInstance().OnResumeEfkUpdate();

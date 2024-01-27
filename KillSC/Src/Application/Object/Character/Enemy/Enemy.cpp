@@ -2469,19 +2469,25 @@ void Enemy::PostUpdate()
 		{
 			if (!m_bEnemyLose)
 			{
-				/*SceneManager::Instance().SubEnemyIeftover();
-				if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
-				{
-					SceneManager::Instance().SubEnemyDrawTotal();
-				}*/
-
 				m_bEnemyLose = true;
 				KdEffekseerManager::GetInstance().
-					Play("BailOutEnemy.efk", { m_pos.x,m_pos.y + 0.3f,m_pos.z });
+					Play("BailOutEnemy.efk", { m_pos.x,m_pos.y + m_addCenterVal.y,m_pos.z});
 				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutEnemy.efk"); // これでループしない
 				Math::Matrix efcMat = Math::Matrix::CreateScale(static_cast<float>(m_mpObj["BailOutEffectScale"].number_value())) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 0.9f,m_pos.z });
 				KdEffekseerManager::GetInstance().SetWorldMatrix("BailOutEnemy.efk", efcMat);
-				//m_isExpired = true;
+
+				if (m_enemyType & bossEnemyTypeOne)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/BossEnemyTypeOneDeath.wav");
+				}
+				else if (m_enemyType & humanBossEnemy)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/HumanBossEnemyDeath.wav");
+				}
+				else
+				{
+					KdAudioManager::Instance().Play3D("Asset/Audio/SE/CoarseFishEnemyAndWinpEnemyDeath.wav", { m_pos.x,m_pos.y + m_addCenterVal.y,m_pos.z });
+				}
 			}
 		}
 	}

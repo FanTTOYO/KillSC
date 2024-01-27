@@ -19,6 +19,11 @@ void BaseScene::PreUpdate()
 			++it; // 次へ
 		}
 	}
+
+	for (auto& obj : m_objList)
+	{
+		obj->PreUpdate();
+	}
 }
 
 void BaseScene::Update()
