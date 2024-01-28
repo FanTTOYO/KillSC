@@ -1990,7 +1990,7 @@ void ResultUi::DrawSprite()
 			                                       static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][1].number_value()),
 			                                       static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][2].number_value()));
 
-		Math::Rectangle rc = { 0,0,894,114 };
+		Math::Rectangle rc = { 0,0,static_cast<int>(m_pushLClickTex.GetWidth()), static_cast<int>(m_pushLClickTex.GetHeight())};
 		color = { 1,1,1,m_pushLClickAlpha };
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_pushLClickTex, 0, 0, static_cast<int>(m_pushLClickTex.GetWidth()), static_cast<int>(m_pushLClickTex.GetHeight()), &rc, &color);

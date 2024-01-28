@@ -412,7 +412,6 @@ void Enemy::Update()
 		m_gravity += static_cast<float>((*m_wpJsonObj.lock())["GravityAcceleration"].number_value());
 	}
 
-	//if (m_pos.y <= -1.05f)//今だけ 地面に着いたらカメラのXAngが180以下かつ0以上補正する
 	// ========================================
 	// 当たり判定
 	// ========================================

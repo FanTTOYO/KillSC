@@ -350,7 +350,7 @@
       "ChallengeEnemyCharaTexPos": [ -600, 320, 0 ],
       "ChallengeFiftyTexPosAddVal": [ 80, 70, 0 ],
       "ChallengeHundredTexPosAddVal": [ 80, 35, 0 ],
-      "PushLClickTexPos": [ 40, -250, 0 ]
+      "PushLClickTexPos": [ 10, -250, 0 ]
     },
 
     "TrainingUi": {

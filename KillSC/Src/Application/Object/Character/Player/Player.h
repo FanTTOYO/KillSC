@@ -132,6 +132,8 @@ private:
 	void StepMove();																								// ステップ時の動きを扱う																						
 	void NormalMove();																								// 歩きなどの動きを扱う
 	void ScorpionAttackMove();																						// 短剣での攻撃を扱う
+	void ScorpionAttackEndProcess();																				// 短剣での攻撃終了処理
+	void ScorpionAttackAnimationMoveProcess();																		// 短剣での攻撃アニメーション中の処理
 	void ScorpionDefenseMove();																						// 短剣での防御を扱う
 	void HasDefenseMove();																							// 防御された時の動きを扱う
 	void TutorialUpdate();																							// チュートリアル時のみ行う処理

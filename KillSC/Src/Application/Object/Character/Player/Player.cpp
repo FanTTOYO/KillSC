@@ -609,6 +609,266 @@ void Player::HitStateUpdate()
 	SpeedyMoveWallHitChack(m_hitMoveSpd, m_knockBackVec);
 	m_pos += m_knockBackVec * m_hitMoveSpd;
 }
+
+// 更新後の処理
+void Player::PostUpdate()
+{
+	if (!m_bPlayerDeath)
+	{
+		auto it = m_enemyList.begin();
+		while (it != m_enemyList.end()) // 数が変動するため範囲ベースForが使えない
+		{
+			// 不要になったオブジェクトを消す
+			if ((*it).expired())
+			{
+				// 消す
+				it = m_enemyList.erase(it); // 戻り値で次の場所を返してくれる
+			}
+			else
+			{
+				++it; // 次へ
+			}
+		}
+
+		if (m_gravity > 0)
+		{
+			if (!(m_playerState & hit))
+			{
+				if (!(m_playerState & fall))
+				{
+					m_spAnimator->SetAnimation(m_spModel->GetAnimation("FallA"), false);
+				}
+
+				m_playerState = fall;
+			}
+		}
+
+		if (m_rGrassHopperPauCnt > 0)
+		{
+			--m_rGrassHopperPauCnt;
+		}
+
+		if (m_lGrassHopperPauCnt > 0)
+		{
+			--m_lGrassHopperPauCnt;
+		}
+
+		AnimationUpdate();
+
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->PostUpdate();
+		}
+	}
+	else
+	{
+		m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
+		m_spModel->CalcNodeMatrices();
+
+		if (!KdEffekseerManager::GetInstance().IsPlaying("BailOutPlayer.efk"))
+		{
+			if (m_bPlayerLose)
+			{
+				if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::training)
+				{
+					SceneManager::Instance().SetBAddOrSubVal(false);
+					if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+					{
+						SceneManager::Instance().SetPointAddOrSubVal(0);
+					}
+					else
+					{
+						SceneManager::Instance().SetPointAddOrSubVal(500);
+					}
+
+					SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
+				}
+				else
+				{
+					m_isExpired = true;
+				}
+			}
+		}
+
+		if (m_spAnimator->IsAnimationEnd())
+		{
+			if (!m_bPlayerLose)
+			{
+				KdEffekseerManager::GetInstance().
+					Play("BailOutPlayer.efk", { m_pos.x,m_pos.y + 0.3f,m_pos.z });
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutPlayer.efk"); // これでループしない
+				m_bPlayerLose = true;
+			}
+
+		}
+	}
+}
+
+// アニメーションの更新処理
+void Player::AnimationUpdate()
+{
+	if (m_bAttackAnimeDelay)
+	{
+		m_attackAnimeDelayCnt--;
+		if (m_attackAnimeDelayCnt <= 0)
+		{
+			m_bAttackAnimeDelay = false;
+			m_attackAnimeDelayCnt = 0;
+		}
+	}
+
+	if (!m_spAnimator) return;
+	if (!(m_playerState & (lAttack | rAttack | rlAttack | rlAttackRush)))
+	{
+		m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
+		m_spModel->CalcNodeMatrices();
+		if (m_playerState & run)
+		{
+			++m_runAnimeCnt;
+			if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][0].int_value())
+			{
+				KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
+			}
+			else if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][1].int_value())
+			{
+				KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
+			}
+
+			if (m_runAnimeCnt == m_mpObj["LastRunAnimationTime"].int_value())
+			{
+				m_runAnimeCnt = 0;
+			}
+		}
+	}
+	else if (m_playerState & (lAttack | rAttack) && !m_bAttackAnimeDelay)
+	{
+		if (m_bAttackAnimeCnt)
+		{
+			m_attackAnimeCnt++;
+			if (m_playerState & (lAttackOne | lAttackTwo | rAttackOne | rAttackTwo))
+			{
+				if (m_attackAnimeCnt == m_mpObj["AttackOneOrTwoShakenMoment"].int_value())
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+
+			if (m_attackAnimeCnt == m_mpObj["LastAttackAnimationMoment"].int_value())
+			{
+				m_bAttackAnimeDelay = true;
+				m_bAttackAnimeCnt = false;
+				m_attackAnimeCnt = 0;
+				m_attackAnimeDelayCnt = m_mpObj["MaxAttackAnimeDelayCnt"].int_value();
+			}
+		}
+		else
+		{
+			m_attackAnimeCnt++;
+			if (m_playerState & (lAttackThree | rAttackThree))
+			{
+				if (m_attackAnimeCnt == m_mpObj["AttackThreeShakenMoment"].int_value())
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+		}
+
+		m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
+		m_spModel->CalcNodeMatrices();
+	}
+	else if (m_playerState & (rlAttack | rlAttackRush))
+	{
+		if (m_bAttackAnimeCnt)
+		{
+			m_attackAnimeCnt++;
+			if (m_playerState & rlAttackOne)
+			{
+				if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+			else if (m_playerState & rlAttackTwo)
+			{
+				if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+			else if (m_playerState & rlAttackThree)
+			{
+				if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+			else if (m_playerState & rlAttackRush)
+			{
+				if (!m_bRushRp)
+				{
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][0].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value())
+					{
+						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+					}
+				}
+				else if (m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][0].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][1].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][2].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][3].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][4].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][5].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][6].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][7].int_value()
+					)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
+				}
+			}
+
+
+			if (m_playerState & rlAttackOne)
+			{
+				if (m_attackAnimeCnt == m_mpObj["LastRLAttackAnimationdMoment"].int_value())
+				{
+					m_bAttackAnimeDelay = true;
+					m_bAttackAnimeCnt = false;
+					m_attackAnimeCnt = 0;
+					m_attackAnimeDelayCnt = 10;
+				}
+			}
+			else if (m_playerState & rlAttackTwo)
+			{
+				if (m_attackAnimeCnt == m_mpObj["LastRLAttackAnimationdMoment"].int_value())
+				{
+					m_bAttackAnimeDelay = true;
+					m_bAttackAnimeCnt = false;
+					m_attackAnimeCnt = 0;
+					m_attackAnimeDelayCnt = 10;
+				}
+			}
+			else if (m_playerState & rlAttackThree)
+			{
+				if (m_attackAnimeCnt == m_mpObj["LastRLAttackThreeAnimationMoment"].int_value())
+				{
+					m_bAttackAnimeDelay = true;
+					m_bAttackAnimeCnt = false;
+					m_attackAnimeCnt = 0;
+					m_attackAnimeDelayCnt = 10;
+				}
+			}
+		}
+
+		m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
+		m_spModel->CalcNodeMatrices();
+	}
+
+}
 //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 // 当たり判定＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
@@ -1518,266 +1778,6 @@ void Player::PlayerPanchiHitAttackChaeck()
 }
 //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
  
-// 更新後の処理
-void Player::PostUpdate()
-{
-	if (!m_bPlayerDeath)
-	{
-		auto it = m_enemyList.begin();
-		while (it != m_enemyList.end()) // 数が変動するため範囲ベースForが使えない
-		{
-			// 不要になったオブジェクトを消す
-			if ((*it).expired())
-			{
-				// 消す
-				it = m_enemyList.erase(it); // 戻り値で次の場所を返してくれる
-			}
-			else
-			{
-				++it; // 次へ
-			}
-		}
-
-		if (m_gravity > 0)
-		{
-			if (!(m_playerState & hit))
-			{
-				if (!(m_playerState & fall))
-				{
-					m_spAnimator->SetAnimation(m_spModel->GetAnimation("FallA"), false);
-				}
-
-				m_playerState = fall;
-			}
-		}
-
-		if (m_rGrassHopperPauCnt > 0)
-		{
-			--m_rGrassHopperPauCnt;
-		}
-
-		if (m_lGrassHopperPauCnt > 0)
-		{
-			--m_lGrassHopperPauCnt;
-		}
-
-		AnimationUpdate();
-
-		for (auto& WeaList : m_weaponList)
-		{
-			WeaList->PostUpdate();
-		}
-	}
-	else
-	{
-		m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
-		m_spModel->CalcNodeMatrices();
-
-		if (!KdEffekseerManager::GetInstance().IsPlaying("BailOutPlayer.efk"))
-		{
-			if (m_bPlayerLose)
-			{
-				if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::training)
-				{
-					SceneManager::Instance().SetBAddOrSubVal(false);
-					if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
-					{
-						SceneManager::Instance().SetPointAddOrSubVal(0);
-					}
-					else
-					{
-						SceneManager::Instance().SetPointAddOrSubVal(500);
-					}
-
-					SceneManager::Instance().SetNextScene(SceneManager::SceneType::result);
-				}
-				else
-				{
-					m_isExpired = true;
-				}
-			}
-		}
-
-		if (m_spAnimator->IsAnimationEnd())
-		{
-			if (!m_bPlayerLose)
-			{
-				KdEffekseerManager::GetInstance().
-					Play("BailOutPlayer.efk", { m_pos.x,m_pos.y + 0.3f,m_pos.z });
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutPlayer.efk"); // これでループしない
-				m_bPlayerLose = true;
-			}
-
-		}
-	}
-}
-
-// アニメーションの更新処理
-void Player::AnimationUpdate()
-{
-	if (m_bAttackAnimeDelay)
-	{
-		m_attackAnimeDelayCnt--;
-		if (m_attackAnimeDelayCnt <= 0)
-		{
-			m_bAttackAnimeDelay = false;
-			m_attackAnimeDelayCnt = 0;
-		}
-	}
-
-	if (!m_spAnimator) return;
-	if (!(m_playerState & (lAttack | rAttack | rlAttack | rlAttackRush)))
-	{
-		m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
-		m_spModel->CalcNodeMatrices();
-		if (m_playerState & run)
-		{
-			++m_runAnimeCnt;
-			if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][0].int_value())
-			{
-				KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
-			}
-			else if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][1].int_value())
-			{
-				KdAudioManager::Instance().Play("Asset/Audio/SE/FootstepsConcrete2.wav");
-			}
-
-			if (m_runAnimeCnt == m_mpObj["LastRunAnimationTime"].int_value())
-			{
-				m_runAnimeCnt = 0;
-			}
-		}
-	}
-	else if (m_playerState & (lAttack | rAttack) && !m_bAttackAnimeDelay)
-	{
-		if (m_bAttackAnimeCnt)
-		{
-			m_attackAnimeCnt++;
-			if (m_playerState & (lAttackOne | lAttackTwo | rAttackOne | rAttackTwo))
-			{
-				if (m_attackAnimeCnt == m_mpObj["AttackOneOrTwoShakenMoment"].int_value())
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-
-			if (m_attackAnimeCnt == m_mpObj["LastAttackAnimationMoment"].int_value())
-			{
-				m_bAttackAnimeDelay = true;
-				m_bAttackAnimeCnt = false;
-				m_attackAnimeCnt = 0;
-				m_attackAnimeDelayCnt = m_mpObj["MaxAttackAnimeDelayCnt"].int_value();
-			}
-		}
-		else
-		{
-			m_attackAnimeCnt++;
-			if (m_playerState & (lAttackThree | rAttackThree))
-			{
-				if (m_attackAnimeCnt == m_mpObj["AttackThreeShakenMoment"].int_value())
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-		}
-
-		m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
-		m_spModel->CalcNodeMatrices();
-	}
-	else if (m_playerState & (rlAttack | rlAttackRush))
-	{
-		if (m_bAttackAnimeCnt)
-		{
-			m_attackAnimeCnt++;
-			if (m_playerState & rlAttackOne)
-			{
-				if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-			else if (m_playerState & rlAttackTwo)
-			{
-				if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-			else if (m_playerState & rlAttackThree)
-			{
-				if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-			else if (m_playerState & rlAttackRush)
-			{
-				if (!m_bRushRp)
-				{
-					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][0].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value())
-					{
-						KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-					}
-				}
-				else if (m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][0].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][1].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][2].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][3].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][4].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][5].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][6].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][7].int_value()
-					)
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav");
-				}
-			}
-
-
-			if (m_playerState & rlAttackOne)
-			{
-				if (m_attackAnimeCnt == m_mpObj["LastRLAttackAnimationdMoment"].int_value())
-				{
-					m_bAttackAnimeDelay = true;
-					m_bAttackAnimeCnt = false;
-					m_attackAnimeCnt = 0;
-					m_attackAnimeDelayCnt = 10;
-				}
-			}
-			else if (m_playerState & rlAttackTwo)
-			{
-				if (m_attackAnimeCnt == m_mpObj["LastRLAttackAnimationdMoment"].int_value())
-				{
-					m_bAttackAnimeDelay = true;
-					m_bAttackAnimeCnt = false;
-					m_attackAnimeCnt = 0;
-					m_attackAnimeDelayCnt = 10;
-				}
-			}
-			else if (m_playerState & rlAttackThree)
-			{
-				if (m_attackAnimeCnt == m_mpObj["LastRLAttackThreeAnimationMoment"].int_value())
-				{
-					m_bAttackAnimeDelay = true;
-					m_bAttackAnimeCnt = false;
-					m_attackAnimeCnt = 0;
-					m_attackAnimeDelayCnt = 10;
-				}
-			}
-		}
-
-		m_spAnimator->AdvanceTime(m_spModel->WorkNodes());
-		m_spModel->CalcNodeMatrices();
-	}
-
-}
-
 // 攻撃が当たった時の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 // 通常の攻撃が当たった時の処理
 void Player::OnHit(Math::Vector3 a_KnocBackvec)
@@ -3473,209 +3473,240 @@ void Player::ScorpionAttackMove()
 {
 	if (m_spAnimator->IsAnimationEnd())
 	{
-		if (m_playerState & lAttack)
-		{
-			m_playerState &= ~lAttack;
-			m_bAttackAnimeDelay = false;
-			m_bAttackAnimeCnt = false;
-			m_attackAnimeCnt = 0;
-			m_attackAnimeDelayCnt = 0;
-			if (m_playerState & grassHopperDashF)
-			{
-				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFA"), true);
-			}
-			else
-			{
-				m_bMove = false;
-			}
-		}
+		ScorpionAttackEndProcess();
+	}
+	else
+	{
+		ScorpionAttackAnimationMoveProcess();
+	}
+}
 
-		if (m_playerState & rAttack)
+// 短剣での攻撃終了処理
+void Player::ScorpionAttackEndProcess()
+{
+	if (m_playerState & lAttack)
+	{
+		m_playerState &= ~lAttack;
+		m_bAttackAnimeDelay = false;
+		m_bAttackAnimeCnt = false;
+		m_attackAnimeCnt = 0;
+		m_attackAnimeDelayCnt = 0;
+		if (m_playerState & grassHopperDashF)
 		{
-			m_playerState &= ~rAttack;
-			m_bAttackAnimeDelay = false;
-			m_bAttackAnimeCnt = false;
-			m_attackAnimeCnt = 0;
-			m_attackAnimeDelayCnt = 0;
-			if (m_playerState & grassHopperDashF)
-			{
-				m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFA"), true);
-			}
-			else
-			{
-				m_bMove = false;
-			}
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFA"), true);
 		}
-
-		if (m_playerState & (rlAttack | rlAttackRush))
+		else
 		{
-			m_playerState &= ~rlAttack;
-			m_playerState &= ~rlAttackRush;
-			m_bAttackAnimeDelay = false;
-			m_bAttackAnimeCnt = false;
-			m_bRushRp = false;
-			m_attackAnimeCnt = 0;
-			m_attackAnimeDelayCnt = 0;
 			m_bMove = false;
 		}
+	}
 
-		if (m_playerState & mantis)
+	if (m_playerState & rAttack)
+	{
+		m_playerState &= ~rAttack;
+		m_bAttackAnimeDelay = false;
+		m_bAttackAnimeCnt = false;
+		m_attackAnimeCnt = 0;
+		m_attackAnimeDelayCnt = 0;
+		if (m_playerState & grassHopperDashF)
 		{
-			m_playerState &= ~mantis;
-			m_attackAnimeCnt = 0;
-
-			const std::shared_ptr<Scopion> scopion = std::dynamic_pointer_cast<Scopion>(m_weaponList[1]);
-			scopion->SetBMantis(false);
-			const std::shared_ptr<Scopion> scopion2 = std::dynamic_pointer_cast<Scopion>(m_weaponList[0]);
-			scopion2->SetBMantis(false);
+			m_spAnimator->SetAnimation(m_spModel->GetAnimation("GrassDashFA"), true);
+		}
+		else
+		{
 			m_bMove = false;
+		}
+	}
+
+	if (m_playerState & (rlAttack | rlAttackRush))
+	{
+		m_playerState &= ~rlAttack;
+		m_playerState &= ~rlAttackRush;
+		m_bAttackAnimeDelay = false;
+		m_bAttackAnimeCnt = false;
+		m_bRushRp = false;
+		m_attackAnimeCnt = 0;
+		m_attackAnimeDelayCnt = 0;
+		m_bMove = false;
+	}
+
+	if (m_playerState & mantis)
+	{
+		m_playerState &= ~mantis;
+		m_attackAnimeCnt = 0;
+
+		const std::shared_ptr<Scopion> scopion = std::dynamic_pointer_cast<Scopion>(m_weaponList[1]);
+		scopion->SetBMantis(false);
+		const std::shared_ptr<Scopion> scopion2 = std::dynamic_pointer_cast<Scopion>(m_weaponList[0]);
+		scopion2->SetBMantis(false);
+		m_bMove = false;
+	}
+}
+
+// 短剣での攻撃アニメーション中の処理
+void Player::ScorpionAttackAnimationMoveProcess()
+{
+	if (!(m_playerState & rlAttackRush))
+	{
+		if (m_attackAnimeCnt >= m_mpObj["AttackPointMoment"].int_value())
+		{
+			m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value());
+		}
+		else
+		{
+			if (m_bAtttackMoveSpeedDec)
+			{
+				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value());
+			}
+		}
+	}
+
+	m_bMove = true;
+	if (!(m_playerState & (rlAttack | rlAttackRush)))
+	{
+		m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
+
+		if (m_playerState & (rAttackTwo | lAttackTwo))
+		{
+			if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
+			{
+				for (auto& enemy : m_enemyList)
+				{
+					if (enemy.expired())continue;
+					enemy.lock()->SetAttackHit(false);
+					enemy.lock()->SetDefenseSuc(false);
+				}
+			}
+		}
+		else if (m_playerState & (rAttackThree | lAttackThree))
+		{
+			if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
+			{
+				for (auto& enemy : m_enemyList)
+				{
+					if (enemy.expired())continue;
+					enemy.lock()->SetAttackHit(false);
+					enemy.lock()->SetDefenseSuc(false);
+				}
+			}
 		}
 	}
 	else
 	{
-		if (!(m_playerState & rlAttackRush))
+		if (m_playerState & rlAttackOne)
 		{
-			if (m_attackAnimeCnt >= m_mpObj["AttackPointMoment"].int_value())
+			m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
+			if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
 			{
-				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value());
+				for (auto& enemy : m_enemyList)
+				{
+					if (enemy.expired())continue;
+					enemy.lock()->SetAttackHit(false);
+					enemy.lock()->SetDefenseSuc(false);
+				}
+			}
+		}
+		else if (m_playerState & rlAttackTwo)
+		{
+			m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
+			if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
+			{
+				for (auto& enemy : m_enemyList)
+				{
+					if (enemy.expired())continue;
+					enemy.lock()->SetAttackHit(false);
+					enemy.lock()->SetDefenseSuc(false);
+				}
+			}
+		}
+		else if (m_playerState & rlAttackThree)
+		{
+			m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
+			if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
+			{
+				for (auto& enemy : m_enemyList)
+				{
+					if (enemy.expired())continue;
+					enemy.lock()->SetAttackHit(false);
+					enemy.lock()->SetDefenseSuc(false);
+				}
+			}
+		}
+		else if (m_playerState & rlAttackRush)
+		{
+			if (!m_bRushRp)
+			{
+				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["RushAttackMoveSpeedDecelerationamount"].number_value());
+				if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RushLastAttackPointTime"].int_value()
+					)
+				{
+					for (auto& enemy : m_enemyList)
+					{
+						if (enemy.expired())continue;
+						enemy.lock()->SetAttackHit(false);
+						enemy.lock()->SetDefenseSuc(false);
+					}
+
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value()
+						)
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushOneAndTwoShakenMomentMoveSpeed"].number_value());
+					}
+
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value()
+						)
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushThreeAndFourShakenMomentMoveSpeed"].number_value());
+					}
+
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value()
+						)
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushFiveAndSixShakenMomentMoveSpeed"].number_value());
+					}
+
+					if (m_attackAnimeCnt == (*m_wpJsonObj.lock())["RushLastAttackPointTime"].int_value())
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RushLastAttackMoveSpeed"].number_value());
+					}
+				}
 			}
 			else
 			{
-				if (m_bAtttackMoveSpeedDec)
+				if (m_attackAnimeCnt < m_mpObj["RotationRushLastAttackPointTime"].int_value())
 				{
-					m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value());
-				}
-			}
-		}
-
-		m_bMove = true;
-		if (!(m_playerState & (rlAttack | rlAttackRush)))
-		{
-			m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-
-			if (m_playerState & (rAttackTwo | lAttackTwo))
-			{
-				if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
-				{
-					for (auto& enemy : m_enemyList)
-					{
-						if (enemy.expired())continue;
-						enemy.lock()->SetAttackHit(false);
-						enemy.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-			else if (m_playerState & (rAttackThree | lAttackThree))
-			{
-				if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
-				{
-					for (auto& enemy : m_enemyList)
-					{
-						if (enemy.expired())continue;
-						enemy.lock()->SetAttackHit(false);
-						enemy.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-		}
-		else
-		{
-			if (m_playerState & rlAttackOne)
-			{
-				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
-				{
-					for (auto& enemy : m_enemyList)
-					{
-						if (enemy.expired())continue;
-						enemy.lock()->SetAttackHit(false);
-						enemy.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-			else if (m_playerState & rlAttackTwo)
-			{
-				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
-				{
-					for (auto& enemy : m_enemyList)
-					{
-						if (enemy.expired())continue;
-						enemy.lock()->SetAttackHit(false);
-						enemy.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-			else if (m_playerState & rlAttackThree)
-			{
-				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
-				{
-					for (auto& enemy : m_enemyList)
-					{
-						if (enemy.expired())continue;
-						enemy.lock()->SetAttackHit(false);
-						enemy.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-			else if (m_playerState & rlAttackRush)
-			{
-				if (!m_bRushRp)
-				{
-					m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["RushAttackMoveSpeedDecelerationamount"].number_value());
-					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RushLastAttackPointTime"].int_value()
-						)
-					{
-						for (auto& enemy : m_enemyList)
-						{
-							if (enemy.expired())continue;
-							enemy.lock()->SetAttackHit(false);
-							enemy.lock()->SetDefenseSuc(false);
-						}
-
-						if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
-							m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value()
-							)
-						{
-							m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushOneAndTwoShakenMomentMoveSpeed"].number_value());
-						}
-
-						if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
-							m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value()
-							)
-						{
-							m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushThreeAndFourShakenMomentMoveSpeed"].number_value());
-						}
-
-						if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
-							m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value()
-							)
-						{
-							m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushFiveAndSixShakenMomentMoveSpeed"].number_value());
-						}
-
-						if (m_attackAnimeCnt == (*m_wpJsonObj.lock())["RushLastAttackPointTime"].int_value())
-						{              
-							m_attackMoveSpd = static_cast<float>(m_mpObj["RushLastAttackMoveSpeed"].number_value());
-						}
-					}
+					m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
 				}
 				else
 				{
-					if (m_attackAnimeCnt < m_mpObj["RotationRushLastAttackPointTime"].int_value())
+					m_attackMoveSpd *= static_cast<float>(m_mpObj["RotationRushLastAttackMoveSpeedDecelerationamount"].number_value());
+				}
+
+				if (m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][0].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][1].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][2].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][3].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][4].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][5].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][6].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][7].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RotationRushLastAttackPointTime"].int_value()
+					)
+				{
+					for (auto& enemy : m_enemyList)
 					{
-						m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-					}
-					else
-					{
-						m_attackMoveSpd *= static_cast<float>(m_mpObj["RotationRushLastAttackMoveSpeedDecelerationamount"].number_value());
+						if (enemy.expired())continue;
+						enemy.lock()->SetAttackHit(false);
+						enemy.lock()->SetDefenseSuc(false);
 					}
 
 					if (m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][0].int_value() ||
@@ -3685,71 +3716,52 @@ void Player::ScorpionAttackMove()
 						m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][4].int_value() ||
 						m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][5].int_value() ||
 						m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][6].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][7].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RotationRushLastAttackPointTime"].int_value()
-						)
+						m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][7].int_value())
 					{
-						for (auto& enemy : m_enemyList)
-						{
-							if (enemy.expired())continue;
-							enemy.lock()->SetAttackHit(false);
-							enemy.lock()->SetDefenseSuc(false);
-						}
+						m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
+						m_attackMoveDir.y = 0;
+						m_attackMoveDir.Normalize();
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRotationRushMoveSpeed"].number_value());
+					}
 
-						if (m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][0].int_value() ||
-					        m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][1].int_value() ||
-							m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][2].int_value() ||
-							m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][3].int_value() ||
-							m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][4].int_value() ||
-							m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][5].int_value() ||
-							m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][6].int_value() ||
-							m_attackAnimeCnt == m_mpObj["RLAttackRotationRushShakenMoment"][7].int_value())
+					if (m_attackAnimeCnt == m_mpObj["RotationRushLastAttackPointTime"].int_value())
+					{
+						if (!m_wpEnemy.expired())
 						{
-							m_attackMoveDir = m_wpCamera.lock()->GetMatrix().Backward();
-							m_attackMoveDir.y = 0;
-							m_attackMoveDir.Normalize();
-							m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRotationRushMoveSpeed"].number_value());
-						}
-
-						if (m_attackAnimeCnt == m_mpObj["RotationRushLastAttackPointTime"].int_value())
-						{
-							if (!m_wpEnemy.expired())
+							Math::Vector3 dis = m_wpEnemy.lock()->GetPos() - m_pos;
+							if (dis.Length() <= static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsNearDistance"].number_value()))
 							{
-								Math::Vector3 dis = m_wpEnemy.lock()->GetPos() - m_pos;
+								m_attackMoveSpd = static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsNearDistanceSpeed"].number_value());
+							}
+							else if (dis.Length() <= static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsMediumDistance"].number_value()))
+							{
+								m_attackMoveSpd = static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsMediumDistanceSpeed"].number_value());
+							}
+							else
+							{
+								m_attackMoveSpd = static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsLongDistanceSpeed"].number_value());
+							}
+						}
+						else
+						{
+							for (auto& enemy : m_enemyList)
+							{
+								if (enemy.expired())continue;
+								Math::Vector3 dis = enemy.lock()->GetPos() - m_pos;
 								if (dis.Length() <= static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsNearDistance"].number_value()))
 								{
 									m_attackMoveSpd = static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsNearDistanceSpeed"].number_value());
+									break;
 								}
 								else if (dis.Length() <= static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsMediumDistance"].number_value()))
 								{
 									m_attackMoveSpd = static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsMediumDistanceSpeed"].number_value());
+									break;
 								}
 								else
 								{
 									m_attackMoveSpd = static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsLongDistanceSpeed"].number_value());
-								}
-							}
-							else
-							{
-								for (auto& enemy : m_enemyList)
-								{
-									if (enemy.expired())continue;
-									Math::Vector3 dis = enemy.lock()->GetPos() - m_pos;
-									if (dis.Length() <= static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsNearDistance"].number_value()))
-									{
-										m_attackMoveSpd = static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsNearDistanceSpeed"].number_value());
-										break;
-									}
-									else if (dis.Length() <= static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsMediumDistance"].number_value()))
-									{
-										m_attackMoveSpd = static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsMediumDistanceSpeed"].number_value());
-										break;
-									}
-									else
-									{
-										m_attackMoveSpd = static_cast<float>(m_mpObj["EnemyToPlayerDistanceIsLongDistanceSpeed"].number_value());
-										break;
-									}
+									break;
 								}
 							}
 						}
@@ -3757,16 +3769,17 @@ void Player::ScorpionAttackMove()
 				}
 			}
 		}
-
-		if (!(m_playerState & mantis))
-		{
-			UpdateRotate(m_attackMoveDir);
-		}
-
-		SpeedyMoveWallHitChack(m_attackMoveSpd, m_attackMoveDir);
-		m_pos += m_attackMoveDir * m_attackMoveSpd;
 	}
+
+	if (!(m_playerState & mantis))
+	{
+		UpdateRotate(m_attackMoveDir);
+	}
+
+	SpeedyMoveWallHitChack(m_attackMoveSpd, m_attackMoveDir);
+	m_pos += m_attackMoveDir * m_attackMoveSpd;
 }
+
 //＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 // Playerがステージの外に出たかどうかを判断する処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
