@@ -6,7 +6,7 @@ class BaseScene
 {
 public:
 	BaseScene() { Init(); }
-	~BaseScene() {}
+	virtual ~BaseScene() {}
 
 	 void PreUpdate();
 	 void Update();
