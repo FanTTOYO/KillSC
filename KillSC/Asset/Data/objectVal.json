@@ -263,24 +263,24 @@
     },
 
     "ModeSelectUi": {
-      "ModeSelectTexPos": [ -380, 325, 0 ],
-      "PictureFrameTexPos": [ 265, 0, 0 ],
+      "ModeSelectTexPos": [ -330, 310, 0 ],
+      "PictureFrameTexPos": [ 280, 0, 0 ],
       "GameTexPos": [ 265, 0, 0 ],
-      "BattleCharaTexPos": [ -350, 225, 0 ],
+      "BattleCharaTexPos": [ -350, 195, 0 ],
       "EnemyBossTypeOneModeTexPos": [ 265, -80, 0 ],
       "EnemyBossTypeTwoModeTexPos": [ 265, -170, 0 ],
       "TwoEnemyBossTypeOneModeTexPos": [ 265, -260, 0 ],
       "HelpMkTexPos": [ 485, 305, 0 ],
       "ClauseMkTexPos": [ 415, 230, 0 ],
       "ChallengeTexPos": [ 265, 0, 0 ],
-      "ChallengeCharaTexPos": [ -350, 75, 0 ],
+      "ChallengeCharaTexPos": [ -350, 55, 0 ],
       "ChalengeFiftyTexPos": [ 265, -180, 0 ],
       "ChalengeHundredTexPos": [ 265, -270, 0 ],
-      "TutorialTexPos": [ -488, -138, 0 ],
-      "TrainingTexPos": [ -205, -138, 0 ],
+      "TutorialTexPos": [ -488, -155, 0 ],
+      "TrainingTexPos": [ -205, -155, 0 ],
       "SelectBackTexPos": [ 0, 0, 0 ],
-      "TitlePos": [ -555, -310, 0 ],
-      "ExitPos": [ -420, -310, 0 ]
+      "TitlePos": [ -555, -325, 0 ],
+      "ExitPos": [ -420, -325, 0 ]
 
     },
 

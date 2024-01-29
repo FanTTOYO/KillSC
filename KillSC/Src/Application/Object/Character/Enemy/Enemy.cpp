@@ -98,6 +98,7 @@ void Enemy::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_wpJsonObj = a_wpJsonObj;
 }
 
+// 更新処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 void Enemy::Update()
 {
 	float lowestYPos;
@@ -493,6 +494,1230 @@ void Enemy::Update()
 	}
 }
 
+// humanBossEnemyの更新処理
+void Enemy::BossUpdate()
+{
+	if (m_bFirstUpdate)
+	{
+		m_mpObj = (*m_wpJsonObj.lock())["BossEnemy"].object_items();
+
+		std::shared_ptr<Scopion> sco;
+		sco = std::make_shared<Scopion>();
+		sco->SetArrmType(rArrm);
+		sco->SetbEnemyWeapon();
+		sco->SetTarget(m_target.lock());
+		m_weaponList.push_back(sco);
+
+		sco = std::make_shared<Scopion>();
+		sco->SetArrmType(lArrm);
+		sco->SetbEnemyWeapon();
+		sco->SetTarget(m_target.lock());
+		m_weaponList.push_back(sco);
+
+		std::shared_ptr<Hopper> hopper;
+		hopper = std::make_shared<Hopper>();
+		hopper->SetArrmType(rArrm);
+		hopper->SetbEnemyWeapon();
+		m_weaponList.push_back(hopper);
+
+		hopper = std::make_shared<Hopper>();
+		hopper->SetArrmType(lArrm);
+		hopper->SetbEnemyWeapon();
+		m_weaponList.push_back(hopper);
+
+		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+		m_addCenterVal = addCenterVal;
+		m_rockOnPos = addCenterVal;
+
+		Math::Vector3 AddGrassDashEffectPosVal = { static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][0].number_value()),
+												   static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][1].number_value()),
+												   static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][2].number_value()) };
+		m_addGrassDashEffectPosVal = AddGrassDashEffectPosVal;
+
+		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
+
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->SetOwner(shared_from_this());
+		}
+
+		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+		{
+			m_vForce = (float)m_mpObj["ChallengeVforce"].number_value();
+			m_endurance = (float)m_mpObj["ChallengeEndurance"].number_value();
+			m_maxEndurance = m_endurance;
+			std::random_device rnd;
+			std::mt19937 mt(rnd());
+			std::uniform_int_distribution<int> intRand(0, 999);
+			int randNum[4] = {};
+			int rand = intRand(mt);
+			randNum[0] = 150;
+			randNum[1] = 300;
+			randNum[2] = 300;
+			randNum[3] = 250;
+
+			for (int i = 0; i < 4; i++)
+			{
+				rand -= randNum[i];
+				if (rand < 0)
+				{
+					switch (i)
+					{
+					case 0:
+						m_enemyType = Enemy::EnemyType::allRounder;
+						break;
+					case 1:
+						m_enemyType = Enemy::EnemyType::striker;
+						break;
+					case 2:
+						m_enemyType = Enemy::EnemyType::defender;
+						break;
+					case 3:
+						m_enemyType = Enemy::EnemyType::speedSter;
+						break;
+					}
+					break;
+				}
+			}
+		}
+		else
+		{
+			m_vForce = (float)m_mpObj["Vforce"].number_value();
+			m_endurance = (float)m_mpObj["Endurance"].number_value();
+			m_enemyType = Enemy::EnemyType::allRounder;
+		}
+		return;
+	}
+
+	if (!(m_EnemyState & (hit | rise)))
+	{
+		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
+		{
+			std::shared_ptr<Player> spTarget = m_target.lock();
+			Math::Vector3 vTarget = Math::Vector3::Zero;
+			if (spTarget)
+			{
+				vTarget = spTarget->GetPos() - m_pos;
+				UpdateRotate(vTarget);
+			}
+
+
+			if (!(m_EnemyState & (fall | jump)) && !m_bEnemyDeath)
+			{
+				m_bMove = false;
+			}
+
+			if (m_wantToMoveState & wNone && !m_bEnemyDeath)
+			{
+				Brain();
+			}
+			else if (!m_bEnemyDeath)
+			{
+				if (vTarget.Length() >= static_cast<float>(m_mpObj["PlayerToEnemyDistBrain"].number_value()) && !(m_EnemyState & (grassHopperDash & ~grassHopperDashB) | grassHopperDashUp))
+				{
+					Brain();
+				}
+			}
+
+			if (m_mpObj["RightWeaponScopionNum"].int_value() == m_rightWeaponNumber)
+			{
+				m_weaponType |= scorpion;
+				m_weaponType &= ~grassHopper;
+			}
+			else if (m_mpObj["RightWeaponGrassHopperNum"].int_value() == m_rightWeaponNumber)
+			{
+				m_weaponType |= grassHopper;
+				m_weaponType &= ~scorpion;
+			}
+
+			if (m_mpObj["LeftWeaponScopionNum"].int_value() == m_leftWeaponNumber)
+			{
+				m_weaponType |= lScorpion;
+				m_weaponType &= ~lGrassHopper;
+			}
+			else if (m_mpObj["LeftWeaponGrassHopperNum"].int_value() == m_leftWeaponNumber)
+			{
+				m_weaponType |= lGrassHopper;
+				m_weaponType &= ~lScorpion;
+			}
+
+			if (!(m_wantToMoveState & WantToMoveState::wNone))
+			{
+				if (!(m_EnemyState & hasDefense))
+				{
+					switch (m_wantToMoveState)
+					{
+					case WantToMoveState::wAttack:
+						ScorpionAttackDecision();
+						break;
+					case WantToMoveState::wEscape:
+						GrassMoveVecDecision();
+						break;
+					case WantToMoveState::wDefense:
+						if (m_EnemyState & defense)
+						{
+							ScorpionDefenseMove();
+						}
+						else
+						{
+							ScorpionDefenseDecision();
+						}
+
+						break;
+					case WantToMoveState::wDashAttack:
+						if (m_lGrassHopperTime <= m_mpObj["DashAttackPossibleTime"].int_value() ||
+							m_rGrassHopperTime <= m_mpObj["DashAttackPossibleTime"].int_value())
+						{
+							if (m_dashSpd == 1.2f)
+							{
+								if (vTarget.Length() <= 15)
+								{
+									if (m_weaponType & grassHopper)
+									{
+										if (m_EnemyState & grassHopperDashF)
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+									else if (m_weaponType & lGrassHopper)
+									{
+										if (m_EnemyState & grassHopperDashF)
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+								}
+								else
+								{
+									GrassMoveVecDecision();
+								}
+							}
+							else if (m_dashSpd == 0.8f)
+							{
+								if (vTarget.Length() <= 9.25f)
+								{
+									if (m_weaponType & grassHopper)
+									{
+										if (m_EnemyState & grassHopperDashF)
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+									else if (m_weaponType & lGrassHopper)
+									{
+										if (m_EnemyState & grassHopperDashF)
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+								}
+								else
+								{
+									GrassMoveVecDecision();
+								}
+							}
+							else if (m_dashSpd == 0.5f)
+							{
+								if (vTarget.Length() <= 8.0f)
+								{
+									if (m_weaponType & grassHopper)
+									{
+										if (m_EnemyState & grassHopperDashF)
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+									else if (m_weaponType & lGrassHopper)
+									{
+										if (m_EnemyState & grassHopperDashF)
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+								}
+								else
+								{
+									GrassMoveVecDecision();
+								}
+							}
+							else if (m_dashSpd == 0.4f || m_dashSpd == 0.35f)
+							{
+								if (vTarget.Length() <= 4.0f)
+								{
+									if (m_weaponType & grassHopper)
+									{
+										if ((m_EnemyState & grassHopperDashF) && (m_rGrassHopperTime <= 80))
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+									else if (m_weaponType & lGrassHopper)
+									{
+										if ((m_EnemyState & grassHopperDashF) && (m_lGrassHopperTime <= 80))
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+								}
+								else
+								{
+									GrassMoveVecDecision();
+								}
+							}
+							else if (m_dashSpd <= 0.25f)
+							{
+								if (vTarget.Length() <= 2.0f)
+								{
+									if (m_weaponType & grassHopper)
+									{
+										if (m_EnemyState & grassHopperDashF)
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+									else if (m_weaponType & lGrassHopper)
+									{
+										if (m_EnemyState & grassHopperDashF)
+										{
+											ScorpionAttackDecision();
+										}
+										else
+										{
+											GrassMoveVecDecision();
+										}
+									}
+								}
+								else
+								{
+									GrassMoveVecDecision();
+								}
+							}
+						}
+						else
+						{
+							GrassMoveVecDecision();
+						}
+						break;
+					case WantToMoveState::wRun:
+						NormalMoveVecDecision();
+						break;
+					case WantToMoveState::wStep:
+						if (!(m_EnemyState & step))
+						{
+							StepVecDecision();
+						}
+						break;
+					case WantToMoveState::wGrassDash:
+						GrassMoveVecDecision();
+						break;
+					case WantToMoveState::wAvoidance:
+						GrassMoveVecDecision();
+						break;
+					}
+				}
+
+				if (!(m_EnemyState & (grassHopperDash | grassHopperDashUp | step)))
+				{
+					if (m_EnemyState & (lAttack | rAttack | rlAttack | rlAttackRush | mantis))
+					{
+						ScorpionAttackMove();
+					}
+					else if (m_EnemyState & run | m_EnemyState & jump)
+					{
+						NormalMove();
+					}
+					else if (m_EnemyState & hasDefense)
+					{
+						HasDefenseMove();
+					}
+				}
+				else if (m_EnemyState & (grassHopperDash | grassHopperDashUp))
+				{
+					GrassMove();
+				}
+				else if (m_EnemyState & step)
+				{
+					StepMove();
+				}
+			}
+
+			if (!m_bMove)
+			{
+				++m_idleCnt;
+
+				if (m_idleCnt >= 30)
+				{
+					Brain();
+				}
+
+				if (!(m_EnemyState & (fall | jump)))
+				{
+					m_EnemyState = idle;
+					m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
+				}
+			}
+		}
+	}
+}
+
+// BossEnemyTypeOneの更新処理
+void Enemy::BossEnemyTyepOneUpdate()
+{
+	if (m_bFirstUpdate)
+	{
+		m_mpObj = (*m_wpJsonObj.lock())["BossEnemyTypeOne"].object_items();
+		m_weaponList.clear();
+		m_weaponType |= lWeaponNone | weaponNone;
+		m_weaponType &= lWeaponNone | weaponNone;
+
+		m_leftWeaponNumber = 0;
+		m_rightWeaponNumber = 0;
+
+		m_vForce = static_cast<float>(m_mpObj["Vforce"].number_value());
+		m_endurance = static_cast<float>(m_mpObj["Endurance"].number_value());
+		m_maxEndurance = m_endurance;
+		if (!(m_EnemyState & run))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+		}
+		m_EnemyState = run;
+		m_addRotationAttackDistToPlayerRadius = 42.5f;
+		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+		m_addCenterVal = addCenterVal;
+		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
+		return;
+	}
+
+	if (m_attackDelayTime < ATTACKDELAYTIME)
+	{
+		++m_attackDelayTime;
+		return;
+	}
+
+	if (m_endurance <= 500 && m_addRotationAttackDistToPlayerRadius == 42.5f)
+	{
+		m_addRotationAttackDistToPlayerRadius = 90.0f;
+	}
+
+	if (m_hitStopCnt > 0)
+	{
+		--m_hitStopCnt;
+	}
+
+	if (m_hitStopCnt == 0)
+	{
+		if (m_addWeaknesSuccessionHitCntTime > 0)
+		{
+			--m_addWeaknesSuccessionHitCntTime;
+		}
+
+		if (m_bShotBeam || m_bShotEnergyBullet)
+		{
+			m_bMove = true;
+
+			if (m_bShotBeam)
+			{
+				if (m_rangedAttackAnimeCnt >= 10 && !m_bBeamHitStart)
+				{
+					m_bBeamHitStart = true;
+					KdAudioManager::Instance().Play3D("Asset/Audio/SE/Beem.wav", m_rangedAttackShotPos);
+				}
+			}
+
+			if (m_bShotEnergyBullet)
+			{
+				if (m_rangedAttackAnimeCnt >= 26 && !m_bEnergyBulletHitStart)
+				{
+					m_bEnergyBulletHitStart = true;
+					KdAudioManager::Instance().Play3D("Asset/Audio/SE/energyShot.wav", m_rangedAttackShotPos);
+				}
+			}
+		}
+
+		if (!(m_notHumanoidEnemyState & rotationAttack))
+		{
+			if (m_addRotationAttackDistToPlayerTime == ADDROTAYIONATTACKDISTTOPLAYERTIME)
+			{
+				if (!m_bEnemyDeath)
+				{
+					m_addRotationAttackDistToPlayerTime = 0;
+					m_notHumanoidEnemyState = rotationAttack;
+					m_animator->SetAnimation(m_model->GetAnimation("RotationAttack"), false);
+				}
+			}
+
+
+			if (m_wantToMoveState & wNone && !m_bEnemyDeath && !m_bShotEnergyBullet && !m_bShotBeam)
+			{
+				BossEnemyTypeOneBrain();
+			}
+
+			if (!(m_wantToMoveState & WantToMoveState::wNone) && !m_bShotEnergyBullet && !m_bShotBeam)
+			{
+				switch (m_wantToMoveState)
+				{
+				case WantToMoveState::wRun:
+					NormalMoveVecDecision();
+					break;
+				}
+
+				if (m_EnemyState & run | m_EnemyState & jump)
+				{
+					NormalMove();
+				}
+			}
+		}
+		else
+		{
+			RotationAttackMove();
+		}
+
+		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial && !m_bShotEnergyBullet && !m_bShotBeam)
+		{
+			std::shared_ptr<Player> spTarget = m_target.lock();
+			if (spTarget)
+			{
+				Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+				UpdateRotate(vTarget);
+			}
+
+		}
+	}
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+
+	node = m_model->FindNode("HitPoint");
+	mat = node->m_localTransform;
+	Math::Vector3 addPos = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+	addPos *= static_cast<float>(m_mpObj["AddRockOnPos"].number_value());
+	m_rockOnPos = { mat._41 + addPos.x,mat._42 + static_cast<float>(m_mpObj["AddRockOnPosY"].number_value()),mat._43 + addPos.z };
+
+#ifdef _DEBUG
+	m_pDebugWire->AddDebugSphere
+	(
+		mat.Translation(),
+		6.0f,
+		{ 0,0,0,1 }
+	);
+#endif
+
+}
+
+// 人間型の弱い敵の更新処理
+void Enemy::CoarseFishEnemyUpdate()
+{
+	if (m_bFirstUpdate)
+	{
+		m_mpObj = (*m_wpJsonObj.lock())["CoarseFishEnemy"].object_items();
+		m_weaponList.clear();
+		std::shared_ptr<Scopion> sco;
+		sco = std::make_shared<Scopion>();
+		sco->SetArrmType(rArrm);
+		sco->SetbEnemyWeapon();
+		sco->SetTarget(m_target.lock());
+		m_weaponList.push_back(sco);
+
+		m_weaponType |= lWeaponNone | scorpion;
+		m_weaponType &= lWeaponNone | scorpion;
+
+		m_leftWeaponNumber = 0;
+		m_rightWeaponNumber = 1;
+
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->SetOwner(shared_from_this());
+		}
+
+		m_vForce = (float)m_mpObj["Vforce"].number_value();
+		m_endurance = (float)m_mpObj["Endurance"].number_value();
+		m_maxEndurance = m_endurance;
+
+		m_enemyType = Enemy::EnemyType::coarseFishEnemy;
+
+		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+		m_addCenterVal = addCenterVal;
+		m_rockOnPos = addCenterVal;
+		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
+		return;
+	}
+
+	if (m_coarseFishEnemyAttackDelayCnt > 0)
+	{
+		--m_coarseFishEnemyAttackDelayCnt;
+	}
+
+	if (!(m_EnemyState & (hit | rise)))
+	{
+		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
+		{
+			std::shared_ptr<Player> spTarget = m_target.lock();
+			Math::Vector3 vTarget = Math::Vector3::Zero;
+			if (spTarget)
+			{
+				vTarget = spTarget->GetPos() - m_pos;
+				UpdateRotate(vTarget);
+			}
+
+
+			if (!(m_EnemyState & (fall | jump)) && !m_bEnemyDeath)
+			{
+				m_bMove = false;
+			}
+
+			if (m_wantToMoveState & wNone && !m_bEnemyDeath)
+			{
+				Brain();
+			}
+			else if (!m_bEnemyDeath)
+			{
+				if (vTarget.Length() >= 20.0f && !(m_EnemyState & (grassHopperDash & ~grassHopperDashB) | grassHopperDashUp))
+				{
+					Brain();
+				}
+			}
+
+			if (!(m_wantToMoveState & WantToMoveState::wNone))
+			{
+				if (!(m_EnemyState & hasDefense))
+				{
+					switch (m_wantToMoveState)
+					{
+					case WantToMoveState::wAttack:
+						ScorpionAttackDecision();
+						break;
+					case WantToMoveState::wRun:
+						NormalMoveVecDecision();
+						break;
+					}
+				}
+
+				if (m_EnemyState & (lAttack | rAttack | rlAttack | rlAttackRush | mantis))
+				{
+					ScorpionAttackMove();
+				}
+				else if (m_EnemyState & run | m_EnemyState & jump)
+				{
+					NormalMove();
+				}
+			}
+
+			if (!m_bMove)
+			{
+				if (!(m_EnemyState & (fall | jump)))
+				{
+					m_EnemyState = idle;
+					m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
+				}
+			}
+		}
+	}
+}
+
+// モンスター型の弱い敵の更新処理
+void Enemy::WimpEnemyTypeOneUpdate()
+{
+	if (m_bFirstUpdate)
+	{
+		m_mpObj = (*m_wpJsonObj.lock())["WimpEnemyTypeOne"].object_items();
+
+		m_weaponList.clear();
+		m_weaponType |= lWeaponNone | weaponNone;
+		m_weaponType &= lWeaponNone | weaponNone;
+
+		m_leftWeaponNumber = 0;
+		m_rightWeaponNumber = 0;
+
+		m_vForce = (float)m_mpObj["Vforce"].number_value();
+		m_endurance = (float)m_mpObj["Endurance"].number_value();
+		m_maxEndurance = m_endurance;
+
+		m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
+		m_EnemyState = idle;
+
+		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
+										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+		m_addCenterVal = addCenterVal;
+		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
+		return;
+	}
+
+
+	if (m_attackDelayTime < ATTACKDELAYTIME)
+	{
+		++m_attackDelayTime;
+		return;
+	}
+
+	if (m_bShotBeam || m_bShotEnergyBullet)
+	{
+		m_bMove = true;
+
+		if (m_bShotBeam)
+		{
+			if (m_rangedAttackAnimeCnt >= 10 && !m_bBeamHitStart)
+			{
+				m_bBeamHitStart = true;
+				KdAudioManager::Instance().Play3D("Asset/Audio/SE/Beem.wav", m_rangedAttackShotPos);
+			}
+		}
+
+		if (m_bShotEnergyBullet)
+		{
+			if (m_rangedAttackAnimeCnt >= 26 && !m_bEnergyBulletHitStart)
+			{
+				m_bEnergyBulletHitStart = true;
+				KdAudioManager::Instance().Play3D("Asset/Audio/SE/energyShot.wav", m_rangedAttackShotPos);
+			}
+		}
+	}
+
+	if (m_wantToMoveState & wNone && !m_bEnemyDeath && !m_bShotEnergyBullet && !m_bShotBeam)
+	{
+		Brain();
+	}
+
+	if (!(m_wantToMoveState & WantToMoveState::wNone) && !m_bShotEnergyBullet && !m_bShotBeam)
+	{
+		switch (m_wantToMoveState)
+		{
+		case WantToMoveState::wRun:
+			NormalMoveVecDecision();
+			break;
+		}
+
+		if (m_EnemyState & run | m_EnemyState & jump)
+		{
+			NormalMove();
+		}
+	}
+
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial && !m_bShotEnergyBullet && !m_bShotBeam)
+	{
+		std::shared_ptr<Player> spTarget = m_target.lock();
+		if (spTarget)
+		{
+			Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
+			UpdateRotate(vTarget);
+		}
+
+	}
+
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+
+	node = m_model->FindNode("HitPoint");
+	mat = node->m_localTransform;
+	Math::Vector3 addPos = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+	addPos *= static_cast<float>(m_mpObj["AddRockOnPos"].number_value());
+	m_rockOnPos = { mat._41 + addPos.x,mat._42 - static_cast<float>(m_mpObj["SubRockOnPosY"].number_value()),mat._43 + addPos.z };
+
+#ifdef _DEBUG
+	m_pDebugWire->AddDebugSphere
+	(
+		{ mat._41, mat._42 , mat._43 },
+		0.325f,
+		{ 0,0,0,1 }
+	);
+#endif
+
+}
+
+// 回転を更新する処理
+void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
+{
+	if (m_bEnemyDeath)return;
+	// 今向いてる方向のベクトル
+	Math::Vector3 nowDir = m_mWorld.Backward();
+
+	// 移動方向のベクトル
+	Math::Vector3 targetDir = a_srcMoveVec;
+
+	nowDir.Normalize();
+	targetDir.Normalize();
+
+	float nowAng = atan2(nowDir.x, nowDir.z);
+	nowAng = DirectX::XMConvertToDegrees(nowAng);
+
+	float targetAng = atan2(targetDir.x, targetDir.z);
+	targetAng = DirectX::XMConvertToDegrees(targetAng);
+
+	Math::Vector3 dot = DirectX::XMVector3Dot(nowDir, targetDir);
+	if (dot.x > 1)
+	{
+		dot.x = 1;
+	}
+	if (dot.x < -1)
+	{
+		dot.x = -1;
+	}
+
+	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+	if (ang > 1)
+	{
+		if (m_delayTurnAroundTime > 0)
+		{
+			m_delayTurnAroundTime--;
+		}
+	}
+	else
+	{
+		m_delayTurnAroundTime = 10;
+	}
+
+	if (ang < 1)
+	{
+		m_bMantisPossAng = true;
+	}
+	else
+	{
+		m_bMantisPossAng = false;
+	}
+
+	if (!(m_enemyType & (bossEnemyTypeOne | wimpEnemyTypeOne)))
+	{
+		if (ang >= 8.0f)
+		{
+			ang = 8.0f;
+		}
+	}
+	else
+	{
+		if (m_enemyType & wimpEnemyTypeOne)
+		{
+			if (ang < 30)
+			{
+				m_bRangedAttackCapableOfFiring = true;
+			}
+			else
+			{
+				m_bRangedAttackCapableOfFiring = false;
+			}
+		}
+		else
+		{
+			const KdModelWork::Node* node = nullptr;
+			Math::Matrix mat = Math::Matrix::Identity;
+
+			node = m_model->FindNode("HitPoint");
+			mat = node->m_worldTransform * m_mWorld;
+
+			std::shared_ptr<Player> spTarget = m_target.lock();
+			if (spTarget)
+			{
+				Math::Vector3 std = spTarget->GetPos() - mat.Translation();
+				if (spTarget->GetPos().y < mat.Translation().y - 1.65f)
+				{
+					if (ang < 5)
+					{
+						m_bRangedAttackCapableOfFiring = true;
+					}
+					else
+					{
+						m_bRangedAttackCapableOfFiring = false;
+					}
+				}
+				else
+				{
+					if (std.Length() <= 100)
+					{
+						if (ang < 45)
+						{
+							m_bRangedAttackCapableOfFiring = true;
+						}
+						else
+						{
+							m_bRangedAttackCapableOfFiring = false;
+						}
+					}
+					else
+					{
+						if (ang < 20)
+						{
+							m_bRangedAttackCapableOfFiring = true;
+						}
+						else
+						{
+							m_bRangedAttackCapableOfFiring = false;
+						}
+					}
+				}
+			}
+		}
+
+		if (ang >= 1.0f)
+		{
+			ang = 1.0f;
+		}
+	}
+
+	Math::Vector3 croos = DirectX::XMVector3Cross(nowDir, targetDir);
+
+	if (m_delayTurnAroundTime == 0)
+	{
+		if (croos.y >= 0)
+		{
+			m_mWorldRot.y += ang;
+		}
+		if (croos.y < 0)
+		{
+			m_mWorldRot.y -= ang;
+		}
+	}
+}
+
+//　チュートリアル時の更新処理
+void Enemy::TutorialUpdate()
+{
+	if (KdInputManager::Instance().IsPress("TutorialEnemyPosInit"))
+	{
+		m_pos = { Math::Vector3::Zero };
+	}
+}
+
+// 更新後の更新処理
+void Enemy::PostUpdate()
+{
+	if (!m_animator) return;
+
+	if (!m_bEnemyDeath)
+	{
+		if (m_gravity > 0)
+		{
+			if (!(m_EnemyState & (hit | hasDefense)))
+			{
+				if (!(m_EnemyState & fall))
+				{
+					m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
+				}
+				m_EnemyState = fall;
+			}
+		}
+
+		if (m_bShotBeam || m_bShotEnergyBullet)
+		{
+			m_rangedAttackAnimeCnt++;
+		}
+
+		if (m_bShotBeam)
+		{
+			if (m_rangedAttackAnimeCnt >= 66)
+			{
+				m_beamRange = 0;
+				m_rangedAttackAnimeCnt = 0;
+				m_bShotEnergyBullet = false;
+				m_bShotBeam = false;
+				m_bBeamHitStart = false;
+				m_bEnergyBulletHitStart = false;
+				m_bMove = false;
+				m_bRangedAttack = false;
+				m_wantToMoveState = wNone;
+			}
+		}
+		else if (m_bShotEnergyBullet)
+		{
+			if (m_enemyType & bossEnemyTypeOne)
+			{
+				if (m_rangedAttackAnimeCnt >= 140)
+				{
+					m_beamRange = 0;
+					m_rangedAttackAnimeCnt = 0;
+					m_bShotEnergyBullet = false;
+					m_bShotBeam = false;
+					m_bBeamHitStart = false;
+					m_bEnergyBulletHitStart = false;
+					m_bMove = false;
+					m_bRangedAttack = false;
+					m_wantToMoveState = wNone;
+				}
+			}
+			else
+			{
+				if (m_rangedAttackAnimeCnt >= 125)
+				{
+					m_beamRange = 0;
+					m_rangedAttackAnimeCnt = 0;
+					m_bShotEnergyBullet = false;
+					m_bShotBeam = false;
+					m_bBeamHitStart = false;
+					m_bEnergyBulletHitStart = false;
+					m_bMove = false;
+					m_bRangedAttack = false;
+					m_wantToMoveState = wNone;
+				}
+			}
+		}
+
+		if (m_rGrassHopperPauCnt > 0)
+		{
+			--m_rGrassHopperPauCnt;
+		}
+
+		if (m_lGrassHopperPauCnt > 0)
+		{
+			--m_lGrassHopperPauCnt;
+		}
+
+		if (m_grassSuccessionDelayCnt > 0)
+		{
+			--m_grassSuccessionDelayCnt;
+		}
+
+		if (m_bAttackAnimeDelay)
+		{
+			m_attackAnimeDelayCnt--;
+			if (m_attackAnimeDelayCnt <= 0)
+			{
+				m_bAttackAnimeDelay = false;
+				m_attackAnimeDelayCnt = 0;
+			}
+		}
+
+		if (!(m_EnemyState & (lAttack | rAttack | rlAttack | rlAttackRush)) && !(m_notHumanoidEnemyState & rotationAttack))
+		{
+			m_animator->AdvanceTime(m_model->WorkNodes());
+			m_model->CalcNodeMatrices();
+
+			if (m_EnemyState & run)
+			{
+				++m_runAnimeCnt;
+				if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][0].int_value())
+				{
+					KdAudioManager::Instance().Play3D("Asset/Audio/SE/FootstepsConcrete2.wav", { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddBottomYVal"].number_value()),m_pos.z });
+				}
+				else if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][1].int_value())
+				{
+					KdAudioManager::Instance().Play3D("Asset/Audio/SE/FootstepsConcrete2.wav", { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddBottomYVal"].number_value()),m_pos.z });
+				}
+
+				if (m_runAnimeCnt == m_mpObj["LastRunAnimationTime"].int_value())
+				{
+					m_runAnimeCnt = 0;
+				}
+			}
+		}
+		else if (m_EnemyState & (lAttack | rAttack) && !m_bAttackAnimeDelay)
+		{
+			if (m_bAttackAnimeCnt)
+			{
+				m_attackAnimeCnt++;
+				if (m_EnemyState & (lAttackOne | lAttackTwo | rAttackOne | rAttackTwo))
+				{
+					if (m_attackAnimeCnt == m_mpObj["AttackOneOrTwoShakenMoment"].int_value())
+					{
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
+					}
+				}
+
+				if (m_attackAnimeCnt == m_mpObj["LastAttackAnimationMoment"].int_value())
+				{
+					m_bAttackAnimeDelay = true;
+					m_bAttackAnimeCnt = false;
+					m_attackAnimeCnt = 0;
+					m_attackAnimeDelayCnt = m_mpObj["MaxAttackAnimeDelayCnt"].int_value();
+				}
+			}
+			else
+			{
+				m_attackAnimeCnt++;
+				if (m_EnemyState & (lAttackThree | rAttackThree))
+				{
+					if (m_attackAnimeCnt == m_mpObj["AttackThreeShakenMoment"].int_value())
+					{
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
+					}
+				}
+			}
+
+			m_animator->AdvanceTime(m_model->WorkNodes());
+			m_model->CalcNodeMatrices();
+		}
+		else if (m_EnemyState & (rlAttack | rlAttackRush))
+		{
+			if (m_bAttackAnimeCnt)
+			{
+				m_attackAnimeCnt++;
+				if (m_EnemyState & rlAttackOne)
+				{
+					if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
+					{
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
+					}
+				}
+				else if (m_EnemyState & rlAttackTwo)
+				{
+					if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
+					{
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
+					}
+				}
+				else if (m_EnemyState & rlAttackThree)
+				{
+					if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
+					{
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
+					}
+				}
+				else if (m_EnemyState & rlAttackRush)
+				{
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][0].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value())
+					{
+						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
+					}
+				}
+
+
+				if (m_EnemyState & rlAttackOne)
+				{
+					if (m_attackAnimeCnt == 20)
+					{
+						m_bAttackAnimeDelay = true;
+						m_bAttackAnimeCnt = false;
+						m_attackAnimeCnt = 0;
+						m_attackAnimeDelayCnt = 10;
+					}
+				}
+				else if (m_EnemyState & rlAttackTwo)
+				{
+					if (m_attackAnimeCnt == 20)
+					{
+						m_bAttackAnimeDelay = true;
+						m_bAttackAnimeCnt = false;
+						m_attackAnimeCnt = 0;
+						m_attackAnimeDelayCnt = 10;
+					}
+				}
+				else if (m_EnemyState & rlAttackThree)
+				{
+					if (m_attackAnimeCnt == 40)
+					{
+						m_bAttackAnimeDelay = true;
+						m_bAttackAnimeCnt = false;
+						m_attackAnimeCnt = 0;
+						m_attackAnimeDelayCnt = 10;
+					}
+				}
+			}
+
+			m_animator->AdvanceTime(m_model->WorkNodes());
+			m_model->CalcNodeMatrices();
+		}
+		else if (m_notHumanoidEnemyState & rotationAttack)
+		{
+			++m_attackAnimeCnt;
+			m_animator->AdvanceTime(m_model->WorkNodes());
+			m_model->CalcNodeMatrices();
+		}
+	}
+	else
+	{
+		m_animator->AdvanceTime(m_model->WorkNodes());
+		m_model->CalcNodeMatrices();
+		m_bMove = true;
+
+		if (!KdEffekseerManager::GetInstance().IsPlaying("BailOutEnemy.efk"))
+		{
+			if (m_bEnemyLose)
+			{
+				m_isExpired = true;
+
+				if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+				{
+					SceneManager::Instance().SubEnemyIeftover();
+					SceneManager::Instance().SubEnemyDrawTotal();
+				}
+				else if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle || SceneManager::Instance().GetSceneType() == SceneManager::SceneType::training)
+				{
+					if (m_bBoss)
+					{
+						SceneManager::Instance().SubEnemyIeftover();
+					}
+
+					SceneManager::Instance().SubEnemyDrawTotal();
+				}
+			}
+		}
+
+		if (m_animator->IsAnimationEnd())
+		{
+			if (!m_bEnemyLose)
+			{
+				m_bEnemyLose = true;
+				KdEffekseerManager::GetInstance().
+					Play("BailOutEnemy.efk", { m_pos.x,m_pos.y + m_addCenterVal.y,m_pos.z });
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutEnemy.efk"); // これでループしない
+				Math::Matrix efcMat = Math::Matrix::CreateScale(static_cast<float>(m_mpObj["BailOutEffectScale"].number_value())) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 0.9f,m_pos.z });
+				KdEffekseerManager::GetInstance().SetWorldMatrix("BailOutEnemy.efk", efcMat);
+
+				if (m_enemyType & bossEnemyTypeOne)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/BossEnemyTypeOneDeath.wav");
+				}
+				else if (m_enemyType & humanBossEnemy)
+				{
+					KdAudioManager::Instance().Play("Asset/Audio/SE/HumanBossEnemyDeath.wav");
+				}
+				else
+				{
+					KdAudioManager::Instance().Play3D("Asset/Audio/SE/CoarseFishEnemyAndWinpEnemyDeath.wav", { m_pos.x,m_pos.y + m_addCenterVal.y,m_pos.z });
+				}
+			}
+		}
+	}
+}
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+// 当たり判定＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// オブジェクトとの当たり判定
 void Enemy::CollisionUpdate()
 {
 	if (m_enemyType & (wimpEnemyTypeOne | bossEnemyTypeOne))
@@ -1363,6 +2588,7 @@ void Enemy::CollisionUpdate()
 	}
 }
 
+// 一定速度以上の時にする壁との当たり判定
 void Enemy::SpeedyMoveWallHitChack(float& a_moveSpd, Math::Vector3 moveVec)
 {
 	KdCollider::RayInfo rayInfo;
@@ -1421,1659 +2647,7 @@ void Enemy::SpeedyMoveWallHitChack(float& a_moveSpd, Math::Vector3 moveVec)
 	}
 }
 
-void Enemy::BossUpdate()
-{
-	if (m_bFirstUpdate)
-	{
-		m_mpObj = (*m_wpJsonObj.lock())["BossEnemy"].object_items();
-
-		std::shared_ptr<Scopion> sco;
-		sco = std::make_shared<Scopion>();
-		sco->SetArrmType(rArrm);
-		sco->SetbEnemyWeapon();
-		sco->SetTarget(m_target.lock());
-		m_weaponList.push_back(sco);
-
-		sco = std::make_shared<Scopion>();
-		sco->SetArrmType(lArrm);
-		sco->SetbEnemyWeapon();
-		sco->SetTarget(m_target.lock());
-		m_weaponList.push_back(sco);
-
-		std::shared_ptr<Hopper> hopper;
-		hopper = std::make_shared<Hopper>();
-		hopper->SetArrmType(rArrm);
-		hopper->SetbEnemyWeapon();
-		m_weaponList.push_back(hopper);
-
-		hopper = std::make_shared<Hopper>();
-		hopper->SetArrmType(lArrm);
-		hopper->SetbEnemyWeapon();
-		m_weaponList.push_back(hopper);
-
-		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
-		m_addCenterVal = addCenterVal;
-		m_rockOnPos = addCenterVal;
-
-		Math::Vector3 AddGrassDashEffectPosVal = { static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][0].number_value()),
-										           static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][1].number_value()),
-										           static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][2].number_value())};
-		m_addGrassDashEffectPosVal = AddGrassDashEffectPosVal;
-
-		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
-
-		for (auto& WeaList : m_weaponList)
-		{
-			WeaList->SetOwner(shared_from_this());
-		}
-
-		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
-		{
-			m_vForce = (float)m_mpObj["ChallengeVforce"].number_value();
-			m_endurance = (float)m_mpObj["ChallengeEndurance"].number_value();
-			m_maxEndurance = m_endurance;
-			std::random_device rnd;
-			std::mt19937 mt(rnd());
-			std::uniform_int_distribution<int> intRand(0, 999);
-			int randNum[4] = {};
-			int rand = intRand(mt);
-			randNum[0] = 150;
-			randNum[1] = 300;
-			randNum[2] = 300;
-			randNum[3] = 250;
-
-			for (int i = 0; i < 4; i++)
-			{
-				rand -= randNum[i];
-				if (rand < 0)
-				{
-					switch (i)
-					{
-					case 0:
-						m_enemyType = Enemy::EnemyType::allRounder;
-						break;
-					case 1:
-						m_enemyType = Enemy::EnemyType::striker;
-						break;
-					case 2:
-						m_enemyType = Enemy::EnemyType::defender;
-						break;
-					case 3:
-						m_enemyType = Enemy::EnemyType::speedSter;
-						break;
-					}
-					break;
-				}
-			}
-		}
-		else
-		{
-			m_vForce = (float)m_mpObj["Vforce"].number_value();
-			m_endurance = (float)m_mpObj["Endurance"].number_value();
-			m_enemyType = Enemy::EnemyType::allRounder;
-		}
-		return;
-	}
-
-	if (!(m_EnemyState & (hit | rise)))
-	{
-		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
-		{
-			std::shared_ptr<Player> spTarget = m_target.lock();
-			Math::Vector3 vTarget = Math::Vector3::Zero;
-			if (spTarget)
-			{
-				vTarget = spTarget->GetPos() - m_pos;
-				UpdateRotate(vTarget);
-			}
-
-
-			if (!(m_EnemyState & (fall | jump)) && !m_bEnemyDeath)
-			{
-				m_bMove = false;
-			}
-
-			if (m_wantToMoveState & wNone && !m_bEnemyDeath)
-			{
-				Brain();
-			}
-			else if (!m_bEnemyDeath)
-			{
-				if (vTarget.Length() >= static_cast<float>(m_mpObj["PlayerToEnemyDistBrain"].number_value()) && !(m_EnemyState & (grassHopperDash & ~grassHopperDashB) | grassHopperDashUp))
-				{
-					Brain();
-				}
-			}
-
-			if (m_mpObj["RightWeaponScopionNum"].int_value() == m_rightWeaponNumber)
-			{
-				m_weaponType |= scorpion;
-				m_weaponType &= ~grassHopper;
-			}
-			else if (m_mpObj["RightWeaponGrassHopperNum"].int_value() == m_rightWeaponNumber)
-			{
-				m_weaponType |= grassHopper;
-				m_weaponType &= ~scorpion;
-			}
-
-			if (m_mpObj["LeftWeaponScopionNum"].int_value() == m_leftWeaponNumber)
-			{
-				m_weaponType |= lScorpion;
-				m_weaponType &= ~lGrassHopper;
-			}
-			else if (m_mpObj["LeftWeaponGrassHopperNum"].int_value() == m_leftWeaponNumber)
-			{
-				m_weaponType |= lGrassHopper;
-				m_weaponType &= ~lScorpion;
-			}
-
-			if (!(m_wantToMoveState & WantToMoveState::wNone))
-			{
-				if (!(m_EnemyState & hasDefense))
-				{
-					switch (m_wantToMoveState)
-					{
-					case WantToMoveState::wAttack:
-						ScorpionAttackDecision();
-						break;
-					case WantToMoveState::wEscape:
-						GrassMoveVecDecision();
-						break;
-					case WantToMoveState::wDefense:
-						if (m_EnemyState & defense)
-						{
-							ScorpionDefenseMove();
-						}
-						else
-						{
-							ScorpionDefenseDecision();
-						}
-
-						break;
-					case WantToMoveState::wDashAttack:
-						if (m_lGrassHopperTime <= m_mpObj["DashAttackPossibleTime"].int_value() ||
-							m_rGrassHopperTime <= m_mpObj["DashAttackPossibleTime"].int_value())
-						{
-							if (m_dashSpd == 1.2f)
-							{
-								if (vTarget.Length() <= 15)
-								{
-									if (m_weaponType & grassHopper)
-									{
-										if (m_EnemyState & grassHopperDashF)
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-									else if (m_weaponType & lGrassHopper)
-									{
-										if (m_EnemyState & grassHopperDashF)
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-							else if (m_dashSpd == 0.8f)
-							{
-								if (vTarget.Length() <= 9.25f)
-								{
-									if (m_weaponType & grassHopper)
-									{
-										if (m_EnemyState & grassHopperDashF)
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-									else if (m_weaponType & lGrassHopper)
-									{
-										if (m_EnemyState & grassHopperDashF)
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-							else if (m_dashSpd == 0.5f)
-							{
-								if (vTarget.Length() <= 8.0f)
-								{
-									if (m_weaponType & grassHopper)
-									{
-										if (m_EnemyState & grassHopperDashF)
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-									else if (m_weaponType & lGrassHopper)
-									{
-										if (m_EnemyState & grassHopperDashF)
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-							else if (m_dashSpd == 0.4f || m_dashSpd == 0.35f)
-							{
-								if (vTarget.Length() <= 4.0f)
-								{
-									if (m_weaponType & grassHopper)
-									{
-										if ((m_EnemyState & grassHopperDashF) && (m_rGrassHopperTime <= 80))
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-									else if (m_weaponType & lGrassHopper)
-									{
-										if ((m_EnemyState & grassHopperDashF) && (m_lGrassHopperTime <= 80))
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-							else if (m_dashSpd <= 0.25f)
-							{
-								if (vTarget.Length() <= 2.0f)
-								{
-									if (m_weaponType & grassHopper)
-									{
-										if (m_EnemyState & grassHopperDashF)
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-									else if (m_weaponType & lGrassHopper)
-									{
-										if (m_EnemyState & grassHopperDashF)
-										{
-											ScorpionAttackDecision();
-										}
-										else
-										{
-											GrassMoveVecDecision();
-										}
-									}
-								}
-								else
-								{
-									GrassMoveVecDecision();
-								}
-							}
-						}
-						else
-						{
-							GrassMoveVecDecision();
-						}
-						break;
-					case WantToMoveState::wRun:
-						NormalMoveVecDecision();
-						break;
-					case WantToMoveState::wStep:
-						if (!(m_EnemyState & step))
-						{
-							StepVecDecision();
-						}
-						break;
-					case WantToMoveState::wGrassDash:
-						GrassMoveVecDecision();
-						break;
-					case WantToMoveState::wAvoidance:
-						GrassMoveVecDecision();
-						break;
-					}
-				}
-
-				if (!(m_EnemyState & (grassHopperDash | grassHopperDashUp | step)))
-				{
-					if (m_EnemyState & (lAttack | rAttack | rlAttack | rlAttackRush | mantis))
-					{
-						ScorpionAttackMove();
-					}
-					else if (m_EnemyState & run | m_EnemyState & jump)
-					{
-						NormalMove();
-					}
-					else if (m_EnemyState & hasDefense)
-					{
-						HasDefenseMove();
-					}
-				}
-				else if (m_EnemyState & (grassHopperDash | grassHopperDashUp))
-				{
-					GrassMove();
-				}
-				else if (m_EnemyState & step)
-				{
-					StepMove();
-				}
-			}
-
-			if (!m_bMove)
-			{
-				++m_idleCnt;
-
-				if (m_idleCnt >= 30)
-				{
-					Brain();
-				}
-
-				if (!(m_EnemyState & (fall | jump)))
-				{
-					m_EnemyState = idle;
-					m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
-				}
-			}
-		}
-	}
-}
-
-void Enemy::BossEnemyTyepOneUpdate()
-{
-	if (m_bFirstUpdate)
-	{
-		m_mpObj = (*m_wpJsonObj.lock())["BossEnemyTypeOne"].object_items();
-		m_weaponList.clear();
-		m_weaponType |= lWeaponNone | weaponNone;
-		m_weaponType &= lWeaponNone | weaponNone;
-
-		m_leftWeaponNumber = 0;
-		m_rightWeaponNumber = 0;
-
-		m_vForce    = static_cast<float>(m_mpObj["Vforce"].number_value());
-		m_endurance = static_cast<float>(m_mpObj["Endurance"].number_value());
-		m_maxEndurance = m_endurance;
-		if (!(m_EnemyState & run))
-		{
-			m_animator->SetAnimation(m_model->GetAnimation("RUN"));
-		}
-		m_EnemyState = run;
-		m_addRotationAttackDistToPlayerRadius = 42.5f;
-		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
-		m_addCenterVal = addCenterVal;
-		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
-		return;
-	}
-
-	if (m_attackDelayTime < ATTACKDELAYTIME)
-	{
-		++m_attackDelayTime;
-		return;
-	}
-
-	if (m_endurance <= 500 && m_addRotationAttackDistToPlayerRadius == 42.5f)
-	{
-		m_addRotationAttackDistToPlayerRadius = 90.0f;
-	}
-
-	if (m_hitStopCnt > 0)
-	{
-		--m_hitStopCnt;
-	}
-
-	if (m_hitStopCnt == 0)
-	{
-		if (m_addWeaknesSuccessionHitCntTime > 0)
-		{
-			--m_addWeaknesSuccessionHitCntTime;
-		}
-
-		if (m_bShotBeam || m_bShotEnergyBullet)
-		{
-			m_bMove = true;
-
-			if (m_bShotBeam)
-			{
-				if (m_rangedAttackAnimeCnt >= 10 && !m_bBeamHitStart)
-				{
-					m_bBeamHitStart = true;
-					KdAudioManager::Instance().Play3D("Asset/Audio/SE/Beem.wav", m_rangedAttackShotPos);
-				}
-			}
-
-			if (m_bShotEnergyBullet)
-			{
-				if (m_rangedAttackAnimeCnt >= 26 && !m_bEnergyBulletHitStart)
-				{
-					m_bEnergyBulletHitStart = true;
-					KdAudioManager::Instance().Play3D("Asset/Audio/SE/energyShot.wav", m_rangedAttackShotPos);
-				}
-			}
-		}
-
-		if (!(m_notHumanoidEnemyState & rotationAttack))
-		{
-			if (m_addRotationAttackDistToPlayerTime == ADDROTAYIONATTACKDISTTOPLAYERTIME)
-			{
-				if (!m_bEnemyDeath)
-				{
-					m_addRotationAttackDistToPlayerTime = 0;
-					m_notHumanoidEnemyState = rotationAttack;
-					m_animator->SetAnimation(m_model->GetAnimation("RotationAttack"), false);
-				}
-			}
-
-
-			if (m_wantToMoveState & wNone && !m_bEnemyDeath && !m_bShotEnergyBullet && !m_bShotBeam)
-			{
-				BossEnemyTypeOneBrain();
-			}
-
-			if (!(m_wantToMoveState & WantToMoveState::wNone) && !m_bShotEnergyBullet && !m_bShotBeam)
-			{
-				switch (m_wantToMoveState)
-				{
-				case WantToMoveState::wRun:
-					NormalMoveVecDecision();
-					break;
-				}
-
-				if (m_EnemyState & run | m_EnemyState & jump)
-				{
-					NormalMove();
-				}
-			}
-		}
-		else
-		{
-			RotationAttackMove();
-		}
-
-		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial && !m_bShotEnergyBullet && !m_bShotBeam)
-		{
-			std::shared_ptr<Player> spTarget = m_target.lock();
-			if (spTarget)
-			{
-				Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
-				UpdateRotate(vTarget);
-			}
-
-		}
-	}
-	const KdModelWork::Node* node = nullptr;
-	Math::Matrix mat = Math::Matrix::Identity;
-
-	node = m_model->FindNode("HitPoint");
-	mat = node->m_localTransform;
-	Math::Vector3 addPos = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-	addPos *= static_cast<float>(m_mpObj["AddRockOnPos"].number_value());
-	m_rockOnPos = { mat._41 + addPos.x,mat._42 + static_cast<float>(m_mpObj["AddRockOnPosY"].number_value()),mat._43 + addPos.z };
-
-#ifdef _DEBUG
-	m_pDebugWire->AddDebugSphere
-	(
-		mat.Translation(),
-		6.0f,
-		{ 0,0,0,1 }
-	);
-#endif
-
-}
-
-void Enemy::CoarseFishEnemyUpdate()
-{
-	if (m_bFirstUpdate)
-	{
-		m_mpObj = (*m_wpJsonObj.lock())["CoarseFishEnemy"].object_items();
-		m_weaponList.clear();
-		std::shared_ptr<Scopion> sco;
-		sco = std::make_shared<Scopion>();
-		sco->SetArrmType(rArrm);
-		sco->SetbEnemyWeapon();
-		sco->SetTarget(m_target.lock());
-		m_weaponList.push_back(sco);
-
-		m_weaponType |= lWeaponNone | scorpion;
-		m_weaponType &= lWeaponNone | scorpion;
-
-		m_leftWeaponNumber = 0;
-		m_rightWeaponNumber = 1;
-
-		for (auto& WeaList : m_weaponList)
-		{
-			WeaList->SetOwner(shared_from_this());
-		}
-
-		m_vForce = (float)m_mpObj["Vforce"].number_value();
-		m_endurance = (float)m_mpObj["Endurance"].number_value();
-		m_maxEndurance = m_endurance;
-
-		m_enemyType = Enemy::EnemyType::coarseFishEnemy;
-		
-		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
-		m_addCenterVal = addCenterVal;
-		m_rockOnPos = addCenterVal;
-		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
-		return;
-	}
-
-	if (m_coarseFishEnemyAttackDelayCnt > 0)
-	{
-		--m_coarseFishEnemyAttackDelayCnt;
-	}
-
-	if (!(m_EnemyState & (hit | rise)))
-	{
-		if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
-		{
-			std::shared_ptr<Player> spTarget = m_target.lock();
-			Math::Vector3 vTarget = Math::Vector3::Zero;
-			if (spTarget)
-			{
-				vTarget = spTarget->GetPos() - m_pos;
-				UpdateRotate(vTarget);
-			}
-
-
-			if (!(m_EnemyState & (fall | jump)) && !m_bEnemyDeath)
-			{
-				m_bMove = false;
-			}
-
-			if (m_wantToMoveState & wNone && !m_bEnemyDeath)
-			{
-				Brain();
-			}
-			else if (!m_bEnemyDeath)
-			{
-				if (vTarget.Length() >= 20.0f && !(m_EnemyState & (grassHopperDash & ~grassHopperDashB) | grassHopperDashUp))
-				{
-					Brain();
-				}
-			}
-
-			if (!(m_wantToMoveState & WantToMoveState::wNone))
-			{
-				if (!(m_EnemyState & hasDefense))
-				{
-					switch (m_wantToMoveState)
-					{
-					case WantToMoveState::wAttack:
-						ScorpionAttackDecision();
-						break;
-					case WantToMoveState::wRun:
-						NormalMoveVecDecision();
-						break;
-					}
-				}
-
-				if (m_EnemyState & (lAttack | rAttack | rlAttack | rlAttackRush | mantis))
-				{
-					ScorpionAttackMove();
-				}
-				else if (m_EnemyState & run | m_EnemyState & jump)
-				{
-					NormalMove();
-				}
-			}
-
-			if (!m_bMove)
-			{
-				if (!(m_EnemyState & (fall | jump)))
-				{
-					m_EnemyState = idle;
-					m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
-				}
-			}
-		}
-	}
-}
-
-void Enemy::WimpEnemyTypeOneUpdate()
-{
-	if (m_bFirstUpdate)
-	{
-		m_mpObj = (*m_wpJsonObj.lock())["WimpEnemyTypeOne"].object_items();
-
-		m_weaponList.clear();
-		m_weaponType |= lWeaponNone | weaponNone;
-		m_weaponType &= lWeaponNone | weaponNone;
-
-		m_leftWeaponNumber = 0;
-		m_rightWeaponNumber = 0;
-
-		m_vForce = (float)m_mpObj["Vforce"].number_value();
-		m_endurance = (float)m_mpObj["Endurance"].number_value();
-		m_maxEndurance = m_endurance;
-
-		m_animator->SetAnimation(m_model->GetAnimation("IdleA"));
-		m_EnemyState = idle;
-
-		Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
-										  static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
-		m_addCenterVal = addCenterVal;
-		m_addHpPosY = static_cast<float>(m_mpObj["AddHpPosY"].number_value());
-		return;
-	}
-
-
-	if (m_attackDelayTime < ATTACKDELAYTIME)
-	{
-		++m_attackDelayTime;
-		return;
-	}
-
-	if (m_bShotBeam || m_bShotEnergyBullet)
-	{
-		m_bMove = true;
-
-		if (m_bShotBeam)
-		{
-			if (m_rangedAttackAnimeCnt >= 10 && !m_bBeamHitStart)
-			{
-				m_bBeamHitStart = true;
-				KdAudioManager::Instance().Play3D("Asset/Audio/SE/Beem.wav", m_rangedAttackShotPos);
-			}
-		}
-
-		if (m_bShotEnergyBullet)
-		{
-			if (m_rangedAttackAnimeCnt >= 26 && !m_bEnergyBulletHitStart)
-			{
-				m_bEnergyBulletHitStart = true;
-				KdAudioManager::Instance().Play3D("Asset/Audio/SE/energyShot.wav", m_rangedAttackShotPos);
-			}
-		}
-	}
-
-	if (m_wantToMoveState & wNone && !m_bEnemyDeath && !m_bShotEnergyBullet && !m_bShotBeam)
-	{
-		Brain();
-	}
-
-	if (!(m_wantToMoveState & WantToMoveState::wNone) && !m_bShotEnergyBullet && !m_bShotBeam)
-	{
-		switch (m_wantToMoveState)
-		{
-		case WantToMoveState::wRun:
-			NormalMoveVecDecision();
-			break;
-		}
-
-		if (m_EnemyState & run | m_EnemyState & jump)
-		{
-			NormalMove();
-		}
-	}
-
-	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial && !m_bShotEnergyBullet && !m_bShotBeam)
-	{
-		std::shared_ptr<Player> spTarget = m_target.lock();
-		if (spTarget)
-		{
-			Math::Vector3 vTarget = spTarget->GetPos() - m_pos;
-			UpdateRotate(vTarget);
-		}
-
-	}
-
-	const KdModelWork::Node* node = nullptr;
-	Math::Matrix mat = Math::Matrix::Identity;
-
-	node = m_model->FindNode("HitPoint");
-	mat = node->m_localTransform;
-	Math::Vector3 addPos = Math::Vector3::Transform({ 0,0,1 }, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-	addPos *= static_cast<float>(m_mpObj["AddRockOnPos"].number_value());
-	m_rockOnPos = {mat._41 + addPos.x,mat._42 - static_cast<float>(m_mpObj["SubRockOnPosY"].number_value()),mat._43 + addPos.z};
-
-#ifdef _DEBUG
-	m_pDebugWire->AddDebugSphere
-	(
-		{ mat._41, mat._42 , mat._43},
-		0.325f,
-		{ 0,0,0,1 }
-	);
-#endif
-
-}
-
-void Enemy::TutorialUpdate()
-{
-	if (KdInputManager::Instance().IsPress("TutorialEnemyPosInit"))
-	{
-		m_pos = { Math::Vector3::Zero };
-	}
-}
-
-void Enemy::PostUpdate()
-{
-	if (!m_animator) return;
-
-	if (!m_bEnemyDeath)
-	{
-		if (m_gravity > 0)
-		{
-			if (!(m_EnemyState & (hit | hasDefense)))
-			{
-				if (!(m_EnemyState & fall))
-				{
-					m_animator->SetAnimation(m_model->GetAnimation("FallA"), false);
-				}
-				m_EnemyState = fall;
-			}
-		}
-
-		if (m_bShotBeam || m_bShotEnergyBullet)
-		{
-			m_rangedAttackAnimeCnt++;
-		}
-		
-		if (m_bShotBeam)
-		{
-			if (m_rangedAttackAnimeCnt >= 66)
-			{
-				m_beamRange = 0;
-				m_rangedAttackAnimeCnt = 0;
-				m_bShotEnergyBullet = false;
-				m_bShotBeam = false;
-				m_bBeamHitStart = false;
-				m_bEnergyBulletHitStart = false;
-				m_bMove = false;
-				m_bRangedAttack = false;
-				m_wantToMoveState = wNone;
-			}
-		}
-		else if (m_bShotEnergyBullet)
-		{
-			if (m_enemyType & bossEnemyTypeOne)
-			{
-				if (m_rangedAttackAnimeCnt >= 140)
-				{
-					m_beamRange = 0;
-					m_rangedAttackAnimeCnt = 0;
-					m_bShotEnergyBullet = false;
-					m_bShotBeam = false;
-					m_bBeamHitStart = false;
-					m_bEnergyBulletHitStart = false;
-					m_bMove = false;
-					m_bRangedAttack = false;
-					m_wantToMoveState = wNone;
-				}
-			}
-			else
-			{
-				if (m_rangedAttackAnimeCnt >= 125)
-				{
-					m_beamRange = 0;
-					m_rangedAttackAnimeCnt = 0;
-					m_bShotEnergyBullet = false;
-					m_bShotBeam = false;
-					m_bBeamHitStart = false;
-					m_bEnergyBulletHitStart = false;
-					m_bMove = false;
-					m_bRangedAttack = false;
-					m_wantToMoveState = wNone;
-				}
-			}
-		}
-
-		if (m_rGrassHopperPauCnt > 0)
-		{
-			--m_rGrassHopperPauCnt;
-		}
-
-		if (m_lGrassHopperPauCnt > 0)
-		{
-			--m_lGrassHopperPauCnt;
-		}
-
-		if (m_grassSuccessionDelayCnt > 0)
-		{
-			--m_grassSuccessionDelayCnt;
-		}
-
-		if (m_bAttackAnimeDelay)
-		{
-			m_attackAnimeDelayCnt--;
-			if (m_attackAnimeDelayCnt <= 0)
-			{
-				m_bAttackAnimeDelay = false;
-				m_attackAnimeDelayCnt = 0;
-			}
-		}
-
-		if (!(m_EnemyState & (lAttack | rAttack | rlAttack | rlAttackRush)) && !(m_notHumanoidEnemyState & rotationAttack))
-		{
-			m_animator->AdvanceTime(m_model->WorkNodes());
-			m_model->CalcNodeMatrices();
-
-			if (m_EnemyState & run)
-			{
-				++m_runAnimeCnt;
-				if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][0].int_value())
-				{
-					KdAudioManager::Instance().Play3D("Asset/Audio/SE/FootstepsConcrete2.wav", {m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddBottomYVal"].number_value()),m_pos.z});
-				}
-				else if (m_runAnimeCnt == m_mpObj["FootfallPointMoment"][1].int_value())
-				{
-					KdAudioManager::Instance().Play3D("Asset/Audio/SE/FootstepsConcrete2.wav", { m_pos.x,m_pos.y + static_cast<float>(m_mpObj["AddBottomYVal"].number_value()),m_pos.z });
-				}
-
-				if (m_runAnimeCnt == m_mpObj["LastRunAnimationTime"].int_value())
-				{
-					m_runAnimeCnt = 0;
-				}
-			}
-		}
-		else if (m_EnemyState & (lAttack | rAttack) && !m_bAttackAnimeDelay)
-		{
-			if (m_bAttackAnimeCnt)
-			{
-				m_attackAnimeCnt++;
-				if (m_EnemyState & (lAttackOne | lAttackTwo | rAttackOne | rAttackTwo))
-				{
-					if (m_attackAnimeCnt == m_mpObj["AttackOneOrTwoShakenMoment"].int_value())
-					{
-						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
-					}
-				}
-
-				if (m_attackAnimeCnt == m_mpObj["LastAttackAnimationMoment"].int_value())
-				{
-					m_bAttackAnimeDelay = true;
-					m_bAttackAnimeCnt = false;
-					m_attackAnimeCnt = 0;
-					m_attackAnimeDelayCnt = m_mpObj["MaxAttackAnimeDelayCnt"].int_value();
-				}
-			}
-			else
-			{
-				m_attackAnimeCnt++;
-				if (m_EnemyState & (lAttackThree | rAttackThree))
-				{
-					if (m_attackAnimeCnt == m_mpObj["AttackThreeShakenMoment"].int_value())
-					{
-						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
-					}
-				}
-			}
-
-			m_animator->AdvanceTime(m_model->WorkNodes());
-			m_model->CalcNodeMatrices();
-		}
-		else if (m_EnemyState & (rlAttack | rlAttackRush))
-		{
-			if (m_bAttackAnimeCnt)
-			{
-				m_attackAnimeCnt++;
-				if (m_EnemyState & rlAttackOne)
-				{
-					if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
-					{
-						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
-					}
-				}
-				else if (m_EnemyState & rlAttackTwo)
-				{
-					if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
-					{
-						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav", m_pos + m_addCenterVal);
-					}
-				}
-				else if (m_EnemyState & rlAttackThree)
-				{
-					if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenFirstMoment"].int_value() || m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
-					{
-						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav",m_pos + m_addCenterVal);
-					}
-				}
-				else if (m_EnemyState & rlAttackRush)
-				{
-					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][0].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value())
-					{
-						KdAudioManager::Instance().Play3D("Asset/Audio/SE/Swishes - SWSH 40, Swish, Combat, Weapon, Light.wav",m_pos + m_addCenterVal);
-					}
-				}
-
-
-				if (m_EnemyState & rlAttackOne)
-				{
-					if (m_attackAnimeCnt == 20)
-					{
-						m_bAttackAnimeDelay = true;
-						m_bAttackAnimeCnt = false;
-						m_attackAnimeCnt = 0;
-						m_attackAnimeDelayCnt = 10;
-					}
-				}
-				else if (m_EnemyState & rlAttackTwo)
-				{
-					if (m_attackAnimeCnt == 20)
-					{
-						m_bAttackAnimeDelay = true;
-						m_bAttackAnimeCnt = false;
-						m_attackAnimeCnt = 0;
-						m_attackAnimeDelayCnt = 10;
-					}
-				}
-				else if (m_EnemyState & rlAttackThree)
-				{
-					if (m_attackAnimeCnt == 40)
-					{
-						m_bAttackAnimeDelay = true;
-						m_bAttackAnimeCnt = false;
-						m_attackAnimeCnt = 0;
-						m_attackAnimeDelayCnt = 10;
-					}
-				}
-			}
-
-			m_animator->AdvanceTime(m_model->WorkNodes());
-			m_model->CalcNodeMatrices();
-		}
-		else if (m_notHumanoidEnemyState & rotationAttack)
-		{
-			++m_attackAnimeCnt;
-			m_animator->AdvanceTime(m_model->WorkNodes());
-			m_model->CalcNodeMatrices();
-		}
-	}
-	else
-	{
-		m_animator->AdvanceTime(m_model->WorkNodes());
-		m_model->CalcNodeMatrices();
-		m_bMove = true;
-
-		if (!KdEffekseerManager::GetInstance().IsPlaying("BailOutEnemy.efk"))
-		{
-			if (m_bEnemyLose)
-			{
-				m_isExpired = true;
-
-				if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
-				{
-					SceneManager::Instance().SubEnemyIeftover();
-					SceneManager::Instance().SubEnemyDrawTotal();
-				}
-				else if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle || SceneManager::Instance().GetSceneType() == SceneManager::SceneType::training)
-				{
-					if (m_bBoss)
-					{
-						SceneManager::Instance().SubEnemyIeftover();
-					}
-
-					SceneManager::Instance().SubEnemyDrawTotal();
-				}
-			}
-		}
-
-		if (m_animator->IsAnimationEnd())
-		{
-			if (!m_bEnemyLose)
-			{
-				m_bEnemyLose = true;
-				KdEffekseerManager::GetInstance().
-					Play("BailOutEnemy.efk", { m_pos.x,m_pos.y + m_addCenterVal.y,m_pos.z});
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutEnemy.efk"); // これでループしない
-				Math::Matrix efcMat = Math::Matrix::CreateScale(static_cast<float>(m_mpObj["BailOutEffectScale"].number_value())) * Math::Matrix::CreateTranslation({ m_pos.x,m_pos.y + 0.9f,m_pos.z });
-				KdEffekseerManager::GetInstance().SetWorldMatrix("BailOutEnemy.efk", efcMat);
-
-				if (m_enemyType & bossEnemyTypeOne)
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/BossEnemyTypeOneDeath.wav");
-				}
-				else if (m_enemyType & humanBossEnemy)
-				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/HumanBossEnemyDeath.wav");
-				}
-				else
-				{
-					KdAudioManager::Instance().Play3D("Asset/Audio/SE/CoarseFishEnemyAndWinpEnemyDeath.wav", { m_pos.x,m_pos.y + m_addCenterVal.y,m_pos.z });
-				}
-			}
-		}
-	}
-}
-
-void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
-{
-	m_EnemyState = nomalHit;
-	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackThree)
-	{
-		m_hitStopCnt = 60;
-	}
-	else
-	{
-		m_hitStopCnt = 40;
-	}
-
-	m_hitMoveSpd = 0.05f;
-	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
-	m_knockBackVec = a_KnocBackvec;
-	m_endurance -= (*m_wpJsonObj.lock())["OnHitDamage"].int_value();
-	m_attackHit = true;
-	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rlAttackOne))
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-		{
-			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
-		}
-	}
-	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackTwo | Player::PlayerState::rlAttackTwo))
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
-		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-		{
-			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
-		}
-	}
-	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::lAttackOne | Player::PlayerState::rlAttackThree))
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("LHit1"), false);
-		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-		{
-			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
-		}
-	}
-	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::lAttackTwo))
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("LHit2"), false);
-		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-		{
-			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
-		}
-	}
-
-	if (!m_target.lock()->GetBRushRp())
-	{
-		if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() < 8)
-		{
-			m_animator->SetAnimation(m_model->GetAnimation("LHit1"), false);
-			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-			{
-				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
-			}
-		}
-		else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 21 && m_target.lock()->GetAnimationCnt() < 31))
-		{
-			m_animator->SetAnimation(m_model->GetAnimation("LHit2"), false);
-			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-			{
-				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
-			}
-		}
-		else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 31 && m_target.lock()->GetAnimationCnt() < 41))
-		{
-			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-			{
-				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
-			}
-		}
-		else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 8 && m_target.lock()->GetAnimationCnt() < 21))
-		{
-			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
-			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-			{
-				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
-			}
-		}
-	}
-	else
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
-		if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() < 93)
-		{
-			m_hitMoveSpd = 0.395f;
-		}
-		else
-		{
-			m_hitMoveSpd = 0.275f;
-		}
-
-		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-		{
-			SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
-		}
-	}
-
-	if (m_graduallyTorionDecVal == 0)
-	{
-		m_graduallyTorionDecVal = 0.01f;
-	}
-	else
-	{
-		m_graduallyTorionDecVal *= 1.25f;
-	}
-}
-
-void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
-{
-	m_EnemyState = blowingAwayHit;
-	m_hitStopCnt = 40;
-	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
-	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() >= 107)
-	{
-		m_hitMoveSpd = 0.95f;
-		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-		{
-			SceneManager::Instance().SetUpdateStopCnt(25); // これでアップデートを一時止める
-		}
-		//SceneManager::Instance().SetUpdateStopCnt(10);   // 画面を揺らす時のHtiストップフレーム数
-		//SceneManager::Instance().SetScreenVibFrames(15); // 画面を揺らすフレーム数
-
-		if (!(m_enemyType & (bossEnemyTypeOne | humanBossEnemy)))
-		{
-			if (m_enemyType & wimpEnemyTypeOne)
-			{
-				m_endurance -= 50.0f;
-			}
-			else
-			{
-				m_bLethalDamageToKickOrPantciOrDashAttackHit = true;
-				m_endurance -= 150.0f;
-			}
-		}
-		else
-		{
-			m_endurance -= 30.0f;
-			if (m_endurance <= 0)
-			{
-				m_bLethalDamageToKickOrPantciOrDashAttackHit = true;
-			}
-		}
-	}
-	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::lAttackOne) && m_target.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDashF))
-	{
-		m_hitMoveSpd = 0.35f;
-		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-		{
-			SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
-		}
-
-		if (!(m_enemyType & (bossEnemyTypeOne | humanBossEnemy)))
-		{
-			if (m_enemyType & wimpEnemyTypeOne)
-			{
-				m_endurance -= 50.0f;
-			}
-			else
-			{
-				m_bLethalDamageToKickOrPantciOrDashAttackHit = true;
-				m_endurance -= 150.0f;
-			}
-		}
-		else
-		{
-			m_endurance -= 30.0f;
-			if (m_endurance <= 0)
-			{
-				m_bLethalDamageToKickOrPantciOrDashAttackHit = true;
-			}
-		}
-
-	}
-	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackThree | Player::PlayerState::lAttackThree))
-	{
-		m_hitMoveSpd = 0.3f;
-		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-		{
-			SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-		}
-
-		if (!(m_enemyType & (bossEnemyTypeOne | humanBossEnemy)))
-		{
-			if (m_enemyType & wimpEnemyTypeOne)
-			{
-				m_endurance -= 20.0f;
-			}
-			else
-			{
-				m_endurance -= 30.0f;
-			}
-		}
-		else
-		{
-			m_endurance -= 15.0f;
-		}
-	}
-
-	m_knockBackVec = a_KnocBackvec;
-	m_attackHit = true;
-
-	if (!(m_enemyType & (bossEnemyTypeOne | wimpEnemyTypeOne)))
-	{
-		Math::Vector3 nowVec = m_mWorld.Backward();
-
-		Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, a_KnocBackvec);
-		if (dot.x > 1)
-		{
-			dot.x = 1;
-		}
-		if (dot.x < -1)
-		{
-			dot.x = -1;
-		}
-
-		float ang = DirectX::XMConvertToDegrees(acos(dot.x));
-
-		if (ang > 90)
-		{
-			m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
-		}
-		else
-		{
-			m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayHitBB"), false);
-			m_bBlowingAwayHitB = true;
-		}
-		m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
-	}
-
-	if (m_graduallyTorionDecVal == 0)
-	{
-		m_graduallyTorionDecVal = 0.01f;
-	}
-	else
-	{
-		m_graduallyTorionDecVal *= 1.45f;
-	}
-
-	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
-	{
-		if (m_bLethalDamageToKickOrPantciOrDashAttackHit)
-		{
-			m_bLethalDamageToKickOrPantciOrDashAttackHit = false;
-		}
-	}
-}
-
-void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
-{
-	m_EnemyState = iaiKiriHit;
-	m_hitStopCnt = 40;
-	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
-	m_hitMoveSpd = 0.0f;
-	m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
-	m_knockBackVec = a_KnocBackvec;
-	m_endurance -= 50.0f;
-	m_attackHit = true;
-	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
-	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-	{
-		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-	}
-
-	if (m_graduallyTorionDecVal == 0)
-	{
-		m_graduallyTorionDecVal = 0.05f;
-	}
-	else
-	{
-		m_graduallyTorionDecVal *= 1.5f;
-	}
-}
-
-void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
-{
-	m_EnemyState = cutRaiseHit;
-	m_hitStopCnt = 60;
-	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
-	m_hitMoveSpd = 0.0f;
-
-	if (m_gravity == 0)
-	{
-		m_gravity -= 0.1f;
-	}
-	else if (m_gravity <= 0.03f)
-	{
-		m_gravity -= 0.04f;
-	}
-	else
-	{
-		m_gravity = 0;
-		m_gravity = -0.05f;
-	}
-	m_knockBackVec = a_KnocBackvec;
-	m_endurance -= 15.0f;
-	if (m_enemyType & humanBossEnemy)
-	{
-		if (m_endurance <= 0)
-		{
-			m_endurance = 0.1f;
-		}
-	}
-
-	m_attackHit = true;
-	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
-
-	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
-	{
-		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
-	}
-
-	if (m_graduallyTorionDecVal == 0)
-	{
-		m_graduallyTorionDecVal = 0.01f;
-	}
-	else
-	{
-		m_graduallyTorionDecVal *= 1.15f;
-	}
-}
-
-void Enemy::WeaknessOnHit()
-{
-	SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
-
-	if (m_enemyType & bossEnemyTypeOne)
-	{
-		if (m_addWeaknesSuccessionHitCntTime == 0)
-		{
-			m_weaknesSuccessionHitCnt = 1;
-		}
-		else
-		{
-			++m_weaknesSuccessionHitCnt;
-		}
-
-		m_addWeaknesSuccessionHitCntTime = ADD_WEAKNES_SEUCCESSION_HIT_CNT_TIME_LIMIT;
-
-		if (m_weaknesSuccessionHitCnt >= m_mpObj["MaxWeaknesSuccessionHitCnt"].int_value())
-		{
-			m_weaknesSuccessionHitCnt = 0;
-			m_addWeaknesSuccessionHitCntTime = 0;
-			m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
-			m_hitStopCnt = m_mpObj["MaxWeaknesSuccessionHitStopCnt"].int_value();
-			m_animator->SetAnimation(m_model->GetAnimation("SuccessionWeaknessOnHit"), false);
-		}
-
-		m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
-	}
-	else
-	{
-		m_endurance = 0.0f;
-	}
-	m_attackHit = true;
-
-	if (m_graduallyTorionDecVal == 0)
-	{
-		m_graduallyTorionDecVal = static_cast<float>((*m_wpJsonObj.lock())["FristWeaknessHitGraduallyTorionDecVal"].number_value());
-	}
-	else
-	{
-		m_graduallyTorionDecVal *= static_cast<float>((*m_wpJsonObj.lock())["AddWeaknessHitGraduallyTorionDecVal"].number_value());
-	}
-}
-
-void Enemy::HasDefense()
-{
-	if (m_EnemyState & (rAttack | rlAttack))
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("RHasDefense"), false);
-	}
-	else if (m_EnemyState & lAttack)
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("LHasDefense"), false);
-	}
-
-	m_EnemyState |= hasDefense;
-	m_EnemyState &= hasDefense;
-	m_hasDeTime = 30;
-	m_bMove = true;
-}
-
-void Enemy::DrawSprite()
-{
-
-}
-
-void Enemy::DrawDebug()
-{
-	if (m_bEnemyLose)
-	{
-		return;
-	}
-
-#ifdef _DEBUG
-	if (!m_pDebugWire)return;
-	m_pDebugWire->Draw();
-
-	for (auto& WeaList : m_weaponList)
-	{
-		WeaList->DrawDebug();
-	}
-#endif
-}
-
-void Enemy::GenerateDepthMapFromLight_SkinMesh()
-{
-	if (m_bEnemyLose)
-	{
-		return;
-	}
-
-	if (!m_model) return;
-
-	KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
-}
-
-void Enemy::DrawLit_SkinMesh()
-{
-	if (m_bEnemyLose)
-	{
-		return;
-	}
-
-	if (!m_model) return;
-
-	if (m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][0].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][1].int_value() ||
-		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][2].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][3].int_value() ||
-		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][4].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][5].int_value() ||
-		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][6].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][7].int_value() ||
-		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][8].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][9].int_value() ||
-		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][10].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][11].int_value() ||
-		m_invincibilityTimeCnt == (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][12].int_value()
-		)return;
-
-	KdShaderManager::Instance().m_HD2DShader.SetOutLineColor({ 1,0,0 });
-	if (m_hitColorChangeTimeCnt == 0)
-	{
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true);
-	}
-	else
-	{
-		Math::Color color = kRedColor;
-		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true, color);
-	}
-}
-
-void Enemy::DrawLit()
-{
-	if (m_bEnemyLose)
-	{
-		return;
-	}
-
-	if (!m_bEwaponDrawPosible)return;
-
-	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
-	{
-		for (auto& WeaList : m_weaponList)
-		{
-			WeaList->DrawLit();
-		}
-	}
-}
-
-void Enemy::DrawBright()
-{
-	if (m_bEnemyLose)
-	{
-		return;
-	}
-
-	if (!m_bEwaponDrawPosible)return;
-
-	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
-	{
-		for (auto& WeaList : m_weaponList)
-		{
-			WeaList->DrawBright();
-		}
-	}
-}
-
-void Enemy::GenerateDepthMapFromLight()
-{
-	if (m_bEnemyLose)
-	{
-		return;
-	}
-
-	if (!m_bEwaponDrawPosible)return;
-
-	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
-	{
-		for (auto& WeaList : m_weaponList)
-		{
-			WeaList->GenerateDepthMapFromLight();
-		}
-	}
-}
-
-void Enemy::SetWeaponToTarget(std::shared_ptr<Player> a_spPlayer)
-{
-	m_weaponList[0]->SetTarget(a_spPlayer);
-	m_weaponList[1]->SetTarget(a_spPlayer);
-}
-
-void Enemy::SetMatrix()
-{
-	// 座標行列
-	Math::Matrix transMat;
-	transMat = Math::Matrix::CreateTranslation(m_pos);
-
-	// 回転行列
-	Math::Matrix rotMat;
-	rotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
-
-	// 行列合成
-	m_mWorld = rotMat * transMat;
-}
-
-void Enemy::SetModelAndType(EnemyType a_enemyType)
-{
-	m_enemyType = a_enemyType;
-	const KdModelWork::Node* node = nullptr;
-	Math::Matrix mat = Math::Matrix::Identity;
-
-	switch (m_enemyType)
-	{
-	case coarseFishEnemy:
-		m_model = std::make_shared<KdModelWork>();
-		m_model->SetModelData
-		(KdAssets::Instance().m_modeldatas.GetData
-		("Asset/Models/Enemy/CoarseFishEnemy.gltf"));
-		/// 当たり判定初期化
-		m_pCollider = std::make_unique<KdCollider>();
-		m_pCollider->RegisterCollisionShape
-		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage  | KdCollider::TypeAttackDec);
-		m_enemyAttackMaxTotal = 2;
-		break;
-	case wimpEnemyTypeOne:
-		m_model = std::make_shared<KdModelWork>();
-		m_model->SetModelData
-		(KdAssets::Instance().m_modeldatas.GetData
-		("Asset/Models/Enemy/WimpEnemyTypeOne.gltf"));
-		/// 当たり判定初期化
-		m_pCollider = std::make_unique<KdCollider>();
-		m_pCollider->RegisterCollisionShape
-		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage | KdCollider::TypeRideEnemy | KdCollider::TypeAttackDec);
-		
-		node = m_model->FindNode("HitPoint");
-		mat = node->m_worldTransform * Math::Matrix::Identity;
-		m_pCollider->RegisterCollisionShape
-		("EnemyModelWeakness", { mat._41,mat._42,mat._43}, 0.325f, KdCollider::TypeWeakness);
-		m_enemyAttackMaxTotal = 4;
-		m_rockOnPos = { mat._41,mat._42,mat._43 };
-		break;
-	case bossEnemyTypeOne:
-		m_model = std::make_shared<KdModelWork>();
-		m_model->SetModelData
-		(KdAssets::Instance().m_modeldatas.GetData
-		("Asset/Models/Enemy/BossEnemyTypeOne.gltf"));
-		/// 当たり判定初期化
-		m_pCollider = std::make_unique<KdCollider>();
-		m_pCollider->RegisterCollisionShape
-		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage | KdCollider::TypeRideEnemy | KdCollider::TypeAttackDec);
-
-		node = m_model->FindNode("HitPoint");
-		mat = node->m_worldTransform * Math::Matrix::Identity;
-		m_pCollider->RegisterCollisionShape
-		("EnemyModelWeakness", { mat._41,mat._42,mat._43}, 3.00f, KdCollider::TypeWeakness);
-		m_rockOnPos = { mat._41,mat._42,mat._43};
-		break;
-	}
-}
-
+// キックの当たり判定
 void Enemy::EnemyKickHitAttackChaeck()
 {
 	const KdModelWork::Node* node = nullptr;
@@ -3243,6 +2817,7 @@ void Enemy::EnemyKickHitAttackChaeck()
 	}	//}
 }
 
+// ビームの当たり判定
 void Enemy::EnemyBeamHitChaeck()
 {
 	if (m_target.expired())return;
@@ -3293,7 +2868,7 @@ void Enemy::EnemyBeamHitChaeck()
 		}
 		else
 		{
-			rayInfo.m_dir = Math::Vector3::Transform(m_rangedAttackDir,Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(1)));
+			rayInfo.m_dir = Math::Vector3::Transform(m_rangedAttackDir, Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(1)));
 			rayInfo.m_range = m_beamRange;
 #ifdef _DEBUG
 			m_pDebugWire->AddDebugLine(rayInfo.m_pos, rayInfo.m_dir, rayInfo.m_range, { 1,0,0,1 });
@@ -3376,6 +2951,7 @@ void Enemy::EnemyBeamHitChaeck()
 	}
 }
 
+// エネルギー弾の当たり判定
 void Enemy::EnemyEnergyBulletHitChaeck()
 {
 	if (m_target.expired())return;
@@ -3436,147 +3012,602 @@ void Enemy::EnemyEnergyBulletHitChaeck()
 		}
 	}
 }
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
-void Enemy::UpdateRotate(Math::Vector3& a_srcMoveVec)
+// 攻撃を受けた時の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// 通常攻撃を受けた時の処理
+void Enemy::OnHit(Math::Vector3 a_KnocBackvec)
 {
-	if (m_bEnemyDeath)return;
-	// 今向いてる方向のベクトル
-	Math::Vector3 nowDir = m_mWorld.Backward();
-
-	// 移動方向のベクトル
-	Math::Vector3 targetDir = a_srcMoveVec;
-
-	nowDir.Normalize();
-	targetDir.Normalize();
-
-	float nowAng = atan2(nowDir.x, nowDir.z);
-	nowAng = DirectX::XMConvertToDegrees(nowAng);
-
-	float targetAng = atan2(targetDir.x, targetDir.z);
-	targetAng = DirectX::XMConvertToDegrees(targetAng);
-
-	Math::Vector3 dot = DirectX::XMVector3Dot(nowDir, targetDir);
-	if (dot.x > 1)
+	m_EnemyState = nomalHit;
+	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackThree)
 	{
-		dot.x = 1;
+		m_hitStopCnt = 60;
 	}
-	if (dot.x < -1)
+	else
 	{
-		dot.x = -1;
+		m_hitStopCnt = 40;
 	}
 
-	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
-
-	if (ang > 1)
+	m_hitMoveSpd = 0.05f;
+	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
+	m_knockBackVec = a_KnocBackvec;
+	m_endurance -= (*m_wpJsonObj.lock())["OnHitDamage"].int_value();
+	m_attackHit = true;
+	if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::rlAttackOne))
 	{
-		if (m_delayTurnAroundTime > 0)
+		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 		{
-			m_delayTurnAroundTime--;
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 		}
 	}
-	else
+	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackTwo | Player::PlayerState::rlAttackTwo))
 	{
-		m_delayTurnAroundTime = 10;
-	}
-
-	if (ang < 1)
-	{
-		m_bMantisPossAng = true;
-	}
-	else
-	{
-		m_bMantisPossAng = false;
-	}
-
-	if (!(m_enemyType & (bossEnemyTypeOne | wimpEnemyTypeOne)))
-	{
-		if (ang >= 8.0f)
+		m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 		{
-			ang = 8.0f;
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 		}
 	}
-	else
+	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::lAttackOne | Player::PlayerState::rlAttackThree))
 	{
-		if (m_enemyType & wimpEnemyTypeOne)
+		m_animator->SetAnimation(m_model->GetAnimation("LHit1"), false);
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 		{
-			if (ang < 30)
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+		}
+	}
+	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::lAttackTwo))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("LHit2"), false);
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
+		}
+	}
+
+	if (!m_target.lock()->GetBRushRp())
+	{
+		if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() < 8)
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("LHit1"), false);
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 			{
-				m_bRangedAttackCapableOfFiring = true;
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
+		}
+		else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 21 && m_target.lock()->GetAnimationCnt() < 31))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("LHit2"), false);
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
+		}
+		else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 31 && m_target.lock()->GetAnimationCnt() < 41))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
+		}
+		else if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && (m_target.lock()->GetAnimationCnt() >= 8 && m_target.lock()->GetAnimationCnt() < 21))
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("RHit2"), false);
+			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+			{
+				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+			}
+		}
+	}
+	else
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHit1"), false);
+		if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() < 93)
+		{
+			m_hitMoveSpd = 0.395f;
+		}
+		else
+		{
+			m_hitMoveSpd = 0.275f;
+		}
+
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
+		}
+	}
+
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.01f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.25f;
+	}
+}
+
+// 吹き飛ばし攻撃を受けたときの処理
+void Enemy::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
+{
+	m_EnemyState = blowingAwayHit;
+	m_hitStopCnt = 40;
+	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
+	if (m_target.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush && m_target.lock()->GetAnimationCnt() >= 107)
+	{
+		m_hitMoveSpd = 0.95f;
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(25); // これでアップデートを一時止める
+		}
+		//SceneManager::Instance().SetUpdateStopCnt(10);   // 画面を揺らす時のHtiストップフレーム数
+		//SceneManager::Instance().SetScreenVibFrames(15); // 画面を揺らすフレーム数
+
+		if (!(m_enemyType & (bossEnemyTypeOne | humanBossEnemy)))
+		{
+			if (m_enemyType & wimpEnemyTypeOne)
+			{
+				m_endurance -= 50.0f;
 			}
 			else
 			{
-				m_bRangedAttackCapableOfFiring = false;
+				m_bLethalDamageToKickOrPantciOrDashAttackHit = true;
+				m_endurance -= 150.0f;
 			}
 		}
 		else
 		{
-			const KdModelWork::Node* node = nullptr;
-			Math::Matrix mat = Math::Matrix::Identity;
-
-			node = m_model->FindNode("HitPoint");
-			mat = node->m_worldTransform * m_mWorld;
-
-			std::shared_ptr<Player> spTarget = m_target.lock();
-			if (spTarget)
+			m_endurance -= 30.0f;
+			if (m_endurance <= 0)
 			{
-				Math::Vector3 std = spTarget->GetPos() - mat.Translation();
-				if (spTarget->GetPos().y < mat.Translation().y - 1.65f)
-				{
-					if (ang < 5)
-					{
-						m_bRangedAttackCapableOfFiring = true;
-					}
-					else
-					{
-						m_bRangedAttackCapableOfFiring = false;
-					}
-				}
-				else
-				{
-					if (std.Length() <= 100)
-					{
-						if (ang < 45)
-						{
-							m_bRangedAttackCapableOfFiring = true;
-						}
-						else
-						{
-							m_bRangedAttackCapableOfFiring = false;
-						}
-					}
-					else
-					{
-						if (ang < 20)
-						{
-							m_bRangedAttackCapableOfFiring = true;
-						}
-						else
-						{
-							m_bRangedAttackCapableOfFiring = false;
-						}
-					}
-				}
+				m_bLethalDamageToKickOrPantciOrDashAttackHit = true;
+			}
+		}
+	}
+	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackOne | Player::PlayerState::lAttackOne) && m_target.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDashF))
+	{
+		m_hitMoveSpd = 0.35f;
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+		{
+			SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
+		}
+
+		if (!(m_enemyType & (bossEnemyTypeOne | humanBossEnemy)))
+		{
+			if (m_enemyType & wimpEnemyTypeOne)
+			{
+				m_endurance -= 50.0f;
+			}
+			else
+			{
+				m_bLethalDamageToKickOrPantciOrDashAttackHit = true;
+				m_endurance -= 150.0f;
+			}
+		}
+		else
+		{
+			m_endurance -= 30.0f;
+			if (m_endurance <= 0)
+			{
+				m_bLethalDamageToKickOrPantciOrDashAttackHit = true;
 			}
 		}
 
-		if (ang >= 1.0f)
+	}
+	else if (m_target.lock()->GetPlayerState() & (Player::PlayerState::rAttackThree | Player::PlayerState::lAttackThree))
+	{
+		m_hitMoveSpd = 0.3f;
+		if (SceneManager::Instance().GetUpdateStopCnt() == 0)
 		{
-			ang = 1.0f;
+			SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+		}
+
+		if (!(m_enemyType & (bossEnemyTypeOne | humanBossEnemy)))
+		{
+			if (m_enemyType & wimpEnemyTypeOne)
+			{
+				m_endurance -= 20.0f;
+			}
+			else
+			{
+				m_endurance -= 30.0f;
+			}
+		}
+		else
+		{
+			m_endurance -= 15.0f;
 		}
 	}
 
-	Math::Vector3 croos = DirectX::XMVector3Cross(nowDir, targetDir);
+	m_knockBackVec = a_KnocBackvec;
+	m_attackHit = true;
 
-	if (m_delayTurnAroundTime == 0)
+	if (!(m_enemyType & (bossEnemyTypeOne | wimpEnemyTypeOne)))
 	{
-		if (croos.y >= 0)
+		Math::Vector3 nowVec = m_mWorld.Backward();
+
+		Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, a_KnocBackvec);
+		if (dot.x > 1)
 		{
-			m_mWorldRot.y += ang;
+			dot.x = 1;
 		}
-		if (croos.y < 0)
+		if (dot.x < -1)
 		{
-			m_mWorldRot.y -= ang;
+			dot.x = -1;
 		}
+
+		float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+
+		if (ang > 90)
+		{
+			m_animator->SetAnimation(m_model->GetAnimation(" BlowingAwayHitB"), false);
+		}
+		else
+		{
+			m_animator->SetAnimation(m_model->GetAnimation("BlowingAwayHitBB"), false);
+			m_bBlowingAwayHitB = true;
+		}
+		m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
+	}
+
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.01f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.45f;
+	}
+
+	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::tutorial)
+	{
+		if (m_bLethalDamageToKickOrPantciOrDashAttackHit)
+		{
+			m_bLethalDamageToKickOrPantciOrDashAttackHit = false;
+		}
+	}
+}
+
+// 居合切り系の攻撃を受けたときの処理
+void Enemy::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
+{
+	m_EnemyState = iaiKiriHit;
+	m_hitStopCnt = 40;
+	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
+	m_hitMoveSpd = 0.0f;
+	m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
+	m_knockBackVec = a_KnocBackvec;
+	m_endurance -= 50.0f;
+	m_attackHit = true;
+	m_animator->SetAnimation(m_model->GetAnimation("IaiKiriAttackHitB"), false);
+	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+	{
+		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	}
+
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.05f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.5f;
+	}
+}
+
+// 切り上げ攻撃を受けたときの処理
+void Enemy::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
+{
+	m_EnemyState = cutRaiseHit;
+	m_hitStopCnt = 60;
+	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
+	m_hitMoveSpd = 0.0f;
+
+	if (m_gravity == 0)
+	{
+		m_gravity -= 0.1f;
+	}
+	else if (m_gravity <= 0.03f)
+	{
+		m_gravity -= 0.04f;
+	}
+	else
+	{
+		m_gravity = 0;
+		m_gravity = -0.05f;
+	}
+	m_knockBackVec = a_KnocBackvec;
+	m_endurance -= 15.0f;
+	if (m_enemyType & humanBossEnemy)
+	{
+		if (m_endurance <= 0)
+		{
+			m_endurance = 0.1f;
+		}
+	}
+
+	m_attackHit = true;
+	m_animator->SetAnimation(m_model->GetAnimation("CutRaiseHit"), false);
+
+	if (SceneManager::Instance().GetUpdateStopCnt() == 0)
+	{
+		SceneManager::Instance().SetUpdateStopCnt(8); // これでアップデートを一時止める
+	}
+
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = 0.01f;
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= 1.15f;
+	}
+}
+
+// 弱点に攻撃されたときの処理
+void Enemy::WeaknessOnHit()
+{
+	SceneManager::Instance().SetUpdateStopCnt(15); // これでアップデートを一時止める
+
+	if (m_enemyType & bossEnemyTypeOne)
+	{
+		if (m_addWeaknesSuccessionHitCntTime == 0)
+		{
+			m_weaknesSuccessionHitCnt = 1;
+		}
+		else
+		{
+			++m_weaknesSuccessionHitCnt;
+		}
+
+		m_addWeaknesSuccessionHitCntTime = ADD_WEAKNES_SEUCCESSION_HIT_CNT_TIME_LIMIT;
+
+		if (m_weaknesSuccessionHitCnt >= m_mpObj["MaxWeaknesSuccessionHitCnt"].int_value())
+		{
+			m_weaknesSuccessionHitCnt = 0;
+			m_addWeaknesSuccessionHitCntTime = 0;
+			m_invincibilityTimeCnt = (*m_wpJsonObj.lock())["InvincibilityMaxTimeCnt"].int_value();
+			m_hitStopCnt = m_mpObj["MaxWeaknesSuccessionHitStopCnt"].int_value();
+			m_animator->SetAnimation(m_model->GetAnimation("SuccessionWeaknessOnHit"), false);
+		}
+
+		m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
+	}
+	else
+	{
+		m_endurance = 0.0f;
+	}
+	m_attackHit = true;
+
+	if (m_graduallyTorionDecVal == 0)
+	{
+		m_graduallyTorionDecVal = static_cast<float>((*m_wpJsonObj.lock())["FristWeaknessHitGraduallyTorionDecVal"].number_value());
+	}
+	else
+	{
+		m_graduallyTorionDecVal *= static_cast<float>((*m_wpJsonObj.lock())["AddWeaknessHitGraduallyTorionDecVal"].number_value());
+	}
+}
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+// 攻撃が防がれた時の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+void Enemy::HasDefense()
+{
+	if (m_EnemyState & (rAttack | rlAttack))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RHasDefense"), false);
+	}
+	else if (m_EnemyState & lAttack)
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("LHasDefense"), false);
+	}
+
+	m_EnemyState |= hasDefense;
+	m_EnemyState &= hasDefense;
+	m_hasDeTime = 30;
+	m_bMove = true;
+}
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+// 描画処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// 光の影響を受けるオブジェクトの描画（スキンメッシュ対応）
+void Enemy::DrawLit_SkinMesh()
+{
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
+	if (!m_model) return;
+
+	if (m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][0].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][1].int_value() ||
+		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][2].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][3].int_value() ||
+		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][4].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][5].int_value() ||
+		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][6].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][7].int_value() ||
+		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][8].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][9].int_value() ||
+		m_invincibilityTimeCnt <= (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][10].int_value() && m_invincibilityTimeCnt > (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][11].int_value() ||
+		m_invincibilityTimeCnt == (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][12].int_value()
+		)return;
+
+	KdShaderManager::Instance().m_HD2DShader.SetOutLineColor({ 1,0,0 });
+	if (m_hitColorChangeTimeCnt == 0)
+	{
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true);
+	}
+	else
+	{
+		Math::Color color = kRedColor;
+		KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld, true, color);
+	}
+}
+
+// 影の描画（スキンメッシュ対応）
+void Enemy::GenerateDepthMapFromLight_SkinMesh()
+{
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
+	if (!m_model) return;
+
+	KdShaderManager::Instance().m_HD2DShader.DrawModel(*m_model, m_mWorld);
+}
+
+// 光の影響を受けるオブジェクトの描画（スキンメッシュ非対応）
+void Enemy::DrawLit()
+{
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
+	if (!m_bEwaponDrawPosible)return;
+
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
+	{
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->DrawLit();
+		}
+	}
+}
+
+// 影の描画（スキンメッシュ非対応）
+void Enemy::GenerateDepthMapFromLight()
+{
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
+	if (!m_bEwaponDrawPosible)return;
+
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
+	{
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->GenerateDepthMapFromLight();
+		}
+	}
+}
+
+// 自己発光させたいオブジェクトの描画
+void Enemy::DrawBright()
+{
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
+	if (!m_bEwaponDrawPosible)return;
+
+	if (SceneManager::Instance().GetSceneType() != SceneManager::SceneType::tutorial)
+	{
+		for (auto& WeaList : m_weaponList)
+		{
+			WeaList->DrawBright();
+		}
+	}
+}
+
+// デバックラインの描画
+void Enemy::DrawDebug()
+{
+	if (m_bEnemyLose)
+	{
+		return;
+	}
+
+#ifdef _DEBUG
+	if (!m_pDebugWire)return;
+	m_pDebugWire->Draw();
+
+	for (auto& WeaList : m_weaponList)
+	{
+		WeaList->DrawDebug();
+	}
+#endif
+}
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+// 武器にプレイヤーの情報を渡す処理
+void Enemy::SetWeaponToTarget(std::shared_ptr<Player> a_spPlayer)
+{
+	m_weaponList[0]->SetTarget(a_spPlayer);
+	m_weaponList[1]->SetTarget(a_spPlayer);
+}
+
+// 行列をセットする処理
+void Enemy::SetMatrix()
+{
+	// 座標行列
+	Math::Matrix transMat;
+	transMat = Math::Matrix::CreateTranslation(m_pos);
+
+	// 回転行列
+	Math::Matrix rotMat;
+	rotMat = Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y));
+
+	// 行列合成
+	m_mWorld = rotMat * transMat;
+}
+
+// モデルとタイプをセットする処理
+void Enemy::SetModelAndType(EnemyType a_enemyType)
+{
+	m_enemyType = a_enemyType;
+	const KdModelWork::Node* node = nullptr;
+	Math::Matrix mat = Math::Matrix::Identity;
+
+	switch (m_enemyType)
+	{
+	case coarseFishEnemy:
+		m_model = std::make_shared<KdModelWork>();
+		m_model->SetModelData
+		(KdAssets::Instance().m_modeldatas.GetData
+		("Asset/Models/Enemy/CoarseFishEnemy.gltf"));
+		/// 当たり判定初期化
+		m_pCollider = std::make_unique<KdCollider>();
+		m_pCollider->RegisterCollisionShape
+		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage  | KdCollider::TypeAttackDec);
+		m_enemyAttackMaxTotal = 2;
+		break;
+	case wimpEnemyTypeOne:
+		m_model = std::make_shared<KdModelWork>();
+		m_model->SetModelData
+		(KdAssets::Instance().m_modeldatas.GetData
+		("Asset/Models/Enemy/WimpEnemyTypeOne.gltf"));
+		/// 当たり判定初期化
+		m_pCollider = std::make_unique<KdCollider>();
+		m_pCollider->RegisterCollisionShape
+		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage | KdCollider::TypeRideEnemy | KdCollider::TypeAttackDec);
+		
+		node = m_model->FindNode("HitPoint");
+		mat = node->m_worldTransform * Math::Matrix::Identity;
+		m_pCollider->RegisterCollisionShape
+		("EnemyModelWeakness", { mat._41,mat._42,mat._43}, 0.325f, KdCollider::TypeWeakness);
+		m_enemyAttackMaxTotal = 4;
+		m_rockOnPos = { mat._41,mat._42,mat._43 };
+		break;
+	case bossEnemyTypeOne:
+		m_model = std::make_shared<KdModelWork>();
+		m_model->SetModelData
+		(KdAssets::Instance().m_modeldatas.GetData
+		("Asset/Models/Enemy/BossEnemyTypeOne.gltf"));
+		/// 当たり判定初期化
+		m_pCollider = std::make_unique<KdCollider>();
+		m_pCollider->RegisterCollisionShape
+		("EnemyModel", m_model, KdCollider::TypeBump | KdCollider::TypeDamage | KdCollider::TypeRideEnemy | KdCollider::TypeAttackDec);
+
+		node = m_model->FindNode("HitPoint");
+		mat = node->m_worldTransform * Math::Matrix::Identity;
+		m_pCollider->RegisterCollisionShape
+		("EnemyModelWeakness", { mat._41,mat._42,mat._43}, 3.00f, KdCollider::TypeWeakness);
+		m_rockOnPos = { mat._41,mat._42,mat._43};
+		break;
 	}
 }
 
