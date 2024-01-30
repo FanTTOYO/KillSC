@@ -130,6 +130,24 @@
     <Filter Include="Src\Framework\Shader\PostProcessShader">
       <UniqueIdentifier>{bfef98c3-f0b2-41b1-b813-6f298072287b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Object\Ui\GameUi">
+      <UniqueIdentifier>{db2f9bed-5a88-4215-b38b-96103e4e865d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Ui\TitleUi">
+      <UniqueIdentifier>{c147607f-a33b-4e9d-9c3f-45ebd6255c0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Ui\TrainingUi">
+      <UniqueIdentifier>{7e2b8a5d-ebde-4609-a79c-91145815e30f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Ui\ResultUi">
+      <UniqueIdentifier>{01db29a2-ed87-4205-9342-66f481143f65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Ui\ModeSelectUi">
+      <UniqueIdentifier>{b6b054cd-dd29-4a6d-a37a-ea4c8cd14038}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Ui\TutorialUi">
+      <UniqueIdentifier>{2d65d3aa-3ea1-4822-977e-d9746bbd192c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -318,6 +336,24 @@
     <ClInclude Include="Src\Application\Scene\TrainingScene\TrainingScene.h">
       <Filter>Src\Application\Scene\TrainingScene</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Object\Ui\GameUi\GameUi.h">
+      <Filter>Src\Application\Object\Ui\GameUi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Ui\TitleUi\TitleUi.h">
+      <Filter>Src\Application\Object\Ui\TitleUi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Ui\ModeSelectUi\ModeSelectUi.h">
+      <Filter>Src\Application\Object\Ui\ModeSelectUi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Ui\ResultUi\ResultUi.h">
+      <Filter>Src\Application\Object\Ui\ResultUi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Ui\TrainingUi\TrainingUi.h">
+      <Filter>Src\Application\Object\Ui\TrainingUi</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Ui\TutorialUi\TutorialUi.h">
+      <Filter>Src\Application\Object\Ui\TutorialUi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -484,6 +520,24 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Scene\TrainingScene\TrainingScene.cpp">
       <Filter>Src\Application\Scene\TrainingScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Ui\GameUi\GameUi.cpp">
+      <Filter>Src\Application\Object\Ui\GameUi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Ui\TitleUi\TitleUi.cpp">
+      <Filter>Src\Application\Object\Ui\TitleUi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Ui\ModeSelectUi\ModeSelectUi.cpp">
+      <Filter>Src\Application\Object\Ui\ModeSelectUi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Ui\ResultUi\ResultUi.cpp">
+      <Filter>Src\Application\Object\Ui\ResultUi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Ui\TrainingUi\TrainingUi.cpp">
+      <Filter>Src\Application\Object\Ui\TrainingUi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Ui\TutorialUi\TutorialUi.cpp">
+      <Filter>Src\Application\Object\Ui\TutorialUi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

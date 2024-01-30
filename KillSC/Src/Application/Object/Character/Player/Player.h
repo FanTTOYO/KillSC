@@ -73,7 +73,7 @@ public:
 	void GenerateDepthMapFromLight()			override;														
 	void GenerateDepthMapFromLight_SkinMesh()	override;														
 	void DrawLit_SkinMesh()						override;
-	void DrawDebug()override;
+	void DrawDebug()							override;
 	void Init(std::weak_ptr<json11::Json> a_wpJsonObj);
 	void Release() {};
 																												

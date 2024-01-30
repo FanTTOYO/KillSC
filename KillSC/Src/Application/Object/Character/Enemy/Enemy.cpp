@@ -98,7 +98,8 @@ void Enemy::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_wpJsonObj = a_wpJsonObj;
 }
 
-// 更新処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// 更新＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// 更新処理
 void Enemy::Update()
 {
 	float lowestYPos;
@@ -3012,6 +3013,82 @@ void Enemy::EnemyEnergyBulletHitChaeck()
 		}
 	}
 }
+
+// 回転攻撃の当たり判定
+void Enemy::RotationAttackChaeck()
+{
+	KdCollider::SphereInfo sphereInfo;
+
+	// 球の当たったオブジェクト情報
+	std::list<KdCollider::CollisionResult> retSphereList;
+
+	sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
+	sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["RotationAttackHitChaeckSphereRadius"].number_value());
+	// 当たり判定をしたいタイプを設定
+	sphereInfo.m_type = KdCollider::TypeDamage;
+
+#ifdef _DEBUG
+	// デバック用
+	m_pDebugWire->AddDebugSphere
+	(
+		sphereInfo.m_sphere.Center,
+		sphereInfo.m_sphere.Radius,
+		{ 0,0,0,1 }
+	);
+#endif
+
+	// 球の当たったオブジェクト情報
+	retSphereList.clear();
+
+	// 球と当たり判定 
+
+	if (!m_target.expired())
+	{
+		if (!m_target.lock()->GetAttackHit() && !m_target.lock()->GetDefenseSuc() && m_target.lock()->GetInvincibilityTimeCnt() == 0 && !m_target.lock()->GetBPlayerDeath())
+		{
+			if (!m_target.lock()->GetBPlayerLose())
+			{
+				m_target.lock()->Intersects
+				(
+					sphereInfo,
+					&retSphereList
+				);
+			}
+
+
+			// 球に当たったリスト情報から一番近いオブジェクトを検出
+			float maxOverLap = 0;
+			bool hit = false;
+			Math::Vector3 hitDir = {}; // 当たった方向
+			Math::Vector3 hitPos;
+			for (auto& ret : retSphereList)
+			{
+				// 一番近くで当たったものを探す
+				if (maxOverLap < ret.m_overlapDistance)
+				{
+					maxOverLap = ret.m_overlapDistance;
+					hit = true;
+					hitDir = ret.m_hitDir;
+					hitPos = ret.m_hitPos;
+				}
+			}
+
+			if (hit)
+			{
+				m_target.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
+				KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
+
+				hitPos.y += 0.35f;
+				KdEffekseerManager::GetInstance().
+					Play("Hit3.efk", hitPos);
+				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
+				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
+				Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
+				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
+			}
+		}
+	}
+}
 // ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
 // 攻撃を受けた時の処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
@@ -3611,6 +3688,8 @@ void Enemy::SetModelAndType(EnemyType a_enemyType)
 	}
 }
 
+// 行動選択＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// ホッパー装備時の動きを決める処理
 void Enemy::GrassMoveVecDecision()
 {
 	const KdModelWork::Node* node = nullptr;
@@ -4167,6 +4246,252 @@ void Enemy::GrassMoveVecDecision()
 	}
 }
 
+// 短剣装備時の攻撃関係の動きを決める処理
+void Enemy::ScorpionAttackDecision()
+{
+	if (!(m_EnemyState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
+	{
+		if ((m_weaponType & scorpion) && (m_weaponType & lScorpion))
+		{
+			if (m_bMantisAttack && m_bMantisPossAng)
+			{
+				m_EnemyState |= mantis;
+				m_EnemyState &= mantis;
+				if (m_EnemyState & grassHopperDash)
+				{
+					m_EnemyState &= ~grassHopperDash;
+				}
+
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
+				m_attackMoveSpd = 0.1f;
+
+				const std::shared_ptr<Scopion> scopion = std::dynamic_pointer_cast<Scopion>(m_weaponList[0]);
+				scopion->SetMantis(Math::Matrix::CreateRotationY(m_mWorldRot.y), true);
+				const std::shared_ptr<Scopion> scopion2 = std::dynamic_pointer_cast<Scopion>(m_weaponList[1]);
+				scopion2->SetBMantis(true);
+				m_bMove = true;
+				m_animator->SetAnimation(m_model->GetAnimation("Mantis"), false);
+				m_bMantisAttack = false;
+			}
+			else
+			{
+				m_bRushAttackPossible = false;
+				m_EnemyState |= rlAttackOne;
+				m_EnemyState &= ~rAttack;
+				m_EnemyState &= ~lAttack;
+				m_bAttackAnimeDelay = false;
+				m_bAttackAnimeCnt = true;
+				m_attackAnimeCnt = 0;
+				m_attackAnimeDelayCnt = 0;
+				m_bMove = true;
+
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+
+				m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
+			}
+		}
+
+		m_bMove = true;
+		if (!m_target.expired())
+		{
+			m_target.lock()->SetAttackHit(false);
+			m_target.lock()->SetDefenseSuc(false);
+		}
+	}
+	else
+	{
+		if (m_bAttackAnimeDelay)
+		{
+			if (m_EnemyState & rAttackOne)
+			{
+				m_EnemyState |= rAttackTwo;
+				m_EnemyState &= ~rAttackOne;
+				m_bAttackAnimeDelay = false;
+				m_bAttackAnimeCnt = true;
+				m_animator->SetAnimation(m_model->GetAnimation("RAttack2"), false);
+				m_bMove = true;
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+			}
+			else if (m_EnemyState & rAttackTwo)
+			{
+				m_EnemyState |= rAttackThree;
+				m_EnemyState &= ~rAttackTwo;
+				m_bAttackAnimeDelay = false;
+				m_bAttackAnimeCnt = false;
+				m_animator->SetAnimation(m_model->GetAnimation("RAttack3"), false);
+				m_bMove = true;
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+			}
+
+			if (m_EnemyState & lAttackOne)
+			{
+				m_EnemyState |= lAttackTwo;
+				m_EnemyState &= ~lAttackOne;
+				m_bAttackAnimeDelay = false;
+				m_bAttackAnimeCnt = true;
+				m_animator->SetAnimation(m_model->GetAnimation("LAttack2"), false);
+				m_bMove = true;
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+			}
+			else if (m_EnemyState & lAttackTwo)
+			{
+				m_EnemyState |= lAttackThree;
+				m_EnemyState &= ~lAttackTwo;
+				m_bAttackAnimeDelay = false;
+				m_bAttackAnimeCnt = false;
+				m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
+				m_bMove = true;
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+			}
+
+			if (m_EnemyState & rlAttackOne)
+			{
+				m_EnemyState |= rlAttackTwo;
+				m_EnemyState &= ~rlAttackOne;
+				m_bAttackAnimeDelay = false;
+				m_bAttackAnimeCnt = true;
+				m_attackAnimeCnt = 0;
+				m_attackAnimeDelayCnt = 0;
+
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+				m_animator->SetAnimation(m_model->GetAnimation("RLAttackTwo"), false);
+				m_bMove = true;
+				if (!m_target.expired())
+				{
+					m_target.lock()->SetAttackHit(false);
+					m_target.lock()->SetDefenseSuc(false);
+				}
+			}
+			else if (m_EnemyState & rlAttackTwo)
+			{
+				m_EnemyState |= rlAttackThree;
+				m_EnemyState &= ~rlAttackTwo;
+				m_bAttackAnimeDelay = false;
+				m_bAttackAnimeCnt = true;
+				m_attackAnimeCnt = 0;
+				m_attackAnimeDelayCnt = 0;
+
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+				m_animator->SetAnimation(m_model->GetAnimation("RLAttackThree"), false);
+				m_bMove = true;
+				if (!m_target.expired())
+				{
+					m_target.lock()->SetAttackHit(false);
+					m_target.lock()->SetDefenseSuc(false);
+				}
+			}
+			else if (m_EnemyState & rlAttackThree && m_bRushAttackPossible)
+			{
+				m_EnemyState |= rlAttackRush;
+				m_EnemyState &= rlAttackRush;
+				m_bAttackAnimeDelay = false;
+				m_bAttackAnimeCnt = true;
+				m_attackAnimeCnt = 0;
+				m_attackAnimeDelayCnt = 0;
+
+				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_attackMoveDir.y = 0;
+				m_attackMoveDir.Normalize();
+				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+				m_animator->SetAnimation(m_model->GetAnimation("RLAttackRush"), false);
+				m_bMove = true;
+				if (!m_target.expired())
+				{
+					m_target.lock()->SetAttackHit(false);
+					m_target.lock()->SetDefenseSuc(false);
+				}
+			}
+			m_EnemyState &= ~lAttack;
+		}
+	}
+
+	if (!(m_EnemyState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
+	{
+		if (m_weaponType & scorpion)
+		{
+			m_EnemyState |= rAttackOne;
+			m_EnemyState &= ~lAttack;
+			m_bAttackAnimeDelay = false;
+			m_bAttackAnimeCnt = true;
+			m_attackAnimeCnt = 0;
+			m_attackAnimeDelayCnt = 0;
+			m_bMove = true;
+			m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+			m_attackMoveDir.y = 0;
+			m_attackMoveDir.Normalize();
+			if (!m_target.expired())
+			{
+				m_target.lock()->SetAttackHit(false);
+				m_target.lock()->SetDefenseSuc(false);
+			}
+
+			m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+
+			if (m_EnemyState & grassHopperDash && m_bBoss)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRAttack"), false);
+			}
+			else
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("RAttack1"), false);
+			}
+		}
+		else if (m_weaponType & lScorpion)
+		{
+			m_EnemyState |= lAttackOne;
+			m_EnemyState &= ~rAttack;
+			m_bAttackAnimeDelay = false;
+			m_bAttackAnimeCnt = true;
+			m_attackAnimeCnt = 0;
+			m_attackAnimeDelayCnt = 0;
+			m_bMove = true;
+			m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+			m_attackMoveDir.y = 0;
+			m_attackMoveDir.Normalize();
+
+			if (!m_target.expired())
+			{
+				m_target.lock()->SetAttackHit(false);
+				m_target.lock()->SetDefenseSuc(false);
+			}
+
+			m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
+			if (m_EnemyState & grassHopperDash && m_bBoss)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLAttack"), false);
+			}
+			else
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
+			}
+		}
+	}
+}
+
+// 短剣装備時の防御関係の動きを決める処理
 void Enemy::ScorpionDefenseDecision()
 {
 	if (!(m_EnemyState & (rAttack | lAttack | defense | mantis | rlAttack | rlAttackRush)))
@@ -4178,6 +4503,73 @@ void Enemy::ScorpionDefenseDecision()
 	}
 }
 
+// ステップの方向を決める処理
+void Enemy::StepVecDecision()
+{
+	std::random_device rnd;
+	std::mt19937 mt(rnd());
+	std::uniform_int_distribution<int> intRand(0, 999);
+	int randNum[4] = {};
+
+	int rand = intRand(mt);
+	randNum[0] = 400;
+	randNum[1] = 400;
+	randNum[2] = 100;
+	randNum[3] = 100;
+
+	for (int i = 0; i < 2; i++)
+	{
+		rand -= randNum[i];
+		if (rand < 0)
+		{
+			switch (i)
+			{
+			case 0:
+				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 1, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_bMove = true;
+				m_stepCnt = 60;
+				m_EnemyState = stepR;
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
+				break;
+			case 1:
+				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, -1, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_bMove = true;
+				m_stepCnt = 60;
+				m_EnemyState = stepL;
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
+				break;
+			case 2:
+				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_bMove = true;
+				m_stepCnt = 60;
+				m_EnemyState = stepF;
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
+				break;
+			case 3:
+				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, -1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
+				m_bMove = true;
+				m_stepCnt = 60;
+				m_EnemyState = stepB;
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
+				break;
+			}
+		}
+	}
+}
+
+// 歩く方向を決める処理
+void Enemy::NormalMoveVecDecision()
+{
+	if (!(m_EnemyState & run))
+	{
+		m_animator->SetAnimation(m_model->GetAnimation("RUN"));
+	}
+	m_EnemyState = run;
+}
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+
+// 各Stateの動き処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// Hopper行動関連の処理
 void Enemy::GrassMove()
 {
 	--m_lGrassHopperTime;
@@ -4439,6 +4831,7 @@ void Enemy::GrassMove()
 	}
 }
 
+// ステップ行動関連の処理
 void Enemy::StepMove()
 {
 	--m_stepCnt;
@@ -4504,68 +4897,7 @@ void Enemy::StepMove()
 	m_pos += m_stepDashDir * m_dashSpd;
 }
 
-void Enemy::StepVecDecision()
-{
-	std::random_device rnd;
-	std::mt19937 mt(rnd());
-	std::uniform_int_distribution<int> intRand(0, 999);
-	int randNum[4] = {};
-
-	int rand = intRand(mt);
-	randNum[0] = 400;
-	randNum[1] = 400;
-	randNum[2] = 100;
-	randNum[3] = 100;
-
-	for (int i = 0; i < 2; i++)
-	{
-		rand -= randNum[i];
-		if (rand < 0)
-		{
-			switch (i)
-			{
-			case 0:
-				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 1, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_bMove = true;
-				m_stepCnt = 60;
-				m_EnemyState = stepR;
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRB"), false);
-				break;
-			case 1:
-				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, -1, 0), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_bMove = true;
-				m_stepCnt = 60;
-				m_EnemyState = stepL;
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLB"), false);
-				break;
-			case 2:
-				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_bMove = true;
-				m_stepCnt = 60;
-				m_EnemyState = stepF;
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFB"), false);
-				break;
-			case 3:
-				m_stepDashDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, -1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_bMove = true;
-				m_stepCnt = 60;
-				m_EnemyState = stepB;
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashBB"), false);
-				break;
-			}
-		}
-	}
-}
-
-void Enemy::NormalMoveVecDecision()
-{
-	if (!(m_EnemyState & run))
-	{
-		m_animator->SetAnimation(m_model->GetAnimation("RUN"));
-	}
-	m_EnemyState = run;
-}
-
+// 歩き行動関連の処理
 void Enemy::NormalMove()
 {
 	Math::Vector3 moveVec = {};
@@ -4616,6 +4948,216 @@ void Enemy::NormalMove()
 	Brain();
 }
 
+// 短剣で攻撃した際の行動処理
+void Enemy::ScorpionAttackMove()
+{
+	if (m_animator->IsAnimationEnd())
+	{
+		if (m_EnemyState & lAttack)
+		{
+			m_EnemyState &= ~lAttack;
+			if (m_EnemyState & grassHopperDashF | step && m_bBoss)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
+			}
+			else
+			{
+				if (!m_bBoss)
+				{
+					m_coarseFishEnemyAttackDelayCnt = m_mpObj["MaxCoarseFishEnemyAttackDelayCnt"].int_value();
+				}
+
+				Brain();
+			}
+		}
+
+		if (m_EnemyState & rAttack)
+		{
+			m_EnemyState &= ~rAttack;
+			if (m_EnemyState & grassHopperDashF | step && m_bBoss)
+			{
+				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
+			}
+			else
+			{
+				if (!m_bBoss)
+				{
+					m_coarseFishEnemyAttackDelayCnt = m_mpObj["MaxCoarseFishEnemyAttackDelayCnt"].int_value();
+				}
+				Brain();
+			}
+		}
+
+		if (m_EnemyState & (rlAttack | rlAttackRush | mantis))
+		{
+			m_EnemyState = idle;
+			Brain();
+		}
+	}
+	else
+	{
+		if (!(m_EnemyState & (rlAttack | rlAttackRush)))
+		{
+			m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
+
+			if (m_EnemyState & (rAttackTwo | lAttackTwo))
+			{
+				if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
+				{
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
+				}
+			}
+			else if (m_EnemyState & (rAttackThree | lAttackThree))
+			{
+				if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
+				{
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
+				}
+			}
+		}
+		if (!(m_EnemyState & rlAttackRush))
+		{
+			if (m_attackAnimeCnt >= m_mpObj["AttackPointMoment"].int_value())
+			{
+				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value());
+			}
+			else
+			{
+				if (!m_target.expired())
+				{
+					Math::Vector3 dis = m_target.lock()->GetPos() - m_pos;
+					if (dis.Length() <= 1.15f)
+					{
+						m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value());
+					}
+				}
+			}
+		}
+
+		m_bMove = true;
+
+		if (m_bAttackAnimeDelay)
+		{
+			if (!m_target.expired() && m_target.lock()->GetAttackHit())
+			{
+				m_wantToMoveState = WantToMoveState::wAttack;
+			}
+
+			if (m_bBoss)
+			{
+				switch (m_wantToMoveState)
+				{
+				case WantToMoveState::wAttack:
+					m_leftWeaponNumber = m_mpObj["LeftWeaponScopionNum"].int_value();
+					m_rightWeaponNumber = m_mpObj["RightWeaponScopionNum"].int_value();
+					break;
+				}
+			}
+		}
+
+		if (!(m_EnemyState & (rlAttack | rlAttackRush)))
+		{
+			m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
+		}
+		else
+		{
+			if (m_EnemyState & rlAttackOne)
+			{
+				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
+				if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
+				{
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
+				}
+			}
+			else if (m_EnemyState & rlAttackTwo)
+			{
+				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
+				if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
+				{
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
+				}
+			}
+			else if (m_EnemyState & rlAttackThree)
+			{
+				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
+				if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
+				{
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
+				}
+			}
+			else if (m_EnemyState & rlAttackRush)
+			{
+				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["RushAttackMoveSpeedDecelerationamount"].number_value());
+				if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value() ||
+					m_attackAnimeCnt == m_mpObj["RushLastAttackPointTime"].int_value()
+					)
+				{
+					if (!m_target.expired())
+					{
+						m_target.lock()->SetAttackHit(false);
+						m_target.lock()->SetDefenseSuc(false);
+					}
+
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value()
+						)
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushOneAndTwoShakenMomentMoveSpeed"].number_value());
+					}
+
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value()
+						)
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushThreeAndFourShakenMomentMoveSpeed"].number_value());
+					}
+
+					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
+						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value()
+						)
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushFiveAndSixShakenMomentMoveSpeed"].number_value());
+					}
+
+					if (m_attackAnimeCnt == (*m_wpJsonObj.lock())["RushLastAttackPointTime"].int_value())
+					{
+						m_attackMoveSpd = static_cast<float>(m_mpObj["RushLastAttackMoveSpeed"].number_value());
+					}
+				}
+			}
+		}
+
+		SpeedyMoveWallHitChack(m_attackMoveSpd, m_attackMoveDir);
+		m_pos += m_attackMoveDir * m_attackMoveSpd;
+	}
+}
+
+// 短剣装備時の防御関連の処理
 void Enemy::ScorpionDefenseMove()
 {
 	std::shared_ptr<Player> spTarget = m_target.lock();
@@ -4641,6 +5183,7 @@ void Enemy::ScorpionDefenseMove()
 	}
 }
 
+// 攻撃を防がれた時の動き
 void Enemy::HasDefenseMove()
 {
 	m_bMove = true;
@@ -4655,7 +5198,10 @@ void Enemy::HasDefenseMove()
 		}
 	}
 }
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
+// 敵の動きを決める処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+// タイプごとの行動を決める処理関数に分岐する処理
 void Enemy::Brain()
 {
 	switch (m_enemyType)
@@ -4717,6 +5263,7 @@ void Enemy::Brain()
 	}
 }
 
+// ストライカータイプの行動を決める処理
 void Enemy::StrikerBrain()
 {
 	std::random_device rnd;
@@ -4960,6 +5507,7 @@ void Enemy::StrikerBrain()
 	}
 }
 
+// ディフェンダータイプの行動を決める処理
 void Enemy::DefenderBrain()
 {
 	std::random_device rnd;
@@ -5140,6 +5688,7 @@ void Enemy::DefenderBrain()
 	}
 }
 
+// スピードスタータイプの行動を決める処理
 void Enemy::SpeedSterBrain()
 {
 	std::random_device rnd;
@@ -5377,6 +5926,7 @@ void Enemy::SpeedSterBrain()
 	}
 }
 
+// オールラウンダータイプの行動を決める処理
 void Enemy::AllRounderBrain()
 {
 	std::random_device rnd;
@@ -5625,6 +6175,7 @@ void Enemy::AllRounderBrain()
 	}
 }
 
+// 人型の弱い敵の行動を決める処理
 void Enemy::CoarseFishEnemyBrain()
 {
 	std::random_device rnd;
@@ -5683,6 +6234,7 @@ void Enemy::CoarseFishEnemyBrain()
 	}
 }
 
+// モンスター型の弱い敵の行動を決める処理
 void Enemy::WimpEnemyBrain()
 {
 	std::random_device rnd;
@@ -5737,6 +6289,7 @@ void Enemy::WimpEnemyBrain()
 	}
 }
 
+// モンスター型のボスの行動を決める処理
 void Enemy::BossEnemyTypeOneBrain()
 {
 	const KdModelWork::Node* node = nullptr;
@@ -5823,7 +6376,9 @@ void Enemy::BossEnemyTypeOneBrain()
 		}
 	}
 }
+// ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 
+// エネルギー系の攻撃を決める処理
 void Enemy::EnergyCharge(bool a_bBeem)
 {
 	if (m_target.expired())return;
@@ -5935,6 +6490,7 @@ void Enemy::EnergyCharge(bool a_bBeem)
 	m_bRangedAttack = true;
 }
 
+// 回転攻撃の処理
 void Enemy::RotationAttackMove()
 {
 	Math::Vector3 moveVec;
@@ -5958,533 +6514,6 @@ void Enemy::RotationAttackMove()
 			m_target.lock()->SetAttackHit(false);
 			m_target.lock()->SetDefenseSuc(false);
 			RotationAttackChaeck();
-		}
-	}
-}
-
-void Enemy::RotationAttackChaeck()
-{
-	KdCollider::SphereInfo sphereInfo;
-
-	// 球の当たったオブジェクト情報
-	std::list<KdCollider::CollisionResult> retSphereList;
-
-	sphereInfo.m_sphere.Center = m_pos + m_addCenterVal;
-	sphereInfo.m_sphere.Radius = static_cast<float>(m_mpObj["RotationAttackHitChaeckSphereRadius"].number_value());
-	// 当たり判定をしたいタイプを設定
-	sphereInfo.m_type = KdCollider::TypeDamage;
-
-#ifdef _DEBUG
-	// デバック用
-	m_pDebugWire->AddDebugSphere
-	(
-		sphereInfo.m_sphere.Center,
-		sphereInfo.m_sphere.Radius,
-		{ 0,0,0,1 }
-	);
-#endif
-
-	// 球の当たったオブジェクト情報
-	retSphereList.clear();
-
-	// 球と当たり判定 
-
-	if (!m_target.expired())
-	{
-		if (!m_target.lock()->GetAttackHit() && !m_target.lock()->GetDefenseSuc() && m_target.lock()->GetInvincibilityTimeCnt() == 0 && !m_target.lock()->GetBPlayerDeath())
-		{
-			if (!m_target.lock()->GetBPlayerLose())
-			{
-				m_target.lock()->Intersects
-				(
-					sphereInfo,
-					&retSphereList
-				);
-			}
-
-
-			// 球に当たったリスト情報から一番近いオブジェクトを検出
-			float maxOverLap = 0;
-			bool hit = false;
-			Math::Vector3 hitDir = {}; // 当たった方向
-			Math::Vector3 hitPos;
-			for (auto& ret : retSphereList)
-			{
-				// 一番近くで当たったものを探す
-				if (maxOverLap < ret.m_overlapDistance)
-				{
-					maxOverLap = ret.m_overlapDistance;
-					hit = true;
-					hitDir = ret.m_hitDir;
-					hitPos = ret.m_hitPos;
-				}
-			}
-
-			if (hit)
-			{
-				m_target.lock()->BlowingAwayAttackOnHit(m_mWorld.Backward());
-				KdAudioManager::Instance().Play("Asset/Audio/SE/KickAttackHit.wav");
-
-				hitPos.y += 0.35f;
-				KdEffekseerManager::GetInstance().
-					Play("Hit3.efk", hitPos);
-				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("Hit3.efk"); // これでループしない
-				//KdEffekseerManager::GetInstance().SetRotation("Hit3.efk", m_mWorld.Backward(),DirectX::XMConvertToRadians(0));
-				Math::Matrix efcMat = Math::Matrix::CreateScale(0.5f) * Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)) * Math::Matrix::CreateTranslation(hitPos);
-				KdEffekseerManager::GetInstance().SetWorldMatrix("Hit3.efk", efcMat);
-			}
-		}
-	}
-}
-
-void Enemy::ScorpionAttackMove()
-{
-	if (m_animator->IsAnimationEnd())
-	{
-		if (m_EnemyState & lAttack)
-		{
-			m_EnemyState &= ~lAttack;
-			if (m_EnemyState & grassHopperDashF | step && m_bBoss)
-			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
-			}
-			else
-			{
-				if (!m_bBoss)
-				{
-					m_coarseFishEnemyAttackDelayCnt = m_mpObj["MaxCoarseFishEnemyAttackDelayCnt"].int_value();
-				}
-
-				Brain();
-			}
-		}
-
-		if (m_EnemyState & rAttack)
-		{
-			m_EnemyState &= ~rAttack;
-			if (m_EnemyState & grassHopperDashF | step && m_bBoss)
-			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashFA"), true);
-			}
-			else
-			{
-				if (!m_bBoss)
-				{
-					m_coarseFishEnemyAttackDelayCnt = m_mpObj["MaxCoarseFishEnemyAttackDelayCnt"].int_value();
-				}
-				Brain();
-			}
-		}
-
-		if (m_EnemyState & (rlAttack | rlAttackRush | mantis))
-		{
-			m_EnemyState = idle;
-			Brain();
-		}
-	}
-	else
-	{
-		if (!(m_EnemyState & (rlAttack | rlAttackRush)))
-		{
-			m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-
-			if (m_EnemyState & (rAttackTwo | lAttackTwo))
-			{
-				if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
-				{
-					if (!m_target.expired())
-					{
-						m_target.lock()->SetAttackHit(false);
-						m_target.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-			else if (m_EnemyState & (rAttackThree | lAttackThree))
-			{
-				if (m_attackAnimeCnt == m_mpObj["AttackPointMoment"].int_value())
-				{
-					if (!m_target.expired())
-					{
-						m_target.lock()->SetAttackHit(false);
-						m_target.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-		}
-		if (!(m_EnemyState & rlAttackRush))
-		{
-			if (m_attackAnimeCnt >= m_mpObj["AttackPointMoment"].int_value())
-			{
-				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value());
-			}
-			else
-			{
-				if (!m_target.expired())
-				{
-					Math::Vector3 dis = m_target.lock()->GetPos() - m_pos;
-					if (dis.Length() <= 1.15f)
-					{
-						m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedStopsAbruptly"].number_value());
-					}
-				}
-			}
-		}
-
-		m_bMove = true;
-
-		if (m_bAttackAnimeDelay)
-		{
-			if (!m_target.expired() && m_target.lock()->GetAttackHit())
-			{
-				m_wantToMoveState = WantToMoveState::wAttack;
-			}
-
-			if (m_bBoss)
-			{
-				switch (m_wantToMoveState)
-				{
-				case WantToMoveState::wAttack:
-					m_leftWeaponNumber  = m_mpObj["LeftWeaponScopionNum"].int_value();
-					m_rightWeaponNumber = m_mpObj["RightWeaponScopionNum"].int_value();
-					break;
-				}
-			}
-		}
-
-		if (!(m_EnemyState & (rlAttack | rlAttackRush)))
-		{
-			m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-		}
-		else
-		{
-			if (m_EnemyState & rlAttackOne)
-			{
-				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == m_mpObj["RLAttackOneShakenSecondMoment"].int_value())
-				{
-					if (!m_target.expired())
-					{
-						m_target.lock()->SetAttackHit(false);
-						m_target.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-			else if (m_EnemyState & rlAttackTwo)
-			{
-				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == m_mpObj["RLAttackTwoShakenSecondMoment"].int_value())
-				{
-					if (!m_target.expired())
-					{
-						m_target.lock()->SetAttackHit(false);
-						m_target.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-			else if (m_EnemyState & rlAttackThree)
-			{
-				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["MoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == m_mpObj["RLAttackThreeShakenSecondMoment"].int_value())
-				{
-					if (!m_target.expired())
-					{
-						m_target.lock()->SetAttackHit(false);
-						m_target.lock()->SetDefenseSuc(false);
-					}
-				}
-			}
-			else if (m_EnemyState & rlAttackRush)
-			{
-				m_attackMoveSpd *= static_cast<float>((*m_wpJsonObj.lock())["RushAttackMoveSpeedDecelerationamount"].number_value());
-				if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value() ||
-					m_attackAnimeCnt == m_mpObj["RushLastAttackPointTime"].int_value()
-					)
-				{
-					if (!m_target.expired())
-					{
-						m_target.lock()->SetAttackHit(false);
-						m_target.lock()->SetDefenseSuc(false);
-					}
-
-					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][1].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][2].int_value()
-						)
-					{
-						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushOneAndTwoShakenMomentMoveSpeed"].number_value());
-					}
-
-					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][3].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][4].int_value()
-						)
-					{
-						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushThreeAndFourShakenMomentMoveSpeed"].number_value());
-					}
-
-					if (m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][5].int_value() ||
-						m_attackAnimeCnt == m_mpObj["RLAttackRushShakenMoment"][6].int_value()
-						)
-					{
-						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushFiveAndSixShakenMomentMoveSpeed"].number_value());
-					}
-
-					if (m_attackAnimeCnt == (*m_wpJsonObj.lock())["RushLastAttackPointTime"].int_value())
-					{
-						m_attackMoveSpd = static_cast<float>(m_mpObj["RushLastAttackMoveSpeed"].number_value());
-					}
-				}
-			}
-		}
-
-		SpeedyMoveWallHitChack(m_attackMoveSpd, m_attackMoveDir);
-		m_pos += m_attackMoveDir * m_attackMoveSpd;
-	}
-}
-
-void Enemy::ScorpionAttackDecision()
-{
-	if (!(m_EnemyState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
-	{
-		if ((m_weaponType & scorpion) && (m_weaponType & lScorpion))
-		{
-			if (m_bMantisAttack && m_bMantisPossAng)
-			{
-				m_EnemyState |= mantis;
-				m_EnemyState &= mantis;
-				if (m_EnemyState & grassHopperDash)
-				{
-					m_EnemyState &= ~grassHopperDash;
-				}
-
-				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_attackMoveDir.y = 0;
-				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = 0.1f;
-
-				const std::shared_ptr<Scopion> scopion = std::dynamic_pointer_cast<Scopion>(m_weaponList[0]);
-				scopion->SetMantis(Math::Matrix::CreateRotationY(m_mWorldRot.y), true);
-				const std::shared_ptr<Scopion> scopion2 = std::dynamic_pointer_cast<Scopion>(m_weaponList[1]);
-				scopion2->SetBMantis(true);
-				m_bMove = true;
-				m_animator->SetAnimation(m_model->GetAnimation("Mantis"), false);
-				m_bMantisAttack = false;
-			}
-			else
-			{
-				m_bRushAttackPossible = false;
-				m_EnemyState |= rlAttackOne;
-				m_EnemyState &= ~rAttack;
-				m_EnemyState &= ~lAttack;
-				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = true;
-				m_attackAnimeCnt = 0;
-				m_attackAnimeDelayCnt = 0;
-				m_bMove = true;
-
-				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_attackMoveDir.y = 0;
-				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-
-				m_animator->SetAnimation(m_model->GetAnimation("RLAttackOne"), false);
-			}
-		}
-
-		m_bMove = true;
-		if (!m_target.expired())
-		{
-			m_target.lock()->SetAttackHit(false);
-			m_target.lock()->SetDefenseSuc(false);
-		}
-	}
-	else
-	{
-		if (m_bAttackAnimeDelay)
-		{
-			if (m_EnemyState & rAttackOne)
-			{
-				m_EnemyState |= rAttackTwo;
-				m_EnemyState &= ~rAttackOne;
-				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = true;
-				m_animator->SetAnimation(m_model->GetAnimation("RAttack2"), false);
-				m_bMove = true;
-				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_attackMoveDir.y = 0;
-				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-			}
-			else if (m_EnemyState & rAttackTwo)
-			{
-				m_EnemyState |= rAttackThree;
-				m_EnemyState &= ~rAttackTwo;
-				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = false;
-				m_animator->SetAnimation(m_model->GetAnimation("RAttack3"), false);
-				m_bMove = true;
-				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_attackMoveDir.y = 0;
-				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-			}
-
-			if (m_EnemyState & lAttackOne)
-			{
-				m_EnemyState |= lAttackTwo;
-				m_EnemyState &= ~lAttackOne;
-				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = true;
-				m_animator->SetAnimation(m_model->GetAnimation("LAttack2"), false);
-				m_bMove = true;
-				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_attackMoveDir.y = 0;
-				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-			}
-			else if (m_EnemyState & lAttackTwo)
-			{
-				m_EnemyState |= lAttackThree;
-				m_EnemyState &= ~lAttackTwo;
-				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = false;
-				m_animator->SetAnimation(m_model->GetAnimation("LAttack3"), false);
-				m_bMove = true;
-				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_attackMoveDir.y = 0;
-				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-			}
-
-			if (m_EnemyState & rlAttackOne)
-			{
-				m_EnemyState |= rlAttackTwo;
-				m_EnemyState &= ~rlAttackOne;
-				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = true;
-				m_attackAnimeCnt = 0;
-				m_attackAnimeDelayCnt = 0;
-
-				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_attackMoveDir.y = 0;
-				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-				m_animator->SetAnimation(m_model->GetAnimation("RLAttackTwo"), false);
-				m_bMove = true;
-				if (!m_target.expired())
-				{
-					m_target.lock()->SetAttackHit(false);
-					m_target.lock()->SetDefenseSuc(false);
-				}
-			}
-			else if (m_EnemyState & rlAttackTwo)
-			{
-				m_EnemyState |= rlAttackThree;
-				m_EnemyState &= ~rlAttackTwo;
-				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = true;
-				m_attackAnimeCnt = 0;
-				m_attackAnimeDelayCnt = 0;
-
-				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_attackMoveDir.y = 0;
-				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-				m_animator->SetAnimation(m_model->GetAnimation("RLAttackThree"), false);
-				m_bMove = true;
-				if (!m_target.expired())
-				{
-					m_target.lock()->SetAttackHit(false);
-					m_target.lock()->SetDefenseSuc(false);
-				}
-			}
-			else if (m_EnemyState & rlAttackThree && m_bRushAttackPossible)
-			{
-				m_EnemyState |= rlAttackRush;
-				m_EnemyState &= rlAttackRush;
-				m_bAttackAnimeDelay = false;
-				m_bAttackAnimeCnt = true;
-				m_attackAnimeCnt = 0;
-				m_attackAnimeDelayCnt = 0;
-
-				m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-				m_attackMoveDir.y = 0;
-				m_attackMoveDir.Normalize();
-				m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-				m_animator->SetAnimation(m_model->GetAnimation("RLAttackRush"), false);
-				m_bMove = true;
-				if (!m_target.expired())
-				{
-					m_target.lock()->SetAttackHit(false);
-					m_target.lock()->SetDefenseSuc(false);
-				}
-			}
-			m_EnemyState &= ~lAttack;
-		}
-	}
-
-	if (!(m_EnemyState & (rAttack | lAttack | mantis | rlAttack | rlAttackRush)))
-	{
-		if (m_weaponType & scorpion)
-		{
-			m_EnemyState |= rAttackOne;
-			m_EnemyState &= ~lAttack;
-			m_bAttackAnimeDelay = false;
-			m_bAttackAnimeCnt = true;
-			m_attackAnimeCnt = 0;
-			m_attackAnimeDelayCnt = 0;
-			m_bMove = true;
-			m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-			m_attackMoveDir.y = 0;
-			m_attackMoveDir.Normalize();
-			if (!m_target.expired())
-			{
-				m_target.lock()->SetAttackHit(false);
-				m_target.lock()->SetDefenseSuc(false);
-			}
-			
-			m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-
-			if (m_EnemyState & grassHopperDash && m_bBoss)
-			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashRAttack"), false);
-			}
-			else
-			{
-				m_animator->SetAnimation(m_model->GetAnimation("RAttack1"), false);
-			}
-		}
-		else if (m_weaponType & lScorpion)
-		{
-			m_EnemyState |= lAttackOne;
-			m_EnemyState &= ~rAttack;
-			m_bAttackAnimeDelay = false;
-			m_bAttackAnimeCnt = true;
-			m_attackAnimeCnt = 0;
-			m_attackAnimeDelayCnt = 0;
-			m_bMove = true;
-			m_attackMoveDir = Math::Vector3::TransformNormal(Math::Vector3(0, 0, 1), Math::Matrix::CreateRotationY(DirectX::XMConvertToRadians(m_mWorldRot.y)));
-			m_attackMoveDir.y = 0;
-			m_attackMoveDir.Normalize();
-
-			if (!m_target.expired())
-			{
-				m_target.lock()->SetAttackHit(false);
-				m_target.lock()->SetDefenseSuc(false);
-			}
-			
-			m_attackMoveSpd = static_cast<float>(m_mpObj["AttackMoveSpeed"].number_value());
-			if (m_EnemyState & grassHopperDash && m_bBoss)
-			{
-				m_animator->SetAnimation(m_model->GetAnimation("GrassDashLAttack"), false);
-			}
-			else
-			{
-				m_animator->SetAnimation(m_model->GetAnimation("LAttack1"), false);
-			}
 		}
 	}
 }

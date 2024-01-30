@@ -9,6 +9,7 @@
 #define MAX_STATE_TIME_CNT 240
 #define MAX_ENEMY_ATTACK_CNT 4
 #define ENEMY_APPEARANCE_MOMENT 25
+#define CHARENGE_ENEMY_APPEARANCEDELAY_TIME 300
 
 class Player;
 class Ui;
@@ -37,4 +38,6 @@ private:
 
 	std::list<std::weak_ptr<Enemy>> m_wpEnemyList;
 	std::shared_ptr<json11::Json> m_spJsonObj;
+
+	int m_charengeEnemyAppearanceDelayTime; // チャレンジモードの時次の敵が出現するまでの時間
 };

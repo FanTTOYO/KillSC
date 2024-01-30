@@ -156,6 +156,12 @@
     <ClInclude Include="Src\Application\Object\Ground\Ground.h" />
     <ClInclude Include="Src\Application\Object\invisibleWall\InvisibleWall.h" />
     <ClInclude Include="Src\Application\Object\Sky\Sky.h" />
+    <ClInclude Include="Src\Application\Object\Ui\GameUi\GameUi.h" />
+    <ClInclude Include="Src\Application\Object\Ui\ModeSelectUi\ModeSelectUi.h" />
+    <ClInclude Include="Src\Application\Object\Ui\ResultUi\ResultUi.h" />
+    <ClInclude Include="Src\Application\Object\Ui\TitleUi\TitleUi.h" />
+    <ClInclude Include="Src\Application\Object\Ui\TrainingUi\TrainingUi.h" />
+    <ClInclude Include="Src\Application\Object\Ui\TutorialUi\TutorialUi.h" />
     <ClInclude Include="Src\Application\Object\Ui\Ui.h" />
     <ClInclude Include="Src\Application\Object\Weapon\Hopper\Hopper.h" />
     <ClInclude Include="Src\Application\Object\Weapon\Scopion\Scopion.h" />
@@ -215,6 +221,12 @@
     <ClCompile Include="Src\Application\Object\Ground\Ground.cpp" />
     <ClCompile Include="Src\Application\Object\invisibleWall\InvisibleWall.cpp" />
     <ClCompile Include="Src\Application\Object\Sky\Sky.cpp" />
+    <ClCompile Include="Src\Application\Object\Ui\GameUi\GameUi.cpp" />
+    <ClCompile Include="Src\Application\Object\Ui\ModeSelectUi\ModeSelectUi.cpp" />
+    <ClCompile Include="Src\Application\Object\Ui\ResultUi\ResultUi.cpp" />
+    <ClCompile Include="Src\Application\Object\Ui\TitleUi\TitleUi.cpp" />
+    <ClCompile Include="Src\Application\Object\Ui\TrainingUi\TrainingUi.cpp" />
+    <ClCompile Include="Src\Application\Object\Ui\TutorialUi\TutorialUi.cpp" />
     <ClCompile Include="Src\Application\Object\Ui\Ui.cpp" />
     <ClCompile Include="Src\Application\Object\Weapon\Hopper\Hopper.cpp" />
     <ClCompile Include="Src\Application\Object\Weapon\Scopion\Scopion.cpp" />

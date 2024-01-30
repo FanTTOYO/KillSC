@@ -102,43 +102,51 @@ void GameScene::Event()
 
 	if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
 	{
+		if (m_charengeEnemyAppearanceDelayTime > 0)
+		{
+			--m_charengeEnemyAppearanceDelayTime;
+		}
+
 		if (SceneManager::Instance().GetEnemyIeftover() >= MAX_ENEMY_DRAW_TOTAL)
 		{
 			if (SceneManager::Instance().GetEnemyDrawTotal() == 0)
 			{
-				for (int i = 0; i < MAX_ENEMY_DRAW_TOTAL; ++i)
-				{
-					std::shared_ptr<Enemy> enemy;
-					SceneManager::Instance().AddEnemyDrawTotal();
-					enemy = std::make_shared<Enemy>();
-					enemy->SetTarget(m_wpPlayer.lock());
-					m_wpPlayer.lock()->AddEnemy(enemy);
-					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
-					enemy->Init(m_spJsonObj);
-					enemy->SetEnemyNumber(i + 1);
-					enemy->SetBBoss(true);
-					enemy->SetPos(Math::Vector3(-10.0f + 5.0f * i, 0.0f, 20.0f));
-					enemy->SetWorldRotationY(180);
-					enemy->SetMatrix();
-
-					m_objList.push_back(enemy);
-					m_wpEnemyList.push_back(enemy);
-				}
-			}
-			if (SceneManager::Instance().GetEnemyDrawTotal() < MAX_ENEMY_DRAW_TOTAL)
-			{
 				std::shared_ptr<Enemy> enemy;
+				SceneManager::Instance().AddEnemyDrawTotal();
 				enemy = std::make_shared<Enemy>();
 				enemy->SetTarget(m_wpPlayer.lock());
 				m_wpPlayer.lock()->AddEnemy(enemy);
 				m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-				enemy->Init(m_spJsonObj);
-				enemy->SetBBoss(true);
 				m_wpUi.lock()->AddEnemy(enemy);
+				enemy->Init(m_spJsonObj);
+				enemy->SetEnemyNumber(1);
+				enemy->SetBBoss(true);
+				enemy->SetPos(Math::Vector3(0.0f, 0.0f, 20.0f));
+				enemy->SetWorldRotationY(180);
+				enemy->SetMatrix();
+
 				m_objList.push_back(enemy);
 				m_wpEnemyList.push_back(enemy);
-				SceneManager::Instance().AddEnemyDrawTotal();
+				m_charengeEnemyAppearanceDelayTime = CHARENGE_ENEMY_APPEARANCEDELAY_TIME;
+				
+			}
+			if (SceneManager::Instance().GetEnemyDrawTotal() < MAX_ENEMY_DRAW_TOTAL)
+			{
+				if (m_charengeEnemyAppearanceDelayTime == 0)
+				{
+					std::shared_ptr<Enemy> enemy;
+					enemy = std::make_shared<Enemy>();
+					enemy->SetTarget(m_wpPlayer.lock());
+					m_wpPlayer.lock()->AddEnemy(enemy);
+					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
+					enemy->Init(m_spJsonObj);
+					enemy->SetBBoss(true);
+					m_wpUi.lock()->AddEnemy(enemy);
+					m_objList.push_back(enemy);
+					m_wpEnemyList.push_back(enemy);
+					SceneManager::Instance().AddEnemyDrawTotal();
+					m_charengeEnemyAppearanceDelayTime = CHARENGE_ENEMY_APPEARANCEDELAY_TIME;
+				}
 			}
 		}
 	}

@@ -119,7 +119,6 @@ public:
 	void Update()override;
 	void PostUpdate()override;
 	void DrawBright()override;
-	void DrawSprite()override;
 	void DrawDebug()override;
 
 	void GenerateDepthMapFromLight()override;
