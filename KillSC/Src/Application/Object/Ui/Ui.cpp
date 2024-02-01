@@ -85,18 +85,19 @@ bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_
 
 	mousePos.x -= 640;
 	mousePos.y = mousePos.y * -1 + 360;
-	Math::Vector3 Dis;
-	float mouseX = (float)mousePos.x;
-	float mouseY = (float)mousePos.y + (float)(pwi->rcWindow.top + m_mpUiSharedObj["TitleBarHeight"].int_value());
 
-	float MouseLeft = mouseX - static_cast<float>(m_mpUiSharedObj["MouseRadius"].number_value());
-	float MouseRight = mouseX + static_cast<float>(m_mpUiSharedObj["MouseRadius"].number_value());
-	float MouseTop = mouseY + static_cast<float>(m_mpUiSharedObj["MouseHalfHeight"].number_value());
+	Math::Vector3 Dis;
+	float mouseX = static_cast<float>(mousePos.x);
+	float mouseY = static_cast<float>(mousePos.y);
+
+	float MouseLeft   = mouseX - static_cast<float>(m_mpUiSharedObj["MouseRadius"].number_value());
+	float MouseRight  = mouseX + static_cast<float>(m_mpUiSharedObj["MouseRadius"].number_value());
+	float MouseTop    = mouseY + static_cast<float>(m_mpUiSharedObj["MouseHalfHeight"].number_value());
 	float MouseBottom = mouseY - static_cast<float>(m_mpUiSharedObj["MouseHalfHeight"].number_value());
 
 	Math::Vector3 ButtomPos;
-	ButtomPos.x = a_pos.x + (float)(pwi->rcWindow.left);
-	ButtomPos.y = a_pos.y;
+	ButtomPos.x = a_pos.x + static_cast<float>(pwi->rcWindow.left);
+	ButtomPos.y = a_pos.y - static_cast<float>(pwi->rcWindow.top + m_mpUiSharedObj["TitleBarHeight"].int_value());
 
 	float TextureWidth  = static_cast<float>(a_tex.GetWidth())  / 2.0f;
 	float TextureHeight = static_cast<float>(a_tex.GetHeight()) / 2.0f;

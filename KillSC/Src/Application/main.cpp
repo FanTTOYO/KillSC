@@ -125,10 +125,10 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	// フルスクリーン確認
 	//===================================================================
-	bool bFullScreen = false;
+	/*bool bFullScreen = false;
 	if (MessageBoxA(m_window.GetWndHandle(), "フルスクリーンにしますか？", "確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) {
 		bFullScreen = true;
-	}
+	}*/
 
 	//===================================================================
 	// Direct3D初期化
@@ -148,9 +148,9 @@ bool Application::Init(int w, int h)
 	}
 
 	// フルスクリーン設定
-	if (bFullScreen) {
+	/*if (bFullScreen) {
 		KdDirect3D::Instance().WorkSwapChain()->SetFullscreenState(TRUE, 0);
-	}
+	}*/
 
 	//===================================================================
 	// シェーダー初期化

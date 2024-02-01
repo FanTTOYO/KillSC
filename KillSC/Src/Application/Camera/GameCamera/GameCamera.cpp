@@ -1,4 +1,5 @@
 ﻿#include "GameCamera.h"
+#include "../../main.h"
 #include "../../Object/Character/Player/Player.h"
 #include "../../Object/Character/Enemy/Enemy.h"
 #include "../../Scene/SceneManager.h"
@@ -11,7 +12,6 @@ void GameCamera::Init()
 	// ↓画面中央
 	m_FixMousePos.x = 640;
 	m_FixMousePos.y = 360;
-
 	m_bRotateEnemy = false;
 	SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
 	m_cameracChasePower = 0.0f;
@@ -26,6 +26,10 @@ void GameCamera::Init()
 
 void GameCamera::Update()
 {
+	m_FixMousePos.x = 640;
+	m_FixMousePos.y = 360;
+	ClientToScreen(Application::Instance().GetWindowHandle(), &m_FixMousePos);
+
 	Math::Matrix targetMat = Math::Matrix::Identity;
 	if (!m_wpPlayer.expired())
 	{
@@ -262,7 +266,6 @@ void GameCamera::UpdateRotateByMouse()
 	// マウスでカメラを回転させる処理
 	POINT nowPos;
 	GetCursorPos(&nowPos);
-
 	POINT mouseMove;
 	mouseMove.x = nowPos.x - m_FixMousePos.x;
 	mouseMove.y = nowPos.y - m_FixMousePos.y;
