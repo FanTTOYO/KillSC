@@ -70,3 +70,10 @@ private:
 	UiType m_uiType = UiType::title;
 	std::shared_ptr<Ui> m_currentUiClassId;
 };
+
+class OptionUi : public Ui
+{
+public:
+
+private:
+};

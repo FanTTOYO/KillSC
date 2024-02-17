@@ -104,7 +104,7 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 	Math::Vector3 addCenterVal = { static_cast<float>(m_mpObj["AddCenterVal"][0].number_value()),
 							       static_cast<float>(m_mpObj["AddCenterVal"][1].number_value()),
-								   static_cast<float>(m_mpObj["AddCenterVal"][2].number_value()) };
+								   static_cast<float>(m_mpObj["AddCenterVal"][2].number_value())};
 	m_addCenterVal = addCenterVal;
 
 	Math::Vector3 AddGrassDashEffectPosVal = { static_cast<float>(m_mpObj["AddGrassDashEffectPosVal"][0].number_value()),
@@ -697,6 +697,7 @@ void Player::PostUpdate()
 				KdEffekseerManager::GetInstance().
 					Play("BailOutPlayer.efk", { m_pos.x,m_pos.y + 0.3f,m_pos.z });
 				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("BailOutPlayer.efk"); // これでループしない
+				KdAudioManager::Instance().Play("Asset/Audio/SE/HumanCharacterDeath.wav");
 				m_bPlayerLose = true;
 			}
 

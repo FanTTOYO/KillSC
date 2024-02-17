@@ -11,7 +11,7 @@
     "AddGrassDashUpEffectPosYVal": 2.9,
     "EnableStepHight": 0.2,
     "StepMaxTime": 60,
-    "RunMoveSpeed": 0.25,
+    "RunMoveSpeed": 0.2,
     "JumpPow": -0.2,
     "RightWeaponScopionNum": 1,
     "RightWeaponGrassHopperNum": 2,

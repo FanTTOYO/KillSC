@@ -22,7 +22,8 @@ void KdEffekseerManager::Create(int w, int h)
 	// 描画用インスタンスからテクスチャの読み込み機能を設定
 	m_efkManager->SetTextureLoader(m_efkRenderer->CreateTextureLoader());
 	m_efkManager->SetModelLoader(m_efkRenderer->CreateModelLoader());
-
+	m_efkManager->SetMaterialLoader(m_efkRenderer->CreateMaterialLoader());
+	m_efkManager->SetCurveLoader(Effekseer::MakeRefPtr<Effekseer::CurveLoader>());
 	// 投影行列を設定
 	m_efkRenderer->SetProjectionMatrix(
 		::Effekseer::Matrix44().PerspectiveFovLH(

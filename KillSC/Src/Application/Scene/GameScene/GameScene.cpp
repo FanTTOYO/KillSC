@@ -19,7 +19,9 @@ void GameScene::Event()
 		);
 	}*/
 
-	if (m_wpUi.lock()->GetTime() >= 0 && m_wpUi.lock()->GetTime() < MAX_STATE_TIME_CNT || m_wpUi.lock()->GetBOption())
+	std::shared_ptr<Ui> spUi = m_wpUi.lock();
+
+	if (spUi->GetTime() >= 0 && spUi->GetTime() < MAX_STATE_TIME_CNT || spUi->GetBOption())
 	{
 		if (!m_bCountDown)
 		{
@@ -33,13 +35,13 @@ void GameScene::Event()
 
 	if (m_bCountDown)
 	{
-		m_wpUi.lock()->Update();
+		spUi->Update();
 	}
 
-	if (m_wpUi.lock()->GetGameTimeM10() == 0 &&
-		m_wpUi.lock()->GetGameTimeM1() == 0 &&
-		m_wpUi.lock()->GetGameTimeS10() == 0 &&
-		m_wpUi.lock()->GetGameTimeS1() == 0)
+	if (spUi->GetGameTimeM10() == 0 &&
+		spUi->GetGameTimeM1() == 0 &&
+		spUi->GetGameTimeS10() == 0 &&
+		spUi->GetGameTimeS1() == 0)
 	{
 		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
 		{
@@ -117,7 +119,7 @@ void GameScene::Event()
 				enemy->SetTarget(m_wpPlayer.lock());
 				m_wpPlayer.lock()->AddEnemy(enemy);
 				m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-				m_wpUi.lock()->AddEnemy(enemy);
+				spUi->AddEnemy(enemy);
 				enemy->Init(m_spJsonObj);
 				enemy->SetEnemyNumber(1);
 				enemy->SetBBoss(true);
@@ -141,7 +143,7 @@ void GameScene::Event()
 					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
 					enemy->Init(m_spJsonObj);
 					enemy->SetBBoss(true);
-					m_wpUi.lock()->AddEnemy(enemy);
+					spUi->AddEnemy(enemy);
 					m_objList.push_back(enemy);
 					m_wpEnemyList.push_back(enemy);
 					SceneManager::Instance().AddEnemyDrawTotal();
@@ -237,11 +239,11 @@ void GameScene::Event()
 				std::shared_ptr<Enemy> enemy;
 				int total = 2;
 				m_waveCnt++;
-				m_wpUi.lock()->SetWaveCnt(m_waveCnt);
+				spUi->SetWaveCnt(m_waveCnt);
 
 				if (m_waveCnt >= MAX_WAVE_CNT)
 				{
-					m_wpUi.lock()->SetBWaveChange();
+					spUi->SetBWaveChange();
 				}
 
 				auto& enemySharedObj = (*m_spJsonObj)["EnemyShared"].object_items();
@@ -259,7 +261,7 @@ void GameScene::Event()
 						enemy->SetTarget(m_wpPlayer.lock());
 						m_wpPlayer.lock()->AddEnemy(enemy);
 						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-						m_wpUi.lock()->AddEnemy(enemy);
+						spUi->AddEnemy(enemy);
 						enemy->Init(m_spJsonObj);
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
@@ -278,7 +280,7 @@ void GameScene::Event()
 						enemy->SetTarget(m_wpPlayer.lock());
 						m_wpPlayer.lock()->AddEnemy(enemy);
 						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-						m_wpUi.lock()->AddEnemy(enemy);
+						spUi->AddEnemy(enemy);
 						enemy->Init(m_spJsonObj);
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
@@ -297,7 +299,7 @@ void GameScene::Event()
 						enemy->SetTarget(m_wpPlayer.lock());
 						m_wpPlayer.lock()->AddEnemy(enemy);
 						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-						m_wpUi.lock()->AddEnemy(enemy);
+						spUi->AddEnemy(enemy);
 						enemy->Init(m_spJsonObj);
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
@@ -316,7 +318,7 @@ void GameScene::Event()
 						enemy->SetTarget(m_wpPlayer.lock());
 						m_wpPlayer.lock()->AddEnemy(enemy);
 						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-						m_wpUi.lock()->AddEnemy(enemy);
+						spUi->AddEnemy(enemy);
 						enemy->Init(m_spJsonObj);
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
@@ -341,7 +343,7 @@ void GameScene::Event()
 						enemy->SetTarget(m_wpPlayer.lock());
 						m_wpPlayer.lock()->AddEnemy(enemy);
 						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-						m_wpUi.lock()->AddEnemy(enemy);
+						spUi->AddEnemy(enemy);
 						enemy->Init(m_spJsonObj);
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
@@ -365,7 +367,7 @@ void GameScene::Event()
 						enemy->SetTarget(m_wpPlayer.lock());
 						m_wpPlayer.lock()->AddEnemy(enemy);
 						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-						m_wpUi.lock()->AddEnemy(enemy);
+						spUi->AddEnemy(enemy);
 						enemy->Init(m_spJsonObj);
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
@@ -390,7 +392,7 @@ void GameScene::Event()
 						enemy->SetTarget(m_wpPlayer.lock());
 						m_wpPlayer.lock()->AddEnemy(enemy);
 						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-						m_wpUi.lock()->AddEnemy(enemy);
+						spUi->AddEnemy(enemy);
 						enemy->Init(m_spJsonObj);
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
@@ -414,7 +416,7 @@ void GameScene::Event()
 						enemy->SetTarget(m_wpPlayer.lock());
 						m_wpPlayer.lock()->AddEnemy(enemy);
 						m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-						m_wpUi.lock()->AddEnemy(enemy);
+						spUi->AddEnemy(enemy);
 						enemy->Init(m_spJsonObj);
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
@@ -443,7 +445,7 @@ void GameScene::Event()
 					enemy->SetTarget(m_wpPlayer.lock());
 					m_wpPlayer.lock()->AddEnemy(enemy);
 					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
+					spUi->AddEnemy(enemy);
 					enemy->Init(m_spJsonObj);
 					enemy->SetEnemyNumber(1);
 					enemy->SetBBoss(false);
@@ -464,7 +466,7 @@ void GameScene::Event()
 					enemy->SetTarget(m_wpPlayer.lock());
 					m_wpPlayer.lock()->AddEnemy(enemy);
 					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
+					spUi->AddEnemy(enemy);
 					enemy->Init(m_spJsonObj);
 					enemy->SetEnemyNumber(2);
 					enemy->SetBBoss(false);
@@ -484,7 +486,7 @@ void GameScene::Event()
 					enemy->SetTarget(m_wpPlayer.lock());
 					m_wpPlayer.lock()->AddEnemy(enemy);
 					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
+					spUi->AddEnemy(enemy);
 					enemy->Init(m_spJsonObj);
 					enemy->SetEnemyNumber(3);
 					enemy->SetBBoss(false);
@@ -503,7 +505,7 @@ void GameScene::Event()
 					enemy->SetTarget(m_wpPlayer.lock());
 					m_wpPlayer.lock()->AddEnemy(enemy);
 					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
+					spUi->AddEnemy(enemy);
 					enemy->Init(m_spJsonObj);
 					enemy->SetEnemyNumber(4);
 					enemy->SetBBoss(false);
@@ -577,7 +579,7 @@ void GameScene::Event()
 					enemy->SetTarget(m_wpPlayer.lock());
 					m_wpPlayer.lock()->AddEnemy(enemy);
 					m_wpPlayer.lock()->AddWeaponToEnemy(enemy);
-					m_wpUi.lock()->AddEnemy(enemy);
+					spUi->AddEnemy(enemy);
 					enemy->Init(m_spJsonObj);
 					enemy->SetEnemyNumber(1);
 					enemy->SetBBoss(true);

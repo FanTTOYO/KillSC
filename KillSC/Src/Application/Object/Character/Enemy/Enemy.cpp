@@ -1705,7 +1705,7 @@ void Enemy::PostUpdate()
 				}
 				else if (m_enemyType & humanBossEnemy)
 				{
-					KdAudioManager::Instance().Play("Asset/Audio/SE/HumanBossEnemyDeath.wav");
+					KdAudioManager::Instance().Play("Asset/Audio/SE/HumanCharacterDeath.wav");
 				}
 				else
 				{
@@ -5283,10 +5283,10 @@ void Enemy::StrikerBrain()
 
 	if (src.Length() <= 1.2f)
 	{
-		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rlAttack))
 		{
-			randNum[0] = 450;
-			randNum[1] = 550;
+			randNum[0] = 350;
+			randNum[1] = 650;
 			for (int i = 0; i < 2; i++)
 			{
 				rand -= randNum[i];
@@ -5333,48 +5333,7 @@ void Enemy::StrikerBrain()
 	}
 	else
 	{
-		if (src.Length() <= 8.0f && spTarget && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
-		{
-			rand = intRand(mt);
-			randNum[0] = 650;
-			randNum[1] = 350;
-			for (int i = 0; i < 2; i++)
-			{
-				rand -= randNum[i];
-				if (rand < 0)
-				{
-					switch (i)
-					{
-					case 0:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::attackCategory; rand = intRand(mt);
-						randNum[0] = 700;
-						randNum[1] = 300;
-						for (int j = 0; j < 2; j++)
-						{
-							rand -= randNum[j];
-							if (rand < 0)
-							{
-								switch (i)
-								{
-								case 1:
-									m_bMantisAttack = true;
-									break;
-								case 2:
-									m_bMantisAttack = false;
-									break;
-								}
-							}
-						}
-						break;
-					case 1:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
-						break;
-					}
-					break;
-				}
-			}
-		}
-		else if (src.Length() <= 2.5f && spTarget && spTarget->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		if (src.Length() <= 2.5f && spTarget && spTarget->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			rand = intRand(mt);
 			randNum[0] = 600;
@@ -5527,7 +5486,7 @@ void Enemy::DefenderBrain()
 
 	if (src.Length() <= 1.2f)
 	{
-		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (spTarget && spTarget->GetPlayerState() & Player::PlayerState::rlAttack)
 		{
 			randNum[0] = 950;
 			randNum[1] = 50;
@@ -5577,29 +5536,7 @@ void Enemy::DefenderBrain()
 	}
 	else
 	{
-		if (src.Length() <= 5.0f && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
-		{
-			randNum[0] = 850;
-			randNum[1] = 150;
-			for (int i = 0; i < 2; i++)
-			{
-				rand -= randNum[i];
-				if (rand < 0)
-				{
-					switch (i)
-					{
-					case 0:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
-						break;
-					case 1:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
-						break;
-					}
-					break;
-				}
-			}
-		}
-		else if (src.Length() <= 2.5f && !m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		if (src.Length() <= 2.5f && !m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			randNum[0] = 600;
 			randNum[1] = 400;
@@ -5708,7 +5645,7 @@ void Enemy::SpeedSterBrain()
 
 	if (src.Length() <= 1.2f)
 	{
-		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rAttack | Player::PlayerState::lAttack | Player::PlayerState::rlAttack))
+		if (spTarget && spTarget->GetPlayerState() & (Player::PlayerState::rlAttack))
 		{
 			randNum[0] = 750;
 			randNum[1] = 250;
@@ -5758,29 +5695,7 @@ void Enemy::SpeedSterBrain()
 	}
 	else
 	{
-		if (src.Length() <= 5.0f && spTarget && spTarget->GetPlayerState() & Player::PlayerState::grassHopperDashF)
-		{
-			randNum[0] = 150;
-			randNum[1] = 850;
-			for (int i = 0; i < 2; i++)
-			{
-				rand -= randNum[i];
-				if (rand < 0)
-				{
-					switch (i)
-					{
-					case 0:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::defenseCategory;
-						break;
-					case 1:
-						m_wantToMoveCategory = Enemy::WantToMoveCategory::approachCategory;
-						break;
-					}
-					break;
-				}
-			}
-		}
-		else if (src.Length() <= 2.5f && !m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
+		if (src.Length() <= 2.5f && !m_target.expired() && m_target.lock()->GetPlayerState() & Player::PlayerState::defense && !(m_EnemyState & grassHopperDash))
 		{
 			randNum[0] = 600;
 			randNum[1] = 400;
