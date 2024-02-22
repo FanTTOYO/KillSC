@@ -1797,18 +1797,6 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	}
 
 	m_playerState = nomalHit;
-	for (auto& enemy : m_enemyList)
-	{
-		if (enemy.expired())continue;
-		if (enemy.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackThree)
-		{
-			m_hitStopCnt = 60;
-		}
-		else
-		{
-			m_hitStopCnt = 40;
-		}
-	}
 
 	m_hitMoveSpd = 0.05f;
 	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
@@ -1816,11 +1804,30 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 	m_endurance -= (*m_wpJsonObj.lock())["OnHitDamage"].int_value();
 	m_attackHit = true;
 
+	std::shared_ptr<Enemy> spEnemy;
 	for (auto& enemy : m_enemyList)
 	{
 		if (enemy.expired())continue;
 
-		if (enemy.lock()->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::rlAttackOne |
+		spEnemy = enemy.lock();
+
+		if (spEnemy->GetEnemyState() & Enemy::EnemyState::rlAttackThree)
+		{
+			m_hitStopCnt = 60;
+		}
+		else
+		{
+			if (spEnemy->GetEnemyType() & (Enemy::EnemyType::coarseFishEnemy | Enemy::EnemyType::wimpEnemyTypeOne))
+			{
+				m_hitStopCnt = 5;
+			}
+			else
+			{
+				m_hitStopCnt = 10;
+			}
+		}
+
+		if (spEnemy->GetEnemyState() & (Enemy::EnemyState::rAttackOne | Enemy::EnemyState::rlAttackOne |
 			Enemy::EnemyState::rlAttackThree))
 		{
 			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit1"), false);
@@ -1829,7 +1836,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 				SceneManager::Instance().SetUpdateStopCnt(5); // これでアップデートを一時止める
 			}
 		}
-		else if (enemy.lock()->GetEnemyState() & (Enemy::EnemyState::rAttackTwo | Enemy::EnemyState::rlAttackTwo))
+		else if (spEnemy->GetEnemyState() & (Enemy::EnemyState::rAttackTwo | Enemy::EnemyState::rlAttackTwo))
 		{
 			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit2"), false);
 			if (SceneManager::Instance().GetUpdateStopCnt() == 0)
@@ -1838,8 +1845,8 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 			}
 		}
 
-		if (enemy.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackRush && enemy.lock()->GetAnimationCnt() < 8 ||
-			(enemy.lock()->GetAnimationCnt() >= 21 && enemy.lock()->GetAnimationCnt() < 41))
+		if (spEnemy->GetEnemyState() & Enemy::EnemyState::rlAttackRush && spEnemy->GetAnimationCnt() < 8 ||
+			(spEnemy->GetAnimationCnt() >= 21 && spEnemy->GetAnimationCnt() < 41))
 		{
 			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit1"), false);
 
@@ -1848,8 +1855,8 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 				SceneManager::Instance().SetUpdateStopCnt(2); // これでアップデートを一時止める
 			}
 		}
-		else if (enemy.lock()->GetEnemyState() & Enemy::EnemyState::rlAttackRush &&
-			(enemy.lock()->GetAnimationCnt() >= 8 && enemy.lock()->GetAnimationCnt() < 21))
+		else if (spEnemy->GetEnemyState() & Enemy::EnemyState::rlAttackRush &&
+			(spEnemy->GetAnimationCnt() >= 8 && spEnemy->GetAnimationCnt() < 21))
 		{
 			m_spAnimator->SetAnimation(m_spModel->GetAnimation("RHit2"), false);
 
@@ -3178,38 +3185,26 @@ void Player::StepMove()
 	if (m_stepCnt != 0)
 	{
 		m_bMove = true;
-		if (m_stepCnt <= 60 && m_stepCnt > 50)
+		if (m_stepCnt <= m_mpObj["StepMaxTime"].int_value() && m_stepCnt > m_mpObj["StepTransitionTime"][0].int_value())
 		{
 			m_dashSpd = 0.2f;
 		}
-		else if (m_stepCnt <= 50 && m_stepCnt > 30)
+		else if (m_stepCnt <= m_mpObj["StepTransitionTime"][0].int_value() && m_stepCnt > m_mpObj["StepTransitionTime"][1].int_value())
 		{
 			m_dashSpd = 0.5f;
 		}
-		else if (m_stepCnt <= 30 && m_stepCnt > 20)
+		else if (m_stepCnt <= m_mpObj["StepTransitionTime"][1].int_value() && m_stepCnt > m_mpObj["StepTransitionTime"][2].int_value())
 		{
 			m_dashSpd = 0.2f;
 		}
-		else if (m_stepCnt <= 20 && m_stepCnt > 10)
+		else if (m_stepCnt <= m_mpObj["StepTransitionTime"][2].int_value() && m_stepCnt > m_mpObj["StepTransitionTime"][3].int_value())
 		{
 			m_dashSpd = 0.1f;
 		}
-		else if (m_stepCnt <= 10 && m_stepCnt > 0)
+		else if (m_stepCnt <= m_mpObj["StepTransitionTime"][3].int_value() && m_stepCnt > 0)
 		{
 			m_dashSpd = 0.05f;
 		}
-		/*else if (m_stepCnt <= 15 && m_stepCnt > 10)
-		{
-			m_dashSpd = 0.30f;
-		}
-		else if (m_stepCnt <= 10 && m_stepCnt > 5)
-		{
-			m_dashSpd = 0.25f;
-		}
-		else if (m_stepCnt <= 5 && m_stepCnt > 0)
-		{
-			m_dashSpd = 0.20f;
-		}*/
 
 		if (m_stepCnt == 60)
 		{
