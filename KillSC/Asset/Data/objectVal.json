@@ -20,7 +20,7 @@
     "LeftWeaponGrassHopperNum": 2,
     "TypeBuriedToHitSphereRadius": 0.4,
     "TypeGroundToHitSphereRadius": 0.3,
-    "TypeGroundToHitSphereRadiusIsGrassDash": 1.2,
+    "TypeGroundToHitSphereRadiusIsGrassDash": 1.0,
     "TypeBumpToHitSphereRadius": 0.3,
     "TypeSpeedDecToHitSphereRadius": 1.8,
     "TypeBumpToHitSphereRadiusIsBossEnemyTypeOne": 1.2,
