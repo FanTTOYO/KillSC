@@ -11,7 +11,7 @@
     "AddGrassDashUpEffectPosYVal": 2.9,
     "EnableStepHight": 0.2,
     "StepMaxTime": 30,
-    "StepTransitionTime" : [25,15,10,5],
+    "StepTransitionTime": [ 25, 15, 10, 5 ],
     "RunMoveSpeed": 0.2,
     "JumpPow": -0.2,
     "RightWeaponScopionNum": 1,
@@ -28,6 +28,9 @@
 
     "TypeGardToHitSphereRadius": 0.3,
     "TypeGardToHitSphereRadiusIsGrassDash": 0.6,
+
+    "StateDefenseMomentLightColor" : [ 1, 1, 1 ],
+    "StateDefenseMomentLightLevel" : 2,
 
     "FootfallPointMoment": [ 16, 31 ],
     "LastRunAnimationTime": 40,
@@ -171,6 +174,9 @@
     "AddBottomYVal": 0.7,
     "RushLastAttackPointTime": 107,
     "AttackMoveSpeed": 0.8,
+
+    "StateDefenseMomentLightColor": [ 1, 1, 1 ],
+    "StateDefenseMomentLightLevel": 2,
 
     "FootfallPointMoment": [ 16, 31 ],
     "LastRunAnimationTime": 40,

@@ -3508,6 +3508,16 @@ void Enemy::DrawLit_SkinMesh()
 		m_invincibilityTimeCnt == (*m_wpJsonObj.lock())["InvincibilityProgramTimeCnt"][12].int_value()
 		)return;
 
+
+	if (m_EnemyState & defense)
+	{
+		KdShaderManager::Instance().m_HD2DShader.SetLimLightEnable(true);
+		KdShaderManager::Instance().m_HD2DShader.SetLimLight({ static_cast<float>(m_mpObj["StateDefenseMomentLightColor"][0].number_value()),
+															   static_cast<float>(m_mpObj["StateDefenseMomentLightColor"][1].number_value()),
+															   static_cast<float>(m_mpObj["StateDefenseMomentLightColor"][2].number_value()) },
+															   static_cast<float>(m_mpObj["StateDefenseMomentLightLevel"].number_value()));
+	}
+
 	KdShaderManager::Instance().m_HD2DShader.SetOutLineColor({ 1,0,0 });
 	if (m_hitColorChangeTimeCnt == 0)
 	{

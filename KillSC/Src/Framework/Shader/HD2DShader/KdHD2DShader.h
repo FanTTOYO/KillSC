@@ -32,7 +32,12 @@ public:
 
 		// 輪郭
 		Math::Vector3   OutLineColor = {1,0,0};
-		float           _blank3 = 0.0f;
+
+		// add:リムライト
+		int             LimLightEnable = 0;
+
+		Math::Vector3   LimLightColor = { 1,1,1 };
+		float           LimLightLevel = 1;
 	};
 
 	// 定数バッファ(メッシュ単位更新)
@@ -62,10 +67,27 @@ public:
 	// 設定・取得
 	//================================================
 
-	// UVタイリング設定
+	// アウトラインの色設定
 	void SetOutLineColor(const Math::Vector3& color)
 	{
 		m_cb0_Obj.Work().OutLineColor = color;
+
+		m_dirtyCBObj = true;
+	}
+
+	// リムライトON・OFF
+	void SetLimLightEnable(bool enable)
+	{
+		m_cb0_Obj.Work().LimLightEnable = enable;
+
+		m_dirtyCBObj = true;
+	}
+
+	// リムナイトの色と光の強さを設定
+	void SetLimLight(Math::Vector3 _color, float _level)
+	{
+		m_cb0_Obj.Work().LimLightColor = _color;
+		m_cb0_Obj.Work().LimLightLevel = _level;
 
 		m_dirtyCBObj = true;
 	}
