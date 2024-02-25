@@ -28,6 +28,7 @@ void GameUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 	m_enduranceBarTex.Load("Asset/Textures/Ui/Game/enduranceBar.png");
 	m_enduranceTex.Load("Asset/Textures/Ui/Game/endurance.png");
+	m_damageAmountTex.Load("Asset/Textures/Ui/Game/damageAmount.png");
 
 	m_hopperDataTex.Load("Asset/Textures/Ui/Game/hopperData.png");
 	m_weaponDataTex.Load("Asset/Textures/Ui/Game/weaponData.png");
@@ -691,6 +692,11 @@ void GameUi::DrawSprite()
 		rc = { 0,0,static_cast<int>(m_enduranceBarTex.GetWidth()),static_cast<int>(m_enduranceBarTex.GetHeight()) };
 		color = { 1, 1, 1, 1 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_enduranceBarTex, 0, 0, static_cast<int>(m_enduranceBarTex.GetWidth()), static_cast<int>(m_enduranceBarTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
+
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+		rc = { 0,0,static_cast<int>((spPlayer->GetDamageAmount())), static_cast<int>(m_damageAmountTex.GetHeight()) };
+		color = { 1, 1, 1, 1 };
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_damageAmountTex, 0, 0, static_cast<int>((spPlayer->GetDamageAmount())), static_cast<int>(m_damageAmountTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
 
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		rc = { 0,0,static_cast<int>((spPlayer->GetEndurance())), static_cast<int>(m_enduranceTex.GetHeight()) };

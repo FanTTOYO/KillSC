@@ -134,6 +134,7 @@ private:
 	KdTexture m_torionTex;
 	KdTexture m_torionBarTex;
 	KdTexture m_enduranceTex;
+	KdTexture m_damageAmountTex;
 	KdTexture m_enduranceBarTex;
 
 	Math::Matrix m_torionMat;									// 

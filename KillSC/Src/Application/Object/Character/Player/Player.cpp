@@ -42,6 +42,8 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 	m_vForce = (float)object["Vforce"].number_value();
 	m_endurance = (float)object["Endurance"].number_value();
+	m_damageAmount = (float)object["Endurance"].number_value();
+	m_notUnderAttackTime = 0;
 
 	m_graduallyTorionDecVal = 0.0f;
 	m_bAttackAnimeCnt = true;
@@ -140,9 +142,23 @@ void Player::PreUpdate()
 		}
 	}
 
+	if (m_notUnderAttackTime > 0)
+	{
+		--m_notUnderAttackTime;
+	}
+
 	if (m_endurance <= 0)
 	{
 		m_endurance = 0;
+		if (m_endurance != m_damageAmount)
+		{
+			m_damageAmount -= 5;
+			if (m_damageAmount <= m_endurance)
+			{
+				m_damageAmount = 0;
+			}
+		}
+
 		if (!m_bPlayerDeath)
 		{
 			const std::shared_ptr<GameCamera> gCamera = std::dynamic_pointer_cast<GameCamera>(m_wpCamera.lock());
@@ -153,6 +169,18 @@ void Player::PreUpdate()
 			m_wpEnemy.reset();
 		}
 	}
+	else if(!m_notUnderAttackTime)
+	{
+		if (m_endurance != m_damageAmount)
+		{
+			m_damageAmount -= 5;
+			if (m_damageAmount <= m_endurance)
+			{
+				m_damageAmount = m_endurance;
+			}
+		}
+	}
+
 }
 
 // 武器を切り替える処理
@@ -268,12 +296,12 @@ void Player::Update()
 #ifdef _DEBUG
  // _DEBUG
 
+#endif
 		// debugキー
 		if (GetAsyncKeyState('L') & 0x8000)
 		{
-			m_vForce = 0;
+			m_endurance = 0;
 		}
-#endif
 
 	}
 
@@ -1798,6 +1826,7 @@ void Player::OnHit(Math::Vector3 a_KnocBackvec)
 
 	m_playerState = nomalHit;
 
+	m_notUnderAttackTime = m_mpObj["NotUnderAttackMaxTime"].int_value();
 	m_hitMoveSpd = 0.05f;
 	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
 	m_knockBackVec = a_KnocBackvec;
@@ -1938,6 +1967,7 @@ void Player::BlowingAwayAttackOnHit(Math::Vector3 a_KnocBackvec)
 		m_hitMoveSpd = 0.3f;
 	}
 
+	m_notUnderAttackTime = m_mpObj["NotUnderAttackMaxTime"].int_value();
 	m_playerState = blowingAwayHit;
 	m_hitStopCnt = 40;
 	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
@@ -2000,6 +2030,7 @@ void Player::IaiKiriAttackOnHit(Math::Vector3 a_KnocBackvec)
 		scopion2->SetBMantis(false);
 	}
 
+	m_notUnderAttackTime = m_mpObj["NotUnderAttackMaxTime"].int_value();
 	m_playerState = iaiKiriHit;
 	m_hitStopCnt = 40;
 	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();
@@ -2040,6 +2071,7 @@ void Player::CutRaiseOnHit(Math::Vector3 a_KnocBackvec)
 		scopion2->SetBMantis(false);
 	}
 
+	m_notUnderAttackTime = m_mpObj["NotUnderAttackMaxTime"].int_value();
 	m_playerState = cutRaiseHit;
 	m_hitStopCnt = 60;
 	m_hitColorChangeTimeCnt = (*m_wpJsonObj.lock())["HitColorChangeTimeCnt"].int_value();

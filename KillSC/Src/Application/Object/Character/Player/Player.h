@@ -96,6 +96,7 @@ public:
 	const float& GetDashSpd() { return m_dashSpd;}																// 高速移動の速さを渡す
 	const float& GetVForce()  { return m_vForce; }																// 現在のエネルギー量を渡す
 	const float& GetEndurance()  { return m_endurance; }														// 戦闘体の耐久力を渡す
+	const float& GetDamageAmount()  { return m_damageAmount; }														// ダメージ量用の数値を渡す
 	const std::shared_ptr<KdModelWork>& GetModel() { return m_spModel; }										// モデルの情報を渡す
 	const int GetInvincibilityTimeCnt() { return m_invincibilityTimeCnt; }										// 現在の無敵時間を渡す
 	const bool GetBRushAttackPossible() { return m_bRushAttackPossible; }										// ラッシュアタックが可能かどうかを渡す
@@ -157,7 +158,7 @@ private:
 
 	float m_gravity = 0;																							// 重力
 	int m_toleranceComboTime = 0;																					// コンボ許容時間
-	int m_m_toleranceAttackTime = 0;																				// 再攻撃間隔
+	int m_toleranceAttackTime = 0;																					// 再攻撃間隔
 	UINT m_playerState;																								// プレイヤーの状態
 	UINT m_weaponType;																								// 今現在装備している武器
 
@@ -210,6 +211,7 @@ private:
 	Math::Vector3 m_knockBackVec;																					// ノックバックする方向
 	float m_vForce = 0.0f;																							// Vフォース残量
 	float m_endurance = 0.0f;																						// Vフォース体耐久力
+	float m_damageAmount = 0.0f;																					// ダメージ量
 	float m_vForceDownValue = 0.0f;																					// Vフォース消費量
 	float m_graduallyTorionDecVal;																					// 徐々に減ってくVフォース量
 	int m_delayTurnAroundTime;																						// 振り返りを遅らせる時間
@@ -239,4 +241,6 @@ private:
 	bool m_bBlowingAwayHitB;																						// 後ろから吹き飛ばし攻撃を受けた true1
 
 	bool m_bAtttackMoveSpeedDec;																					// 減速させる : true
+
+	int m_notUnderAttackTime;																						// 攻撃を受けていない時間
 };
