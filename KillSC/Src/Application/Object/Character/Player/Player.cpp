@@ -92,7 +92,7 @@ void Player::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_bPlayerDeath = false;
 	m_bPlayerLose = false;
 
-	m_rocKOnPolygon.SetMaterial("Asset/Textures/Ui/Game/ターゲット N 白.png");
+	m_rocKOnPolygon.SetMaterial("Asset/Textures/Ui/Game/lockonMark.png");
 
 	m_hitColorChangeTimeCnt = 0;
 

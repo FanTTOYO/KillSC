@@ -305,16 +305,6 @@ void GameCamera::UpdateRotateByEnemy()
 	// 角度を取得
 	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
 
-	//// 角度制限
-	//if (ang > 5)
-	//{
-	//	ang = 5.0f;
-	//}
-	//if (ang < -5)
-	//{
-	//	ang = -5.0f;
-	//}
-
 	Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
 	if (cross.y >= 0)
 	{

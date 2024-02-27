@@ -695,7 +695,7 @@ void GameUi::DrawSprite()
 
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 		rc = { 0,0,static_cast<int>((spPlayer->GetDamageAmount())), static_cast<int>(m_damageAmountTex.GetHeight()) };
-		color = { 1, 1, 1, 1 };
+		color = { 1, 1, 1, 0.75 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_damageAmountTex, 0, 0, static_cast<int>((spPlayer->GetDamageAmount())), static_cast<int>(m_damageAmountTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
 
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
