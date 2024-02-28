@@ -26,7 +26,6 @@ private:
 	KdTexture m_winPlayerCharaTex;
 	KdTexture m_losePlayerCharaTex;
 	KdTexture m_loseCharaTex;
-	KdTexture m_pushLClickTex;
 	KdTexture m_continueButtonTex;
 	KdTexture m_modeSelectButtonTex;
 
@@ -39,8 +38,6 @@ private:
 	bool m_addFadeAlpha = false;
 
 	bool m_bSceneCangePossible = false;
-	float m_pushLClickAlpha = 0.0f;
-	bool  m_bPushLClickAlphaAdd = false;
 
 	Math::Vector3 m_continueButtonPos;
 	Math::Vector3 m_modeSelectButtonPos;
