@@ -4,14 +4,6 @@
 
 void ResultScene::Event()
 {
-	if (KdInputManager::Instance().IsPress("select"))
-	{
-		if (m_wpUi.lock()->GetBSceneCangePossible())
-		{
-			m_wpUi.lock()->SetAddFadeAlpha();
-		}
-	}
-
 	if (m_wpUi.lock()->GetTime() == 1)
 	{
 		if (SceneManager::Instance().GetBPlayerWin())

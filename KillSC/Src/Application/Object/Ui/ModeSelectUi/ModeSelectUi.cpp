@@ -316,19 +316,16 @@ void ModeSelectUi::Update()
 				if (m_bEnemyBossTypeOneTotal)
 				{
 					SceneManager::Instance().SetEnemyTotal(1);
-					SceneManager::Instance().SetEnemyIeftover(1);
 					SceneManager::Instance().SetBHumanoidEnemy(true);
 				}
 				else if (m_bEnemyBossTypeTwoTotal)
 				{
 					SceneManager::Instance().SetEnemyTotal(1);
-					SceneManager::Instance().SetEnemyIeftover(1);
 					SceneManager::Instance().SetBHumanoidEnemy(false);
 				}
 				else if (m_bTwoEnemyBossTypeOneTotal)
 				{
 					SceneManager::Instance().SetEnemyTotal(2);
-					SceneManager::Instance().SetEnemyIeftover(2);
 					SceneManager::Instance().SetBHumanoidEnemy(true);
 				}
 
@@ -349,7 +346,6 @@ void ModeSelectUi::Update()
 			if (m_bTraining)
 			{
 				SceneManager::Instance().SetEnemyTotal(1);
-				SceneManager::Instance().SetEnemyIeftover(1);
 				SceneManager::Instance().SetBHumanoidEnemy(true);
 
 				SceneManager::Instance().SetNextScene
@@ -377,7 +373,6 @@ void ModeSelectUi::Update()
 			if (m_bChalengeFifty)
 			{
 				SceneManager::Instance().SetEnemyTotal(50);
-				SceneManager::Instance().SetEnemyIeftover(50);
 
 				SceneManager::Instance().SetNextScene
 				(
@@ -388,7 +383,6 @@ void ModeSelectUi::Update()
 			if (m_bChalengeHundred)
 			{
 				SceneManager::Instance().SetEnemyTotal(100);
-				SceneManager::Instance().SetEnemyIeftover(100);
 
 				SceneManager::Instance().SetNextScene
 				(

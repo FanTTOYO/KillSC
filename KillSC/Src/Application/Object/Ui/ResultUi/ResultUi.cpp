@@ -7,6 +7,7 @@ void ResultUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 	m_mpDedicatedObj = m_mpUiSharedObj["ResultUi"].object_items();
 
 	m_screenAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["ScreenAlphaFadeSpeed"].number_value());
+	m_pushLClickAlphaFadeSpeed = static_cast<float>(m_mpUiSharedObj["PushLClickAlphaFadeSpeed"].number_value());
 	m_mouseRadius = m_mpUiSharedObj["MouseRadius"].int_value();
 	m_mouseHalfHeight = m_mpUiSharedObj["MouseHalfHeight"].int_value();
 	m_titleBarHeight = m_mpUiSharedObj["TitleBarHeight"].int_value();
@@ -41,6 +42,7 @@ void ResultUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 	m_winTex.Load("Asset/Textures/Ui/Result/WIN.png");
 	m_lossTex.Load("Asset/Textures/Ui/Result/LOSS.png");
+	m_pushLClickTex.Load("Asset/Textures/Ui/shared/PUSHTLCLICK.png");
 	m_PointTex[0].Load("Asset/Textures/Ui/Result/p0.png");
 	m_PointTex[1].Load("Asset/Textures/Ui/Result/p1.png");
 	m_PointTex[2].Load("Asset/Textures/Ui/Result/p2.png");
@@ -62,6 +64,8 @@ void ResultUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 	m_time = 0;
 	m_bSceneCangePossible = false;
+	m_pushLClickAlpha = 0.0f;
+	m_bPushLClickAlphaAdd = false;
 
 	m_continueButtonPos = Math::Vector3(static_cast<float>(m_mpDedicatedObj["ContinueButtonPos"][0].number_value()),
 			                            static_cast<float>(m_mpDedicatedObj["ContinueButtonPos"][1].number_value()),
@@ -209,24 +213,54 @@ void ResultUi::Update()
 
 	if (m_bSceneCangePossible)
 	{
-		if (ButtomProcessing({ m_continueButtonPos.x,m_continueButtonPos.y }, m_continueButtonTex, m_continueButtonScale))
+		if (SceneManager::Instance().GetBPlayerWin())
 		{
-			if (!m_addFadeAlpha)
+			if (m_bPushLClickAlphaAdd)
 			{
-				m_bContinueButton = true;
+				m_pushLClickAlpha += m_pushLClickAlphaFadeSpeed;
+				if (m_pushLClickAlpha >= 1.0f)
+				{
+					m_pushLClickAlpha = 1.0f;
+					m_bPushLClickAlphaAdd = false;
+				}
+			}
+			else
+			{
+				m_pushLClickAlpha -= m_pushLClickAlphaFadeSpeed;
+				if (m_pushLClickAlpha <= 0.2f)
+				{
+					m_pushLClickAlpha = 0.2f;
+					m_bPushLClickAlphaAdd = true;
+				}
+			}
+
+			if (KdInputManager::Instance().IsPress("select"))
+			{
 				m_addFadeAlpha = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
 			}
 		}
-
-		if (ButtomProcessing({ m_modeSelectButtonPos.x,m_modeSelectButtonPos.y }, m_modeSelectButtonTex, m_modeSelectButtonScale))
+		else
 		{
-			if (!m_addFadeAlpha)
+			if (ButtomProcessing({ m_continueButtonPos.x,m_continueButtonPos.y }, m_continueButtonTex, m_continueButtonScale))
 			{
-				m_bModeSelectButton = true;
-				m_addFadeAlpha = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+				if (!m_addFadeAlpha)
+				{
+					m_bContinueButton = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+				}
 			}
+
+			if (ButtomProcessing({ m_modeSelectButtonPos.x,m_modeSelectButtonPos.y }, m_modeSelectButtonTex, m_modeSelectButtonScale))
+			{
+				if (!m_addFadeAlpha)
+				{
+					m_bModeSelectButton = true;
+					m_addFadeAlpha = true;
+					KdAudioManager::Instance().Play("Asset/Audio/SE/PushButton.wav");
+				}
+			}
+
 		}
 	}
 
@@ -237,14 +271,42 @@ void ResultUi::Update()
 		{
 			m_fadeAlpha = 1.0f;
 
-			if (m_bModeSelectButton)
+			if (SceneManager::Instance().GetBPlayerWin())
 			{
-				KdAudioManager::Instance().StopAllSound();
-				KdAudioManager::Instance().Play("Asset/Audio/BGM/1 Fated Battle loop.wav", true);
 				SceneManager::Instance().SetNextScene
 				(
-					SceneManager::SceneType::select
+					SceneManager::SceneType::title
 				);
+			}
+			else
+			{
+				if (m_bModeSelectButton)
+				{
+					KdAudioManager::Instance().StopAllSound();
+					KdAudioManager::Instance().Play("Asset/Audio/BGM/1 Fated Battle loop.wav", true);
+					SceneManager::Instance().SetNextScene
+					(
+						SceneManager::SceneType::select
+					);
+				}
+
+				if (m_bContinueButton)
+				{
+					if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
+					{
+						SceneManager::Instance().SetNextScene
+						(
+							SceneManager::SceneType::battle
+						);
+					}
+					else if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+					{
+						SceneManager::Instance().SetNextScene
+						(
+							SceneManager::SceneType::challenge
+						);
+					}
+				}
 			}
 		}
 	}
@@ -645,19 +707,34 @@ void ResultUi::DrawSprite()
 
 	if (m_pointAddOrSubVal == 0)
 	{
-		mat = Math::Matrix::CreateScale(m_continueButtonScale) * Math::Matrix::CreateTranslation(m_continueButtonPos);
+		if (SceneManager::Instance().GetBPlayerWin())
+		{
+			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][0].number_value()),
+				static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][1].number_value()),
+				static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][2].number_value()));
 
-		Math::Rectangle rc = { 0,0,static_cast<int>(m_continueButtonTex.GetWidth()), static_cast<int>(m_continueButtonTex.GetHeight()) };
-		color = { 1,1,1,1 };
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_continueButtonTex, 0, 0, static_cast<int>(m_continueButtonTex.GetWidth()), static_cast<int>(m_continueButtonTex.GetHeight()), &rc, &color);
+			Math::Rectangle rc = { 0,0,static_cast<int>(m_pushLClickTex.GetWidth()), static_cast<int>(m_pushLClickTex.GetHeight()) };
+			color = { 1,1,1,m_pushLClickAlpha };
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_pushLClickTex, 0, 0, static_cast<int>(m_pushLClickTex.GetWidth()), static_cast<int>(m_pushLClickTex.GetHeight()), &rc, &color);
+		}
+		else
+		{
 
-		mat = Math::Matrix::CreateScale(m_modeSelectButtonScale) * Math::Matrix::CreateTranslation(m_modeSelectButtonPos);
+			mat = Math::Matrix::CreateScale(m_continueButtonScale) * Math::Matrix::CreateTranslation(m_continueButtonPos);
 
-		rc = { 0,0,static_cast<int>(m_modeSelectButtonTex.GetWidth()), static_cast<int>(m_modeSelectButtonTex.GetHeight()) };
-		color = { 1,1,1,1 };
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_modeSelectButtonTex, 0, 0, static_cast<int>(m_modeSelectButtonTex.GetWidth()), static_cast<int>(m_modeSelectButtonTex.GetHeight()), &rc, &color);
+			Math::Rectangle rc = { 0,0,static_cast<int>(m_continueButtonTex.GetWidth()), static_cast<int>(m_continueButtonTex.GetHeight()) };
+			color = { 1,1,1,1 };
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_continueButtonTex, 0, 0, static_cast<int>(m_continueButtonTex.GetWidth()), static_cast<int>(m_continueButtonTex.GetHeight()), &rc, &color);
+
+			mat = Math::Matrix::CreateScale(m_modeSelectButtonScale) * Math::Matrix::CreateTranslation(m_modeSelectButtonPos);
+
+			rc = { 0,0,static_cast<int>(m_modeSelectButtonTex.GetWidth()), static_cast<int>(m_modeSelectButtonTex.GetHeight()) };
+			color = { 1,1,1,1 };
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_modeSelectButtonTex, 0, 0, static_cast<int>(m_modeSelectButtonTex.GetWidth()), static_cast<int>(m_modeSelectButtonTex.GetHeight()), &rc, &color);
+		}
 	}
 
 	transMat = Math::Matrix::Identity;

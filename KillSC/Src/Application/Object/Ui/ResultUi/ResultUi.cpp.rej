@@ -1,0 +1,9 @@
+diff a/KillSC/Src/Application/Object/Ui/ResultUi/ResultUi.cpp b/KillSC/Src/Application/Object/Ui/ResultUi/ResultUi.cpp	(rejected hunks)
+@@ -209,7 +209,6 @@
+ 
+ 	if (m_bSceneCangePossible)
+ 	{
+-		if (m_bPushLClickAlphaAdd)
+ 		if (ButtomProcessing({ m_continueButtonPos.x,m_continueButtonPos.y }, m_continueButtonTex, m_continueButtonScale))
+ 		{
+ 			if (!m_addFadeAlpha)
