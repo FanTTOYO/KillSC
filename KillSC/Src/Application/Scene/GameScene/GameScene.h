@@ -9,7 +9,7 @@
 #define MAX_STATE_TIME_CNT 240							// カウントダウンが終わる時間
 #define MAX_ENEMY_ATTACK_CNT 4							// 敵が同時に攻撃できる人数
 #define ENEMY_APPEARANCE_MOMENT 25						// 敵が出現する瞬間
-#define CHARENGE_ENEMY_APPEARANCEDELAY_TIME 600			// チャレンジで敵が出現するまでの間隔時間
+#define CHARENGE_ENEMY_APPEARANCEDELAY_TIME 450			// チャレンジで敵が出現するまでの間隔時間
 
 class Player;
 class Ui;

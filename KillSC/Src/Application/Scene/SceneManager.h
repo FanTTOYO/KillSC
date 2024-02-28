@@ -42,6 +42,7 @@ public:
 	}
 
 	const SceneType GetSceneType() { return m_currentSceneType; }
+	const SceneType GetPreviousSceneType() { return m_previousSceneType; }
 
 	const std::list<std::shared_ptr<KdGameObject>>&  GetObjList();
 	void AddObject(const std::shared_ptr<KdGameObject>& _obj);
@@ -90,6 +91,9 @@ private:
 	SceneType m_currentSceneType = SceneType::title;
 	// 次のシーンを管理しているデータ（変数）
 	SceneType m_nextSceneType = m_currentSceneType;
+
+	// 一つ前のシーンを管理しているデータ
+	SceneType m_previousSceneType;
 
 	bool m_bPlayerWin;           // playerが勝ってる
 	int  m_pointAddOrSubVal;     // 加算値か減算値

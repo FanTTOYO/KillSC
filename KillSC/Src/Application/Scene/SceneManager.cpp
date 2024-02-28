@@ -82,6 +82,7 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 		m_updateStopCnt = 0;
 		m_enemyDrawTotal = 0;
 		m_screenVibFrames = 0;
+		m_enemyIeftover = m_enemyTotal;
 		m_currentScene = std::make_shared<GameScene>();
 		break;
 	case SceneType::result:
@@ -103,5 +104,6 @@ void SceneManager::ChangeScene(SceneType _sceneType)
 		break;
 	}
 
+	m_previousSceneType = m_currentSceneType;
 	m_currentSceneType = _sceneType;
 }

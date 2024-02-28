@@ -292,14 +292,14 @@ void ResultUi::Update()
 
 				if (m_bContinueButton)
 				{
-					if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::battle)
+					if (SceneManager::Instance().GetPreviousSceneType() == SceneManager::SceneType::battle)
 					{
 						SceneManager::Instance().SetNextScene
 						(
 							SceneManager::SceneType::battle
 						);
 					}
-					else if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
+					else if (SceneManager::Instance().GetPreviousSceneType() == SceneManager::SceneType::challenge)
 					{
 						SceneManager::Instance().SetNextScene
 						(
@@ -710,8 +710,8 @@ void ResultUi::DrawSprite()
 		if (SceneManager::Instance().GetBPlayerWin())
 		{
 			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][0].number_value()),
-				static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][1].number_value()),
-				static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][2].number_value()));
+				                                       static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["PushLClickTexPos"][2].number_value()));
 
 			Math::Rectangle rc = { 0,0,static_cast<int>(m_pushLClickTex.GetWidth()), static_cast<int>(m_pushLClickTex.GetHeight()) };
 			color = { 1,1,1,m_pushLClickAlpha };
