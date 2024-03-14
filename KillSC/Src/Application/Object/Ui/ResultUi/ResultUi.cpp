@@ -309,15 +309,15 @@ void ResultUi::DrawSprite()
 		if (SceneManager::Instance().GetBPlayerWin())
 		{
 			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WinTexPos"][0].number_value()),
-				static_cast<float>(m_mpDedicatedObj["WinTexPos"][1].number_value()),
-				static_cast<float>(m_mpDedicatedObj["WinTexPos"][2].number_value()));
+				                                       static_cast<float>(m_mpDedicatedObj["WinTexPos"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WinTexPos"][2].number_value()));
 
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winTex, 0, 0, static_cast<int>(m_winTex.GetWidth()), static_cast<int>(m_winTex.GetHeight()));
 
 			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["WinPlayerCharaTexPos"][0].number_value()),
-				static_cast<float>(m_mpDedicatedObj["WinPlayerCharaTexPos"][1].number_value()),
-				static_cast<float>(m_mpDedicatedObj["WinPlayerCharaTexPos"][2].number_value()));
+				                                       static_cast<float>(m_mpDedicatedObj["WinPlayerCharaTexPos"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WinPlayerCharaTexPos"][2].number_value()));
 
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winPlayerCharaTex, 0, 0, static_cast<int>(m_winPlayerCharaTex.GetWidth()), static_cast<int>(m_winPlayerCharaTex.GetHeight()));
@@ -326,8 +326,8 @@ void ResultUi::DrawSprite()
 			{
 			case 1:
 				transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][0].number_value()),
-					static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][1].number_value()),
-					static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][2].number_value()));
+					                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][1].number_value()),
+					                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][2].number_value()));
 
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -339,8 +339,8 @@ void ResultUi::DrawSprite()
 					if (m_time >= 80)
 					{
 						transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][0].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][1].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][2].number_value()));
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][1].number_value()),
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][2].number_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -349,8 +349,8 @@ void ResultUi::DrawSprite()
 					if (m_time >= 100)
 					{
 						transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][0].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][1].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][2].number_value()));
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][1].number_value()),
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][2].number_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -358,8 +358,8 @@ void ResultUi::DrawSprite()
 					break;
 				case 1:
 					transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][0].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][1].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][2].number_value()));
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][1].number_value()),
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][2].number_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -373,8 +373,8 @@ void ResultUi::DrawSprite()
 					if (m_time >= 70)
 					{
 						transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_One"][0].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_One"][1].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_One"][2].number_value()));
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_One"][1].number_value()),
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_One"][2].number_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -383,8 +383,8 @@ void ResultUi::DrawSprite()
 					if (m_time >= 90)
 					{
 						transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Two"][0].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Two"][1].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Two"][2].number_value()));
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Two"][1].number_value()),
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Two"][2].number_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -393,8 +393,8 @@ void ResultUi::DrawSprite()
 					if (m_time >= 110)
 					{
 						transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Three"][0].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Three"][1].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Three"][2].number_value()));
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Three"][1].number_value()),
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalThreeWhenToLoseEnemyCharaTexPos_Three"][2].number_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -404,8 +404,8 @@ void ResultUi::DrawSprite()
 					if (m_time >= 80)
 					{
 						transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][0].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][1].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][2].number_value()));
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][1].number_value()),
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_One"][2].number_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -414,8 +414,8 @@ void ResultUi::DrawSprite()
 					if (m_time >= 100)
 					{
 						transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][0].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][1].number_value()),
-							static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][2].number_value()));
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][1].number_value()),
+							                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalTwoWhenToLoseEnemyCharaTexPos_Two"][2].number_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -423,8 +423,8 @@ void ResultUi::DrawSprite()
 					break;
 				case 2:
 					transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][0].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][1].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][2].number_value()));
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][1].number_value()),
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyKillsTotalOneLoseEnemyCharaTexPos"][2].number_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -441,8 +441,8 @@ void ResultUi::DrawSprite()
 					for (int j = 0; j < 5; j++)
 					{
 						transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][0].int_value() + m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][0].int_value() * j),
-							static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][1].int_value() * i),
-							static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
+							                                                                         static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][1].int_value() * i),
+							                                                                         static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
 					}
@@ -451,8 +451,8 @@ void ResultUi::DrawSprite()
 				for (int k = 0; k < ieftoverExcess; k++)
 				{
 					transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][0].int_value() + m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][0].int_value() * k),
-						static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][1].int_value() * ieftover),
-						static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
+						                                                                         static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][1].int_value() * ieftover),
+						                                                                         static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -468,8 +468,8 @@ void ResultUi::DrawSprite()
 					for (int j = 0; j < 5; j++)
 					{
 						transMat = Math::Matrix::CreateScale(0.075f) * Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][0].int_value() + m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][0].int_value() * j),
-							static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][1].int_value() * i),
-							static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
+							                                                                           static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][1].int_value() * i),
+							                                                                           static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -479,8 +479,8 @@ void ResultUi::DrawSprite()
 				for (int k = 0; k < ieftoverExcess; k++)
 				{
 					transMat = Math::Matrix::CreateScale(0.075f) * Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][0].int_value() + m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][0].int_value() * k),
-						static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][1].int_value() * ieftover),
-						static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
+						                                                                           static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][1].int_value() * ieftover),
+						                                                                           static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -493,15 +493,15 @@ void ResultUi::DrawSprite()
 		else
 		{
 			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["LoseTexPos"][0].number_value()),
-				static_cast<float>(m_mpDedicatedObj["LoseTexPos"][1].number_value()),
-				static_cast<float>(m_mpDedicatedObj["LoseTexPos"][2].number_value()));
+				                                       static_cast<float>(m_mpDedicatedObj["LoseTexPos"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["LoseTexPos"][2].number_value()));
 
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_lossTex, 0, 0, static_cast<int>(m_lossTex.GetWidth()), static_cast<int>(m_lossTex.GetHeight()));
 
 			transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["LosePlayerCharaTexPos"][0].number_value()),
-				static_cast<float>(m_mpDedicatedObj["LosePlayerCharaTexPos"][1].number_value()),
-				static_cast<float>(m_mpDedicatedObj["LosePlayerCharaTexPos"][2].number_value()));
+				                                       static_cast<float>(m_mpDedicatedObj["LosePlayerCharaTexPos"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["LosePlayerCharaTexPos"][2].number_value()));
 
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_losePlayerCharaTex, 0, 0, static_cast<int>(m_losePlayerCharaTex.GetWidth()), static_cast<int>(m_losePlayerCharaTex.GetHeight()));
@@ -510,8 +510,8 @@ void ResultUi::DrawSprite()
 			{
 			case 1:
 				transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyTotalOneWinEnemyCharaTexPos"][0].number_value()),
-					static_cast<float>(m_mpDedicatedObj["EnemyTotalOneWinEnemyCharaTexPos"][1].number_value()),
-					static_cast<float>(m_mpDedicatedObj["EnemyTotalOneWinEnemyCharaTexPos"][2].number_value()));
+					                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalOneWinEnemyCharaTexPos"][1].number_value()),
+					                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalOneWinEnemyCharaTexPos"][2].number_value()));
 
 				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, static_cast<int>(m_winCharaTex.GetWidth()), static_cast<int>(m_winCharaTex.GetHeight()));
@@ -520,8 +520,8 @@ void ResultUi::DrawSprite()
 				if (m_time >= 80)
 				{
 					transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_One"][0].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_One"][1].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_One"][2].number_value()));
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_One"][1].number_value()),
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_One"][2].number_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, static_cast<int>(m_winCharaTex.GetWidth()), static_cast<int>(m_winCharaTex.GetHeight()));
@@ -530,8 +530,8 @@ void ResultUi::DrawSprite()
 				if (m_time >= 100)
 				{
 					transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_Two"][0].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_Two"][1].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_Two"][2].number_value()));
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_Two"][1].number_value()),
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalTwoWhenToWinEnemyCharaTexPos_Two"][2].number_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, static_cast<int>(m_winCharaTex.GetWidth()), static_cast<int>(m_winCharaTex.GetHeight()));
@@ -541,8 +541,8 @@ void ResultUi::DrawSprite()
 				if (m_time >= 70)
 				{
 					transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_One"][0].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_One"][1].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_One"][2].number_value()));
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_One"][1].number_value()),
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_One"][2].number_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, static_cast<int>(m_winCharaTex.GetWidth()), static_cast<int>(m_winCharaTex.GetHeight()));
@@ -551,8 +551,8 @@ void ResultUi::DrawSprite()
 				if (m_time >= 90)
 				{
 					transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Two"][0].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Two"][1].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Two"][2].number_value()));
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Two"][1].number_value()),
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Two"][2].number_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, static_cast<int>(m_winCharaTex.GetWidth()), static_cast<int>(m_winCharaTex.GetHeight()));
@@ -561,8 +561,8 @@ void ResultUi::DrawSprite()
 				if (m_time >= 110)
 				{
 					transMat = Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Three"][0].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Three"][1].number_value()),
-						static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Three"][2].number_value()));
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Three"][1].number_value()),
+						                                       static_cast<float>(m_mpDedicatedObj["EnemyTotalThreeWhenToWinEnemyCharaTexPos_Three"][2].number_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_winCharaTex, 0, 0, static_cast<int>(m_winCharaTex.GetWidth()), static_cast<int>(m_winCharaTex.GetHeight()));
@@ -578,8 +578,8 @@ void ResultUi::DrawSprite()
 					for (int j = 0; j < 5; j++)
 					{
 						transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][0].int_value() + m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][0].int_value() * j),
-							static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][1].int_value() * i),
-							static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
+							                                                                         static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][1].int_value() * i),
+							                                                                         static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -589,8 +589,8 @@ void ResultUi::DrawSprite()
 				for (int k = 0; k < ieftoverExcess; k++)
 				{
 					transMat = Math::Matrix::CreateScale(0.2f) * Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][0].int_value() + m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][0].int_value() * k),
-						static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][1].int_value() * ieftover),
-						static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
+						                                                                         static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeFiftyTexPosAddVal"][1].int_value() * ieftover),
+						                                                                         static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -606,8 +606,8 @@ void ResultUi::DrawSprite()
 					for (int j = 0; j < 5; j++)
 					{
 						transMat = Math::Matrix::CreateScale(0.075f) * Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][0].int_value() + m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][0].int_value() * j),
-							static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][1].int_value() * i),
-							static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
+							                                                                           static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][1].int_value() * i),
+							                                                                           static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
 
 						KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 						KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -617,8 +617,8 @@ void ResultUi::DrawSprite()
 				for (int k = 0; k < ieftoverExcess; k++)
 				{
 					transMat = Math::Matrix::CreateScale(0.075f) * Math::Matrix::CreateTranslation(static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][0].int_value() + m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][0].int_value() * k),
-						static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][1].int_value() * ieftover),
-						static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
+						                                                                           static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][1].int_value() - m_mpDedicatedObj["ChallengeHundredTexPosAddVal"][1].int_value() * ieftover),
+						                                                                           static_cast<float>(m_mpDedicatedObj["ChallengeEnemyCharaTexPos"][2].int_value()));
 
 					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_loseCharaTex, 0, 0, static_cast<int>(m_loseCharaTex.GetWidth()), static_cast<int>(m_loseCharaTex.GetHeight()));
@@ -635,8 +635,8 @@ void ResultUi::DrawSprite()
 		for (int i = 1; i <= 1000; i *= 10)
 		{
 			transMat = Math::Matrix::CreateTranslation(xVal,
-				static_cast<float>(m_mpDedicatedObj["WeaponPointAddOrSubVal"][1].number_value()),
-				static_cast<float>(m_mpDedicatedObj["WeaponPointAddOrSubVal"][2].number_value()));
+			                                           static_cast<float>(m_mpDedicatedObj["WeaponPointAddOrSubVal"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponPointAddOrSubVal"][2].number_value()));
 
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_PointTex[(m_pointAddOrSubVal / i) % 10], 0, 0, static_cast<int>(m_PointTex[(m_pointAddOrSubVal / i) % 10].GetWidth()),
@@ -652,12 +652,12 @@ void ResultUi::DrawSprite()
 		for (int i = 1; i <= 10000; i *= 10)
 		{
 			transMat = Math::Matrix::CreateTranslation(xVal,
-				static_cast<float>(m_mpDedicatedObj["WeaponPointTexPos"][1].number_value()),
-				static_cast<float>(m_mpDedicatedObj["WeaponPointTexPos"][2].number_value()));
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponPointTexPos"][1].number_value()),
+				                                       static_cast<float>(m_mpDedicatedObj["WeaponPointTexPos"][2].number_value()));
 
 			KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_PointTex[(m_weaponPoint / i) % 10], 0, 0, static_cast<int>(m_PointTex[(m_weaponPoint / i) % 10].GetWidth()),
-				static_cast<int>(m_PointTex[(m_weaponPoint / i) % 10].GetHeight()));
+				                                                static_cast<int>(m_PointTex[(m_weaponPoint / i) % 10].GetHeight()));
 
 			xVal -= 80;
 		}

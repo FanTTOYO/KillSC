@@ -47,6 +47,4 @@ private:
 
 	bool m_bContinueButton;
 	bool m_bModeSelectButton;
-
-	
 };

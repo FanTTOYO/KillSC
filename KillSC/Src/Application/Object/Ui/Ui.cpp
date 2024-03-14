@@ -123,7 +123,6 @@ bool Ui::ButtomProcessing(Math::Vector2 a_pos, const KdTexture& a_tex, float& a_
 		a_scale = a_originalScale;
 	}
 
-	return false;
-
 	KdSafeDelete(pwi);
+	return false;
 }

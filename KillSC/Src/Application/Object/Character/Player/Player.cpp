@@ -3711,7 +3711,7 @@ void Player::ScorpionAttackAnimationMoveProcess()
 						m_attackMoveSpd = static_cast<float>(m_mpObj["RLAttackRushFiveAndSixShakenMomentMoveSpeed"].number_value());
 					}
 
-					if (m_attackAnimeCnt == (*m_wpJsonObj.lock())["RushLastAttackPointTime"].int_value())
+					if (m_attackAnimeCnt == m_mpObj["RushLastAttackPointTime"].int_value())
 					{
 						m_attackMoveSpd = static_cast<float>(m_mpObj["RushLastAttackMoveSpeed"].number_value());
 					}
@@ -3910,7 +3910,7 @@ void Player::OverStageChaeck()
 // 敵をロックオンする処理＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 void Player::EnemyRockOn()
 {
-	if (GetAsyncKeyState(VK_MBUTTON) & 0x80000)
+	if (KdInputManager::Instance().IsPress("rockOn"))
 	{
 		if (!m_bMButtonState)
 		{

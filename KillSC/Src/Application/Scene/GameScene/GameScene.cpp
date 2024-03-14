@@ -617,35 +617,7 @@ void GameScene::Event()
 							}
 						}
 
-						std::shared_ptr<Bldg> bldg;
-						std::ifstream ifs("Asset/Data/BldgInfoBackUpBossOne.csv");
-						std::string str, filed;
-						while (getline(ifs, str))
-						{
-							bldg = std::make_shared<Bldg>();
-							std::istringstream ss(str);
-							int j = 0;
-							std::string aStr[8];
-
-							while (getline(ss, filed, ','))
-							{
-								aStr[j] = filed;
-								j++;
-							}
-
-							if (j >= 7)
-							{
-								bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4], Math::Vector3(stof(aStr[5]), stof(aStr[6]), stof(aStr[7])));
-							}
-							else
-							{
-								bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4]);
-
-							}
-							m_objList.push_back(bldg);
-
-							m_wpGameCamera.lock()->SetHitObj(bldg);
-						}
+						CreateBldg("Asset/Data/BldgInfoBackUpBossOne.csv", m_wpGameCamera.lock());
 					}
 					m_objList.push_back(enemy);
 					m_wpEnemyList.push_back(enemy);
@@ -692,34 +664,7 @@ void GameScene::Init()
 	m_objList.push_back(ground);
 	camera->SetHitObj(ground);
 
-	std::shared_ptr<Bldg> bldg;
-	std::ifstream ifs("Asset/Data/BldgInfoBackUp.csv");
-	std::string str, filed;
-	while (getline(ifs, str))
-	{
-		bldg = std::make_shared<Bldg>();
-		std::istringstream ss(str);
-		int i = 0;
-		std::string aStr[8];
-
-		while (getline(ss, filed, ','))
-		{
-			aStr[i] = filed;
-			i++;
-		}
-
-		if (i >= 7)
-		{
-			bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4], Math::Vector3(stof(aStr[5]), stof(aStr[6]), stof(aStr[7])));
-		}
-		else
-		{
-			bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4]);
-		}
-		m_objList.push_back(bldg);
-
-		camera->SetHitObj(bldg);
-	}
+	CreateBldg("Asset/Data/BldgInfoBackUp.csv", camera);
 
 	std::shared_ptr<InvisibleWall> invisibleWall;
 	invisibleWall = std::make_shared<InvisibleWall>();
@@ -754,4 +699,36 @@ void GameScene::Init()
 
 	SetCursorPos(640, 360);
 	KdAudioManager::Instance().Play("Asset/Audio/SE/CntDwon1.wav");
+}
+
+void GameScene::CreateBldg(std::string a_fileName, std::shared_ptr<GameCamera> a_gameCamera)
+{
+	std::shared_ptr<Bldg> bldg;
+	std::ifstream ifs(a_fileName);
+	std::string str, filed;
+	while (getline(ifs, str))
+	{
+		bldg = std::make_shared<Bldg>();
+		std::istringstream ss(str);
+		int i = 0;
+		std::string aStr[8];
+
+		while (getline(ss, filed, ','))
+		{
+			aStr[i] = filed;
+			i++;
+		}
+
+		if (i >= 7)
+		{
+			bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4], Math::Vector3(stof(aStr[5]), stof(aStr[6]), stof(aStr[7])));
+		}
+		else
+		{
+			bldg->CreateBldg(aStr[0], Math::Vector3(stof(aStr[1]), stof(aStr[2]), stof(aStr[3])), aStr[4]);
+		}
+		m_objList.push_back(bldg);
+
+		a_gameCamera->SetHitObj(bldg);
+	}
 }

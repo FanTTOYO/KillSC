@@ -181,6 +181,7 @@ bool Application::Init(int w, int h)
 	KdInputButtonForWindows* pRWeaponChange = new KdInputButtonForWindows('E');
 	KdInputButtonForWindows* pLWeaponChange = new KdInputButtonForWindows('Q');
 	KdInputButtonForWindows* pTutorialEnemyPosInit = new KdInputButtonForWindows('P');
+	KdInputButtonForWindows* pRockOn = new KdInputButtonForWindows(VK_MBUTTON);
 
 	keyboardCollector->AddButton("forward", pForward);
 	keyboardCollector->AddButton("left", pLeft);
@@ -189,6 +190,7 @@ bool Application::Init(int w, int h)
 	keyboardCollector->AddButton("rWeaponChange", pRWeaponChange);
 	keyboardCollector->AddButton("lWeaponChange", pLWeaponChange);
 	keyboardCollector->AddButton("TutorialEnemyPosInit", pTutorialEnemyPosInit);
+	keyboardCollector->AddButton("rockOn", pRockOn);
 
 	KdInputAxisForWindows* pMove = new KdInputAxisForWindows(keyboardCollector->GetButton("forward"), keyboardCollector->GetButton("right"),
 		keyboardCollector->GetButton("backward"), keyboardCollector->GetButton("left"));

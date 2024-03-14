@@ -26,6 +26,7 @@ private:
 
 	void Event()override;
 	void Init()override;
+	void CreateBldg(std::string a_fileName,std::shared_ptr<GameCamera> a_gameCamera);
 
 	std::weak_ptr<Player> m_wpPlayer;
 	std::weak_ptr<Ui> m_wpUi;
