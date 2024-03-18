@@ -92,7 +92,7 @@ void Bldg::CreateBldg(std::string a_CollName, Math::Vector3 a_pos, std::string a
 
 	m_pCollider = std::make_unique<KdCollider>();
 	m_pCollider->RegisterCollisionShape
-	(a_CollName, m_pModel, KdCollider::TypeGround);
+	(a_CollName, m_pModel, KdCollider::TypeGround | KdCollider::TypeSpeedDec);
 
 	Math::Matrix transMat = Math::Matrix::CreateTranslation(a_pos);
 

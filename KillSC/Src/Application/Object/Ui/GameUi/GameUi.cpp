@@ -153,6 +153,46 @@ void GameUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 void GameUi::Update()
 {
+	if (GetAsyncKeyState(VK_TAB) & 0x8000)
+	{
+		if (!m_bTABKey)
+		{
+			m_bTABKey = true;
+			if (!m_bOption)
+			{
+				m_bOption = true;
+				KdAudioManager::Instance().PauseAllSound();
+				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
+				ShowCursor(true); // マウスカーソルを出現させる
+				KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
+			}
+			else if (m_bOption)
+			{
+				m_bOption = false;
+				m_bWeaponDataPage = false;
+				m_bWeaponDataHopperPage = false;
+				m_bWeaponDataScoPage = true;
+				m_bHowToPage = true;
+				m_bOperation = false;
+				SetCursorPos(640, 360);
+				KdAudioManager::Instance().ResumeAllSound();
+				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
+				ShowCursor(false); // マウスカーソルを消す
+				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
+			}
+		}
+	}
+	else
+	{
+		m_bTABKey = false;
+	}
+
+	if (m_bOption)
+	{
+		OptionUpdate();
+		return;
+	}
+
 	if (m_time == 0)
 	{
 		if (SceneManager::Instance().GetSceneType() == SceneManager::SceneType::challenge)
@@ -346,86 +386,45 @@ void GameUi::Update()
 				}
 			}
 		}
-
-		if (GetAsyncKeyState(VK_TAB) & 0x8000)
+	
+		if (m_gameTimeCntDeray >= 60)
 		{
-			if (!m_bTABKey)
+			m_gameTimeCntDeray = 0;
+			if (m_gameTimeS1 == 0)
 			{
-				m_bTABKey = true;
-				if (!m_bOption)
+				if (m_gameTimeS10 == 0)
 				{
-					m_bOption = true;
-					KdAudioManager::Instance().PauseAllSound();
-					KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-					ShowCursor(true); // マウスカーソルを出現させる
-					KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
-				}
-				else if (m_bOption)
-				{
-					m_bOption = false;
-					m_bWeaponDataPage = false;
-					m_bWeaponDataHopperPage = false;
-					m_bWeaponDataScoPage = true;
-					m_bHowToPage = true;
-					m_bOperation = false;
-					SetCursorPos(640, 360);
-					KdAudioManager::Instance().ResumeAllSound();
-					KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-					ShowCursor(false); // マウスカーソルを消す
-					KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
-				}
-			}
-		}
-		else
-		{
-			m_bTABKey = false;
-		}
-
-		if (m_bOption)
-		{
-			OptionUpdate();
-		}
-		else
-		{
-			if (m_gameTimeCntDeray >= 60)
-			{
-				m_gameTimeCntDeray = 0;
-				if (m_gameTimeS1 == 0)
-				{
-					if (m_gameTimeS10 == 0)
+					if (m_gameTimeM1 == 0)
 					{
-						if (m_gameTimeM1 == 0)
+						if (m_gameTimeM10 != 0)
 						{
-							if (m_gameTimeM10 != 0)
-							{
-								m_gameTimeM10--;
-								m_gameTimeM1 = 9;
-								m_gameTimeS10 = 5;
-								m_gameTimeS1 = 9;
-							}
-						}
-						else
-						{
-							m_gameTimeM1--;
+							m_gameTimeM10--;
+							m_gameTimeM1 = 9;
 							m_gameTimeS10 = 5;
 							m_gameTimeS1 = 9;
 						}
 					}
 					else
 					{
-						m_gameTimeS10--;
+						m_gameTimeM1--;
+						m_gameTimeS10 = 5;
 						m_gameTimeS1 = 9;
 					}
 				}
 				else
 				{
-					m_gameTimeS1--;
+					m_gameTimeS10--;
+					m_gameTimeS1 = 9;
 				}
 			}
 			else
 			{
-				++m_gameTimeCntDeray;
+				m_gameTimeS1--;
 			}
+		}
+		else
+		{
+			++m_gameTimeCntDeray;
 		}
 	}
 }
@@ -985,9 +984,15 @@ void GameUi::OptionUpdate()
 		if (ButtomProcessing({ m_backPos.x,m_backPos.y }, m_backTex, m_backScale))
 		{
 			m_bOption = false;
-			ShowCursor(false); // マウスカーソルを消す
+			m_bWeaponDataPage = false;
+			m_bWeaponDataHopperPage = false;
+			m_bWeaponDataScoPage = true;
+			m_bHowToPage = true;
+			m_bOperation = false;
 			SetCursorPos(640, 360);
-			KdAudioManager::Instance().Play("Asset/Audio/SE/backPush.wav");
+			KdAudioManager::Instance().ResumeAllSound();
+			KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
+			ShowCursor(false); // マウスカーソルを消す
 			KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
 		}
 
@@ -1017,6 +1022,8 @@ void GameUi::OptionUpdate()
 				if (m_bSelect)
 				{
 					KdEffekseerManager::GetInstance().Reset();
+					KdAudioManager::Instance().StopAllSound();
+					KdAudioManager::Instance().Play("Asset/Audio/BGM/1 Fated Battle loop.wav", true);
 					SceneManager::Instance().SetNextScene
 					(
 						SceneManager::SceneType::select

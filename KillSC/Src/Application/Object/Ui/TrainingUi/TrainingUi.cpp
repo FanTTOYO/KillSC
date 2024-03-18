@@ -152,6 +152,47 @@ void TrainingUi::Init(std::weak_ptr<json11::Json> a_wpJsonObj)
 
 void TrainingUi::Update()
 {
+	if (GetAsyncKeyState(VK_TAB) & 0x8000)
+	{
+		if (!m_bTABKey)
+		{
+			m_bTABKey = true;
+			m_bTABKey = true;
+			if (!m_bOption)
+			{
+				m_bOption = true;
+				KdAudioManager::Instance().PauseAllSound();
+				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
+				ShowCursor(true); // マウスカーソルを出現させる
+				KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
+			}
+			else if (m_bOption)
+			{
+				m_bOption = false;
+				m_bWeaponDataPage = false;
+				m_bWeaponDataHopperPage = false;
+				m_bWeaponDataScoPage = true;
+				m_bHowToPage = true;
+				m_bOperation = false;
+				SetCursorPos(640, 360);
+				KdAudioManager::Instance().ResumeAllSound();
+				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
+				ShowCursor(false); // マウスカーソルを消す
+				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
+			}
+		}
+	}
+	else
+	{
+		m_bTABKey = false;
+	}
+
+	if (m_bOption)
+	{
+		OptionUpdate();
+		return;
+	}
+
 	if (m_time <= m_mpDedicatedObj["MaxTime"].int_value())
 	{
 		m_time++;
@@ -246,43 +287,6 @@ void TrainingUi::Update()
 			m_countGoAlpha = 0.0f;
 			SetCursorPos(640, 360);
 		}
-	}
-
-	if (GetAsyncKeyState(VK_TAB) & 0x8000)
-	{
-		if (!m_bTABKey)
-		{
-			m_bTABKey = true;
-			if (!m_bOption)
-			{
-				m_bOption = true;
-				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-				ShowCursor(true); // マウスカーソルを消す
-				KdEffekseerManager::GetInstance().OnPauseEfkUpdate();
-			}
-			else if (m_bOption)
-			{
-				m_bOption = false;
-				m_bWeaponDataPage = false;
-				m_bWeaponDataHopperPage = false;
-				m_bWeaponDataScoPage = true;
-				m_bHowToPage = true;
-				m_bOperation = false;
-				SetCursorPos(640, 360);
-				KdAudioManager::Instance().Play("Asset/Audio/SE/OpenMenu.wav");
-				ShowCursor(false); // マウスカーソルを消す
-				KdEffekseerManager::GetInstance().OnResumeEfkUpdate();
-			}
-		}
-	}
-	else
-	{
-		m_bTABKey = false;
-	}
-
-	if (m_bOption)
-	{
-		OptionUpdate();
 	}
 }
 
@@ -740,6 +744,8 @@ void TrainingUi::OptionUpdate()
 				if (m_bSelect)
 				{
 					KdEffekseerManager::GetInstance().Reset();
+					KdAudioManager::Instance().StopAllSound();
+					KdAudioManager::Instance().Play("Asset/Audio/BGM/1 Fated Battle loop.wav", true);
 					SceneManager::Instance().SetNextScene
 					(
 						SceneManager::SceneType::select

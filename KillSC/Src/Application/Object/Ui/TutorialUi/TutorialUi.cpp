@@ -365,75 +365,6 @@ void TutorialUi::DrawSprite()
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_divisionSignTex, 0, 0, static_cast<int>(m_divisionSignTex.GetWidth()), static_cast<int>(m_divisionSignTex.GetHeight()));
 	}
 
-	if (m_bOption)
-	{
-		transMat = Math::Matrix::Identity;
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-		color = { 0,0,0,0.6f };
-		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
-
-		if (!m_bOperation)
-		{
-			mat = Math::Matrix::CreateScale(m_operationScale) * Math::Matrix::CreateTranslation(m_operationPos);
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_operationTex, 0, 0, static_cast<int>(m_operationTex.GetWidth()), static_cast<int>(m_operationTex.GetHeight()));
-
-			mat = Math::Matrix::CreateScale(m_selectScale) * Math::Matrix::CreateTranslation(m_selectPos);
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectTex, 0, 0, static_cast<int>(m_selectTex.GetWidth()), static_cast<int>(m_selectTex.GetHeight()));
-
-			mat = Math::Matrix::CreateScale(m_exitScale) * Math::Matrix::CreateTranslation(m_exitPos);
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_exitTex, 0, 0, static_cast<int>(m_exitTex.GetWidth()), static_cast<int>(m_exitTex.GetHeight()));
-		}
-		else if (m_bOperation)
-		{
-			if (m_bHowToPage)
-			{
-				transMat = Math::Matrix::Identity;
-				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_howToTex, 0, 0, static_cast<int>(m_howToTex.GetWidth()), static_cast<int>(m_howToTex.GetHeight()));
-			}
-
-			if (m_bWeaponDataPage)
-			{
-				if (m_bWeaponDataHopperPage)
-				{
-					transMat = Math::Matrix::Identity;
-					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_hopperDataTex, 0, 0, static_cast<int>(m_hopperDataTex.GetWidth()), static_cast<int>(m_hopperDataTex.GetHeight()));
-				}
-				else if (m_bWeaponDataScoPage)
-				{
-					transMat = Math::Matrix::Identity;
-					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
-					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponInfoTex, 0, 0, static_cast<int>(m_weaponInfoTex.GetWidth()), static_cast<int>(m_weaponInfoTex.GetHeight()));
-				}
-
-				mat = Math::Matrix::CreateScale(m_weaponRightYaiScale) * Math::Matrix::CreateTranslation(m_weaponRightYaiPos);
-				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, static_cast<int>(m_rightYaiTex.GetWidth()), static_cast<int>(m_rightYaiTex.GetHeight()));
-
-				mat = Math::Matrix::CreateScale(m_weaponLeftYaiScale) * Math::Matrix::CreateTranslation(m_weaponLeftYaiPos);
-				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, static_cast<int>(m_leftYaiTex.GetWidth()), static_cast<int>(m_leftYaiTex.GetHeight()));
-			}
-
-			mat = Math::Matrix::CreateScale(m_weaOrHowRightYaiScale) * Math::Matrix::CreateTranslation(m_weaOrHowRightYaiPos);
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, static_cast<int>(m_rightYaiTex.GetWidth()), static_cast<int>(m_rightYaiTex.GetHeight()));
-
-			mat = Math::Matrix::CreateScale(m_weaOrHowLeftYaiScale) * Math::Matrix::CreateTranslation(m_weaOrHowLeftYaiPos);
-			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, static_cast<int>(m_leftYaiTex.GetWidth()), static_cast<int>(m_leftYaiTex.GetHeight()));
-
-		}
-
-		mat = Math::Matrix::CreateScale(m_backScale) * Math::Matrix::CreateTranslation(m_backPos);
-		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_backTex, 0, 0, static_cast<int>(m_backTex.GetWidth()), static_cast<int>(m_backTex.GetHeight()));
-	}
-
 	if (m_bTutorialView)
 	{
 		transMat = Math::Matrix::Identity;
@@ -514,6 +445,75 @@ void TutorialUi::DrawSprite()
 			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_hopperTyuToDoTex, 0, 0, static_cast<int>(m_hopperTyuToDoTex.GetWidth()), static_cast<int>(m_hopperTyuToDoTex.GetHeight()));
 			break;
 		}
+	}
+
+	if (m_bOption)
+	{
+		transMat = Math::Matrix::Identity;
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+		color = { 0,0,0,0.6f };
+		KdShaderManager::Instance().m_spriteShader.DrawBox(0, 0, 1280, 720, &color);
+
+		if (!m_bOperation)
+		{
+			mat = Math::Matrix::CreateScale(m_operationScale) * Math::Matrix::CreateTranslation(m_operationPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_operationTex, 0, 0, static_cast<int>(m_operationTex.GetWidth()), static_cast<int>(m_operationTex.GetHeight()));
+
+			mat = Math::Matrix::CreateScale(m_selectScale) * Math::Matrix::CreateTranslation(m_selectPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_selectTex, 0, 0, static_cast<int>(m_selectTex.GetWidth()), static_cast<int>(m_selectTex.GetHeight()));
+
+			mat = Math::Matrix::CreateScale(m_exitScale) * Math::Matrix::CreateTranslation(m_exitPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_exitTex, 0, 0, static_cast<int>(m_exitTex.GetWidth()), static_cast<int>(m_exitTex.GetHeight()));
+		}
+		else if (m_bOperation)
+		{
+			if (m_bHowToPage)
+			{
+				transMat = Math::Matrix::Identity;
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_howToTex, 0, 0, static_cast<int>(m_howToTex.GetWidth()), static_cast<int>(m_howToTex.GetHeight()));
+			}
+
+			if (m_bWeaponDataPage)
+			{
+				if (m_bWeaponDataHopperPage)
+				{
+					transMat = Math::Matrix::Identity;
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_hopperDataTex, 0, 0, static_cast<int>(m_hopperDataTex.GetWidth()), static_cast<int>(m_hopperDataTex.GetHeight()));
+				}
+				else if (m_bWeaponDataScoPage)
+				{
+					transMat = Math::Matrix::Identity;
+					KdShaderManager::Instance().m_spriteShader.SetMatrix(transMat);
+					KdShaderManager::Instance().m_spriteShader.DrawTex(&m_weaponInfoTex, 0, 0, static_cast<int>(m_weaponInfoTex.GetWidth()), static_cast<int>(m_weaponInfoTex.GetHeight()));
+				}
+
+				mat = Math::Matrix::CreateScale(m_weaponRightYaiScale) * Math::Matrix::CreateTranslation(m_weaponRightYaiPos);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, static_cast<int>(m_rightYaiTex.GetWidth()), static_cast<int>(m_rightYaiTex.GetHeight()));
+
+				mat = Math::Matrix::CreateScale(m_weaponLeftYaiScale) * Math::Matrix::CreateTranslation(m_weaponLeftYaiPos);
+				KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+				KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, static_cast<int>(m_leftYaiTex.GetWidth()), static_cast<int>(m_leftYaiTex.GetHeight()));
+			}
+
+			mat = Math::Matrix::CreateScale(m_weaOrHowRightYaiScale) * Math::Matrix::CreateTranslation(m_weaOrHowRightYaiPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_rightYaiTex, 0, 0, static_cast<int>(m_rightYaiTex.GetWidth()), static_cast<int>(m_rightYaiTex.GetHeight()));
+
+			mat = Math::Matrix::CreateScale(m_weaOrHowLeftYaiScale) * Math::Matrix::CreateTranslation(m_weaOrHowLeftYaiPos);
+			KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_leftYaiTex, 0, 0, static_cast<int>(m_leftYaiTex.GetWidth()), static_cast<int>(m_leftYaiTex.GetHeight()));
+
+		}
+
+		mat = Math::Matrix::CreateScale(m_backScale) * Math::Matrix::CreateTranslation(m_backPos);
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_backTex, 0, 0, static_cast<int>(m_backTex.GetWidth()), static_cast<int>(m_backTex.GetHeight()));
 	}
 
 	transMat = Math::Matrix::Identity;
