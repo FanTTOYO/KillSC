@@ -510,7 +510,7 @@ void TrainingUi::DrawSprite()
 		color = { 1, 1, 1, 1 };
 		KdShaderManager::Instance().m_spriteShader.DrawTex(&m_torionTex, 0, 0, static_cast<int>((spPlayer->GetVForce())), static_cast<int>(m_torionTex.GetHeight()), &rc, &color, Math::Vector2(0, 0.5f));
 
-		if (!m_wpEnemy.expired() && !m_wpEnemy.lock()->GetBEnemyDeath())
+		if (!m_wpEnemy.expired() && !m_wpEnemy.lock()->GetBDeath())
 		{
 			Math::Vector3 nowVec = m_wpCamera.lock()->GetMatrix().Backward();
 			nowVec.Normalize();

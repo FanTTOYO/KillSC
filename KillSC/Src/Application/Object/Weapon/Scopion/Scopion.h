@@ -23,16 +23,20 @@ public:
 private:
 	void Init()override;
 	void PlayerHitAttackChaeck();
-	Math::Matrix PlayerHitEffectMat(Math::Vector3 a_hitPos,std::weak_ptr<Enemy> a_enemy);
-	Math::Matrix EnemyHitEffectMat(Math::Vector3 a_hitPos,std::weak_ptr<Player> a_player);
 	void PlayerManAttackChaeck();
+	void PlayerAttackHit(std::shared_ptr<Player> a_player, std::shared_ptr<Enemy> a_enemy, Math::Vector3 a_hitPos);
+	Math::Matrix PlayerHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<Enemy> a_enemy);
+
+
 	void EnemyHitAttackChaeck();
 	void EnemyManAttackChaeck();
+	void EnemyAttackHit(std::shared_ptr<Enemy> a_enemy, Math::Vector3 a_hitPos);
+	Math::Matrix EnemyHitEffectMat(Math::Vector3 a_hitPos, std::weak_ptr<Player> a_player);
 
 	bool m_bPlayerWeapon = false;
 	bool m_bEnemyWeapon = false;
 	bool m_bMantis = false;
-	
+
 	Math::Matrix m_mantisRot = Math::Matrix::Identity;
 	std::shared_ptr<KdModelWork> m_model;
 	std::unique_ptr<KdModelWork> m_manModel;

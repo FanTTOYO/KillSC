@@ -69,7 +69,7 @@ void GameCamera::Update()
 				Math::Vector3 endPos;
 				Math::Vector3 nowPos;
 
-				if (m_wpPlayer.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDash | Player::PlayerState::grassHopperDashUp) && m_wpPlayer.lock()->GetLGrassHopperTime() <= 75 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 75)
+				if (m_wpPlayer.lock()->GetCharaState() & (CharacterBase::grassHopperDash | CharacterBase::grassHopperDashUp) && m_wpPlayer.lock()->GetLGrassHopperTime() <= 75 || m_wpPlayer.lock()->GetRGrassHopperTime() <= 75)
 				{
 					m_startPos[0] = m_startPos[1];
 					m_startPos[1] = m_startPos[2];
@@ -96,7 +96,7 @@ void GameCamera::Update()
 
 					targetMat = Math::Matrix::CreateTranslation(nowPos);
 				}
-				else if (m_wpPlayer.lock()->GetPlayerState() & (Player::PlayerState::grassHopperDash | Player::PlayerState::grassHopperDashUp) && m_wpPlayer.lock()->GetLGrassHopperTime() > 75 || m_wpPlayer.lock()->GetRGrassHopperTime() > 75)
+				else if (m_wpPlayer.lock()->GetCharaState() & (CharacterBase::grassHopperDash | CharacterBase::grassHopperDashUp) && m_wpPlayer.lock()->GetLGrassHopperTime() > 75 || m_wpPlayer.lock()->GetRGrassHopperTime() > 75)
 				{
 					if (!m_bRotateEnemy)
 					{
@@ -146,24 +146,24 @@ void GameCamera::Update()
 		else if (SceneManager::Instance().GetScreenVibFrames() > 0 && SceneManager::Instance().GetUpdateStopCnt() == 0)
 		{
 			int PMVal = 0;
-			if (SceneManager::Instance().GetScreenVibFrames() <= 30 && SceneManager::Instance().GetScreenVibFrames() > 28 || 
-				SceneManager::Instance().GetScreenVibFrames() <= 26 && SceneManager::Instance().GetScreenVibFrames() > 24 || 
-				SceneManager::Instance().GetScreenVibFrames() <= 22 && SceneManager::Instance().GetScreenVibFrames() > 20 || 
+			if (SceneManager::Instance().GetScreenVibFrames() <= 30 && SceneManager::Instance().GetScreenVibFrames() > 28 ||
+				SceneManager::Instance().GetScreenVibFrames() <= 26 && SceneManager::Instance().GetScreenVibFrames() > 24 ||
+				SceneManager::Instance().GetScreenVibFrames() <= 22 && SceneManager::Instance().GetScreenVibFrames() > 20 ||
 				SceneManager::Instance().GetScreenVibFrames() <= 18 && SceneManager::Instance().GetScreenVibFrames() > 16)
 			{
 				if (SceneManager::Instance().GetScreenVibFrames() == 30 ||
 					SceneManager::Instance().GetScreenVibFrames() == 26 ||
 					SceneManager::Instance().GetScreenVibFrames() == 22 ||
-					SceneManager::Instance().GetScreenVibFrames() == 18 )
+					SceneManager::Instance().GetScreenVibFrames() == 18)
 				{
 					PMVal = (rand() % 2) * 2 - 1;
 				}
 				m_LocalPos = Math::Matrix::CreateTranslation(0.025f * PMVal, CAMERAY + 0.025f * PMVal, CAMERAZ - m_cameracChasePower);
 			}
 			else if (SceneManager::Instance().GetScreenVibFrames() <= 28 && SceneManager::Instance().GetScreenVibFrames() > 26 ||
-				     SceneManager::Instance().GetScreenVibFrames() <= 24 && SceneManager::Instance().GetScreenVibFrames() > 22 ||
-				     SceneManager::Instance().GetScreenVibFrames() <= 20 && SceneManager::Instance().GetScreenVibFrames() > 18 ||
-				     SceneManager::Instance().GetScreenVibFrames() <= 16 && SceneManager::Instance().GetScreenVibFrames() > 15)
+				SceneManager::Instance().GetScreenVibFrames() <= 24 && SceneManager::Instance().GetScreenVibFrames() > 22 ||
+				SceneManager::Instance().GetScreenVibFrames() <= 20 && SceneManager::Instance().GetScreenVibFrames() > 18 ||
+				SceneManager::Instance().GetScreenVibFrames() <= 16 && SceneManager::Instance().GetScreenVibFrames() > 15)
 			{
 				if (SceneManager::Instance().GetScreenVibFrames() == 28 ||
 					SceneManager::Instance().GetScreenVibFrames() == 24 ||
@@ -175,26 +175,26 @@ void GameCamera::Update()
 				m_LocalPos = Math::Matrix::CreateTranslation(0.025f * PMVal, CAMERAY + 0.025f * PMVal, CAMERAZ - m_cameracChasePower);
 			}
 			else if (SceneManager::Instance().GetScreenVibFrames() <= 15 && SceneManager::Instance().GetScreenVibFrames() > 12 ||
-				     SceneManager::Instance().GetScreenVibFrames() <=  9 && SceneManager::Instance().GetScreenVibFrames() >  6 ||
-				     SceneManager::Instance().GetScreenVibFrames() <=  3 && SceneManager::Instance().GetScreenVibFrames() >  0
-				    )
+				SceneManager::Instance().GetScreenVibFrames() <= 9 && SceneManager::Instance().GetScreenVibFrames() > 6 ||
+				SceneManager::Instance().GetScreenVibFrames() <= 3 && SceneManager::Instance().GetScreenVibFrames() > 0
+				)
 			{
 				if (SceneManager::Instance().GetScreenVibFrames() == 15 ||
-					SceneManager::Instance().GetScreenVibFrames() ==  9 ||
-					SceneManager::Instance().GetScreenVibFrames() ==  3
-				   )
+					SceneManager::Instance().GetScreenVibFrames() == 9 ||
+					SceneManager::Instance().GetScreenVibFrames() == 3
+					)
 				{
 					PMVal = (rand() % 2) * 2 - 1;
 				}
 				m_LocalPos = Math::Matrix::CreateTranslation(0.0125f * PMVal, CAMERAY + 0.0125f * PMVal, CAMERAZ - m_cameracChasePower);
 			}
 			else if (SceneManager::Instance().GetScreenVibFrames() <= 12 && SceneManager::Instance().GetScreenVibFrames() > 9 ||
-				     SceneManager::Instance().GetScreenVibFrames() <=  6 && SceneManager::Instance().GetScreenVibFrames() > 3
-				    )
+				SceneManager::Instance().GetScreenVibFrames() <= 6 && SceneManager::Instance().GetScreenVibFrames() > 3
+				)
 			{
 				if (SceneManager::Instance().GetScreenVibFrames() == 12 ||
-					SceneManager::Instance().GetScreenVibFrames() ==  6
-				   )
+					SceneManager::Instance().GetScreenVibFrames() == 6
+					)
 				{
 					PMVal = (rand() % 2) * 2 - 1;
 				}
@@ -229,10 +229,10 @@ void GameCamera::Update()
 		{
 			m_bRotateEnemy = false;
 		}
-		if (m_wpEnemy.lock()->GetBEnemyDeath())
+		if (m_wpEnemy.lock()->GetBDeath())
 		{
 			m_bRotateEnemy = false;
-		}	
+		}
 		else
 		{
 			UpdateRotateByEnemy();
@@ -241,8 +241,8 @@ void GameCamera::Update()
 		SetCursorPos(m_FixMousePos.x, m_FixMousePos.y);
 		rotMatX = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(10));
 	}
-		m_Rotation = GetRotationMatrix();
-	
+	m_Rotation = GetRotationMatrix();
+
 	if (m_bCameraSet)
 	{
 		CameraSetUpdate();
@@ -288,61 +288,37 @@ void GameCamera::UpdateRotateByEnemy()
 
 	// 向きたい方向
 	Math::Vector3 toVec = Math::Vector3(m_wpEnemy.lock()->GetPos().x + m_wpEnemy.lock()->GetRockOnPos().x, m_wpEnemy.lock()->GetPos().y + m_wpEnemy.lock()->GetRockOnPos().y, m_wpEnemy.lock()->GetPos().z + m_wpEnemy.lock()->GetRockOnPos().z) -
-	 	                  Math::Vector3(m_wpPlayer.lock()->GetPos().x + m_wpPlayer.lock()->GetAddCenterVal().x, m_wpPlayer.lock()->GetPos().y + m_wpPlayer.lock()->GetAddCenterVal().y, m_wpPlayer.lock()->GetPos().z + m_wpPlayer.lock()->GetAddCenterVal().z);
+		Math::Vector3(m_wpPlayer.lock()->GetPos().x + m_wpPlayer.lock()->GetAddCenterVal().x, m_wpPlayer.lock()->GetPos().y + m_wpPlayer.lock()->GetAddCenterVal().y, m_wpPlayer.lock()->GetPos().z + m_wpPlayer.lock()->GetAddCenterVal().z);
 	toVec.y = 0.0f;
 	toVec.Normalize();
 
-	Math::Vector3 dot = DirectX::XMVector3Dot(nowVec, toVec);
-	if (dot.x > 1)
-	{
-		dot.x = 1;
-	}
-	if (dot.x < -1)
-	{
-		dot.x = -1;
-	}
-
-	// 角度を取得
-	float ang = DirectX::XMConvertToDegrees(acos(dot.x));
+	float ang = DotProductCalculation(nowVec, toVec);
 
 	Math::Vector3 cross = DirectX::XMVector3Cross(nowVec, toVec);
 	if (cross.y >= 0)
 	{
 		m_DegAng.y += ang;
 	}
-	
+
 	if (cross.y < 0)
 	{
 		m_DegAng.y -= ang;
 	}
 
 	//nowVec = Math::Vector3::TransformNormal(nowVec,Math::Matrix::CreateRotationY(m_DegAng.y));
-	
-	if (m_wpPlayer.lock()->GetPlayerState() & Player::PlayerState::rlAttackRush)return;
 
-	nowVec   = m_mWorld.Backward();
+	if (m_wpPlayer.lock()->GetCharaState() & CharacterBase::rlAttackRush)return;
+
+	nowVec = m_mWorld.Backward();
 	nowVec.x = 0.0f;
 	nowVec.Normalize();
 
-	toVec   = Math::Vector3(m_wpEnemy.lock()->GetPos().x + m_wpEnemy.lock()->GetRockOnPos().x, m_wpEnemy.lock()->GetPos().y + m_wpEnemy.lock()->GetRockOnPos().y, m_wpEnemy.lock()->GetPos().z + m_wpEnemy.lock()->GetRockOnPos().z) - 
-		      Math::Vector3(m_wpPlayer.lock()->GetPos().x + m_wpPlayer.lock()->GetAddCenterVal().x, m_wpPlayer.lock()->GetPos().y + m_wpPlayer.lock()->GetAddCenterVal().y, m_wpPlayer.lock()->GetPos().z + m_wpPlayer.lock()->GetAddCenterVal().z);
+	toVec = Math::Vector3(m_wpEnemy.lock()->GetPos().x + m_wpEnemy.lock()->GetRockOnPos().x, m_wpEnemy.lock()->GetPos().y + m_wpEnemy.lock()->GetRockOnPos().y, m_wpEnemy.lock()->GetPos().z + m_wpEnemy.lock()->GetRockOnPos().z) -
+		Math::Vector3(m_wpPlayer.lock()->GetPos().x + m_wpPlayer.lock()->GetAddCenterVal().x, m_wpPlayer.lock()->GetPos().y + m_wpPlayer.lock()->GetAddCenterVal().y, m_wpPlayer.lock()->GetPos().z + m_wpPlayer.lock()->GetAddCenterVal().z);
 	toVec.x = 0.0f;
 	toVec.Normalize();
 
-	dot = DirectX::XMVector3Dot(nowVec, toVec);
-	
-	if (dot.x > 1)
-	{
-		dot.x = 1;
-	}
-	if (dot.x < -1)
-	{
-		dot.x = -1;
-	}
-
-
-	// 角度を取得
-	ang = DirectX::XMConvertToDegrees(acos(dot.x));
+	ang = DotProductCalculation(nowVec, toVec);
 
 	if (ang >= 15)
 	{

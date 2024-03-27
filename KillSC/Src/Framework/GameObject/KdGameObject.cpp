@@ -17,8 +17,8 @@ void KdGameObject::SetScale(const Math::Vector3& scale)
 {
 	Math::Vector3 vecX = m_mWorld.Right();
 	Math::Vector3 vecY = m_mWorld.Up();
-	Math::Vector3 vecZ = m_mWorld.Backward(); 
-	
+	Math::Vector3 vecZ = m_mWorld.Backward();
+
 	vecX.Normalize();
 	vecY.Normalize();
 	vecZ.Normalize();
@@ -50,4 +50,19 @@ bool KdGameObject::Intersects(const KdCollider::RayInfo& targetShape, std::list<
 	if (!m_pCollider) { return false; }
 
 	return m_pCollider->Intersects(targetShape, m_mWorld, pResults);
+}
+
+float KdGameObject::DotProductCalculation(Math::Vector3 a_nowVec, Math::Vector3 a_targetVec)
+{
+	Math::Vector3 dot = DirectX::XMVector3Dot(a_nowVec, a_targetVec);
+	if (dot.x > 1)
+	{
+		dot.x = 1;
+	}
+	if (dot.x < -1)
+	{
+		dot.x = -1;
+	}
+
+	return DirectX::XMConvertToDegrees(acos(dot.x));
 }

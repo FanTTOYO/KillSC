@@ -80,6 +80,7 @@ public:
 protected:
 
 	void Release() {}
+	float DotProductCalculation(Math::Vector3 a_nowVec, Math::Vector3 a_targetVec);
 
 	// 描画タイプ・何の描画を行うのかを決める / 最適な描画リスト作成用
 	UINT m_drawType = 0;

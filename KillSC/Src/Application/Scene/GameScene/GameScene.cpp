@@ -11,14 +11,6 @@
 
 void GameScene::Event()
 {
-	/*if (GetAsyncKeyState(VK_RETURN) & 0x8000)
-	{
-		SceneManager::Instance().SetNextScene
-		(
-			SceneManager::SceneType::result
-		);
-	}*/
-
 	std::shared_ptr<Ui> spUi = m_wpUi.lock();
 
 	if (spUi->GetTime() >= 0 && spUi->GetTime() < MAX_STATE_TIME_CNT || spUi->GetBOption())
@@ -130,7 +122,7 @@ void GameScene::Event()
 				m_objList.push_back(enemy);
 				m_wpEnemyList.push_back(enemy);
 				m_charengeEnemyAppearanceDelayTime = CHARENGE_ENEMY_APPEARANCEDELAY_TIME;
-				
+
 			}
 			if (SceneManager::Instance().GetEnemyDrawTotal() < MAX_ENEMY_DRAW_TOTAL)
 			{
@@ -161,8 +153,8 @@ void GameScene::Event()
 			if (wpEnemy.lock()->GetBBoss())continue;
 			if (wpEnemy.lock()->GetEnemyAttackTotal() >= MAX_ENEMY_ATTACK_CNT)break;
 
-			
-			if (wpEnemy.lock()->GetEnemyState() & (Enemy::EnemyState::rAttack | Enemy::EnemyState::lAttack | Enemy::EnemyState::rlAttack | Enemy::EnemyState::rlAttackRush | Enemy::EnemyState::mantis) || wpEnemy.lock()->GetBRangedAttack())
+
+			if (wpEnemy.lock()->GetCharaState() & (CharacterBase::rAttack | CharacterBase::lAttack | CharacterBase::rlAttack | CharacterBase::rlAttackRush | CharacterBase::mantis) || wpEnemy.lock()->GetBRangedAttack())
 			{
 				++attackCnt;
 				for (auto& enemy : m_wpEnemyList)
@@ -200,29 +192,29 @@ void GameScene::Event()
 				m_bAppearanceEffect = true;
 
 				pos = Math::Vector3((float)(*m_spJsonObj)["EnemyAppearanceF"][0].number_value(),
-				   				    (float)(*m_spJsonObj)["EnemyAppearanceF"][1].number_value(),
-								    (float)(*m_spJsonObj)["EnemyAppearanceF"][2].number_value());
+					(float)(*m_spJsonObj)["EnemyAppearanceF"][1].number_value(),
+					(float)(*m_spJsonObj)["EnemyAppearanceF"][2].number_value());
 				KdEffekseerManager::GetInstance().
 					Play("EnemyAppearance.efk", pos);
 				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
 
 				pos = Math::Vector3((float)(*m_spJsonObj)["EnemyAppearanceB"][0].number_value(),
-					                (float)(*m_spJsonObj)["EnemyAppearanceB"][1].number_value(),
-					                (float)(*m_spJsonObj)["EnemyAppearanceB"][2].number_value());
+					(float)(*m_spJsonObj)["EnemyAppearanceB"][1].number_value(),
+					(float)(*m_spJsonObj)["EnemyAppearanceB"][2].number_value());
 				KdEffekseerManager::GetInstance().
 					Play("EnemyAppearance.efk", pos);
 				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
 
 				pos = Math::Vector3((float)(*m_spJsonObj)["EnemyAppearanceR"][0].number_value(),
-					                (float)(*m_spJsonObj)["EnemyAppearanceR"][1].number_value(),
-					                (float)(*m_spJsonObj)["EnemyAppearanceR"][2].number_value());
+					(float)(*m_spJsonObj)["EnemyAppearanceR"][1].number_value(),
+					(float)(*m_spJsonObj)["EnemyAppearanceR"][2].number_value());
 				KdEffekseerManager::GetInstance().
 					Play("EnemyAppearance.efk", pos);
 				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
 
 				pos = Math::Vector3((float)(*m_spJsonObj)["EnemyAppearanceL"][0].number_value(),
-					                (float)(*m_spJsonObj)["EnemyAppearanceL"][1].number_value(),
-					                (float)(*m_spJsonObj)["EnemyAppearanceL"][2].number_value());
+					(float)(*m_spJsonObj)["EnemyAppearanceL"][1].number_value(),
+					(float)(*m_spJsonObj)["EnemyAppearanceL"][2].number_value());
 				KdEffekseerManager::GetInstance().
 					Play("EnemyAppearance.efk", pos);
 				KdEffekseerManager::GetInstance().KdEffekseerManager::StopEffect("EnemyAppearance.efk"); // これでループしない
@@ -266,8 +258,8 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
 						pos = Math::Vector3((float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosF"][0].number_value(),
-							                (float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosF"][1].number_value(),
-							                (float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosF"][2].number_value());
+							(float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosF"][1].number_value(),
+							(float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosF"][2].number_value());
 						enemy->SetPos(pos);
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceFWorldRotationY"].number_value());
 						enemy->SetMatrix();
@@ -285,8 +277,8 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
 						pos = Math::Vector3((float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosB"][0].number_value(),
-							                (float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosB"][1].number_value(),
-							                (float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosB"][2].number_value());
+							(float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosB"][1].number_value(),
+							(float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosB"][2].number_value());
 						enemy->SetPos(pos);
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceBWorldRotationY"].number_value());
 						enemy->SetMatrix();
@@ -304,8 +296,8 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
 						pos = Math::Vector3((float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosR"][0].number_value(),
-							                (float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosR"][1].number_value(),
-							                (float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosR"][2].number_value());
+							(float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosR"][1].number_value(),
+							(float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosR"][2].number_value());
 						enemy->SetPos(pos);
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceRWorldRotationY"].number_value());
 						enemy->SetMatrix();
@@ -323,8 +315,8 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(0);
 						enemy->SetBBoss(false);
 						pos = Math::Vector3((float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosL"][0].number_value(),
-							                (float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosL"][1].number_value(),
-							                (float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosL"][2].number_value());
+							(float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosL"][1].number_value(),
+							(float)enemyTotalTwoWimpEnemyObj["EnemyTotalTwoWimpEnemyPosL"][2].number_value());
 						enemy->SetPos(pos);
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceLWorldRotationY"].number_value());
 						enemy->SetMatrix();
@@ -348,8 +340,8 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
 						pos = Math::Vector3((float)coarseFishEnemyObj["CoarseFishEnemyPosF"][0].number_value(),
-							                (float)coarseFishEnemyObj["CoarseFishEnemyPosF"][1].number_value(),
-							                (float)coarseFishEnemyObj["CoarseFishEnemyPosF"][2].number_value());
+							(float)coarseFishEnemyObj["CoarseFishEnemyPosF"][1].number_value(),
+							(float)coarseFishEnemyObj["CoarseFishEnemyPosF"][2].number_value());
 						enemy->SetPos(Math::Vector3(pos.x + 1.0f * i, pos.y, pos.z));
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceFWorldRotationY"].number_value());
 						enemy->SetMatrix();
@@ -372,8 +364,8 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
 						pos = Math::Vector3((float)coarseFishEnemyObj["CoarseFishEnemyPosB"][0].number_value(),
-							                (float)coarseFishEnemyObj["CoarseFishEnemyPosB"][1].number_value(),
-							                (float)coarseFishEnemyObj["CoarseFishEnemyPosB"][2].number_value());
+							(float)coarseFishEnemyObj["CoarseFishEnemyPosB"][1].number_value(),
+							(float)coarseFishEnemyObj["CoarseFishEnemyPosB"][2].number_value());
 						enemy->SetPos(Math::Vector3(pos.x + 1.0f * i, pos.y, pos.z));
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceBWorldRotationY"].number_value());
 						enemy->SetMatrix();
@@ -397,8 +389,8 @@ void GameScene::Event()
 						enemy->SetEnemyNumber(i + 1);
 						enemy->SetBBoss(false);
 						pos = Math::Vector3((float)coarseFishEnemyObj["CoarseFishEnemyPosR"][0].number_value(),
-							                (float)coarseFishEnemyObj["CoarseFishEnemyPosR"][1].number_value(),
-							                (float)coarseFishEnemyObj["CoarseFishEnemyPosR"][2].number_value());
+							(float)coarseFishEnemyObj["CoarseFishEnemyPosR"][1].number_value(),
+							(float)coarseFishEnemyObj["CoarseFishEnemyPosR"][2].number_value());
 						enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z + 1.0f * i));
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceRWorldRotationY"].number_value());
 						enemy->SetMatrix();
@@ -422,8 +414,8 @@ void GameScene::Event()
 						enemy->SetBBoss(false);
 
 						pos = Math::Vector3((float)coarseFishEnemyObj["CoarseFishEnemyPosL"][0].number_value(),
-							                (float)coarseFishEnemyObj["CoarseFishEnemyPosL"][1].number_value(),
-							                (float)coarseFishEnemyObj["CoarseFishEnemyPosL"][2].number_value());
+							(float)coarseFishEnemyObj["CoarseFishEnemyPosL"][1].number_value(),
+							(float)coarseFishEnemyObj["CoarseFishEnemyPosL"][2].number_value());
 						enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z + 1.0f * i));
 
 						enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceLWorldRotationY"].number_value());
@@ -434,7 +426,7 @@ void GameScene::Event()
 						m_wpEnemyList.push_back(enemy);
 					}
 					//========================================================================================================================================================
-				}   
+				}
 				else // モンスター型Enemyインスタンス化==========================================================================================================
 				{
 					auto& wimpEnemyTypeOne = (*m_spJsonObj)["WimpEnemyTypeOne"].object_items();
@@ -450,8 +442,8 @@ void GameScene::Event()
 					enemy->SetEnemyNumber(1);
 					enemy->SetBBoss(false);
 					pos = Math::Vector3((float)wimpEnemyTypeOne["WimpEnemyTypeOnePosF"][0].number_value(),
-						                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosF"][1].number_value(),
-						                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosF"][2].number_value());
+						(float)wimpEnemyTypeOne["WimpEnemyTypeOnePosF"][1].number_value(),
+						(float)wimpEnemyTypeOne["WimpEnemyTypeOnePosF"][2].number_value());
 
 					enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z));
 					enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceFWorldRotationY"].number_value());
@@ -460,7 +452,7 @@ void GameScene::Event()
 
 					m_objList.push_back(enemy);
 					m_wpEnemyList.push_back(enemy);
-					
+
 					SceneManager::Instance().AddEnemyDrawTotal();
 					enemy = std::make_shared<Enemy>();
 					enemy->SetTarget(m_wpPlayer.lock());
@@ -471,8 +463,8 @@ void GameScene::Event()
 					enemy->SetEnemyNumber(2);
 					enemy->SetBBoss(false);
 					pos = Math::Vector3((float)wimpEnemyTypeOne["WimpEnemyTypeOnePosB"][0].number_value(),
-						                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosB"][1].number_value(),
-						                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosB"][2].number_value());
+						(float)wimpEnemyTypeOne["WimpEnemyTypeOnePosB"][1].number_value(),
+						(float)wimpEnemyTypeOne["WimpEnemyTypeOnePosB"][2].number_value());
 					enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z));
 					enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceBWorldRotationY"].number_value());
 					enemy->SetMatrix();
@@ -491,8 +483,8 @@ void GameScene::Event()
 					enemy->SetEnemyNumber(3);
 					enemy->SetBBoss(false);
 					pos = Math::Vector3((float)wimpEnemyTypeOne["WimpEnemyTypeOnePosR"][0].number_value(),
-						                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosR"][1].number_value(),
-						                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosR"][2].number_value());
+						(float)wimpEnemyTypeOne["WimpEnemyTypeOnePosR"][1].number_value(),
+						(float)wimpEnemyTypeOne["WimpEnemyTypeOnePosR"][2].number_value());
 					enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z));
 					enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceRWorldRotationY"].number_value());
 					enemy->SetMatrix();
@@ -510,8 +502,8 @@ void GameScene::Event()
 					enemy->SetEnemyNumber(4);
 					enemy->SetBBoss(false);
 					pos = Math::Vector3((float)wimpEnemyTypeOne["WimpEnemyTypeOnePosL"][0].number_value(),
-						                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosL"][1].number_value(),
-						                (float)wimpEnemyTypeOne["WimpEnemyTypeOnePosL"][2].number_value());
+						(float)wimpEnemyTypeOne["WimpEnemyTypeOnePosL"][1].number_value(),
+						(float)wimpEnemyTypeOne["WimpEnemyTypeOnePosL"][2].number_value());
 					enemy->SetPos(Math::Vector3(pos.x, pos.y, pos.z));
 					enemy->SetWorldRotationY((float)enemySharedObj["EnemyAppearanceLWorldRotationY"].number_value());
 					enemy->SetMatrix();
@@ -525,11 +517,11 @@ void GameScene::Event()
 		else if (SceneManager::Instance().GetEnemyDrawTotal() == 0 && m_waveCnt >= MAX_WAVE_CNT && m_bossAppearanceCnt < SceneManager::Instance().GetEnemyTotal())
 		{
 			auto& enemySharedObj = (*m_spJsonObj)["EnemyShared"].object_items();
-			auto& bossEnemyObj   = (*m_spJsonObj)["BossEnemy"].object_items();
+			auto& bossEnemyObj = (*m_spJsonObj)["BossEnemy"].object_items();
 			auto& bossEnemyTypeOneObj = (*m_spJsonObj)["BossEnemyTypeOne"].object_items();
 			Math::Vector3 pos = Math::Vector3((float)enemySharedObj["BossEnemyAppearanceEffectPos"][0].number_value(),
-				                              (float)enemySharedObj["BossEnemyAppearanceEffectPos"][1].number_value(),
-				                              (float)enemySharedObj["BossEnemyAppearanceEffectPos"][2].number_value());
+				(float)enemySharedObj["BossEnemyAppearanceEffectPos"][1].number_value(),
+				(float)enemySharedObj["BossEnemyAppearanceEffectPos"][2].number_value());
 			if (!m_bAppearanceEffect)
 			{
 				m_appearanceEffectCnt = 0;
@@ -685,7 +677,6 @@ void GameScene::Init()
 	m_wpUi = ui;
 
 	player->Init(m_spJsonObj);
-
 
 	camera->SetTarget(player);
 	camera->SetPlayer(player);

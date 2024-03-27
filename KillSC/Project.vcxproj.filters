@@ -354,6 +354,9 @@
     <ClInclude Include="Src\Application\Object\Ui\TutorialUi\TutorialUi.h">
       <Filter>Src\Application\Object\Ui\TutorialUi</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Object\Character\CharacterBase.h">
+      <Filter>Src\Application\Object\Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -538,6 +541,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Object\Ui\TutorialUi\TutorialUi.cpp">
       <Filter>Src\Application\Object\Ui\TutorialUi</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Character\CharacterBase.cpp">
+      <Filter>Src\Application\Object\Character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

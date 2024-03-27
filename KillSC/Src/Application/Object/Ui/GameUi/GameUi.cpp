@@ -724,7 +724,7 @@ void GameUi::DrawSprite()
 		for (auto& list : m_wpEnemyList)
 		{
 			if (list.expired())continue;
-			if (list.lock()->GetBEnemyDeath())
+			if (list.lock()->GetBDeath())
 			{
 				++i;
 				continue;
